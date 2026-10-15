@@ -1,0 +1,15 @@
+{
+  "name": "pathwd",
+  "owner": {
+    "name": "PathWD",
+    "url": "https://pathwd.com"
+  },
+  "description": "PATH WD plugins for Claude: work with your PATH WD account from Claude Code and Cowork.",
+  "plugins": [
+    {
+      "name": "path-cli",
+      "source": "./plugins/path-cli",
+      "description": "Work with PATH WD records, folders, pathways, tasks and calendars from Claude"
+    }
+  ]
+}
