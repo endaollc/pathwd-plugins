@@ -47794,7 +47794,7 @@ var useAccountCommand = new Command("use-account").description(
 
 // .path-cli/src/index.ts
 function createProgram() {
-  const program2 = new Command("path").version("1.0.0").description(
+  const program2 = new Command("path").version("1.0.1").description(
     "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
@@ -56256,7 +56256,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.0";
+var VERSION = "1.0.1";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;
