@@ -22,6 +22,8 @@ Start a PATH session by confirming the user is signed in and selecting an accoun
 
 4. **Confirm** — State the active account ID. From here on, `--account <id>` is only needed to override the saved default for a single call.
 
+5. **Read the account's info** — `use-account` prints the account's info under the confirmation (`get-account` shows it again). It is the designers' description of the business: what the company does and how it uses PATH. Keep it in mind for the rest of the session. If there's no info line, the account has none.
+
 ## Usage pattern for the rest of the session
 
 ```

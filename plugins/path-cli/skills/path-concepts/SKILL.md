@@ -19,6 +19,7 @@ Nothing here is about how PATH is built. Speak to users in the web app's words, 
 - **Actions.** Automations such as notifications, emails, texts, new tasks and scheduled pathways, which fire when a record enters a milestone, from a pathway step, or on a schedule.
 - **Folders and tags.** Folders are saved, filtered lists of one kind of record ("Deposit Needed", "My Jobs In Full Quote Out"). Tags, such as a location, limit which records each user sees anywhere in PATH, so two users can see different records.
 - **Saving.** Saving a record recalculates its calculated fields, re-checks its milestones (tasks and actions may follow), and updates totals on linked records, sometimes a moment later.
+- **Info.** Designers can write *info* on almost anything they set up: the account, business objects, fields, relationships, milestones, workflow steps, tasks, stickers, pathways and pathway steps. It is their own description of what the thing is for and how it's meant to be used, and the account's info describes the business itself. Whenever you look at a record, a folder, a report or a record's related lists, the info of its business object and of each field or column comes with it; a table column shows the info of the field it is based on. Each piece of info is shown once per session and marked as shown earlier after that (ask for it again if you no longer have it), except the columns of a folder, report or related list, which show it every time. Read it before you act on the thing it describes; where it differs from these files, the account's info wins.
 
 ## Running pathways for a user
 
@@ -26,8 +27,9 @@ This is where understanding matters most. Before answering a screen:
 
 1. **Know where you are.** Read the screen's title and question and the record it is about. If the screen mentions a PATH WD term you don't recognise, look it up in `references/path-wd.md`.
 2. **Know what the screen does.** `references/pathways.md` explains each kind of screen, what the person is deciding, and what answering changes.
-3. **Answer only from what the user told you.** If they haven't said, ask them. Field values, the record picked in a lookup, a Yes or No, email recipients, scans and signatures all change real data or send real messages. Never sign or acknowledge for someone without their clear say-so.
-4. **Explain the outcome in business terms.** For example: "Job 1234 now has its winning quote and has left Full Quote Out."
+3. **Read the designer's info.** A run shows the pathway's info when it starts, the step's info under the screen heading (`waiting_for.step_info`), and each field's info under the field (`info` on each field and table column in `detail`). That is what the designer meant the step and its fields for. Use it to decide what to ask the user and what a sensible answer looks like, for example "the amount actually paid, not the quote total". It never answers the screen on its own.
+4. **Answer only from what the user told you.** If they haven't said, ask them. Field values, the record picked in a lookup, a Yes or No, email recipients, scans and signatures all change real data or send real messages. Never sign or acknowledge for someone without their clear say-so.
+5. **Explain the outcome in business terms.** For example: "Job 1234 now has its winning quote and has left Full Quote Out."
 
 ## Reference files
 

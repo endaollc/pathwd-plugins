@@ -54,6 +54,7 @@ Use the `path-session` skill to start a session. In short:
 #   --fields <list>    Comma-separated field selection for table output
 #   --quiet            IDs only (one per line)
 #   --as-user <user>   Act as another member of the account (id, email or name; account Admins only)
+#   --with-info        Repeat designer info (and the account block) already shown this session
 ```
 
 ### Access: always real-world
@@ -67,7 +68,7 @@ Every command runs as the **acting user** (`--as-user`, else you) and only does 
 |------|-----------------|
 | Business objects | Only BOs with View exist (listings, metadata reads, records, related records, tasks, feed) |
 | Search | Only BOs that are viewable **and** shown in the menu (the web search picker); `--bo-id` on any other BO is refused |
-| Reading records | `get-record` / `list-records` / `search` show only what the record viewer shows: hidden fields, fields failing their user/role/logic visibility, fields in hidden field groups, hidden relationships and relationships to unviewable BOs are left out (a note on stderr says how many). Created / Modified / Last Accessed dates always show. `get-record` answers like the record viewer: field **names** with **display** values (selection text, related records by identifier, formatted numbers / currency), dates and times on the acting user's clock (all-day: account-calendar day) — in the terminal and as the plugin tool's default JSON. Explicit `--json` (tool `format: "json"`), `--raw`, `--fields` or `--quiet` give the stored record (field ids, UTC) |
+| Reading records | `get-record` / `list-records` / `list-related-records` / `search` show only what the record viewer shows: hidden fields, fields failing their user/role/logic visibility, fields in hidden field groups, hidden relationships and relationships to unviewable BOs are left out (a note on stderr says how many). Created / Modified / Last Accessed dates always show. `get-record` answers like the record viewer: field **names** with **display** values (selection text, related records by identifier, formatted numbers / currency), dates and times on the acting user's clock (all-day: account-calendar day) — in the terminal and as the plugin tool's default JSON. Explicit `--json` (tool `format: "json"`), `--raw`, `--fields` or `--quiet` give the stored record (field ids, UTC) |
 | Creating / editing records | BO **Edit**; only fields visible in the record viewer. Linking / unlinking: BO Edit + the relationship visible in the record viewer |
 | Archiving | BO **Archive** (or the Delete Records role permission) |
 | Record tabs | Files, messages, emails, tasks, history: the record's BO must be viewable. Edit/delete a message: only your own. Delete a file: Admin or Delete Files |
@@ -79,15 +80,29 @@ Every command runs as the **acting user** (`--as-user`, else you) and only does 
 
 **Pathway runs are exempt** from the business object create / edit / archive rules and the record viewer's visibility, as in the web app; their launch rules (`pathway-run start` / `available` / `execute-pathway`) still apply.
 
+### Designer info (`info`)
+
+Designers can write **info** on the account and on what they set up: business objects, fields (relationship fields too), field groups, relationships, milestones, workflow steps, tasks, stickers, folder stickers, file types, pathways and pathway steps. It is their own description of what the thing is for and how it's meant to be used. Anyone can read it.
+
+- **The account's info describes the business.** `use-account <id>` prints it, and so do `get-account` and the default account in `auth_status`. Read it at the start of a session.
+- **Read an object's info before acting on it.** It comes back as `info` in get / list JSON (`get-business-object`, `get-field`, `list-fields`, `list-pathways`, `list-workflow-*`, …) and as an `info:` line in `get-*` text output. Lists only show it in JSON.
+- **Folder stickers:** `list-folders` gives each `folder_stickers[]` entry its `info`. A copy of a business object sticker with no info of its own also gets `bo_sticker_info`, which is the business object sticker's info that the copy shows. Never save `bo_sticker_info` into a folder.
+- **Pathway runs** show the pathway's, the step's and each field's info at the screen where it matters (see the `cli-pathways` command).
+- **Records come with the info of what they show.** `get-record` adds `business_object {id, name, info}`, `field_info {<field>: info}` and `relationship_info {<relationship>: info}`. `list-records --folder-id` answers `{business_object, field_info: [{field_id, name, info}], items}` (`items` is the record list as before; recent records give `business_objects[]` per BO). `run-report --json` keeps `{rows, meta}` and adds `business_object` and `columns[] {name, column_type, field_id?, relationship_path?, info}`. `list-related-records` gives the relationship's, the related BO's and each column's info. A table column has no info of its own: it shows the info of the field (or relationship field, relationship or pathway) it is based on. A relationship field with no info of its own shows the related field's.
+- **Info is given once per session.** The first time a piece of info appears in a session it is shown in full; later calls leave it out. JSON then drops the key and flags it (`info_elided: true`, `<key>_elided: true`, or `field_info_elided: [names]` for a map), with one `info_shown_earlier` summary on the object. Text prints `<label>: (shown earlier this session)` and one closing line. Pass **`--with-info`** to get it all again, for example after your context was compacted, or when you are a subagent that didn't see the earlier calls. Exceptions, shown every time: a folder's columns (`list-records`), a report's columns (`run-report`), a related-record table's columns (`list-related-records`), and explicit info requests (`get-account`). Pathway runs repeat pathway, step and field info on every new run; only a revisit within the same run leaves it out. A missing `info` key never means "no info": a save copied from that output leaves the info unchanged.
+- **The account comes first.** The first call of a session (and the first on another account) opens with the account block: id, name, time zone, country and info (text: an `Account: …` header; JSON: an `account` key). The plugin's MCP server also puts it in its instructions when the saved account is known at start.
+- **Info is the designer's intent, not data.** Use it to understand what something is for, what to ask the user and what a sensible answer looks like. Never invent a value from it when the user hasn't decided.
+
 ## Commands
 
 ### Auth & Account Discovery
 | Command | Description |
 |---------|-------------|
 | `authenticate` tool | Sign in via the browser. Use the tool, not the `auth` command: `auth` waits for the browser and times out inside `path_cli` |
-| `auth_status` tool | Check the sign-in and list available accounts |
+| `auth_status` tool | Check the sign-in and list available accounts; names the saved default account with its info |
 | `list-accounts` | List available accounts (no `--account` needed) |
-| `use-account <id>` | Persist a default account ID to `~/.path-cli/.env` (replaces the need for `--account` on every command) |
+| `use-account <id>` | Persist a default account ID to `~/.path-cli/.env` (replaces the need for `--account` on every command) and print the account's info |
+| `get-account [--account-id <id>]` | The active account: name, time zone, country and info (what the business does) |
 | `logout` | Clear stored tokens and saved default account |
 
 ### Business Object Structure (read-only)
@@ -107,10 +122,12 @@ All BO commands accept `--bo-id <id>` or `--bo-name <name>`. These are read-only
 ### Folders & Records
 | Command | Description |
 |---------|-------------|
-| `list-folders` | List all folders (filter: `--bo-name <n>`) |
-| `list-records --folder-id <id>` | List records in a folder |
-| `list-records` | List recent records (no folder) |
-| `get-record --record-id <id> [--raw]` | Get a single record. The record viewer's field names and display values on your clock; `--raw` / explicit `--json` give the stored record (ids, UTC) |
+| `list-folders` | List all folders (filter: `--bo-name <n>`); folder stickers carry `info` (copies of a BO sticker add `bo_sticker_info`) |
+| `list-records --folder-id <id>` | List records in a folder. JSON: `{business_object, field_info, items}` — the folder's BO info and its columns' field info (every time), records in `items` |
+| `list-records` | List recent records (no folder). JSON: `{business_objects: [{id, name, info, field_info}], items}` |
+| `get-record --record-id <id> [--raw]` | Get a single record. The record viewer's field names and display values on your clock; `--raw` / explicit `--json` give the stored record (ids, UTC). Adds `business_object`, `field_info` and `relationship_info` (only entries with info); `related_ids` gives each related record's id |
+| `list-related-records --record-id <id>` | Every related list the record viewer shows you on that record: direct relationships (the records it links to — relationship cards, Contacts, People, Addresses) and inverse relationship tabs (records linking to it), each with `direction`, relationship id, name, related BO `{id, name, info}`, relationship `info` and a count |
+| `list-related-records --record-id <id> --relationship-id <id> \| --relationship-name <name> [--direction direct\|inverse]` | That list's records with the record viewer's columns (inverse tab: its Table Columns, incl. lookups, nested tables, pathway buttons, milestones; direct: identifier, milestones and the linked fields; addresses: Street / City / State / Zip). JSON `{record, direction, relationship, business_object, columns[{kind, name, field_id?, relationship_id?, pathway_id?, info}], items[{id, identifier, values, linked_ids?}]}`. Open a listed record with `get-record --record-id <id>`. A relationship the record viewer doesn't show you is refused |
 | `list-record-files --record-id <id> [--file-type <ids-or-names>]` | List every file on a record with its type names; `--file-type` keeps only files of those types (comma-separated ids and/or names) |
 | `download-record-file --record-id <id> --file-id <id> [--out <path>] [--stdout]` | Download one record file (`--file-id` = `id` or `file_id` from list-record-files); saves to `./<file name>` by default, `--out` takes a file or directory, `--stdout` prints the bytes. File server = API host with `api`→`files` (override `PATH_FILE_SERVER_URL`) |
 | `list-file-types --bo-id <id> \| --bo-name <name>` | Every file type on a BO (all pages fetched; id, type_name, system_type, active) |
@@ -194,7 +211,7 @@ Plain output is just the URL; `--json` adds type, id, name and business object. 
 |---------|-------------|
 | `list-tag-groups` | List tag groups |
 | `list-reports` | List reports (only those the acting user can open) |
-| `run-report --report-id <id> [--per-page <n>] [--user-filter '<json>']` | Run a report and print its rows |
+| `run-report --report-id <id> [--per-page <n>] [--user-filter '<json>']` | Run a report and print its rows, then its root BO's info and each column's info (the field it shows; a column through relationships: the end field's, with `relationship_path`). `--json` keeps `{rows, meta}` and adds `business_object` and `columns` |
 
 ### Search
 | Command | Description |

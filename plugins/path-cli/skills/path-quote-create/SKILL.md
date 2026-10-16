@@ -107,7 +107,7 @@ list-records --folder-id <Quote Item Tax Category folder id> --json
 list-records --folder-id <Quote Item Categories folder id> --json
 ```
 
-For each folder record, the display value is in `fields[<display field id>]`. The display field id = `select_business_object_field_id` on the corresponding selection field metadata captured earlier:
+`list-records --folder-id … --json` answers `{business_object, field_info, items}`: the folder's records are in `items`. For each folder record, the display value is in `fields[<display field id>]`. The display field id = `select_business_object_field_id` on the corresponding selection field metadata captured earlier:
 
 - **Vendor display field** = `select_business_object_field_id` from the `Primary Vendor` (or `Vendor`) field
 - **Admin Item display field** = `select_business_object_field_id` from the `Terms` (or `Tax Category`) field

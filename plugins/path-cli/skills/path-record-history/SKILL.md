@@ -70,7 +70,7 @@ One row per event, newest first:
 | `SESSION` | `#1`, `#2`, ... Rows with the same number happened in one sitting (one card-view visit or one pathway run) |
 | `TYPE` | Where it happened: `card view` (the record's card), `pathway: <name>`, `scheduled action`, `inbound integration`, `email received`, ... |
 | `USER` | Who did it. `system` means automation, not a person |
-| `SOURCE` | Shown only when some session has one. An agent and where the work came from, e.g. `Claude Code · PATH CLI` (Claude, through the PATH CLI tools, signed in as `USER`), `Claude Cowork · PATH CLI`, or `PATH CLI` alone (the person typed CLI commands). Blank: the web app, or a session recorded before sources were |
+| `SOURCE` | Shown only when some session has one. An agent and where the work came from, e.g. `Claude Code · PATH CLI` (Claude, through the PATH CLI tools, signed in as `USER`), `Claude Cowork · PATH CLI`, or `PATH CLI` alone (the person typed CLI commands). Blank: the web app, or a session from before sources were recorded |
 | `ACTION` | What happened: `Saved Changes`, `Created`, `Linked`, `Unlinked`, `Archived`, `Milestone Reached`, `Milestone Exited`, `Workflow Step Run`, `Task Completed`, `File Uploaded`, `Email Sent`, `Message Sent`, `Note Added`, `Document Generated`, ... |
 | `SUBJECT` | What the event was about: the milestone, step, task, file, relationship or email subject |
 | `CHANGES` | Field changes as `Field: old → new`. `(empty)` means blank |
@@ -107,7 +107,7 @@ Categories: `saved_changes`, `milestones`, `milestones_exited`, `steps`, `files`
 
 There is no filter for one field. For "when was the status changed?", filter to `--category saved_changes` and read `CHANGES`.
 
-`--source <source>` keeps sessions from one source, like the History tab's Source filter: `web_app` (people in the web app), `cli` (people typing CLI commands), `agent` (any agent), `claude_code`, `claude_cowork`, `claude_desktop`, or `system` (integrations, scheduled actions, emails received). Use it for "what did Claude change?" (`--source agent`) or "what was done by hand in the app?" (`--source web_app`). Sessions recorded before sources were have none and only show without `--source`.
+There is no filter for who made a change either. For "what did Claude change?", read `SOURCE`: an agent's sessions name the agent.
 
 ## Display options
 

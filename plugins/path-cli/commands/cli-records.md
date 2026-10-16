@@ -162,6 +162,26 @@ Before creating, present a plain language summary:
 --account <ID> get-record --record-id <id> --json
 ```
 
+### Related Records (the record viewer's relationship cards and tabs)
+
+```
+# Every related list the record viewer shows you on this record:
+# direct relationships (records it links to) and inverse tabs (records linking to it)
+--account <ID> list-related-records --record-id <id>
+
+# One list's records, with the record viewer's columns
+--account <ID> list-related-records --record-id <id> --relationship-name "Quotes"
+--account <ID> list-related-records --record-id <id> --relationship-id 55 --direction direct
+```
+
+- The overview gives each list's `direction` (`direct` / `inverse`), relationship id and name (an inverse tab's `tab_name`), the related business object `{id, name, info}`, the relationship's `info` and a count.
+- A list gives `columns[]` (each with the `info` of the field, relationship or pathway it is based on) and `items[]` with `id`, `identifier` and the cell `values`; lookup cells add `linked_ids`. Open any record with `get-record --record-id <id>` (get-record's `related_ids` gives the ids of the records it links to).
+- Only lists the record viewer shows the acting user: a hidden relationship, one failing its visibility rules, or one to a business object they can't view is refused.
+
+### Designer info on records
+
+`get-record`, `list-records --folder-id`, `list-related-records` and `run-report` carry the info of what they show: the business object's (`business_object.info`), each field's / column's (`field_info`, `columns[].info`) and each relationship's (`relationship_info`). Read it before changing a record: it is what the designer meant the field for. Info is given once per session. Later calls leave out what you were already shown (`info_elided` / `*_elided` flags and an `info_shown_earlier` summary). Pass `--with-info` to see it again. A folder's, a report's and a related-record table's columns show their info every time. `list-records --folder-id ... --json` is an object: the records are in `items`.
+
 ### Linking Records
 
 ```
@@ -265,7 +285,8 @@ Use this when a user says "my colleague can't see the job I created" or "why don
 | `create-record --bo-name <n> --data <json>` | Create a new record |
 | `update-record --record-id <id> --data <json>` | Update an existing record |
 | `get-record --record-id <id>` | Get a single record |
-| `list-records` | List records (by folder, BO, or recent) |
+| `list-records` | List records (by folder, BO, or recent); JSON `{business_object, field_info, items}` |
+| `list-related-records --record-id <id> [--relationship-id <id> \| --relationship-name <name>]` | The record viewer's related lists (direct relationships and inverse tabs), or one list's records with its columns and their info |
 | `search --query <text>` | Global search for records |
 | `list-relationships --bo-name <n>` | Find relationships for linking |
 | `link-record` | Link two records via a relationship |

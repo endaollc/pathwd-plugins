@@ -5987,7 +5987,7 @@ var require_compile = __commonJS({
       const schOrFunc = root.refs[ref];
       if (schOrFunc)
         return schOrFunc;
-      let _sch = resolve11.call(this, root, ref);
+      let _sch = resolve12.call(this, root, ref);
       if (_sch === void 0) {
         const schema = (_a = root.localRefs) === null || _a === void 0 ? void 0 : _a[ref];
         const { schemaId } = this.opts;
@@ -6014,7 +6014,7 @@ var require_compile = __commonJS({
     function sameSchemaEnv(s1, s2) {
       return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
     }
-    function resolve11(root, ref) {
+    function resolve12(root, ref) {
       let sch;
       while (typeof (sch = this.refs[ref]) == "string")
         ref = sch;
@@ -6844,7 +6844,7 @@ var require_fast_uri = __commonJS({
       }
       return uri;
     }
-    function resolve11(baseURI, relativeURI, options) {
+    function resolve12(baseURI, relativeURI, options) {
       const schemelessOptions = options ? Object.assign({ scheme: "null" }, options) : { scheme: "null" };
       const {
         parsed: baseParsed,
@@ -7213,7 +7213,7 @@ var require_fast_uri = __commonJS({
     var fastUri = {
       SCHEMES,
       normalize,
-      resolve: resolve11,
+      resolve: resolve12,
       resolveComponent,
       equal,
       serialize,
@@ -10204,7 +10204,7 @@ var require_dist = __commonJS({
 
 // .path-mcp/src/stdio.ts
 import { homedir as homedir5 } from "node:os";
-import { dirname as dirname6 } from "node:path";
+import { dirname as dirname7, resolve as resolve11 } from "node:path";
 
 // .path-mcp/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
 import process2 from "node:process";
@@ -16334,12 +16334,12 @@ var StdioServerTransport = class {
     this.onclose?.();
   }
   send(message2) {
-    return new Promise((resolve11) => {
+    return new Promise((resolve12) => {
       const json = serializeMessage(message2);
       if (this._stdout.write(json)) {
-        resolve11();
+        resolve12();
       } else {
-        this._stdout.once("drain", resolve11);
+        this._stdout.once("drain", resolve12);
       }
     });
   }
@@ -16365,6 +16365,11 @@ var {
   Help
 } = import_index.default;
 
+// .path-cli/src/config.ts
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
+import { resolve } from "path";
+import { homedir } from "os";
+
 // .path-cli/src/command-scope.ts
 var COMMAND_ENV_KEYS = [
   "PATH_ACCESS_TOKEN",
@@ -16378,6 +16383,9 @@ var COMMAND_ENV_KEYS = [
 var currentScope = () => void 0;
 function setCommandScope(lookup) {
   currentScope = lookup;
+}
+function currentCommandScope() {
+  return currentScope();
 }
 function commandEnv(key) {
   const scope = currentScope();
@@ -16393,33 +16401,6 @@ function setExitCode(code) {
   if (scope) scope.exitCode = code;
   else process.exitCode = code;
 }
-
-// .path-cli/src/system-ca.ts
-import tls from "node:tls";
-function trustSystemCertificates() {
-  const api = tls;
-  if (typeof api.getCACertificates !== "function" || typeof api.setDefaultCACertificates !== "function") {
-    return;
-  }
-  try {
-    const system = api.getCACertificates("system");
-    if (system.length === 0) return;
-    api.setDefaultCACertificates([.../* @__PURE__ */ new Set([...api.getCACertificates("default"), ...system])]);
-  } catch {
-  }
-}
-function canTrustSystemCertificates() {
-  const api = tls;
-  return typeof api.getCACertificates === "function" && typeof api.setDefaultCACertificates === "function";
-}
-
-// .path-cli/src/session-tab.ts
-import { randomUUID } from "node:crypto";
-
-// .path-cli/src/config.ts
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
-import { resolve } from "path";
-import { homedir } from "os";
 
 // .path-cli/src/bundled-client-secret.ts
 var BUNDLED_CLIENT_SECRET = "";
@@ -16523,7 +16504,27 @@ function updateEnvValue(key, value) {
   writeFileSync(envPath, updatedLines.join("\n") + "\n");
 }
 
+// .path-cli/src/system-ca.ts
+import tls from "node:tls";
+function trustSystemCertificates() {
+  const api = tls;
+  if (typeof api.getCACertificates !== "function" || typeof api.setDefaultCACertificates !== "function") {
+    return;
+  }
+  try {
+    const system = api.getCACertificates("system");
+    if (system.length === 0) return;
+    api.setDefaultCACertificates([.../* @__PURE__ */ new Set([...api.getCACertificates("default"), ...system])]);
+  } catch {
+  }
+}
+function canTrustSystemCertificates() {
+  const api = tls;
+  return typeof api.getCACertificates === "function" && typeof api.setDefaultCACertificates === "function";
+}
+
 // .path-cli/src/session-tab.ts
+import { randomUUID } from "node:crypto";
 var CLAUDE_CODE_ENTRYPOINTS = /* @__PURE__ */ new Set(["cli", "sdk-cli", "claude-vscode", "claude-desktop", "claude-desktop-3p"]);
 function agentFromEntrypoint(entrypoint) {
   const value = entrypoint?.trim();
@@ -16871,6 +16872,369 @@ var ApiError = class extends Error {
     this.name = "ApiError";
   }
 };
+
+// .path-cli/src/info-session.ts
+import { createHash } from "node:crypto";
+import { mkdirSync as mkdirSync2, readFileSync as readFileSync2, renameSync, writeFileSync as writeFileSync2 } from "node:fs";
+import { dirname as dirname2 } from "node:path";
+var INFO_SESSION_IDLE_MS = 2 * 60 * 6e4;
+var MIN_ELIDE_CHARS = 40;
+var MAX_HASHES = 5e3;
+var FORGET_AFTER_MS2 = 7 * 24 * 60 * 6e4;
+var EXPLICIT_INFO_COMMANDS = /* @__PURE__ */ new Set(["get-info", "set-info", "get-account", "pathway-run show"]);
+var MemoryStore = class {
+  #sessions = /* @__PURE__ */ new Map();
+  get(anchor) {
+    return this.#sessions.get(anchor);
+  }
+  set(anchor, state) {
+    this.#sessions.set(anchor, state);
+  }
+};
+var FileStore = class {
+  constructor(path) {
+    this.path = path;
+  }
+  #read() {
+    try {
+      const parsed = JSON.parse(readFileSync2(this.path, "utf-8"));
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+  get(anchor) {
+    const state = this.#read()[anchor];
+    return state && Array.isArray(state.hashes) && typeof state.lastUsedAt === "number" ? state : void 0;
+  }
+  set(anchor, state) {
+    const all4 = this.#read();
+    all4[anchor] = state;
+    for (const [key, s] of Object.entries(all4)) {
+      if (!s || typeof s.lastUsedAt !== "number" || state.lastUsedAt - s.lastUsedAt > FORGET_AFTER_MS2) delete all4[key];
+    }
+    try {
+      mkdirSync2(dirname2(this.path), { recursive: true });
+      const tmp = `${this.path}.${process.pid}.tmp`;
+      writeFileSync2(tmp, `${JSON.stringify(all4)}
+`, { mode: 384 });
+      renameSync(tmp, this.path);
+    } catch {
+    }
+  }
+};
+var store2 = new MemoryStore();
+var anchorOverride = null;
+function useFileInfoStore(path) {
+  store2 = new FileStore(path);
+}
+function setInfoSessionAnchor(anchor) {
+  anchorOverride = anchor;
+}
+function infoSessionAnchor(env = process.env) {
+  const claude = env.CLAUDE_CODE_SESSION_ID?.trim();
+  if (claude) return `claude-code:${claude}`;
+  if (anchorOverride) return anchorOverride;
+  const tab = env.TERM_SESSION_ID?.trim();
+  return tab ? `terminal:${tab}` : `shell:${process.ppid}`;
+}
+function infoHash(text) {
+  return createHash("sha256").update(text).digest("hex").slice(0, 20);
+}
+function clean(value) {
+  if (typeof value !== "string") return null;
+  const text = value.trim();
+  return text ? text : null;
+}
+var InfoGate = class {
+  withInfo;
+  anchor;
+  #state;
+  #seenAtStart;
+  #new = /* @__PURE__ */ new Set();
+  #always = /* @__PURE__ */ new Set();
+  #run = null;
+  /** Labels of what was elided, in order. */
+  elided = [];
+  #reported = 0;
+  jsonPrinted = false;
+  /** The session's account block, waiting to go into the first JSON object (JSON output). */
+  pendingAccount = null;
+  constructor(opts = {}) {
+    this.withInfo = !!opts.withInfo;
+    this.anchor = opts.anchor ?? infoSessionAnchor();
+    const now = opts.now ?? Date.now();
+    const previous = store2.get(this.anchor);
+    this.#state = previous && now - previous.lastUsedAt <= INFO_SESSION_IDLE_MS ? { ...previous, lastUsedAt: now } : { lastUsedAt: now, hashes: [] };
+    this.#seenAtStart = new Set(this.#state.hashes);
+  }
+  /** This info shows in full on this command whatever was shown before (table columns). */
+  always(value) {
+    const text = clean(value);
+    if (text) this.#always.add(infoHash(text));
+  }
+  /** Pathway-runner commands: dedupe against the run, not the session. */
+  useRunScope(scope) {
+    scope.hashes ??= [];
+    this.#run = { scope, seenAtStart: new Set(scope.hashes) };
+  }
+  get runScoped() {
+    return this.#run !== null;
+  }
+  /**
+   * Whether `value` is shown on this command (true), or was shown earlier and
+   * is elided (false, `label` noted). Records the text as shown either way.
+   */
+  shows(value, label = "info") {
+    const text = clean(value);
+    if (!text) return true;
+    const hash = infoHash(text);
+    this.#new.add(hash);
+    if (this.#run && !this.#run.scope.hashes.includes(hash)) this.#run.scope.hashes.push(hash);
+    if (this.withInfo || this.#always.has(hash) || text.length < MIN_ELIDE_CHARS) return true;
+    const seen = this.#run ? this.#run.seenAtStart.has(hash) : this.#seenAtStart.has(hash);
+    if (seen) this.elided.push(label);
+    return !seen;
+  }
+  /** The account block: due when this account's block wasn't shown this session (or changed). */
+  accountDue(summary) {
+    const key = `${summary.id}:${infoHash(JSON.stringify(summary))}`;
+    return this.withInfo || !(this.#state.accounts ?? []).includes(key);
+  }
+  accountShown(summary) {
+    const key = `${summary.id}:${infoHash(JSON.stringify(summary))}`;
+    const accounts = (this.#state.accounts ?? []).filter((k) => !k.startsWith(`${summary.id}:`));
+    this.#state.accounts = [...accounts, key];
+    const info = clean(summary.info);
+    if (info) this.#new.add(infoHash(info));
+  }
+  cachedAccount(accountId) {
+    return this.#state.accountCache?.[accountId];
+  }
+  cacheAccount(summary) {
+    this.#state.accountCache = { ...this.#state.accountCache ?? {}, [summary.id]: summary };
+  }
+  /** Labels elided since the last summary (for one output). */
+  takeElided() {
+    const out = this.elided.slice(this.#reported);
+    this.#reported = this.elided.length;
+    return out;
+  }
+  /** Saves what this command showed into the session. */
+  commit(now = Date.now()) {
+    if (this.#run?.scope.save) this.#run.scope.save(this.#run.scope.hashes);
+    const hashes = [...this.#state.hashes.filter((h) => !this.#new.has(h)), ...this.#new].slice(-MAX_HASHES);
+    store2.set(this.anchor, { ...this.#state, hashes, lastUsedAt: now });
+  }
+};
+var current = null;
+function currentInfoGate() {
+  const scope = currentCommandScope();
+  return scope ? scope.info ?? null : current;
+}
+function setCurrentInfoGate(gate) {
+  const scope = currentCommandScope();
+  if (scope) scope.info = gate ?? void 0;
+  else current = gate;
+}
+function elidedText(gate) {
+  return gate?.runScoped ? "(shown earlier in this run)" : "(shown earlier this session)";
+}
+function elidedSummaryLine(labels, runScoped = false) {
+  if (!labels.length) return null;
+  const names = [...new Set(labels)];
+  const shown = names.slice(0, 6).join(", ");
+  const more = names.length > 6 ? ` and ${names.length - 6} more` : "";
+  return `Info for ${shown}${more} was shown earlier ${runScoped ? "in this run" : "this session"} (pass --with-info to repeat).`;
+}
+var INFO_KEY = /^(info|.+_info)$/;
+function labelOf(obj, key) {
+  const name = obj.name ?? obj.field_name ?? obj.folder_name ?? obj.title ?? obj.step_title ?? obj.pathway_name ?? obj.plural_name;
+  const base = typeof name === "string" || typeof name === "number" ? String(name) : obj.id != null ? `#${String(obj.id)}` : "";
+  const what = key === "info" ? "" : key.replace(/_info$/, "").replace(/_/g, " ");
+  return [what, base].filter(Boolean).join(" ") || key;
+}
+function isStringMap(value) {
+  return !!value && typeof value === "object" && !Array.isArray(value) && Object.values(value).every((v) => v === null || typeof v === "string");
+}
+function elideJsonValue(value, gate) {
+  if (Array.isArray(value)) {
+    for (const item2 of value) elideJsonValue(item2, gate);
+    return;
+  }
+  if (!value || typeof value !== "object") return;
+  const obj = value;
+  for (const key of Object.keys(obj)) {
+    const v = obj[key];
+    if (key !== "info_shown_earlier" && INFO_KEY.test(key)) {
+      if (typeof v === "string") {
+        if (!gate.shows(v, labelOf(obj, key))) {
+          delete obj[key];
+          obj[`${key}_elided`] = true;
+        }
+        continue;
+      }
+      if (key !== "info" && isStringMap(v)) {
+        const gone = [];
+        for (const [name, text] of Object.entries(v)) {
+          if (typeof text === "string" && !gate.shows(text, name)) {
+            delete v[name];
+            gone.push(name);
+          }
+        }
+        if (gone.length) obj[`${key}_elided`] = gone;
+        continue;
+      }
+    }
+    elideJsonValue(v, gate);
+  }
+}
+function accountJson(summary) {
+  return { id: summary.id, name: summary.name, time_zone: summary.time_zone, country: summary.country, info: summary.info };
+}
+function accountBlockLines(summary) {
+  const head = [
+    `Account: ${summary.name ?? "(unnamed)"} (${summary.id})`,
+    summary.time_zone ? `time zone ${summary.time_zone}` : null,
+    summary.country ? `country ${summary.country}` : null
+  ].filter(Boolean).join(" \xB7 ");
+  const info = clean(summary.info);
+  if (!info) return [head];
+  const lines = info.split(/\r?\n/);
+  return [head, ...lines.length === 1 ? [`  Account info: ${lines[0]}`] : ["  Account info:", ...lines.map((l) => l.trim() ? `    ${l}` : "")]];
+}
+function filterOutputArgs(args, gate = currentInfoGate()) {
+  if (!gate || args.length !== 1 || typeof args[0] !== "string") return args;
+  const raw = args[0];
+  const trimmed = raw.trim();
+  const first = trimmed[0];
+  const last = trimmed[trimmed.length - 1];
+  if (!(first === "{" && last === "}" || first === "[" && last === "]")) return args;
+  if (!gate.pendingAccount && !/"(?:[a-z_]+_)?info"\s*:/.test(raw)) {
+    gate.jsonPrinted = true;
+    return args;
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(trimmed);
+  } catch {
+    return args;
+  }
+  if (!parsed || typeof parsed !== "object") return args;
+  gate.jsonPrinted = true;
+  elideJsonValue(parsed, gate);
+  const elided = gate.takeElided();
+  let account = gate.pendingAccount;
+  if (!Array.isArray(parsed)) {
+    const obj = parsed;
+    if (account && !("account" in obj)) {
+      parsed = { account: accountJson(account), ...obj };
+      gate.accountShown(account);
+      gate.pendingAccount = null;
+      account = null;
+    }
+    if (elided.length) {
+      parsed.info_shown_earlier = {
+        count: elided.length,
+        items: [...new Set(elided)].slice(0, 30),
+        note: `Removed because it was shown earlier ${gate.runScoped ? "in this run" : "this session"} (the "<key>_elided" flags mark where); pass --with-info to repeat.`
+      };
+    }
+  } else {
+    const line = elidedSummaryLine(elided, gate.runScoped);
+    if (line) console.error(line);
+  }
+  const indented = /^\s*[[{]\s*\n/.test(raw);
+  return [indented ? JSON.stringify(parsed, null, 2) : JSON.stringify(parsed)];
+}
+function commandPathOf(command) {
+  const names = [];
+  let c = command;
+  while (c && c.parent) {
+    names.unshift(c.name());
+    c = c.parent;
+  }
+  return names.join(" ");
+}
+var NO_ACCOUNT_BLOCK = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache", "get-account"]);
+async function beginInfoCommand(opts) {
+  const explicit = EXPLICIT_INFO_COMMANDS.has(opts.commandPath);
+  const gate = new InfoGate({ withInfo: opts.withInfo || explicit });
+  setCurrentInfoGate(gate);
+  const accountId = opts.accountId ? String(opts.accountId) : null;
+  if (accountId && opts.loadAccount && !opts.quiet && !NO_ACCOUNT_BLOCK.has(opts.commandPath.split(" ")[0])) {
+    try {
+      let summary = gate.cachedAccount(accountId);
+      if (!summary) {
+        summary = await opts.loadAccount(accountId);
+        gate.cacheAccount(summary);
+      }
+      if (gate.accountDue(summary)) {
+        if (opts.json) {
+          gate.pendingAccount = summary;
+        } else {
+          const print3 = opts.print ?? ((line) => console.log(line));
+          for (const line of accountBlockLines(summary)) print3(line);
+          print3("");
+          gate.accountShown(summary);
+        }
+      }
+    } catch {
+    }
+  }
+  return gate;
+}
+function endInfoCommand(print3 = (line) => console.log(line)) {
+  const gate = currentInfoGate();
+  if (!gate) return;
+  if (gate.pendingAccount && !gate.jsonPrinted) {
+    for (const line of accountBlockLines(gate.pendingAccount)) print3(line);
+    gate.accountShown(gate.pendingAccount);
+    gate.pendingAccount = null;
+  }
+  if (!gate.jsonPrinted) {
+    const line = elidedSummaryLine(gate.takeElided(), gate.runScoped);
+    if (line) print3(line);
+  }
+  gate.commit();
+  setCurrentInfoGate(null);
+}
+function accountSummaryOf(account, accountId) {
+  const str = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
+  return {
+    id: String(account.id ?? accountId),
+    name: str(account.name),
+    time_zone: str(account.time_zone),
+    country: str(account.country),
+    info: clean(account.info)
+  };
+}
+
+// .path-cli/src/info-hooks.ts
+function installInfoHooks(program2) {
+  program2.addOption(
+    new Option(
+      "--with-info",
+      "Repeat designer info (and the account block) that was already shown earlier this session \u2014 e.g. after your context was compacted"
+    )
+  );
+  program2.hook("preAction", async (thisCommand, actionCommand) => {
+    const opts = thisCommand.opts();
+    const config2 = loadConfig({ accountId: opts.account, baseUrl: opts.baseUrl });
+    await beginInfoCommand({
+      commandPath: commandPathOf(actionCommand),
+      withInfo: !!opts.withInfo,
+      json: !!opts.json,
+      quiet: !!opts.quiet,
+      accountId: config2.accessToken ? config2.accountId : null,
+      loadAccount: async (accountId) => accountSummaryOf(
+        await new HttpClient(config2).get(`/v1/accounts/${encodeURIComponent(accountId)}`),
+        accountId
+      )
+    });
+  });
+  program2.hook("postAction", () => endInfoCommand());
+}
 
 // packages/permissions.ts
 var P = class {
@@ -17345,6 +17709,37 @@ async function checkTaskAction(client, recordId, taskId, action) {
   return { task, userId: access.user.id };
 }
 
+// .path-cli/src/utils/info-text.ts
+var INFO_TEXT_CAP = 1e3;
+function infoText(value) {
+  if (typeof value !== "string") return null;
+  const text = value.trim();
+  return text ? text : null;
+}
+function infoLines(value, opts = {}) {
+  let text = infoText(value);
+  if (!text) return [];
+  const indent = opts.indent ?? "  ";
+  const label = opts.label ?? "info";
+  const gate = currentInfoGate();
+  if (gate && !gate.shows(text, label)) return [`${indent}${label}: ${elidedText(gate)}`];
+  if (opts.cap !== void 0 && text.length > opts.cap) {
+    text = `${text.slice(0, opts.cap).trimEnd()} \u2026(see --json)`;
+  }
+  const lines = text.split(/\r?\n/);
+  if (lines.length === 1) return [`${indent}${label}: ${lines[0]}`];
+  return [`${indent}${label}:`, ...lines.map((line) => line.trim() ? `${indent}  ${line}` : "")];
+}
+function infoBlock(info, label = "info") {
+  if (info === null || info === void 0 || typeof info === "string" && !info.trim()) return `${label}: (none)`;
+  const gate = currentInfoGate();
+  if (typeof info === "string" && gate && !gate.shows(info, label)) return `${label}: ${elidedText(gate)}`;
+  const text = typeof info === "string" ? info.replace(/\s+$/, "") : JSON.stringify(info);
+  if (!text.includes("\n") && text.length <= 100) return `${label}: ${text}`;
+  return `${label}:
+${text.split("\n").map((line) => line ? `  ${line}` : "").join("\n")}`;
+}
+
 // .path-cli/src/output/formatter.ts
 function formatOutput(data, opts) {
   if (opts.quiet) return formatQuiet(data);
@@ -17367,17 +17762,23 @@ function formatOutput(data, opts) {
   }
 }
 function formatCompact(data, fields) {
-  const keys = fields || Object.keys(data);
-  return keys.filter((k) => k in data).map((k) => {
+  const infoLast = !fields && "info" in data;
+  const keys = (fields || Object.keys(data)).filter(
+    (k) => !(infoLast && k === "info")
+  );
+  const lines = keys.filter((k) => k in data).map((k) => {
     const v = data[k];
+    if (k === "info") return infoBlock(v);
     const display = typeof v === "object" && v !== null ? JSON.stringify(v) : String(v);
     return `${k}: ${display}`;
-  }).join("\n");
+  });
+  if (infoLast) lines.push(infoBlock(data.info));
+  return lines.join("\n");
 }
 function formatTable(items, fields, footer) {
   const meta = items[PAGINATION_META];
   if (!items.length) return footer ?? formatCountFooter(0, meta);
-  const keys = fields || Object.keys(items[0]);
+  const keys = fields || Object.keys(items[0]).filter((k) => k !== "info");
   const headers = keys.map((k) => k.toUpperCase());
   const cells = items.map(
     (item2) => keys.map((k) => String(item2[k] ?? "").split("\n"))
@@ -17422,7 +17823,7 @@ function formatQuiet(data) {
 }
 
 // .path-cli/src/cache.ts
-import { readFileSync as readFileSync2, writeFileSync as writeFileSync2, existsSync as existsSync2, mkdirSync as mkdirSync2, rmSync } from "fs";
+import { readFileSync as readFileSync3, writeFileSync as writeFileSync3, existsSync as existsSync2, mkdirSync as mkdirSync3, rmSync } from "fs";
 import { resolve as resolve2 } from "path";
 import { homedir as homedir2 } from "os";
 var DEFAULT_TTL_MS = 10 * 60 * 1e3;
@@ -17445,7 +17846,7 @@ function cacheGet(accountId, key, ttlMs = DEFAULT_TTL_MS) {
   const filePath = getCacheFilePath(accountId, key);
   if (!existsSync2(filePath)) return null;
   try {
-    const raw = readFileSync2(filePath, "utf-8");
+    const raw = readFileSync3(filePath, "utf-8");
     const entry = JSON.parse(raw);
     if (Date.now() - entry.cachedAt > ttlMs) return null;
     return entry.data;
@@ -17456,9 +17857,9 @@ function cacheGet(accountId, key, ttlMs = DEFAULT_TTL_MS) {
 function cacheSet(accountId, key, data, endpoint) {
   try {
     const dir = getCacheDir(accountId);
-    if (!existsSync2(dir)) mkdirSync2(dir, { recursive: true });
+    if (!existsSync2(dir)) mkdirSync3(dir, { recursive: true });
     const entry = { data, endpoint, cachedAt: Date.now() };
-    writeFileSync2(getCacheFilePath(accountId, key), JSON.stringify(entry));
+    writeFileSync3(getCacheFilePath(accountId, key), JSON.stringify(entry));
   } catch {
   }
 }
@@ -17826,15 +18227,15 @@ var updateNotificationSettingsCommand = new Command("update-notification-setting
         const key = `${set.entityType}:${set.entityId ?? ""}`;
         let row = rows.get(key);
         if (!row) {
-          const current = saved.find((s) => s.entity_type === set.entityType && (s.entity_id ?? null) === set.entityId);
+          const current2 = saved.find((s) => s.entity_type === set.entityType && (s.entity_id ?? null) === set.entityId);
           const res = resolved.find((r) => r.entity_type === set.entityType && r.entity_id === set.entityId);
-          if (!current && !res) {
+          if (!current2 && !res) {
             throw new Error(`No notification setting "${set.entityType}${set.entityId != null ? `:${set.entityId}` : ""}" \u2014 see get-notification-settings [--resolved]`);
           }
           const config2 = Object.fromEntries(
             MEDIUMS.map((m) => [
               m,
-              current ? { value: !!current.notification_config?.[m]?.value, disable: !!current.notification_config?.[m]?.disable } : {
+              current2 ? { value: !!current2.notification_config?.[m]?.value, disable: !!current2.notification_config?.[m]?.disable } : {
                 value: res.mediums?.[m]?.configurable ? !!res.mediums[m].user_value : res.mediums?.[m]?.effective_state === "required",
                 disable: false
               }
@@ -18459,21 +18860,6 @@ function sessionSourceLabel(session) {
   if (clientLabel) parts.push(clientLabel);
   return parts.join(" \xB7 ");
 }
-function matchesHistorySource(session, source) {
-  const { isAgent, agent, client } = sessionSource(session);
-  switch (source) {
-    case "web_app":
-      return !isAgent && client === "path_app";
-    case "cli":
-      return !isAgent && (client === "path_cli" || client === "path_designer_cli");
-    case "agent":
-      return isAgent;
-    case "system":
-      return session.platform === "system";
-    default:
-      return isAgent && agent === source;
-  }
-}
 function sessionTypeLabel(session, pathwayNames) {
   const base = (() => {
     switch (session.sessionType) {
@@ -18946,11 +19332,11 @@ var getHistorySessionCommand = new Command("get-history-session").description(
 
 // .path-cli/src/oauth-login.ts
 import { createServer } from "node:http";
-import { randomBytes, createHash } from "node:crypto";
+import { randomBytes, createHash as createHash2 } from "node:crypto";
 import { spawn } from "node:child_process";
 function buildPkce() {
   const verifier = randomBytes(32).toString("base64url");
-  const challenge = createHash("sha256").update(verifier).digest("base64url");
+  const challenge = createHash2("sha256").update(verifier).digest("base64url");
   const state = randomBytes(16).toString("base64url");
   return { verifier, challenge, state };
 }
@@ -19201,7 +19587,7 @@ var listAccountsCommand = new Command("list-accounts").description("List availab
 });
 
 // .path-cli/src/commands/list-business-objects.ts
-var listBusinessObjectsCommand = new Command("list-business-objects").description("List business objects").action(async () => {
+var listBusinessObjectsCommand = new Command("list-business-objects").description("List business objects (--json adds each one's info: what the designer says it is for)").action(async () => {
   try {
     const parentOpts = listBusinessObjectsCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19233,7 +19619,7 @@ var listBusinessObjectsCommand = new Command("list-business-objects").descriptio
 });
 
 // .path-cli/src/commands/get-business-object.ts
-var getBusinessObjectCommand = new Command("get-business-object").description("Get a single business object").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
+var getBusinessObjectCommand = new Command("get-business-object").description("Get a single business object, with its info (the designer's description of what it is for)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
   try {
     const parentOpts = getBusinessObjectCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19271,7 +19657,7 @@ var getBusinessObjectCommand = new Command("get-business-object").description("G
 });
 
 // .path-cli/src/commands/list-fields.ts
-var listFieldsCommand = new Command("list-fields").description("List fields for a business object").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--page <n>", "Fetch only this single page (default: all fields)").option("--per-page <n>", "Items per page (single-page mode)", "100").option("--all", "Fetch all fields (this is now the default)").action(async (opts) => {
+var listFieldsCommand = new Command("list-fields").description("List fields for a business object (--json adds each field's info: what it holds and when to fill it)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--page <n>", "Fetch only this single page (default: all fields)").option("--per-page <n>", "Items per page (single-page mode)", "100").option("--all", "Fetch all fields (this is now the default)").action(async (opts) => {
   try {
     const parentOpts = listFieldsCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19332,7 +19718,7 @@ var listFieldsCommand = new Command("list-fields").description("List fields for 
 });
 
 // .path-cli/src/commands/get-field.ts
-var getFieldCommand = new Command("get-field").description("Get a single field on a business object").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--field-id <id>", "Field ID").option("--field-name <name>", "Field name (case-insensitive)").action(async (opts) => {
+var getFieldCommand = new Command("get-field").description("Get a single field on a business object, with its info (the designer's description of what the field holds and when to fill it)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--field-id <id>", "Field ID").option("--field-name <name>", "Field name (case-insensitive)").action(async (opts) => {
   try {
     const parentOpts = getFieldCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19395,7 +19781,7 @@ var getFieldCommand = new Command("get-field").description("Get a single field o
 });
 
 // .path-cli/src/commands/list-field-groups.ts
-var listFieldGroupsCommand = new Command("list-field-groups").description("List field groups for a business object").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--all", "Fetch the full set via /init/field_groups").action(async (opts) => {
+var listFieldGroupsCommand = new Command("list-field-groups").description("List field groups for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--all", "Fetch the full set via /init/field_groups").action(async (opts) => {
   try {
     const parentOpts = listFieldGroupsCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19443,7 +19829,7 @@ var listFieldGroupsCommand = new Command("list-field-groups").description("List 
 });
 
 // .path-cli/src/commands/list-relationships.ts
-var listRelationshipsCommand = new Command("list-relationships").description("List relationships for a business object").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
+var listRelationshipsCommand = new Command("list-relationships").description("List relationships for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
   try {
     const parentOpts = listRelationshipsCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19502,7 +19888,7 @@ var listRelationshipsCommand = new Command("list-relationships").description("Li
 // .path-cli/src/commands/list-workflow-milestones.ts
 var listWorkflowMilestonesCommand = new Command(
   "list-workflow-milestones"
-).description("List workflow milestones for a business object").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--all", "Fetch the full set via /init/milestones").action(async (opts) => {
+).description("List workflow milestones for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--all", "Fetch the full set via /init/milestones").action(async (opts) => {
   try {
     const parentOpts = listWorkflowMilestonesCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19550,7 +19936,7 @@ var listWorkflowMilestonesCommand = new Command(
 });
 
 // .path-cli/src/commands/list-workflow-steps.ts
-var listWorkflowStepsCommand = new Command("list-workflow-steps").description("List workflow steps for a business object").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
+var listWorkflowStepsCommand = new Command("list-workflow-steps").description("List workflow steps for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
   try {
     const parentOpts = listWorkflowStepsCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19591,7 +19977,7 @@ var listWorkflowStepsCommand = new Command("list-workflow-steps").description("L
 });
 
 // .path-cli/src/commands/list-workflow-tasks.ts
-var listWorkflowTasksCommand = new Command("list-workflow-tasks").description("List workflow tasks for a business object").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
+var listWorkflowTasksCommand = new Command("list-workflow-tasks").description("List workflow tasks for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
   try {
     const parentOpts = listWorkflowTasksCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19631,8 +20017,45 @@ var listWorkflowTasksCommand = new Command("list-workflow-tasks").description("L
   }
 });
 
+// .path-cli/src/utils/folder-sticker-info.ts
+async function withFolderStickerInfo(client, folders, loadStickers = async () => unwrapPaginated(await client.get("/v1/stickers"))) {
+  const needs = folders.some((f) => (f.folder_stickers ?? []).some((s) => !infoText(s.info) && s.sticker_id != null));
+  if (!needs) return folders;
+  const byId = /* @__PURE__ */ new Map();
+  try {
+    for (const sticker2 of await loadStickers()) byId.set(Number(sticker2.id), infoText(sticker2.info));
+  } catch {
+    return folders;
+  }
+  const out = folders.map((folder2) => {
+    if (!folder2.folder_stickers?.length) return folder2;
+    return {
+      ...folder2,
+      folder_stickers: folder2.folder_stickers.map((s) => {
+        if (infoText(s.info) || s.sticker_id == null) return s;
+        const info = byId.get(Number(s.sticker_id));
+        return info ? { ...s, bo_sticker_info: info } : s;
+      })
+    };
+  });
+  const meta = folders[PAGINATION_META];
+  if (meta) Object.defineProperty(out, PAGINATION_META, { value: meta, enumerable: false });
+  return out;
+}
+function folderStickerInfoLines(folders) {
+  const lines = [];
+  for (const folder2 of folders) {
+    for (const s of folder2.folder_stickers ?? []) {
+      const own = infoText(s.info);
+      const label = `folder ${folder2.id} "${folder2.folder_name ?? ""}" sticker "${s.name ?? s.id}"${own ? "" : " (from its business object sticker)"}`;
+      lines.push(...infoLines(own ?? s.bo_sticker_info, { indent: "  ", label, cap: INFO_TEXT_CAP }));
+    }
+  }
+  return lines.length ? ["", "Sticker info:", ...lines] : [];
+}
+
 // .path-cli/src/commands/list-folders.ts
-var listFoldersCommand = new Command("list-folders").description("List folders").option("--bo-id <id>", "Filter by business object ID").option("--bo-name <name>", "Filter by business object name").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
+var listFoldersCommand = new Command("list-folders").description("List folders. Each folder_stickers[] entry carries its info; a copy of a business object sticker with no info of its own also gets bo_sticker_info (the business object sticker's info, which the copy shows). Text output lists sticker info under the table").option("--bo-id <id>", "Filter by business object ID").option("--bo-name <name>", "Filter by business object name").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
   try {
     const parentOpts = listFoldersCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19657,9 +20080,12 @@ var listFoldersCommand = new Command("list-folders").description("List folders")
       query["business_object_ids[]"] = opts.boId;
     }
     const raw = await client.get("/v1/folders", query);
-    const data = await filterVisibleFolders(
+    const data = await withFolderStickerInfo(
       client,
-      unwrapPaginated(raw)
+      await filterVisibleFolders(
+        client,
+        unwrapPaginated(raw)
+      )
     );
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? [
@@ -19674,6 +20100,9 @@ var listFoldersCommand = new Command("list-folders").description("List folders")
         quiet: parentOpts.quiet
       })
     );
+    if (!format && !parentOpts.quiet) {
+      for (const line of folderStickerInfoLines(data)) console.log(line);
+    }
   } catch (err) {
     handleError(err);
   }
@@ -24083,8 +24512,8 @@ function compareFieldValues(a, b) {
 function normalizeCellValue(value) {
   return value === null || value === void 0 || value === "" ? null : value;
 }
-function cellValueChanged(initial, current) {
-  return normalizeCellValue(initial) !== normalizeCellValue(current);
+function cellValueChanged(initial, current2) {
+  return normalizeCellValue(initial) !== normalizeCellValue(current2);
 }
 function updateRecordsRequest(data, rows) {
   const records = rows.filter((row) => row.fields.length > 0).map((row) => ({
@@ -24616,11 +25045,11 @@ async function loadAllStops(stopBoId, fetchPage2) {
   }
   return stops;
 }
-function stopOptions(initial, stops, identifierOf) {
+function stopOptions(initial, stops, identifierOf2) {
   const all4 = initial && !stops.some((s) => s.id === initial.id) ? [initial, ...stops] : [...stops];
   return all4.map((stop) => ({
     id: stop.id,
-    label: identifierOf(stop) ?? "Unnamed stop",
+    label: identifierOf2(stop) ?? "Unnamed stop",
     record: stop
   }));
 }
@@ -24656,12 +25085,12 @@ function jobServiceRequests(w, from) {
 function needsLineJobService(w, poResults, lineId) {
   return !poResults.job?.length && !poResults.service?.length && !!lineId && w.bo.product != null;
 }
-function jobServiceName(w, job, service, identifierOf) {
+function jobServiceName(w, job, service, identifierOf2) {
   if (job) {
-    return fieldValue(job, w.field.jobName) ?? identifierOf(job) ?? "";
+    return fieldValue(job, w.field.jobName) ?? identifierOf2(job) ?? "";
   }
   if (service) {
-    return fieldValue(service, w.field.serviceName) ?? identifierOf(service) ?? "";
+    return fieldValue(service, w.field.serviceName) ?? identifierOf2(service) ?? "";
   }
   return "";
 }
@@ -24697,9 +25126,9 @@ function backStep(isImport2, stage2) {
   const prev = wizardSteps(isImport2)[wizardStepNumber(isImport2, stage2) - 2];
   return prev ? { stage: prev.stage, label: BACK_LABELS[prev.stage] } : void 0;
 }
-function canGoBackTo(isImport2, current, target) {
+function canGoBackTo(isImport2, current2, target) {
   const step = wizardSteps(isImport2).find((s) => s.stage === target);
-  return !!step && step.n < wizardStepNumber(isImport2, current);
+  return !!step && step.n < wizardStepNumber(isImport2, current2);
 }
 function coerceQty(value) {
   const n = Number(value);
@@ -24722,9 +25151,9 @@ function displayVendor(po, line, w) {
   if (poVendor) return poVendor;
   return line ? fieldValue(line, w.field.productVendor) ?? "" : "";
 }
-function displayPoNumber(po, w, identifierOf) {
+function displayPoNumber(po, w, identifierOf2) {
   if (!po) return "";
-  return fieldValue(po, w.field.poNumber) ?? identifierOf(po) ?? "";
+  return fieldValue(po, w.field.poNumber) ?? identifierOf2(po) ?? "";
 }
 function displayOrder(line, w) {
   return line ? fieldValue(line, w.field.orderNumber) ?? "" : "";
@@ -28132,8 +28561,8 @@ function markSignatureImagesHtml(html) {
     attrs = attrPattern.test(attrs) ? attrs.replace(attrPattern, marker) : attrs + marker;
     const classMatch = attrs.match(CLASS_ATTR);
     if (classMatch) {
-      const current = classMatch[2] ?? classMatch[3] ?? classMatch[4] ?? "";
-      const classes = current.split(/\s+/).filter(Boolean);
+      const current2 = classMatch[2] ?? classMatch[3] ?? classMatch[4] ?? "";
+      const classes = current2.split(/\s+/).filter(Boolean);
       if (!classes.includes(SIGNATURE_IMAGE_CLASS)) {
         classes.push(SIGNATURE_IMAGE_CLASS);
       }
@@ -28659,9 +29088,9 @@ function evalSelectionBlank(filter, actual, meta) {
 }
 function followChain(record2, chain, ctx) {
   if (!chain || chain.length === 0) return record2;
-  let current = record2;
+  let current2 = record2;
   for (const relId of chain) {
-    const linkedId = current.relationships[relId];
+    const linkedId = current2.relationships[relId];
     if (linkedId == null) return void 0;
     if (!ctx.relatedRecords) {
       throw new EvaluatorMissingContextError(
@@ -28674,9 +29103,9 @@ function followChain(record2, chain, ctx) {
         `related record ${linkedId} (rel ${relId}) not present in ctx.relatedRecords \u2014 caller must pre-fetch the full chain`
       );
     }
-    current = linked;
+    current2 = linked;
   }
-  return current;
+  return current2;
 }
 function absentLinkResult(logic) {
   return logic === "empty" /* Empty */;
@@ -30799,7 +31228,7 @@ function withDisplayFormat(field) {
   }
   return field;
 }
-async function recordDisplay(record2, view4, visibility2) {
+async function recordDisplay(record2, view4, visibility2, sources) {
   const metadata = visibility2.metadata;
   const boId3 = record2.business_object_id;
   const [zones, bos, groups, milestones] = await Promise.all([
@@ -30825,8 +31254,10 @@ async function recordDisplay(record2, view4, visibility2) {
       let name = field.name;
       for (let n = 2; name in fields; n++) name = `${field.name} (${n})`;
       fields[name] = text;
+      sources?.fields.push({ name, field });
     }
     const related = {};
+    const relatedIds = {};
     for (const relationshipId of view4.relationships) {
       const linkedId = record2.relationships?.[String(relationshipId)];
       if (!linkedId) continue;
@@ -30834,7 +31265,10 @@ async function recordDisplay(record2, view4, visibility2) {
       const target = relationship ? boById.get(relationship.to_business_object_id) : void 0;
       const linkedFields = record2.relationship_fields?.[String(relationshipId)]?.fields ?? {};
       const linkedIdentifier = target?.identifier_field_id != null ? linkedFields[String(target.identifier_field_id)] : void 0;
-      related[relationship?.name ?? `Relationship ${relationshipId}`] = linkedIdentifier != null && linkedIdentifier !== "" ? String(linkedIdentifier) : String(linkedId);
+      const name = relationship?.name ?? `Relationship ${relationshipId}`;
+      related[name] = linkedIdentifier != null && linkedIdentifier !== "" ? String(linkedIdentifier) : String(linkedId);
+      relatedIds[name] = String(linkedId);
+      if (relationship) sources?.relationships.push({ name, relationship });
     }
     const milestoneNames = new Map(milestones.map((m) => [m.id, m.name]));
     return {
@@ -30843,7 +31277,8 @@ async function recordDisplay(record2, view4, visibility2) {
       milestones: (record2.milestones ?? []).map((id) => milestoneNames.get(id) ?? `Milestone ${id}`),
       ...record2.archived_on ? { archived: true } : {},
       fields,
-      related
+      related,
+      related_ids: relatedIds
     };
   } finally {
     setActiveTimeZone(previous);
@@ -30861,7 +31296,10 @@ function renderRecordDisplay(display) {
   const related = Object.entries(display.related);
   if (related.length) {
     lines.push("", "Related:");
-    for (const [name, value] of related) lines.push(`  ${name}: ${value}`);
+    for (const [name, value] of related) {
+      const id = display.related_ids?.[name];
+      lines.push(`  ${name}: ${value}${id && id !== value ? `  (${id})` : ""}`);
+    }
   }
   return lines.join("\n");
 }
@@ -30997,6 +31435,14 @@ var RecordVisibility = class {
     const verdict = await this.#evaluator.evaluate(filters, record2).catch(() => null);
     return verdict?.decided ? verdict.matches : true;
   }
+  /** visibility-settings.ts isVisibleToUser: the user/role lists (empty = everyone). */
+  isListed(settings2) {
+    return this.#listed(settings2);
+  }
+  /** A visibility formula against a record; undecidable = shown (the web fails open). */
+  logicPasses(filters, record2) {
+    return this.#logicPasses(filters, record2);
+  }
   /**
    * utils/record.ts isFieldVisible + the record viewer's is_hidden skip. The
    * Identifier is flagged hidden but shown in the header; the Created /
@@ -31122,7 +31568,8 @@ async function recordDisplayFor(client, accountId, record2, what = "open this re
   await assertBusinessObject(client, record2.business_object_id, "view", what);
   const view4 = await visibility2.view(record2);
   const { hiddenFields, hiddenRelationships } = trimRecord(record2, view4);
-  return { display: await recordDisplay(record2, view4, visibility2), hiddenFields, hiddenRelationships };
+  const sources = { fields: [], relationships: [] };
+  return { display: await recordDisplay(record2, view4, visibility2, sources), hiddenFields, hiddenRelationships, sources };
 }
 async function recordsForDisplay(client, accountId, records) {
   const visibility2 = await recordVisibility(client, accountId);
@@ -31195,8 +31642,49 @@ function hiddenNote(parts) {
   return bits.length ? `Real-world mode: hid ${bits.join(", ")} the acting user doesn't see in the web app.` : null;
 }
 
+// .path-cli/src/utils/designer-info-context.ts
+function businessObjectName(bo, id) {
+  return bo?.plural_name || bo?.name || bo?.singular_name || `Business object ${bo?.id ?? id}`;
+}
+async function businessObjectInfo(metadata, boId3) {
+  const bo = await metadata.businessObject(boId3).catch(() => void 0);
+  return { id: boId3, name: businessObjectName(bo, boId3), info: infoText(bo?.info) };
+}
+async function fieldInfo(metadata, field, relationships2) {
+  if (!field) return null;
+  const own = infoText(field.info);
+  if (own || field.relationship_id == null || field.reference_field_id == null) return own;
+  const relationship = relationships2.find((r) => r.id === field.relationship_id);
+  if (!relationship) return null;
+  const referenced = await metadata.field(relationship.to_business_object_id, field.reference_field_id).catch(() => void 0);
+  return infoText(referenced?.info);
+}
+function infoByName(entries) {
+  const out = {};
+  for (const { name, info } of entries) {
+    const text = infoText(info);
+    if (!text) continue;
+    let key = name;
+    for (let n = 2; key in out; n++) key = `${name} (${n})`;
+    out[key] = text;
+  }
+  return out;
+}
+function infoContextLines(businessObject, sections = []) {
+  const lines = [];
+  const boLines = businessObject ? infoLines(businessObject.info, { indent: "  ", label: businessObject.name, cap: INFO_TEXT_CAP }) : [];
+  if (boLines.length) lines.push("Business object info:", ...boLines);
+  for (const section of sections) {
+    const entryLines = section.entries.flatMap((e) => infoLines(e.info, { indent: "  ", label: e.name, cap: INFO_TEXT_CAP }));
+    if (entryLines.length) lines.push(`${section.title}:`, ...entryLines);
+  }
+  return lines;
+}
+
 // .path-cli/src/commands/list-records.ts
-var listRecordsCommand = new Command("list-records").description("List records in a folder, or recent records").option("--folder-id <id>", "Folder ID to list records from").option("--folder-name <name>", "Folder name (requires --bo-id or --bo-name)").option("--bo-id <id>", "Business object ID (for --folder-name)").option("--bo-name <name>", "Business object name (for --folder-name)").option(
+var listRecordsCommand = new Command("list-records").description(
+  `List records in a folder (--folder-id / --folder-name), or your recent records. JSON is { business_object: {id, name, info}, field_info: [{field_id, name, info}], items } for a folder \u2014 field_info lists the folder's columns that have designer info (a relationship field without its own shows the related field's) \u2014 and { business_objects: [{id, name, info, field_info}], items } for recent records (one entry per business object present). items is the record list as before. Text output prints the table, then a "Business object info:" and a "Field info:" block (only what has info)`
+).option("--folder-id <id>", "Folder ID to list records from").option("--folder-name <name>", "Folder name (requires --bo-id or --bo-name)").option("--bo-id <id>", "Business object ID (for --folder-name)").option("--bo-name <name>", "Business object name (for --folder-name)").option(
   "--page <n>",
   "Fetch only this single page (disables auto-pagination)"
 ).option("--per-page <n>", "Items per page (page size used while paging)", "30").action(async (opts) => {
@@ -31229,9 +31717,11 @@ var listRecordsCommand = new Command("list-records").description("List records i
       folderId = String(folder2.id);
     }
     let data;
+    let folderRow = null;
     if (folderId) {
       const warning = await checkFolderAccess(client, Number(folderId));
       if (warning) console.error(`\u26A0 ${warning}`);
+      folderRow = await getFolder(client, folderId).catch(() => null);
       const perPage = parseInt(opts.perPage, 10);
       if (opts.page) {
         const raw = await client.get(`/v1/folders/${folderId}/records`, {
@@ -31264,20 +31754,85 @@ var listRecordsCommand = new Command("list-records").description("List records i
     }
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim());
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
+    if (parentOpts.quiet || !Array.isArray(data)) {
+      console.log(formatOutput(data, { format, fields, quiet: parentOpts.quiet }));
+      return;
+    }
+    const metadata = (await recordVisibility(client, config2.accountId))?.metadata ?? new RunMetadata(client, config2.accountId);
+    const listed = data.map(
+      (r) => r && typeof r.record === "object" && r.record !== null ? r.record : r
     );
+    const context3 = await recordListInfo(metadata, listed, folderId ? folderRow ?? { id: Number(folderId) } : null);
+    if (format === "json") {
+      console.log(JSON.stringify({ ...context3, items: data }, null, 2));
+      return;
+    }
+    console.log(formatOutput(data, { fields }));
+    const blocks = renderRecordListInfo(context3);
+    if (blocks.length) console.log(["", ...blocks].join("\n"));
   } catch (err) {
     handleError(err);
   }
 });
+async function fieldEntries2(metadata, boId3, fieldIds, relationships2) {
+  const boFields = await metadata.fields(boId3).catch(() => []);
+  const byId = new Map(boFields.map((f) => [f.id, f]));
+  const rels2 = boFields.some((f) => f.relationship_id != null && !f.info) ? await relationships2() : [];
+  const out = [];
+  for (const { id, name } of fieldIds) {
+    const field = byId.get(id);
+    if (!field) continue;
+    const info = await fieldInfo(metadata, field, rels2);
+    if (info) out.push({ field_id: id, name: name?.trim() || field.name, info });
+  }
+  return out;
+}
+async function recordListInfo(metadata, records, folder2) {
+  let relationshipsPending;
+  const relationships2 = () => relationshipsPending ??= metadata.client.get("/v1/init/relationships").then((raw) => unwrapPaginated(raw)).catch(() => []);
+  const carried = (rows) => {
+    const ids = /* @__PURE__ */ new Set();
+    for (const r of rows) for (const k of Object.keys(r.fields ?? {})) if (Number.isFinite(Number(k))) ids.add(Number(k));
+    return [...ids].sort((a, b) => a - b).map((id) => ({ id }));
+  };
+  if (folder2) {
+    const boId3 = folder2.business_object_id ?? records[0]?.business_object_id;
+    if (boId3 == null) return { business_object: { id: 0, name: "Business object", info: null }, field_info: [] };
+    const columns = [...folder2.folder_columns ?? []].sort((a, b) => (a.order_number ?? 0) - (b.order_number ?? 0)).map((c) => ({ id: c.field_id, name: c.custom_name }));
+    const [business_object, field_info] = await Promise.all([
+      businessObjectInfo(metadata, boId3),
+      fieldEntries2(metadata, boId3, columns.length ? columns : carried(records), relationships2)
+    ]);
+    const gate = currentInfoGate();
+    for (const entry of field_info) gate?.always(entry.info);
+    return { business_object, field_info };
+  }
+  const byBo = /* @__PURE__ */ new Map();
+  for (const r of records) {
+    if (r?.business_object_id == null) continue;
+    byBo.set(r.business_object_id, [...byBo.get(r.business_object_id) ?? [], r]);
+  }
+  const business_objects = await Promise.all(
+    [...byBo].map(async ([boId3, rows]) => ({
+      ...await businessObjectInfo(metadata, boId3),
+      field_info: await fieldEntries2(metadata, boId3, carried(rows), relationships2)
+    }))
+  );
+  return { business_objects };
+}
+function renderRecordListInfo(context3) {
+  if ("business_object" in context3) {
+    return infoContextLines(context3.business_object, [{ title: "Field info", entries: context3.field_info }]);
+  }
+  return context3.business_objects.flatMap(
+    (bo) => infoContextLines(bo, [{ title: `Field info (${bo.name})`, entries: bo.field_info }])
+  );
+}
 
 // .path-cli/src/commands/get-record.ts
-var getRecordCommand = new Command("get-record").description("Get a single record by ID").requiredOption("--record-id <id>", "Record ID").option(
+var getRecordCommand = new Command("get-record").description(
+  "Get a single record by ID, as the record viewer shows it to you. Also gives the designer info of what it shows: business_object {id, name, info}, field_info {<field name>: info} and relationship_info {<relationship name>: info} (only entries that have info; a relationship field without its own shows the related field's). In the record view, related_ids gives each related record's id (open it with get-record). Text output ends with a compact info block. Lists of related records (inverse relationship tabs, linked records): list-related-records"
+).requiredOption("--record-id <id>", "Record ID").option(
   "--raw",
   "The stored record (fields keyed by id, UTC dates) instead of the record viewer's names and display values (real-world mode) / name enrichment"
 ).action(async (opts) => {
@@ -31301,7 +31856,16 @@ var getRecordCommand = new Command("get-record").description("Get a single recor
       if (shown2) {
         const note2 = hiddenNote({ fields: shown2.hiddenFields, relationships: shown2.hiddenRelationships });
         if (note2) console.error(note2);
-        console.log(parentOpts.json ? JSON.stringify(shown2.display, null, 2) : renderRecordDisplay(shown2.display));
+        const metadata = (await recordVisibility(client, config2.accountId)).metadata;
+        const context4 = await recordInfo(
+          metadata,
+          fetched.business_object_id,
+          shown2.sources.fields.map(({ name, field }) => ({ name, field })),
+          shown2.sources.relationships.map(({ name, relationship }) => ({ name, relationship }))
+        );
+        console.log(
+          parentOpts.json ? JSON.stringify({ ...shown2.display, ...context4 }, null, 2) : [renderRecordDisplay(shown2.display), ...renderRecordInfo(context4, fetched.id)].join("\n")
+        );
         return;
       }
     }
@@ -31316,13 +31880,35 @@ var getRecordCommand = new Command("get-record").description("Get a single recor
     }
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim());
+    let context3 = null;
+    if (!parentOpts.quiet && !fields && data?.business_object_id) {
+      const metadata = (await recordVisibility(client, config2.accountId))?.metadata ?? new RunMetadata(client, config2.accountId);
+      const [boFields, rels2] = await Promise.all([
+        metadata.fields(data.business_object_id).catch(() => []),
+        relationshipsOf(client)
+      ]);
+      const fieldIds = new Set(Object.keys(data.fields ?? {}).map(Number));
+      const relIds2 = new Set(Object.keys(data.relationships ?? {}).map(Number));
+      context3 = await recordInfo(
+        metadata,
+        data.business_object_id,
+        boFields.filter((f) => fieldIds.has(f.id)).map((field) => ({ name: field.name, field })),
+        rels2.filter((r) => relIds2.has(r.id)).map((relationship) => ({ name: relationship.name ?? `Relationship ${relationship.id}`, relationship })),
+        rels2
+      );
+    }
+    const output = context3 ? { ...display, ...context3 } : display;
     console.log(
-      formatOutput(display, {
+      formatOutput(format === "json" ? output : display, {
         format,
         fields,
         quiet: parentOpts.quiet
       })
     );
+    if (context3 && format !== "json") {
+      const lines = renderRecordInfo(context3, data.id);
+      if (lines.length) console.log(lines.join("\n"));
+    }
   } catch (err) {
     handleError(err);
   }
@@ -31360,6 +31946,449 @@ function remap(obj, nameById) {
     out[name ? `${name} (${id})` : k] = v;
   }
   return out;
+}
+function relationshipsOf(client) {
+  return client.get("/v1/init/relationships").then((raw) => unwrapPaginated(raw)).catch(() => []);
+}
+async function recordInfo(metadata, boId3, fields, relationships2, allRelationships) {
+  const rels2 = allRelationships ?? (fields.some((f) => f.field.relationship_id != null && !infoText(f.field.info)) ? await relationshipsOf(metadata.client) : []);
+  const [business_object, fieldEntries3] = await Promise.all([
+    businessObjectInfo(metadata, boId3),
+    Promise.all(fields.map(async ({ name, field }) => ({ name, info: await fieldInfo(metadata, field, rels2) })))
+  ]);
+  return {
+    business_object,
+    field_info: infoByName(fieldEntries3),
+    relationship_info: infoByName(relationships2.map(({ name, relationship }) => ({ name, info: infoText(relationship.info) })))
+  };
+}
+function renderRecordInfo(context3, recordId) {
+  const toEntries = (map) => Object.entries(map).map(([name, info]) => ({ name, info }));
+  const lines = infoContextLines(context3.business_object, [
+    { title: "Field info", entries: toEntries(context3.field_info) },
+    { title: "Relationship info", entries: toEntries(context3.relationship_info) }
+  ]);
+  return ["", ...lines, ...lines.length ? [""] : [], `Related lists: list-related-records --record-id ${recordId}`];
+}
+
+// .path-cli/src/access/related-records.ts
+function compareByTabOrder(a, b) {
+  const ac = a.config ?? {};
+  const bc = b.config ?? {};
+  return (ac.tab_order_number ?? 1) - (bc.tab_order_number ?? 1) || (ac.tab_name ?? "").localeCompare(bc.tab_name ?? "") || (ac.id ?? 0) - (bc.id ?? 0);
+}
+function compareBySourceOrder(a, b) {
+  return (a.order_number ?? 0) - (b.order_number ?? 0) || a.id - b.id;
+}
+function sectionOf(relationship, target) {
+  if (target?.bo_type === "address") return "addresses";
+  if (relationship.config?.include_in_contacts) return "contacts";
+  if (target?.bo_type === "person") return "people";
+  return "relationships";
+}
+async function relatedTabs(visibility2, record2) {
+  const [view4, relationships2, bos] = await Promise.all([
+    visibility2.view(record2),
+    visibility2.relationships(),
+    visibility2.metadata.businessObjects().catch(() => [])
+  ]);
+  const boById = new Map(bos.map((b) => [b.id, b]));
+  const direct = relationships2.filter((r) => view4.relationships.has(r.id)).sort(compareBySourceOrder).map((relationship) => ({
+    direction: "direct",
+    relationship,
+    businessObjectId: relationship.to_business_object_id,
+    section: sectionOf(relationship, boById.get(relationship.to_business_object_id))
+  }));
+  const evaluated = { ...record2, fields: record2.fields ?? {}, milestones: record2.milestones ?? [] };
+  const candidates = relationships2.filter(
+    (r) => r.to_business_object_id === record2.business_object_id && r.config?.show_in_target && (r.config.tab_name ?? "").trim().length > 0
+  );
+  const shown = await Promise.all(candidates.map((r) => visibility2.isRelationshipVisible(r, "target", evaluated)));
+  const inverse = candidates.filter((_, i) => shown[i]).sort(compareByTabOrder).map((relationship) => ({ direction: "inverse", relationship, businessObjectId: relationship.business_object_id }));
+  return [...direct, ...inverse];
+}
+function columnKindOf(type) {
+  const t = (type ?? "").toLowerCase();
+  if (t === "table") return "table";
+  if (t === "lookup") return "lookup";
+  if (t === "pathway") return "pathway";
+  if (t === "file") return "file";
+  if (t === "milestone") return "milestone";
+  if (t === "field" || t === "column_type_field" || t === "") return "field";
+  return null;
+}
+function inverseColumnSettings(relationship, listed) {
+  return [...relationship.config?.target_field_settings ?? []].filter((s) => s.field_type === "table_columns" && listed(s.visibility_settings)).sort((a, b) => (a.order_number ?? 0) - (b.order_number ?? 0));
+}
+var LINKED_FIELD_SKIP_TYPES = /* @__PURE__ */ new Set(["notes", "appointment"]);
+function directLinkedFields(fields, shownFieldIds, relationshipId) {
+  return fields.filter(
+    (f) => f.relationship_id === relationshipId && shownFieldIds.has(f.id) && !f.is_hidden && f.standard_field_type !== "Identifier" && !LINKED_FIELD_SKIP_TYPES.has(f.field_type)
+  ).sort(
+    (a, b) => (a.order_number ?? 1e9) - (b.order_number ?? 1e9) || a.id - b.id
+  );
+}
+var ADDRESS_PARTS = ["Street", "City", "State", "Zip"];
+async function fieldsOf(metadata, boId3) {
+  return await metadata.fields(boId3).catch(() => []);
+}
+function identifierOf(bo, fields, fallback) {
+  const value = bo?.identifier_field_id != null ? fields?.[String(bo.identifier_field_id)] : void 0;
+  return value != null && value !== "" ? String(value) : fallback;
+}
+async function withZone(zones, work) {
+  const previous = activeTimeZoneSetting();
+  setActiveTimeZone(zones.user);
+  try {
+    return await work();
+  } finally {
+    setActiveTimeZone(previous);
+  }
+}
+async function directList(visibility2, record2, tab) {
+  const metadata = visibility2.metadata;
+  const rel = tab.relationship;
+  const targetBoId = rel.to_business_object_id;
+  const [view4, bos, ownFields, targetFields, milestones, zones, relationships2] = await Promise.all([
+    visibility2.view(record2),
+    metadata.businessObjects().catch(() => []),
+    fieldsOf(metadata, record2.business_object_id),
+    fieldsOf(metadata, targetBoId),
+    metadata.client.get(`/v1/business-objects/${targetBoId}/workflows/milestones`, { all: "true" }).then((r) => unwrapPaginated(r)).catch(() => []),
+    appointmentZones(metadata),
+    visibility2.relationships()
+  ]);
+  const target = bos.find((b) => b.id === targetBoId);
+  const identifierField = targetFields.find((f) => f.id === target?.identifier_field_id);
+  const plans = [];
+  if (tab.section === "addresses") {
+    for (const part of ADDRESS_PARTS) {
+      const field = targetFields.find((f) => f.standard_field_type === part);
+      if (field) plans.push({ kind: "field", name: field.name, field_id: field.id, field, info: await fieldInfo(metadata, field, relationships2) });
+    }
+  } else {
+    plans.push({
+      kind: "identifier",
+      name: identifierField?.name ?? "Identifier",
+      ...identifierField ? { field_id: identifierField.id } : {},
+      info: await fieldInfo(metadata, identifierField, relationships2)
+    });
+    if (tab.section === "relationships") plans.push({ kind: "milestones", name: "Milestones", info: null });
+    for (const field of directLinkedFields(ownFields, view4.fields, rel.id)) {
+      plans.push({ kind: "field", name: field.name, field_id: field.id, field, info: await fieldInfo(metadata, field, relationships2) });
+    }
+  }
+  const linkedIds = [record2.relationships?.[String(rel.id)] ?? []].flat().filter(Boolean).map(String);
+  const milestoneName = new Map(milestones.map((m) => [m.id, m.name]));
+  const items = await withZone(zones, async () => {
+    const out = [];
+    for (const [i, id] of linkedIds.entries()) {
+      let linked = i === 0 ? record2.relationship_fields?.[String(rel.id)] : void 0;
+      if (!linked) {
+        const fetched = await metadata.record(id).catch(() => null);
+        if (!fetched) continue;
+        linked = { fields: fetched.fields, milestones: fetched.milestones, archived_on: fetched.archived_on };
+      }
+      const values = {};
+      for (const plan of plans) {
+        let text = "";
+        if (plan.kind === "identifier") text = identifierOf(target, linked.fields, id);
+        else if (plan.kind === "milestones") text = (linked.milestones ?? []).map((m) => milestoneName.get(m) ?? `Milestone ${m}`).join(", ");
+        else if (plan.field && tab.section === "addresses") {
+          const related = { ...record2, id, business_object_id: targetBoId, fields: linked.fields ?? {}, milestones: linked.milestones ?? [] };
+          if (await visibility2.isFieldVisible(plan.field, related)) text = displayValue(withDisplayFormat(plan.field), linked.fields?.[String(plan.field.id)], zones);
+        } else if (plan.field) {
+          const source = i === 0 ? record2 : { ...record2, relationship_fields: { [String(rel.id)]: linked } };
+          text = displayValue(withDisplayFormat(plan.field), fieldValueOf(plan.field, source), zones);
+        }
+        values[plan.name] = text;
+      }
+      out.push({
+        id,
+        identifier: identifierOf(target, linked.fields, id),
+        ...linked.archived_on ? { archived: true } : {},
+        values
+      });
+    }
+    return out;
+  });
+  return {
+    direction: "direct",
+    section: tab.section,
+    relationship: { id: rel.id, name: rel.name ?? `Relationship ${rel.id}`, info: infoText(rel.info) },
+    business_object: await businessObjectInfo(metadata, targetBoId),
+    columns: plans.map(publicColumn),
+    items
+  };
+}
+function publicColumn(plan) {
+  const { field: _field, filters: _filters, ...column } = plan;
+  return column;
+}
+function inverseSorting(relationship, fields, columns) {
+  const config2 = relationship.config ?? {};
+  let fieldId = null;
+  let direction = 1;
+  if (config2.default_sort_field != null) {
+    fieldId = config2.default_sort_field;
+    direction = config2.default_sort_direction === "desc" ? -1 : 1;
+  } else {
+    fieldId = fields.find((f) => f.standard_field_type === "CreatedDate")?.id ?? columns.find((c) => c.field_id != null)?.field_id ?? null;
+  }
+  return fieldId == null ? [] : [{ type: "field", field_id: fieldId, direction }];
+}
+function inverseFilter(relationship, recordId, sorting = []) {
+  return {
+    version: 1,
+    business_object_ids: [relationship.business_object_id],
+    sorting,
+    quick_search: [],
+    filters: {
+      type: "group",
+      condition: "and",
+      for_groups: true,
+      filter_types: [{ type: "relationship", relationship_id: relationship.id, logic: "equal", value: recordId }]
+    }
+  };
+}
+async function fetchInverseRecords(client, relationship, recordId, sorting, page) {
+  const raw = await client.post("/v1/folders/filter-records", {
+    filter_condition: JSON.stringify(inverseFilter(relationship, recordId, sorting)),
+    with_relationships: true,
+    ...page ?? {}
+  });
+  return unwrapPaginated(raw);
+}
+async function inverseCount(client, relationship, recordId) {
+  try {
+    const raw = await client.post("/v1/folders/filter-records", {
+      filter_condition: JSON.stringify(inverseFilter(relationship, recordId)),
+      with_relationships: false,
+      per_page: 1,
+      page: 1
+    });
+    if (Array.isArray(raw)) return raw.length;
+    return typeof raw.meta?.total_items === "number" ? raw.meta.total_items : null;
+  } catch {
+    return null;
+  }
+}
+async function inverseList(visibility2, record2, tab) {
+  const metadata = visibility2.metadata;
+  const rel = tab.relationship;
+  const listedBoId = rel.business_object_id;
+  const [rowFields, parentFields, bos, relationships2, pathways, zones, milestones] = await Promise.all([
+    fieldsOf(metadata, listedBoId),
+    fieldsOf(metadata, rel.to_business_object_id),
+    metadata.businessObjects().catch(() => []),
+    visibility2.relationships(),
+    metadata.pathways().catch(() => []),
+    appointmentZones(metadata),
+    metadata.client.get(`/v1/business-objects/${listedBoId}/workflows/milestones`, { all: "true" }).then((r) => unwrapPaginated(r)).catch(() => [])
+  ]);
+  const allFields = [...rowFields, ...parentFields];
+  const boById = new Map(bos.map((b) => [b.id, b]));
+  const relById = new Map(relationships2.map((r) => [r.id, r]));
+  const plans = [];
+  for (const setting of inverseColumnSettings(rel, (s) => visibility2.isListed(s))) {
+    const kind = columnKindOf(setting.column_type);
+    if (!kind) continue;
+    const name = setting.field_name || "Column";
+    const config2 = setting.virtual_column_config?.config ?? {};
+    const filters = setting.visibility_settings?.filters;
+    if (kind === "field") {
+      const field = allFields.find((f) => f.id === setting.field_id);
+      plans.push({
+        kind,
+        name,
+        ...setting.field_id != null ? { field_id: setting.field_id } : {},
+        ...field ? { field } : {},
+        filters,
+        info: await fieldInfo(metadata, field, relationships2)
+      });
+    } else if (kind === "lookup" || kind === "table") {
+      const relationshipId = Number(config2.relationship_id) || void 0;
+      plans.push({ kind, name, ...relationshipId ? { relationship_id: relationshipId } : {}, filters, info: infoText(relationshipId ? relById.get(relationshipId)?.info : null) });
+    } else if (kind === "pathway") {
+      const pathwayId = Number(config2.pathway_id) || void 0;
+      plans.push({ kind, name, ...pathwayId ? { pathway_id: pathwayId } : {}, filters, info: infoText(pathwayId ? pathways.find((p) => p.id === pathwayId)?.info : null) });
+    } else {
+      plans.push({ kind, name, filters, info: null });
+    }
+  }
+  const sorting = inverseSorting(rel, rowFields, plans);
+  const rows = await fetchInverseRecords(metadata.client, rel, record2.id, sorting);
+  const listedBo = boById.get(listedBoId);
+  const milestoneName = new Map(milestones.map((m) => [m.id, m.name]));
+  const items = await withZone(zones, async () => {
+    const out = [];
+    for (const row of rows) {
+      const values = {};
+      const linked = {};
+      for (const plan of plans) {
+        let text = "";
+        if (plan.filters && !await visibility2.logicPasses(plan.filters, row)) {
+          values[plan.name] = "";
+          continue;
+        }
+        if (plan.kind === "field" && plan.field) {
+          text = displayValue(withDisplayFormat(plan.field), fieldValueOf(plan.field, row), zones);
+        } else if (plan.kind === "milestone") {
+          text = (row.milestones ?? []).map((m) => milestoneName.get(m) ?? `Milestone ${m}`).join(", ");
+        } else if (plan.kind === "lookup" && plan.relationship_id) {
+          const linkedId = row.relationships?.[String(plan.relationship_id)];
+          if (linkedId) {
+            const lookupRel = relById.get(plan.relationship_id);
+            const target = lookupRel ? boById.get(lookupRel.to_business_object_id) : void 0;
+            text = identifierOf(target, row.relationship_fields?.[String(plan.relationship_id)]?.fields, String(linkedId));
+            linked[plan.name] = String(linkedId);
+          }
+        }
+        values[plan.name] = text;
+      }
+      out.push({
+        id: row.id,
+        identifier: identifierOf(listedBo, row.fields, row.id),
+        ...row.archived_on ? { archived: true } : {},
+        values,
+        ...Object.keys(linked).length ? { linked_ids: linked } : {}
+      });
+    }
+    return out;
+  });
+  return {
+    direction: "inverse",
+    relationship: {
+      id: rel.id,
+      name: rel.name ?? `Relationship ${rel.id}`,
+      ...rel.config?.tab_name ? { tab_name: rel.config.tab_name } : {},
+      info: infoText(rel.info)
+    },
+    business_object: await businessObjectInfo(metadata, listedBoId),
+    columns: plans.map(publicColumn),
+    items
+  };
+}
+
+// .path-cli/src/commands/list-related-records.ts
+var listRelatedRecordsCommand = new Command("list-related-records").description(
+  "A record's related records as the record viewer shows them to you. Without --relationship-*: every related list the record viewer shows \u2014 direct relationships (the records this one links to: relationship cards, Contacts, People, Addresses) and inverse relationship tabs (records that link to this one), each with direction, relationship id, name, the related business object {id, name, info}, the relationship's info and a count. With --relationship-id / --relationship-name: that list's records with the record viewer's columns \u2014 an inverse tab's Table Columns (fields, linked-record lookups, nested tables, pathway buttons, milestones), a direct relationship's identifier, milestones and linked fields (an address's Street / City / State / Zip). JSON: { record, direction, relationship {id, name, info}, business_object {id, name, info}, columns [{kind, name, field_id?, relationship_id?, pathway_id?, info}], items [{id, identifier, values, linked_ids?}] } \u2014 a column's info is the info of the field / relationship / pathway it is based on, shown every time. Open any listed record with get-record --record-id <id>. Relationships the record viewer doesn't show you (hidden, visibility rules, business objects you can't view) are refused"
+).requiredOption("--record-id <id>", "The record whose related records to list").option("--relationship-id <id>", "The relationship (from the overview)").option("--relationship-name <name>", "The relationship by name or inverse tab name (case-insensitive)").option("--direction <direction>", "direct or inverse, when a name or a self-relationship matches both").option("--no-count", "Overview: skip the per-tab record counts (one small request each)").action(async (opts) => {
+  try {
+    const parentOpts = listRelatedRecordsCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({ accountId: parentOpts.account, baseUrl: parentOpts.baseUrl });
+    if (!config2.accountId) {
+      throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
+    }
+    const client = new HttpClient(config2);
+    const visibility2 = await recordVisibility(client, config2.accountId);
+    if (!visibility2) throw new Error("list-related-records lists what the record viewer shows a user: run it in the PATH CLI.");
+    const record2 = await client.get(`/v1/records/${opts.recordId}`);
+    await assertBusinessObject(client, record2.business_object_id, "view", "open this record");
+    const tabs = await relatedTabs(visibility2, record2);
+    const wanted = opts.relationshipId ?? opts.relationshipName;
+    if (wanted === void 0) {
+      const overview = await relatedOverview(client, visibility2.metadata, record2, tabs, opts.count !== false);
+      if (parentOpts.json) {
+        console.log(JSON.stringify(overview, null, 2));
+        return;
+      }
+      console.log(`Related lists of ${overview.record.business_object.name} record ${record2.id}`);
+      console.log(
+        formatOutput(
+          overview.relationships.map((t) => ({
+            direction: t.direction,
+            relationship_id: t.relationship_id,
+            name: t.tab_name ?? t.name,
+            where: t.section ?? "tab",
+            business_object: `${t.business_object.name} (${t.business_object.id})`,
+            count: t.count ?? ""
+          })),
+          { quiet: parentOpts.quiet }
+        )
+      );
+      const lines = infoContextLines(null, [
+        { title: "Relationship info", entries: overview.relationships.map((t) => ({ name: t.tab_name ?? t.name, info: t.info })) },
+        { title: "Business object info", entries: uniqueBos(overview.relationships.map((t) => t.business_object)) }
+      ]);
+      if (lines.length) console.log(["", ...lines].join("\n"));
+      console.log("\nList one: list-related-records --record-id " + record2.id + " --relationship-id <id>");
+      return;
+    }
+    const tab = pickTab(tabs, wanted, opts.relationshipId !== void 0, opts.direction, visibility2.access.label);
+    const list3 = tab.direction === "direct" ? await directList(visibility2, record2, tab) : await inverseList(visibility2, record2, tab);
+    const gate = currentInfoGate();
+    for (const column of list3.columns) gate?.always(column.info);
+    if (parentOpts.json) {
+      console.log(JSON.stringify({ record: { id: record2.id }, ...list3 }, null, 2));
+      return;
+    }
+    console.log(renderRelatedList(list3, parentOpts.quiet));
+  } catch (err) {
+    handleError(err);
+  }
+});
+function uniqueBos(bos) {
+  const seen = /* @__PURE__ */ new Map();
+  for (const bo of bos) seen.set(bo.id, bo);
+  return [...seen.values()].map((bo) => ({ name: bo.name, info: bo.info }));
+}
+async function relatedOverview(client, metadata, record2, tabs, withCounts = true) {
+  const relationships2 = await Promise.all(
+    tabs.map(async (tab) => {
+      const rel = tab.relationship;
+      const linked = tab.direction === "direct" ? [record2.relationships?.[String(rel.id)] ?? []].flat().filter(Boolean).length : null;
+      return {
+        direction: tab.direction,
+        relationship_id: rel.id,
+        name: rel.name ?? `Relationship ${rel.id}`,
+        ...tab.direction === "inverse" && rel.config?.tab_name ? { tab_name: rel.config.tab_name } : {},
+        ...tab.section ? { section: tab.section } : {},
+        business_object: await businessObjectInfo(metadata, tab.businessObjectId),
+        info: infoText(rel.info),
+        count: tab.direction === "direct" ? linked : withCounts ? await inverseCount(client, rel, record2.id) : null
+      };
+    })
+  );
+  return { record: { id: record2.id, business_object: await businessObjectInfo(metadata, record2.business_object_id) }, relationships: relationships2 };
+}
+function pickTab(tabs, wanted, byId, direction, who) {
+  if (direction !== void 0 && direction !== "direct" && direction !== "inverse") {
+    throw new Error("--direction must be direct or inverse");
+  }
+  const key = String(wanted).trim().toLowerCase();
+  let matches = tabs.filter(
+    (t) => byId ? t.relationship.id === Number(wanted) : (t.relationship.name ?? "").trim().toLowerCase() === key || (t.relationship.config?.tab_name ?? "").trim().toLowerCase() === key
+  );
+  if (direction) matches = matches.filter((t) => t.direction === direction);
+  if (matches.length === 1) return matches[0];
+  if (matches.length > 1) {
+    throw new Error(`Relationship ${byId ? wanted : `"${wanted}"`} matches both a direct relationship and an inverse tab \u2014 pass --direction direct or --direction inverse.`);
+  }
+  const shown = tabs.map((t) => `${t.direction} ${t.relationship.id} "${t.direction === "inverse" ? t.relationship.config?.tab_name ?? t.relationship.name : t.relationship.name}"`);
+  throw new Error(
+    `Relationship ${byId ? wanted : `"${wanted}"`} isn't one ${who}'s record viewer shows on this record (hidden, its visibility rules, or a business object they can't view). Shown: ${shown.join(", ") || "(none)"}.`
+  );
+}
+function renderRelatedList(list3, quiet = false) {
+  if (quiet) return list3.items.map((i) => i.id).join("\n");
+  const label = list3.direction === "inverse" ? list3.relationship.tab_name ?? list3.relationship.name : list3.relationship.name;
+  const head = `${list3.direction === "inverse" ? "Inverse tab" : `Direct relationship (${list3.section})`} "${label}" (${list3.relationship.id}) \xB7 ${list3.business_object.name}`;
+  const rows = list3.items.map((item2) => ({
+    id: item2.id,
+    ...list3.columns.some((c) => c.kind === "identifier") ? {} : { identifier: item2.identifier },
+    ...item2.values,
+    ...item2.archived ? { archived: "yes" } : {}
+  }));
+  const keys = ["id", ...list3.columns.some((c) => c.kind === "identifier") ? [] : ["identifier"], ...list3.columns.map((c) => c.name)];
+  if (list3.items.some((i) => i.archived)) keys.push("archived");
+  const table = formatOutput(rows, { fields: keys });
+  const info = infoContextLines(list3.business_object, [
+    { title: "Relationship info", entries: [{ name: label, info: list3.relationship.info }] },
+    { title: "Column info", entries: list3.columns.map((c) => ({ name: c.name, info: c.info })) }
+  ]);
+  const linked = list3.items.some((i) => i.linked_ids) ? ["", "Linked record ids (open with get-record):", ...list3.items.filter((i) => i.linked_ids).map((i) => `  ${i.id}: ${Object.entries(i.linked_ids).map(([k, v]) => `${k} \u2192 ${v}`).join(", ")}`)] : [];
+  return [head, table, ...linked, ...info.length ? ["", ...info] : []].join("\n");
 }
 
 // .path-cli/src/utils/record-files.ts
@@ -31461,8 +32490,8 @@ var listRecordFilesCommand = new Command("list-record-files").description(
 });
 
 // .path-cli/src/commands/download-record-file.ts
-import { existsSync as existsSync4, mkdirSync as mkdirSync3, statSync as statSync2, writeFileSync as writeFileSync3 } from "fs";
-import { basename, dirname as dirname2, join, resolve as resolve4 } from "path";
+import { existsSync as existsSync4, mkdirSync as mkdirSync4, statSync as statSync2, writeFileSync as writeFileSync4 } from "fs";
+import { basename, dirname as dirname3, join, resolve as resolve4 } from "path";
 var downloadRecordFileCommand = new Command("download-record-file").description(
   "Download one file attached to a record (to a local path, or to stdout with --stdout)"
 ).requiredOption("--record-id <id>", "Record ID").requiredOption(
@@ -31519,8 +32548,8 @@ var downloadRecordFileCommand = new Command("download-record-file").description(
     if (existsSync4(target) && statSync2(target).isDirectory()) {
       target = join(target, fileName);
     }
-    mkdirSync3(dirname2(target), { recursive: true });
-    writeFileSync3(target, bytes);
+    mkdirSync4(dirname3(target), { recursive: true });
+    writeFileSync4(target, bytes);
     if (parentOpts.quiet) {
       console.log(target);
     } else {
@@ -31640,13 +32669,6 @@ var listRecordEmailsCommand = new Command("list-record-emails").description("Lis
 
 // .path-cli/src/utils/history-command.ts
 var PAGE_SIZE = 100;
-var HISTORY_SOURCES = ["web_app", "cli", "agent", "claude_code", "claude_cowork", "claude_desktop", "system"];
-function addSourceOption(command) {
-  return command.option(
-    "--source <source>",
-    "Only sessions from one source: web_app (people in the web app), cli (people typing CLI commands), agent (any agent), claude_code, claude_cowork, claude_desktop, or system (integrations, scheduled actions, emails received)"
-  );
-}
 function addHistoryOptions(command) {
   return command.option("--from <date>", "Only events at/after this time (ISO 8601)").option("--to <date>", "Only events at/before this time (ISO 8601)").option("--action <action>", "Filter by event action (e.g. updated)").option(
     "--category <list>",
@@ -31698,17 +32720,12 @@ async function loadHistory({
       'Missing --account <id>. Run "path list-accounts" to see available accounts.'
     );
   }
-  const source = opts.source ? String(opts.source).trim().toLowerCase() : void 0;
-  if (source && !HISTORY_SOURCES.includes(source)) {
-    throw new Error(`--source must be one of: ${HISTORY_SOURCES.join(", ")}`);
-  }
   const client = new HttpClient(config2);
   await gate?.(client);
   const query = {
     include_metadata: "true",
     ...extraQuery
   };
-  if (source) query.source = source;
   if (opts.from) query.from = String(opts.from);
   if (opts.to) query.to = String(opts.to);
   if (opts.action) query.action = String(opts.action);
@@ -31720,7 +32737,6 @@ async function loadHistory({
     Math.max(1, parseInt(String(opts.limit ?? PAGE_SIZE), 10) || PAGE_SIZE)
   );
   let sessions = opts.page ? await fetchPage(client, path, query, parseInt(String(opts.page), 10), limit) : await fetchAllSessions(client, path, query, limit, enough);
-  if (source) sessions = sessions.filter((session) => matchesHistorySource(session, source));
   if (eventFilter) {
     sessions = sessions.map((session) => ({ ...session, events: session.events.filter((event) => eventFilter(event, session)) })).filter((session, i) => session.events.length > 0 || !sessions[i].events.length);
   }
@@ -31833,12 +32849,10 @@ async function fetchAllSessions(client, path, query, limit, enough) {
 }
 
 // .path-cli/src/commands/get-history-by-record.ts
-var getHistoryByRecordCommand = addSourceOption(
-  addHistoryOptions(
-    new Command("get-history-by-record").description(
-      "Change history for a record as a flat event table (read-only). All sessions are fetched unless --page is given."
-    ).requiredOption("--record-id <id>", "Record ID")
-  )
+var getHistoryByRecordCommand = addHistoryOptions(
+  new Command("get-history-by-record").description(
+    "Change history for a record as a flat event table (read-only). All sessions are fetched unless --page is given."
+  ).requiredOption("--record-id <id>", "Record ID")
 ).action(async (opts) => {
   try {
     await runHistoryCommand({
@@ -31968,7 +32982,7 @@ var listRolesCommand = new Command("list-roles").description("List roles").optio
 });
 
 // .path-cli/src/commands/list-pathways.ts
-var listPathwaysCommand = new Command("list-pathways").description("List pathways").action(async () => {
+var listPathwaysCommand = new Command("list-pathways").description("List pathways (--json adds each pathway's info: what the designer built it for)").action(async () => {
   try {
     const parentOpts = listPathwaysCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -36650,7 +37664,7 @@ var FilterCatalogLoader = class _FilterCatalogLoader {
     });
     const fieldsByBo = groupBy(fields.map((f) => [f.business_object_id, f]));
     const catalogFields = /* @__PURE__ */ new Map();
-    const fieldsOf3 = (id) => {
+    const fieldsOf4 = (id) => {
       let list3 = catalogFields.get(id);
       if (!list3) {
         list3 = (fieldsByBo.get(id) ?? []).map(toCatalogField);
@@ -36664,8 +37678,8 @@ var FilterCatalogLoader = class _FilterCatalogLoader {
     this.catalog = {
       timeZone,
       businessObjectId: boId3 ?? void 0,
-      fields: boId3 == null ? [] : fieldsOf3(boId3),
-      fieldsOf: fieldsOf3,
+      fields: boId3 == null ? [] : fieldsOf4(boId3),
+      fieldsOf: fieldsOf4,
       milestones: boId3 == null ? [] : milestonesByBo.get(boId3) ?? [],
       milestonesOf: (id) => milestonesByBo.get(id) ?? [],
       steps: rootSteps,
@@ -37342,7 +38356,7 @@ function boFlagLogicTarget(name, property, flag) {
         "business object"
       );
       const bindings = bo.setting_bindings ?? [];
-      const current = bindings.find((b) => b.property === property);
+      const current2 = bindings.find((b) => b.property === property);
       const others = bindings.filter((b) => b.property !== property).map(
         ({ property: p, setting_id, filter }) => filter ? { property: p, filter } : { property: p, setting_id }
       );
@@ -37351,17 +38365,17 @@ function boFlagLogicTarget(name, property, flag) {
         rootBoId: null,
         // business-object-microservice validates the logic on save.
         validateWithBuilder: false,
-        pipeline: current?.filter ?? null,
+        pipeline: current2?.filter ?? null,
         save: (pipeline) => client.put(`/v1/business-objects/${id}`, {
           setting_bindings: pipeline ? [...others, { property, filter: pipeline }] : others
         }),
         notes: (pipeline) => {
-          if (pipeline && current?.setting_id) {
+          if (pipeline && current2?.setting_id) {
             return [
-              `NOTE: replaces the account setting override (setting ${current.setting_id}) on ${flag}.`
+              `NOTE: replaces the account setting override (setting ${current2.setting_id}) on ${flag}.`
             ];
           }
-          if (!pipeline && current?.filter) {
+          if (!pipeline && current2?.filter) {
             return [
               `NOTE: removes the Logic override; ${flag} goes back to its manual value.`
             ];
@@ -37435,6 +38449,9 @@ function folderBody(folder2, overrides) {
     default_sort_field: folder2.default_sort_field ?? null,
     default_sort_direction: folder2.default_sort_direction ?? "desc",
     stickers: folder2.folder_stickers ?? [],
+    // Left out, the folder DTO's defaults would switch the map view off.
+    map_enabled: folder2.map_enabled ?? false,
+    map_relationship_id: folder2.map_relationship_id ?? null,
     ...overrides,
     filter_condition: filter,
     ...userFilterFields(filter)
@@ -38050,17 +39067,17 @@ function parseCustomFieldExpression(text, catalog) {
   if (result.errors.length > 0 || !result.expression) {
     throw new Error(describeParseErrors(text, result.errors));
   }
-  const resolve11 = remoteFieldResolver(catalog);
+  const resolve12 = remoteFieldResolver(catalog);
   const output = inferOutputType(
     result.expression,
     catalog.fields,
-    resolve11,
+    resolve12,
     catalog.settings
   );
   return toBackendFormat(
     { output, expression: result.expression },
     catalog.fields,
-    resolve11,
+    resolve12,
     catalog.settings
   );
 }
@@ -38847,16 +39864,16 @@ var updateRecordCommand = new Command("update-record").description("Update a rec
     const client = new HttpClient(config2);
     const data = JSON.parse(opts.data);
     let boId3 = data.business_object_id;
-    let current = null;
+    let current2 = null;
     if (boId3 == null || isRealWorld()) {
-      current = await client.get(`/v1/records/${opts.recordId}`);
-      boId3 ??= current.business_object_id;
+      current2 = await client.get(`/v1/records/${opts.recordId}`);
+      boId3 ??= current2.business_object_id;
     }
-    if (current) {
+    if (current2) {
       await assertRecordFieldsEditable(
         client,
         config2.accountId,
-        current,
+        current2,
         (data.fields ?? []).map((f) => Number(f.field_id)),
         `edit record ${opts.recordId}`
       );
@@ -39216,12 +40233,12 @@ function stepTitleText(title) {
 }
 
 // .path-cli/src/pathway-runner/run-store.ts
-import { appendFileSync, existsSync as existsSync5, mkdirSync as mkdirSync4, readdirSync, readFileSync as readFileSync3, rmSync as rmSync2, writeFileSync as writeFileSync4 } from "fs";
+import { appendFileSync, existsSync as existsSync5, mkdirSync as mkdirSync5, readdirSync, readFileSync as readFileSync4, rmSync as rmSync2, writeFileSync as writeFileSync5 } from "fs";
 import { homedir as homedir3 } from "os";
 import { join as join2, resolve as resolve5 } from "path";
 function runsDir() {
   const dir = resolve5(homedir3(), ".path-cli", "runs");
-  mkdirSync4(dir, { recursive: true });
+  mkdirSync5(dir, { recursive: true });
   return dir;
 }
 function runDir(runId) {
@@ -39230,9 +40247,19 @@ function runDir(runId) {
 function saveRun(run) {
   run.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
   const dir = runDir(run.runId);
-  mkdirSync4(dir, { recursive: true });
-  writeFileSync4(join2(dir, "run.json"), JSON.stringify(run, null, 2));
-  writeFileSync4(join2(runsDir(), "current"), run.runId);
+  mkdirSync5(dir, { recursive: true });
+  writeFileSync5(join2(dir, "run.json"), JSON.stringify(run, null, 2));
+  writeFileSync5(join2(runsDir(), "current"), run.runId);
+}
+function saveRunInfoShown(runId, hashes) {
+  const path = join2(runDir(runId), "run.json");
+  if (!existsSync5(path)) return;
+  try {
+    const run = JSON.parse(readFileSync4(path, "utf-8"));
+    run.infoShown = [.../* @__PURE__ */ new Set([...run.infoShown ?? [], ...hashes])];
+    writeFileSync5(path, JSON.stringify(run, null, 2));
+  } catch {
+  }
 }
 function loadRun(runId) {
   const id = runId || currentRunId();
@@ -39243,27 +40270,27 @@ function loadRun(runId) {
   if (!existsSync5(path)) {
     throw new Error(`Pathway run ${id} not found. "pathway-run list" shows saved runs.`);
   }
-  return JSON.parse(readFileSync3(path, "utf-8"));
+  return JSON.parse(readFileSync4(path, "utf-8"));
 }
 function currentRunId() {
   const path = join2(runsDir(), "current");
-  return existsSync5(path) ? readFileSync3(path, "utf-8").trim() || null : null;
+  return existsSync5(path) ? readFileSync4(path, "utf-8").trim() || null : null;
 }
 function listRuns() {
-  return readdirSync(runsDir(), { withFileTypes: true }).filter((d) => d.isDirectory() && existsSync5(join2(runDir(d.name), "run.json"))).map((d) => JSON.parse(readFileSync3(join2(runDir(d.name), "run.json"), "utf-8"))).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return readdirSync(runsDir(), { withFileTypes: true }).filter((d) => d.isDirectory() && existsSync5(join2(runDir(d.name), "run.json"))).map((d) => JSON.parse(readFileSync4(join2(runDir(d.name), "run.json"), "utf-8"))).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 function deleteRun(runId) {
   rmSync2(runDir(runId), { recursive: true, force: true });
 }
 function appendLog(runId, entry) {
   const dir = runDir(runId);
-  mkdirSync4(dir, { recursive: true });
+  mkdirSync5(dir, { recursive: true });
   appendFileSync(join2(dir, "log.jsonl"), JSON.stringify({ at: (/* @__PURE__ */ new Date()).toISOString(), ...entry }) + "\n");
 }
 function readLog(runId) {
   const path = join2(runDir(runId), "log.jsonl");
   if (!existsSync5(path)) return [];
-  return readFileSync3(path, "utf-8").split("\n").filter(Boolean).map((line) => JSON.parse(line));
+  return readFileSync4(path, "utf-8").split("\n").filter(Boolean).map((line) => JSON.parse(line));
 }
 function recordsCreatedInRun(log) {
   const started = log.find((e) => e.kind === "started");
@@ -39281,7 +40308,7 @@ function recordsCreatedInRun(log) {
 }
 
 // .path-cli/src/pathway-runner/services.ts
-import { mkdirSync as mkdirSync5, writeFileSync as writeFileSync5 } from "fs";
+import { mkdirSync as mkdirSync6, writeFileSync as writeFileSync6 } from "fs";
 import { basename as basename2, join as join3 } from "path";
 var BROWSER_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36";
 var CliPathwayResolver = class extends PathwayResolverLike {
@@ -39420,9 +40447,9 @@ var CliFileService = class extends FileServiceLike {
     if (!res.ok) {
       throw new Error(`File server returned ${res.status} for ${fileName}`);
     }
-    mkdirSync5(this.downloadDir, { recursive: true });
+    mkdirSync6(this.downloadDir, { recursive: true });
     const target = join3(this.downloadDir, basename2(fileName || fileId));
-    writeFileSync5(target, Buffer.from(await res.arrayBuffer()));
+    writeFileSync6(target, Buffer.from(await res.arrayBuffer()));
     this.downloaded.push(target);
     return target;
   }
@@ -39506,10 +40533,10 @@ async function availableTemplates(data, metadata) {
     metadata.client.get("/v1/init/milestones")
   ]);
   const list3 = (res) => Array.isArray(res) ? res : res.items ?? [];
-  const current = new Set(data.record.milestones ?? []);
+  const current2 = new Set(data.record.milestones ?? []);
   const availableIds = /* @__PURE__ */ new Set();
   for (const m of list3(milestones)) {
-    if (m.business_object_id !== data.business_object_id || !current.has(m.id)) continue;
+    if (m.business_object_id !== data.business_object_id || !current2.has(m.id)) continue;
     for (const a of m.milestone_available_tasks ?? []) availableIds.add(a.task_id);
   }
   const evaluator = new CliPipelineEvaluator(metadata);
@@ -39728,6 +40755,182 @@ var editTask = {
   }
 };
 
+// .path-cli/src/pathway-runner/surfaces/record-form.ts
+async function buildEditForm(record2, selection, metadata) {
+  const fields = (await metadata.fields(record2.business_object_id)).filter((f) => !f.is_hidden);
+  const ordered = orderBySelection(fields, selection);
+  const form = [];
+  for (const field of ordered) {
+    if (!isEditableField(field)) continue;
+    const entry = selection?.find((e) => e.field_id === field.id);
+    if (selection !== null && !entry) continue;
+    form.push({
+      field,
+      required: !!field.is_required || !!entry?.required,
+      allowList: entry?.select_options ?? [],
+      value: coerceFieldValue(field, record2.fields?.[String(field.id)])
+    });
+  }
+  return form;
+}
+async function buildCreateForm(boId3, selection, settled, metadata) {
+  const fields = (await metadata.fields(boId3)).filter((f) => !f.is_hidden && f.is_primary_object !== false);
+  const ordered = orderBySelection(fields, selection);
+  const inlineTags = await inlineTagFields(fields, settled, metadata);
+  const form = [];
+  for (const field of ordered) {
+    const tag = inlineTags.get(field.id);
+    if (tag) {
+      form.push({ field, required: true, allowList: [], value: null, tagGroupId: tag.groupId, tagOptions: tag.options });
+      continue;
+    }
+    if (!isEditableField(field)) continue;
+    const entry = selection?.find((e) => e.field_id === field.id);
+    if (selection !== null && !entry) continue;
+    form.push({
+      field,
+      required: !!field.is_required || !!entry?.required,
+      allowList: entry?.select_options ?? [],
+      value: coerceFieldValue(field, field.default_value ?? null)
+    });
+  }
+  return form;
+}
+function orderBySelection(fields, selection) {
+  if (selection === null) return fields;
+  const index = (id) => {
+    const i = selection.findIndex((e) => e.field_id === id);
+    return i === -1 ? Infinity : i;
+  };
+  return [...fields].sort((a, b) => index(a.id) - index(b.id));
+}
+async function inlineTagFields(fields, settled, metadata) {
+  const candidates = fields.filter(
+    (f) => f.field_type === FieldTypes3.Tag && f.tag_group_id != null && f.multi_tag_ui === true
+  );
+  const result = /* @__PURE__ */ new Map();
+  if (!candidates.length) return result;
+  const [user, groups] = await Promise.all([
+    metadata.currentUser(),
+    metadata.client.get("/v1/tag-groups", { all: "true", active: "true" })
+  ]);
+  const activeGroups = new Set(
+    (Array.isArray(groups) ? groups : groups.items ?? []).map(
+      (g) => Number(g.id)
+    )
+  );
+  const byGroup = /* @__PURE__ */ new Map();
+  for (const userTag of user.tags ?? []) {
+    const tag = userTag.tag;
+    if (!tag?.is_active) continue;
+    const list3 = byGroup.get(Number(tag.tag_group_id)) ?? [];
+    if (!list3.some((t) => t.tag_id === Number(tag.id))) list3.push({ tag_id: Number(tag.id), name: tag.name });
+    byGroup.set(Number(tag.tag_group_id), list3);
+  }
+  const settledGroups = new Set(settled.map((c) => Number(c.tag_group_id)));
+  for (const field of candidates) {
+    const groupId = Number(field.tag_group_id);
+    if (settledGroups.has(groupId) || !activeGroups.has(groupId)) continue;
+    const options = byGroup.get(groupId) ?? [];
+    if (options.length > 1) result.set(field.id, { groupId, options });
+  }
+  return result;
+}
+async function applyFormInput(form, input, metadata) {
+  for (const [key, raw] of input.set) {
+    const field = findField(
+      form.map((f) => f.field),
+      key
+    );
+    const entry = field && form.find((f) => f.field.id === field.id);
+    if (!entry) {
+      throw new SurfaceInputError(
+        `"${key}" isn't an editable field on this form. Editable: ${form.map((f) => f.field.name).join(", ") || "(none)"}`
+      );
+    }
+    if (entry.tagOptions) {
+      const tag = entry.tagOptions.find((t) => t.name.toLowerCase() === raw.trim().toLowerCase());
+      if (!tag) {
+        throw new SurfaceInputError(
+          `"${raw}" isn't one of your tags for ${entry.field.name}. Choose: ${entry.tagOptions.map((t) => t.name).join(", ")}`
+        );
+      }
+      entry.value = tag.name;
+      continue;
+    }
+    try {
+      entry.value = await parseFieldInput(entry.field, raw, { metadata, allowList: entry.allowList });
+    } catch (err) {
+      if (err instanceof FieldInputError) throw new SurfaceInputError(err.message);
+      throw err;
+    }
+  }
+}
+function validateForm(form) {
+  const errors = form.map((f) => validateFieldValue(f.field, f.value, f.required)).filter((e) => !!e);
+  if (errors.length) throw new SurfaceInputError(errors.join("; "));
+}
+function formPayload(form) {
+  const fields = [];
+  const tag_selections = [];
+  for (const entry of form) {
+    if (entry.tagOptions) {
+      const tag = entry.tagOptions.find((t) => t.name === entry.value);
+      if (tag && entry.tagGroupId != null) tag_selections.push({ tag_group_id: entry.tagGroupId, tag_id: tag.tag_id });
+      continue;
+    }
+    const picked = entry.field.field_type === FieldTypes3.Selection || entry.field.field_type === FieldTypes3.Tag;
+    fields.push({
+      field_id: entry.field.id,
+      value: typeof entry.value === "string" && !picked ? entry.value.trim() : entry.value
+    });
+  }
+  return { fields, tag_selections };
+}
+async function describeForm(form, metadata) {
+  const lines = [];
+  const detail = [];
+  for (const entry of form) {
+    const f = entry.field;
+    let options;
+    if (entry.tagOptions) {
+      options = entry.tagOptions.map((t) => t.name);
+    } else if (f.field_type === FieldTypes3.Selection) {
+      options = await selectionOptions(f, metadata, entry.allowList).catch(() => void 0);
+    }
+    const type = entry.tagOptions ? "Tag" : fieldTypeLabel(f);
+    const flags = [type, entry.required ? "required" : ""].filter(Boolean).join(", ");
+    const current2 = entry.tagOptions ? entry.value ? String(entry.value) : "(choose)" : describeValue(f, entry.value);
+    lines.push(`  [${f.id}] ${f.name} (${flags}) = ${current2}`);
+    lines.push(...fieldInfoLines(f));
+    if (options) {
+      const shown = options.slice(0, 25).map(quote2).join(", ");
+      lines.push(`        options: ${shown}${options.length > 25 ? `, \u2026 (${options.length} total)` : ""}`);
+    }
+    detail.push({
+      field_id: f.id,
+      name: f.name,
+      type: f.field_type,
+      required: entry.required,
+      value: entry.value,
+      display: current2,
+      info: infoText(f.info),
+      ...options ? { options } : {},
+      ...entry.tagOptions ? { tag_group_id: entry.tagGroupId } : {}
+    });
+  }
+  return { lines, detail };
+}
+function fieldInfoLines(field, indent = "        ") {
+  return infoLines(field?.info, { indent, label: "info", cap: INFO_TEXT_CAP });
+}
+function exampleSet(form) {
+  const first = form.find((f) => !f.tagOptions) ?? form[0];
+  if (!first) return "";
+  const sample = first.field.field_type === FieldTypes3.DateAndTime ? "2026-10-15" : first.field.field_type === FieldTypes3.Boolean ? "true" : "<value>";
+  return `--set ${quote2(`${first.field.name}=${sample}`)}`;
+}
+
 // .path-cli/src/pathway-runner/surfaces/edit-record-table.ts
 var stateKey = (ctx) => `edit-record-table:${ctx.stepId}`;
 async function context2(data, ctx) {
@@ -39940,6 +41143,13 @@ async function render(data, ctx, showRow) {
       return `${c.field_name}${editable ? "\u270E" : ""}${c.required ? "*" : ""}${c.column_type && c.column_type !== "Field" ? ` (${c.column_type} column)` : ""}`;
     }).join(" | ")}`
   );
+  const columnInfo = columns.filter((c) => infoText(c.field?.info));
+  if (columnInfo.length) {
+    lines.push("  column info:");
+    for (const c of columnInfo) {
+      lines.push(...infoLines(c.field.info, { indent: "    ", label: c.field_name, cap: INFO_TEXT_CAP }));
+    }
+  }
   rows.forEach((row, i) => {
     const mark6 = behaviour.selectorVisible ? selected.has(row.id) ? "[x] " : "[ ] " : "";
     const edited = state.edits[row.id] && Object.keys(state.edits[row.id]).length ? " *edited*" : "";
@@ -39954,6 +41164,7 @@ async function render(data, ctx, showRow) {
     for (const d of details.filter((c) => c.field)) {
       const editable = d.editable && isEditableField(d.field);
       lines.push(`    ${d.field_name}${editable ? "\u270E" : ""} (${fieldTypeLabel(d.field)}) = ${formatFieldValue(d.field, row.fields?.[String(d.field.id)]) || "\u2014"}`);
+      lines.push(...fieldInfoLines(d.field, "      "));
     }
   }
   for (const m of state.messages) lines.push(`  \u2713 ${m}`);
@@ -39975,7 +41186,8 @@ async function render(data, ctx, showRow) {
       behaviour,
       search: state.search,
       total: state.total,
-      columns: columns.map((c) => ({ field_id: c.field_id, name: c.field_name, editable: !!c.field && c.editable && isEditableField(c.field), required: c.required, column_type: c.column_type })),
+      columns: columns.map((c) => ({ field_id: c.field_id, name: c.field_name, editable: !!c.field && c.editable && isEditableField(c.field), required: c.required, column_type: c.column_type, info: infoText(c.field?.info) })),
+      detail_columns: details.map((c) => ({ field_id: c.field_id, name: c.field_name, editable: !!c.field && c.editable && isEditableField(c.field), info: infoText(c.field?.info) })),
       rows: rows.map((r, i) => ({ n: i + 1, id: r.id, selected: selected.has(r.id), edited: Object.keys(state.edits[r.id] ?? {}).length > 0, fields: r.fields })),
       field_names: Object.fromEntries(fields.map((f) => [f.id, f.name]))
     }
@@ -40017,7 +41229,7 @@ var editRecordTable = {
 import { deflateSync } from "zlib";
 
 // .path-cli/src/utils/file-upload.ts
-import { existsSync as existsSync6, readFileSync as readFileSync4, statSync as statSync3 } from "fs";
+import { existsSync as existsSync6, readFileSync as readFileSync5, statSync as statSync3 } from "fs";
 import { basename as basename3, extname, resolve as resolve6 } from "path";
 var MIME_TYPES = {
   ".pdf": "application/pdf",
@@ -40047,7 +41259,7 @@ function readUploadFile(path) {
   if (!existsSync6(full)) throw new Error(`File not found: ${full}`);
   if (!statSync3(full).isFile()) throw new Error(`Not a file: ${full}`);
   const type = MIME_TYPES[extname(full).toLowerCase()] ?? "application/octet-stream";
-  return { blob: new Blob([readFileSync4(full)], { type }), name: basename3(full) };
+  return { blob: new Blob([readFileSync5(full)], { type }), name: basename3(full) };
 }
 
 // .path-cli/src/pathway-runner/surfaces/files.ts
@@ -40574,11 +41786,11 @@ function reselectPO(state) {
   state.orders = [];
 }
 function requireStage(data, state, wanted, what) {
-  const current = stage(data, state);
-  if (current === wanted) return;
+  const current2 = stage(data, state);
+  if (current2 === wanted) return;
   const steps = create_tracking_labels_exports.wizardSteps(isImport(data));
-  const label = steps.find((s) => s.stage === current).label;
-  const hint = current === "scan" ? "scan a barcode first (--set barcode=<value>)" : create_tracking_labels_exports.canGoBackTo(isImport(data), current, wanted) ? `go back first (--set back=${wanted})` : "finish the current step first";
+  const label = steps.find((s) => s.stage === current2).label;
+  const hint = current2 === "scan" ? "scan a barcode first (--set barcode=<value>)" : create_tracking_labels_exports.canGoBackTo(isImport(data), current2, wanted) ? `go back first (--set back=${wanted})` : "finish the current step first";
   throw new SurfaceInputError(`${what} isn't on the ${label} step \u2014 ${hint}`);
 }
 function findRow(state, token) {
@@ -40657,12 +41869,12 @@ async function addLabel(data, state, env, ctx) {
 }
 function goBack(data, state, target) {
   const importMode = isImport(data);
-  const current = stage(data, state);
+  const current2 = stage(data, state);
   const t = target.trim().toLowerCase();
   const steps = create_tracking_labels_exports.wizardSteps(importMode);
-  const wanted = ["true", "yes", "y", "1"].includes(t) ? create_tracking_labels_exports.backStep(importMode, current)?.stage : steps.find((s) => s.stage === t || s.label.toLowerCase() === t)?.stage;
-  if (!wanted || !create_tracking_labels_exports.canGoBackTo(importMode, current, wanted)) {
-    const earlier = steps.filter((s) => create_tracking_labels_exports.canGoBackTo(importMode, current, s.stage)).map((s) => s.stage);
+  const wanted = ["true", "yes", "y", "1"].includes(t) ? create_tracking_labels_exports.backStep(importMode, current2)?.stage : steps.find((s) => s.stage === t || s.label.toLowerCase() === t)?.stage;
+  if (!wanted || !create_tracking_labels_exports.canGoBackTo(importMode, current2, wanted)) {
+    const earlier = steps.filter((s) => create_tracking_labels_exports.canGoBackTo(importMode, current2, s.stage)).map((s) => s.stage);
     throw new SurfaceInputError(`Can't go back to "${target}"${earlier.length ? ` \u2014 earlier steps: ${earlier.join(", ")}` : " \u2014 this is the first step"}`);
   }
   if (wanted === "scan") state.committedBarcode = null;
@@ -40837,7 +42049,7 @@ async function render3(data, ctx, known) {
   const state = known?.state ?? await getState3(data, ctx, env);
   const { w, identify } = env;
   const importMode = isImport(data);
-  const current = stage(data, state);
+  const current2 = stage(data, state);
   const steps = create_tracking_labels_exports.wizardSteps(importMode);
   const submitLabel = importMode ? "Submit" : "Download and Continue";
   const lines = [];
@@ -40858,17 +42070,17 @@ async function render3(data, ctx, known) {
     stops.slice(0, 15).forEach((o, i) => lines.push(`   ${String(i + 1).padStart(3)}. ${o.id === state.stop.recordId ? "(\u2022)" : "( )"} ${o.label}  (${o.id})`));
     if (stops.length > 15) lines.push(`    \u2026 ${stops.length - 15} more \u2014 narrow with --set stop_search=<text>`);
   }
-  lines.push(`  Steps: ${steps.map((s) => s.stage === current ? `[${s.n}. ${s.label}]` : `${s.n}. ${s.label}`).join(" \u203A ")}`);
+  lines.push(`  Steps: ${steps.map((s) => s.stage === current2 ? `[${s.n}. ${s.label}]` : `${s.n}. ${s.label}`).join(" \u203A ")}`);
   const crumbs = [
     state.committedBarcode ? `Barcode ${state.committedBarcode}` : "",
     state.selectedPO ? `Order ${identify(state.selectedPO) ?? state.selectedPO.id}` : "",
     state.selectedLine ? create_tracking_labels_exports.lineLabel(state.selectedLine, w) ?? "Line selected" : ""
   ].filter(Boolean);
   if (crumbs.length) lines.push(`  Selected: ${crumbs.join(" \u203A ")}`);
-  if (current === "scan") {
+  if (current2 === "scan") {
     lines.push("  Scan or type the barcode on the item.");
     actions2.push("pathway-run act --set barcode=<value>");
-  } else if (current === "order") {
+  } else if (current2 === "order") {
     actions2.push('pathway-run act --set search="<order number or text>"');
     if (state.poSearchTerm !== null) {
       lines.push(`  Orders matching "${state.poSearchTerm}": ${state.orders.length}`);
@@ -40893,7 +42105,7 @@ async function render3(data, ctx, known) {
     } else {
       lines.push("  Search for the purchase order to label.");
     }
-  } else if (current === "line") {
+  } else if (current2 === "line") {
     const tracked = create_tracking_labels_exports.trackedLines(state.lines, w.field.notTracked);
     lines.push(`  Select Order Line (${tracked.length}${tracked.length !== state.lines.length ? ` tracked of ${state.lines.length}` : ""}):`);
     tracked.forEach((line, i) => {
@@ -40914,7 +42126,7 @@ async function render3(data, ctx, known) {
     if (!importMode) actions2.push("pathway-run act --set size=6in|2in --set qty=<n>");
     actions2.push('pathway-run act --set description="<text>"', `pathway-run act --set add=true   (${importMode ? "Add to List" : "Add Label"})`);
   }
-  const back = create_tracking_labels_exports.backStep(importMode, current);
+  const back = create_tracking_labels_exports.backStep(importMode, current2);
   if (back) actions2.push(`pathway-run act --set back=${back.stage}   (${back.label}; or --set start_over=true)`);
   const ready = create_tracking_labels_exports.submittableRows(state.labels);
   lines.push(`  Labels: ${state.labels.length}${state.labels.length !== ready.length ? ` (${ready.length} ready \u2014 only ready labels are submitted)` : ""}`);
@@ -40942,7 +42154,7 @@ async function render3(data, ctx, known) {
     actions: actions2,
     detail: {
       mode: data.config.mode,
-      stage: current,
+      stage: current2,
       stop: { ...state.stop, label: stopLabel ?? null },
       stops: stops.map((o, i) => ({ n: i + 1, id: o.id, label: o.label })),
       close_shipment: state.markReceived,
@@ -41037,7 +42249,7 @@ var stateKey4 = (ctx) => `scheduling:${ctx.stepId}`;
 function errorText(err) {
   return err instanceof Error ? err.message : String(err);
 }
-var fieldsOf = (ctx) => (boId3) => ctx.metadata.fields(boId3);
+var fieldsOf2 = (ctx) => (boId3) => ctx.metadata.fields(boId3);
 async function fetchRecords(ctx, input) {
   const res = await ctx.apiExecutor.sendRequest(-1, "ScanAndProcess.FetchRecords", input);
   return res.output_content.records;
@@ -41072,7 +42284,7 @@ async function getState4(data, ctx) {
     })(),
     scheduling_exports.loadSchedulingItems(ids, data.record, {
       fetchRecords: (input) => fetchRecords(ctx, input),
-      fields: fieldsOf(ctx)
+      fields: fieldsOf2(ctx)
     })
   ]);
   if (session.status === "fulfilled") state.session = session.value;
@@ -41458,7 +42670,7 @@ var scheduling = {
 };
 
 // .path-cli/src/pathway-runner/surfaces/send-email.ts
-import { existsSync as existsSync7, readFileSync as readFileSync5 } from "fs";
+import { existsSync as existsSync7, readFileSync as readFileSync6 } from "fs";
 import { isAbsolute as isAbsolute2, resolve as resolve7 } from "path";
 var ACCEPTED2 = ["to", "cc", "bcc", "subject", "body", "body file", "remove upload"];
 var stateKey5 = (ctx) => `send-email:${ctx.stepId}`;
@@ -41606,7 +42818,7 @@ async function applyInput5(data, input, ctx) {
       case "body file": {
         const path = isAbsolute2(value) ? value : resolve7(ctx.cwd, value);
         if (!existsSync7(path)) throw new SurfaceInputError(`File not found: ${value}`);
-        form.body = contentWithTokens(bodyHtml(readFileSync5(path, "utf8")), form.body);
+        form.body = contentWithTokens(bodyHtml(readFileSync6(path, "utf8")), form.body);
         break;
       }
       case "remove upload": {
@@ -41728,7 +42940,7 @@ var sendEmail = {
 };
 
 // .path-cli/src/pathway-runner/surfaces/edit-document.ts
-import { existsSync as existsSync8, readFileSync as readFileSync6 } from "fs";
+import { existsSync as existsSync8, readFileSync as readFileSync7 } from "fs";
 import { isAbsolute as isAbsolute3, resolve as resolve8 } from "path";
 
 // utils/html-document-template/html-template-source.ts
@@ -41779,8 +42991,8 @@ var PAGE_KEYS = [
 var SUBMIT_KEYS = ["body", "body file", "format", "file name", "comment", ...PAGE_KEYS];
 var PAGE_SIZES = [...Object.keys(PAGE_SIZE_INCHES), PageSizes.Custom];
 function chosenPage(data, input) {
-  const current = data.source.page;
-  const portrait = portraitPageInches(current);
+  const current2 = data.source.page;
+  const portrait = portraitPageInches(current2);
   const inches = (key, fallback, min, max) => {
     const raw = getSet(input, key)?.trim();
     if (raw === void 0) return fallback;
@@ -41794,21 +43006,21 @@ function chosenPage(data, input) {
   if (rawSize !== void 0 && !PAGE_SIZES.includes(rawSize)) {
     throw new SurfaceInputError(`Unknown size "${rawSize}" \u2014 use ${PAGE_SIZES.join(", ")}`);
   }
-  const size = rawSize ?? current.size;
+  const size = rawSize ?? current2.size;
   const rawOrientation = getSet(input, "orientation")?.trim().toLowerCase();
   if (rawOrientation !== void 0 && rawOrientation !== "portrait" && rawOrientation !== "landscape") {
     throw new SurfaceInputError(`Unknown orientation "${rawOrientation}" \u2014 use portrait or landscape`);
   }
   const page = {
     size,
-    orientation: rawOrientation ?? current.orientation,
+    orientation: rawOrientation ?? current2.orientation,
     margins: {
-      top: inches("margin top", current.margins.top, 0, 4),
-      right: inches("margin right", current.margins.right, 0, 4),
-      bottom: inches("margin bottom", current.margins.bottom, 0, 4),
-      left: inches("margin left", current.margins.left, 0, 4),
-      header: inches("header distance", headerFooterDistanceInches(current, "header"), 0, 4),
-      footer: inches("footer distance", headerFooterDistanceInches(current, "footer"), 0, 4)
+      top: inches("margin top", current2.margins.top, 0, 4),
+      right: inches("margin right", current2.margins.right, 0, 4),
+      bottom: inches("margin bottom", current2.margins.bottom, 0, 4),
+      left: inches("margin left", current2.margins.left, 0, 4),
+      header: inches("header distance", headerFooterDistanceInches(current2, "header"), 0, 4),
+      footer: inches("footer distance", headerFooterDistanceInches(current2, "footer"), 0, 4)
     }
   };
   if (size === PageSizes.Custom) {
@@ -41839,7 +43051,7 @@ function editedBody(data, input, ctx) {
   if (file !== void 0) {
     const path = isAbsolute3(file) ? file : resolve8(ctx.cwd, file);
     if (!existsSync8(path)) throw new SurfaceInputError(`File not found: ${file}`);
-    return readFileSync6(path, "utf8");
+    return readFileSync7(path, "utf8");
   }
   return getSet(input, "body") ?? data.source.body;
 }
@@ -41928,177 +43140,6 @@ var editDocumentFromTemplate = {
   }
 };
 
-// .path-cli/src/pathway-runner/surfaces/record-form.ts
-async function buildEditForm(record2, selection, metadata) {
-  const fields = (await metadata.fields(record2.business_object_id)).filter((f) => !f.is_hidden);
-  const ordered = orderBySelection(fields, selection);
-  const form = [];
-  for (const field of ordered) {
-    if (!isEditableField(field)) continue;
-    const entry = selection?.find((e) => e.field_id === field.id);
-    if (selection !== null && !entry) continue;
-    form.push({
-      field,
-      required: !!field.is_required || !!entry?.required,
-      allowList: entry?.select_options ?? [],
-      value: coerceFieldValue(field, record2.fields?.[String(field.id)])
-    });
-  }
-  return form;
-}
-async function buildCreateForm(boId3, selection, settled, metadata) {
-  const fields = (await metadata.fields(boId3)).filter((f) => !f.is_hidden && f.is_primary_object !== false);
-  const ordered = orderBySelection(fields, selection);
-  const inlineTags = await inlineTagFields(fields, settled, metadata);
-  const form = [];
-  for (const field of ordered) {
-    const tag = inlineTags.get(field.id);
-    if (tag) {
-      form.push({ field, required: true, allowList: [], value: null, tagGroupId: tag.groupId, tagOptions: tag.options });
-      continue;
-    }
-    if (!isEditableField(field)) continue;
-    const entry = selection?.find((e) => e.field_id === field.id);
-    if (selection !== null && !entry) continue;
-    form.push({
-      field,
-      required: !!field.is_required || !!entry?.required,
-      allowList: entry?.select_options ?? [],
-      value: coerceFieldValue(field, field.default_value ?? null)
-    });
-  }
-  return form;
-}
-function orderBySelection(fields, selection) {
-  if (selection === null) return fields;
-  const index = (id) => {
-    const i = selection.findIndex((e) => e.field_id === id);
-    return i === -1 ? Infinity : i;
-  };
-  return [...fields].sort((a, b) => index(a.id) - index(b.id));
-}
-async function inlineTagFields(fields, settled, metadata) {
-  const candidates = fields.filter(
-    (f) => f.field_type === FieldTypes3.Tag && f.tag_group_id != null && f.multi_tag_ui === true
-  );
-  const result = /* @__PURE__ */ new Map();
-  if (!candidates.length) return result;
-  const [user, groups] = await Promise.all([
-    metadata.currentUser(),
-    metadata.client.get("/v1/tag-groups", { all: "true", active: "true" })
-  ]);
-  const activeGroups = new Set(
-    (Array.isArray(groups) ? groups : groups.items ?? []).map(
-      (g) => Number(g.id)
-    )
-  );
-  const byGroup = /* @__PURE__ */ new Map();
-  for (const userTag of user.tags ?? []) {
-    const tag = userTag.tag;
-    if (!tag?.is_active) continue;
-    const list3 = byGroup.get(Number(tag.tag_group_id)) ?? [];
-    if (!list3.some((t) => t.tag_id === Number(tag.id))) list3.push({ tag_id: Number(tag.id), name: tag.name });
-    byGroup.set(Number(tag.tag_group_id), list3);
-  }
-  const settledGroups = new Set(settled.map((c) => Number(c.tag_group_id)));
-  for (const field of candidates) {
-    const groupId = Number(field.tag_group_id);
-    if (settledGroups.has(groupId) || !activeGroups.has(groupId)) continue;
-    const options = byGroup.get(groupId) ?? [];
-    if (options.length > 1) result.set(field.id, { groupId, options });
-  }
-  return result;
-}
-async function applyFormInput(form, input, metadata) {
-  for (const [key, raw] of input.set) {
-    const field = findField(
-      form.map((f) => f.field),
-      key
-    );
-    const entry = field && form.find((f) => f.field.id === field.id);
-    if (!entry) {
-      throw new SurfaceInputError(
-        `"${key}" isn't an editable field on this form. Editable: ${form.map((f) => f.field.name).join(", ") || "(none)"}`
-      );
-    }
-    if (entry.tagOptions) {
-      const tag = entry.tagOptions.find((t) => t.name.toLowerCase() === raw.trim().toLowerCase());
-      if (!tag) {
-        throw new SurfaceInputError(
-          `"${raw}" isn't one of your tags for ${entry.field.name}. Choose: ${entry.tagOptions.map((t) => t.name).join(", ")}`
-        );
-      }
-      entry.value = tag.name;
-      continue;
-    }
-    try {
-      entry.value = await parseFieldInput(entry.field, raw, { metadata, allowList: entry.allowList });
-    } catch (err) {
-      if (err instanceof FieldInputError) throw new SurfaceInputError(err.message);
-      throw err;
-    }
-  }
-}
-function validateForm(form) {
-  const errors = form.map((f) => validateFieldValue(f.field, f.value, f.required)).filter((e) => !!e);
-  if (errors.length) throw new SurfaceInputError(errors.join("; "));
-}
-function formPayload(form) {
-  const fields = [];
-  const tag_selections = [];
-  for (const entry of form) {
-    if (entry.tagOptions) {
-      const tag = entry.tagOptions.find((t) => t.name === entry.value);
-      if (tag && entry.tagGroupId != null) tag_selections.push({ tag_group_id: entry.tagGroupId, tag_id: tag.tag_id });
-      continue;
-    }
-    const picked = entry.field.field_type === FieldTypes3.Selection || entry.field.field_type === FieldTypes3.Tag;
-    fields.push({
-      field_id: entry.field.id,
-      value: typeof entry.value === "string" && !picked ? entry.value.trim() : entry.value
-    });
-  }
-  return { fields, tag_selections };
-}
-async function describeForm(form, metadata) {
-  const lines = [];
-  const detail = [];
-  for (const entry of form) {
-    const f = entry.field;
-    let options;
-    if (entry.tagOptions) {
-      options = entry.tagOptions.map((t) => t.name);
-    } else if (f.field_type === FieldTypes3.Selection) {
-      options = await selectionOptions(f, metadata, entry.allowList).catch(() => void 0);
-    }
-    const type = entry.tagOptions ? "Tag" : fieldTypeLabel(f);
-    const flags = [type, entry.required ? "required" : ""].filter(Boolean).join(", ");
-    const current = entry.tagOptions ? entry.value ? String(entry.value) : "(choose)" : describeValue(f, entry.value);
-    lines.push(`  [${f.id}] ${f.name} (${flags}) = ${current}`);
-    if (options) {
-      const shown = options.slice(0, 25).map(quote2).join(", ");
-      lines.push(`        options: ${shown}${options.length > 25 ? `, \u2026 (${options.length} total)` : ""}`);
-    }
-    detail.push({
-      field_id: f.id,
-      name: f.name,
-      type: f.field_type,
-      required: entry.required,
-      value: entry.value,
-      display: current,
-      ...options ? { options } : {},
-      ...entry.tagOptions ? { tag_group_id: entry.tagGroupId } : {}
-    });
-  }
-  return { lines, detail };
-}
-function exampleSet(form) {
-  const first = form.find((f) => !f.tagOptions) ?? form[0];
-  if (!first) return "";
-  const sample = first.field.field_type === FieldTypes3.DateAndTime ? "2026-10-15" : first.field.field_type === FieldTypes3.Boolean ? "true" : "<value>";
-  return `--set ${quote2(`${first.field.name}=${sample}`)}`;
-}
-
 // .path-cli/src/pathway-runner/surfaces/records.ts
 var editRecord = {
   mirrored: true,
@@ -42160,20 +43201,22 @@ var editRecordField = {
   async view(data, ctx) {
     const field = await editFieldMeta(data, ctx);
     const required2 = !!data.field_config.is_required || !!field.is_required;
-    const current = data.record.fields?.[String(field.id)];
+    const current2 = data.record.fields?.[String(field.id)];
     const lines = [`  on ${await recordLabel(data.record, ctx.metadata)}`];
     const detail = {
       field_id: field.id,
       name: field.name,
       type: field.field_type,
       required: required2,
-      value: current ?? null
+      value: current2 ?? null,
+      info: infoText(field.info)
     };
     if (field.field_type === FieldTypes3.Appointment) {
       const editor = await appointmentEditor(data, field, ctx);
       const v = editor.value;
       const calendarName = (id) => id == null ? null : editor.calendars.find((c) => c.id === id)?.name ?? `calendar ${id}`;
-      lines.push(`  ${field.name} (Appointment${required2 ? ", required" : ""}) = ${formatFieldValue(field, current) || "(not set)"}`);
+      lines.push(`  ${field.name} (Appointment${required2 ? ", required" : ""}) = ${formatFieldValue(field, current2) || "(not set)"}`);
+      lines.push(...fieldInfoLines(field, "    "));
       if (editor.event) lines.push(`  event ${editor.event.id} on ${quote2(calendarName(editor.event.calendar_id) ?? "")}`);
       lines.push(
         `  editor: ${describeWhen(v, editor.zones)}${editor.scheduled ? "" : " (default \u2014 nothing scheduled yet)"} \xB7 calendar ${v.calendar_id == null ? "(choose one)" : quote2(calendarName(v.calendar_id))} \xB7 title ${quote2(v.title ?? "")}`
@@ -42197,7 +43240,8 @@ var editRecordField = {
       };
     }
     const allow = data.select_options_config?.selection_options ?? [];
-    lines.push(`  ${field.name} (${fieldTypeLabel(field)}${required2 ? ", required" : ""}) = ${describeValue(field, current)}`);
+    lines.push(`  ${field.name} (${fieldTypeLabel(field)}${required2 ? ", required" : ""}) = ${describeValue(field, current2)}`);
+    lines.push(...fieldInfoLines(field, "    "));
     if (field.field_type === FieldTypes3.Selection) {
       const options = await selectionOptions(field, ctx.metadata, allow);
       lines.push(`  options: ${options.map(quote2).join(", ")}`);
@@ -42257,20 +43301,20 @@ var editRecordField = {
   }
 };
 async function appointmentEditor(data, field, ctx) {
-  const current = data.record.fields?.[String(field.id)] ?? null;
-  const scheduled = isScheduled(current);
+  const current2 = data.record.fields?.[String(field.id)] ?? null;
+  const scheduled = isScheduled(current2);
   const [zones, event, calendars2, title, access] = await Promise.all([
     appointmentZones(ctx.metadata),
     data.record.id ? fieldEvent(ctx.client, data.record.id, field.id).catch(() => null) : Promise.resolve(null),
     listCalendars(ctx.client).catch(() => []),
-    current?.title ? Promise.resolve(current.title) : appointmentTitle(field, data.record, ctx.metadata),
+    current2?.title ? Promise.resolve(current2.title) : appointmentTitle(field, data.record, ctx.metadata),
     UserAccess.load(ctx.client).catch(() => null)
   ]);
   const value = {
-    ...scheduled ? whenOf(current) : defaultWhen(zones),
-    calendar_id: current?.calendar_id ?? null,
+    ...scheduled ? whenOf(current2) : defaultWhen(zones),
+    calendar_id: current2?.calendar_id ?? null,
     title,
-    color: current?.color ?? null,
+    color: current2?.color ?? null,
     location: event?.location ?? null,
     description: event?.description ?? null
   };
@@ -42659,7 +43703,7 @@ function slim(r, relIds2 = []) {
 async function settings(ctx) {
   return await ctx.metadata.dynamicSettings();
 }
-async function fieldsOf2(ctx, boId3) {
+async function fieldsOf3(ctx, boId3) {
   return await ctx.metadata.fields(boId3);
 }
 async function canMark2(ctx) {
@@ -42911,7 +43955,7 @@ async function open(data, ctx) {
   }
   state.ids = ids;
   try {
-    const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", StopReceiving.createSession(ids, await fieldsOf2(ctx, ids.sessionBoId), data.record.id));
+    const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", StopReceiving.createSession(ids, await fieldsOf3(ctx, ids.sessionBoId), data.record.id));
     state.session = record2;
   } catch (e) {
     state.error = `Could not start the session (${e.message})`;
@@ -42924,7 +43968,7 @@ async function open(data, ctx) {
       shipmentProducts.map((sp) => send(ctx, "ScanAndProcess.FetchRecords", StopReceiving.trackingItemsRequest(ids, sp.id)))
     );
     const tiBoId = scan_sessions_exports.firstRecordBoId(tiResults);
-    const idFid = scan_sessions_exports.identifierFieldId(tiBoId !== null ? await fieldsOf2(ctx, tiBoId) : []);
+    const idFid = scan_sessions_exports.identifierFieldId(tiBoId !== null ? await fieldsOf3(ctx, tiBoId) : []);
     const split = StopReceiving.splitTrackingItems(tiResults, ids, idFid);
     const toItem2 = (i) => ({ ...i, record: slim(i.record), actionId: null, actionKind: null });
     for (const i of [...split.pending, ...split.done]) state.items[i.record.id] = toItem2(i);
@@ -43094,7 +44138,7 @@ async function open2(data, ctx) {
   }
   state.ids = ids;
   try {
-    const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", PoReceiving.createSession(ids, await fieldsOf2(ctx, ids.sessionBoId), data.record.id));
+    const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", PoReceiving.createSession(ids, await fieldsOf3(ctx, ids.sessionBoId), data.record.id));
     state.session = record2;
   } catch (e) {
     state.error = `Could not start the session (${e.message})`;
@@ -43104,14 +44148,14 @@ async function open2(data, ctx) {
     const productRes = await send(ctx, "ScanAndProcess.FetchRecords", PoReceiving.productsRequest(ids, data.record.id));
     const activeProducts = productRes.records.filter((r) => !r.archived_on);
     const prodBoId = activeProducts[0]?.business_object_id ?? null;
-    const prodFields = prodBoId !== null ? await fieldsOf2(ctx, prodBoId) : [];
+    const prodFields = prodBoId !== null ? await fieldsOf3(ctx, prodBoId) : [];
     const { om, nonOm } = PoReceiving.splitProducts(activeProducts, ids, PoReceiving.notTrackedFieldId(ids, prodFields));
     const spResults = await Promise.all(om.map((p) => send(ctx, "ScanAndProcess.FetchRecords", PoReceiving.shipmentProductsRequest(ids, p.id))));
     const tiResults = await Promise.all(
       PoReceiving.uniqueShipmentProductIds(spResults).map((spId) => send(ctx, "ScanAndProcess.FetchRecords", PoReceiving.trackingItemsRequest(ids, spId)))
     );
     const tiBoId = tiResults.flatMap((r) => r.records)[0]?.business_object_id ?? null;
-    const tiIdFid = scan_sessions_exports.identifierFieldId(tiBoId !== null ? await fieldsOf2(ctx, tiBoId) : []);
+    const tiIdFid = scan_sessions_exports.identifierFieldId(tiBoId !== null ? await fieldsOf3(ctx, tiBoId) : []);
     const split = PoReceiving.splitItems(tiResults, nonOm, ids, tiIdFid, scan_sessions_exports.identifierFieldId(prodFields));
     const toItem2 = (i) => {
       if (i.kind === "tracking") return { ...i, record: slim(i.record), actionId: null };
@@ -43363,7 +44407,7 @@ async function load(ctx, ids) {
   const index = await scan_sessions_exports.Pallets.loadIndex(
     ids,
     fetcher(ctx, ids),
-    fieldsOf2(ctx, ids.binBoId).then((f) => scan_sessions_exports.identifierFieldId(f))
+    fieldsOf3(ctx, ids.binBoId).then((f) => scan_sessions_exports.identifierFieldId(f))
   );
   return { ids, pallets: [.../* @__PURE__ */ new Set([...index.byBarcode.values(), ...index.byBinItemId.values()])] };
 }
@@ -43404,8 +44448,8 @@ async function fetchAppointmentItems(ids, apptId, ctx, rels2) {
   const tiBoId = tiRes.records[0]?.business_object_id ?? null;
   const aiBoId = aiRes.records[0]?.business_object_id ?? null;
   const [tiFields, aiFields] = await Promise.all([
-    tiBoId !== null ? fieldsOf2(ctx, tiBoId) : Promise.resolve([]),
-    aiBoId !== null ? fieldsOf2(ctx, aiBoId) : Promise.resolve([])
+    tiBoId !== null ? fieldsOf3(ctx, tiBoId) : Promise.resolve([]),
+    aiBoId !== null ? fieldsOf3(ctx, aiBoId) : Promise.resolve([])
   ]);
   const lists3 = Loading.appointmentLists(
     tiRes.records,
@@ -43444,7 +44488,7 @@ async function open3(data, ctx) {
   }
   state.ids = ids;
   try {
-    const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", Loading.createSession(ids, await fieldsOf2(ctx, ids.sessionBoId), data.record.id));
+    const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", Loading.createSession(ids, await fieldsOf3(ctx, ids.sessionBoId), data.record.id));
     state.session = record2;
     state.sessionByAppointment[data.record.id] = record2.id;
   } catch (e) {
@@ -43526,20 +44570,20 @@ async function scanFromOtherAppointment(state, code, ctx) {
       const { record: child } = await send(
         ctx,
         "ScanAndProcess.ApplyScanAction",
-        Loading.childSessionRequest(ids, await fieldsOf2(ctx, ids.sessionBoId), appt.id, parentId)
+        Loading.childSessionRequest(ids, await fieldsOf3(ctx, ids.sessionBoId), appt.id, parentId)
       );
       if (!child) throw new Error(Loading.CHILD_SESSION_FAILED);
       state.sessionByAppointment[appt.id] = child.id;
       appended = true;
       say(state, `Pulled in appointment ${appt.id} (child session ${child.id})`);
-      const [apptFields, tiFields] = await Promise.all([fieldsOf2(ctx, appt.business_object_id), fieldsOf2(ctx, match.business_object_id)]);
+      const [apptFields, tiFields] = await Promise.all([fieldsOf3(ctx, appt.business_object_id), fieldsOf3(ctx, match.business_object_id)]);
       const apptLabel = scan_sessions_exports.fieldText(appt, scan_sessions_exports.identifierFieldId(apptFields), appt.id);
       state.appointmentLabels = { ...state.appointmentLabels, [appt.id]: apptLabel };
       pulledIn = Loading.otherAppointmentMessage(scan_sessions_exports.fieldText(match, scan_sessions_exports.identifierFieldId(tiFields), code), apptLabel);
     }
     let entry = view2(state).pendingTracking.find((i) => i.record.id === match.id);
     if (!entry) {
-      const tiFields = await fieldsOf2(ctx, match.business_object_id);
+      const tiFields = await fieldsOf3(ctx, match.business_object_id);
       const built = toItem(
         Loading.trackingItem(match, ids, scan_sessions_exports.identifierFieldId(tiFields), Loading.binNameField(ids, tiFields), appt.id),
         rels(state)
@@ -43571,7 +44615,7 @@ async function scanFromOtherAppointment(state, code, ctx) {
 async function scanPallet(state, pallet, code, ctx) {
   const { ids } = requireSession3(state);
   const p = state.pallets;
-  const tiIdFid = scan_sessions_exports.identifierFieldId(await fieldsOf2(ctx, ids.tiBoId));
+  const tiIdFid = scan_sessions_exports.identifierFieldId(await fieldsOf3(ctx, ids.tiBoId));
   const evaluate = () => {
     const v2 = view2(state);
     const listed = new Set([...v2.pendingTracking, ...v2.doneTracking].map((i) => i.record.id));
@@ -43816,7 +44860,7 @@ async function open4(data, ctx) {
   }
   state.ids = ids;
   try {
-    const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", Delivery.createSession(ids, await fieldsOf2(ctx, ids.sessionBoId), data.record.id));
+    const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", Delivery.createSession(ids, await fieldsOf3(ctx, ids.sessionBoId), data.record.id));
     state.session = record2;
   } catch (e) {
     state.error = `Could not start the session (${e.message})`;
@@ -43831,9 +44875,9 @@ async function open4(data, ctx) {
     const tiBoId = tiRes.records[0]?.business_object_id ?? null;
     const aiBoId = aiRes.records[0]?.business_object_id ?? null;
     const [tiFields, aiFields, apptFields] = await Promise.all([
-      tiBoId !== null ? fieldsOf2(ctx, tiBoId) : Promise.resolve([]),
-      aiBoId !== null ? fieldsOf2(ctx, aiBoId) : Promise.resolve([]),
-      data.record.business_object_id ? fieldsOf2(ctx, data.record.business_object_id) : Promise.resolve([])
+      tiBoId !== null ? fieldsOf3(ctx, tiBoId) : Promise.resolve([]),
+      aiBoId !== null ? fieldsOf3(ctx, aiBoId) : Promise.resolve([]),
+      data.record.business_object_id ? fieldsOf3(ctx, data.record.business_object_id) : Promise.resolve([])
     ]);
     const pickup = Delivery.isCustomerPickup(apptFields, data.record);
     const lists3 = Delivery.lists(
@@ -43890,7 +44934,7 @@ async function deliver(state, entry, ctx, barcode) {
 async function scanPallet2(state, pallet, code, appointmentId, ctx) {
   const { ids, sid } = requireSession4(state);
   const p = state.pallets;
-  const tiIdFid = scan_sessions_exports.identifierFieldId(await fieldsOf2(ctx, pallet.trackingItems[0]?.business_object_id ?? p.ids.tiBoId));
+  const tiIdFid = scan_sessions_exports.identifierFieldId(await fieldsOf3(ctx, pallet.trackingItems[0]?.business_object_id ?? p.ids.tiBoId));
   const evaluate = () => {
     const v2 = view3(state);
     const listed = new Set([...v2.pendingTracking, ...v2.doneTracking].map((i) => i.record.id));
@@ -44096,7 +45140,7 @@ var deliveryMode = {
 // .path-cli/src/pathway-runner/surfaces/scan-sessions/bins.ts
 var { BinCheckIn, BinCheckOut } = scan_sessions_exports;
 async function binLabelOf(bin, ctx) {
-  return scan_sessions_exports.fieldText(bin, scan_sessions_exports.identifierFieldId(await fieldsOf2(ctx, bin.business_object_id)), bin.id);
+  return scan_sessions_exports.fieldText(bin, scan_sessions_exports.identifierFieldId(await fieldsOf3(ctx, bin.business_object_id)), bin.id);
 }
 async function closeBinSession(state, cc, ctx) {
   const post = state.session ? scan_sessions_exports.finishRequest(cc, state.session) : null;
@@ -44114,7 +45158,7 @@ async function closeBinSession(state, cc, ctx) {
 }
 async function createBinSession(state, ctx, build, sessionBoId) {
   try {
-    const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", build(await fieldsOf2(ctx, sessionBoId)));
+    const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", build(await fieldsOf3(ctx, sessionBoId)));
     state.session = record2;
     return true;
   } catch (e) {
@@ -44135,7 +45179,7 @@ async function loadCheckInBin(state, ids, ctx) {
     const idFids = /* @__PURE__ */ new Map();
     const binNames = /* @__PURE__ */ new Map();
     for (const bo of new Set(tiResults.flatMap((r) => r.records.filter((x) => !x.archived_on).map((x) => x.business_object_id)))) {
-      const fields = await fieldsOf2(ctx, bo);
+      const fields = await fieldsOf3(ctx, bo);
       idFids.set(bo, scan_sessions_exports.identifierFieldId(fields));
       binNames.set(bo, BinCheckIn.binNameField(ids, fields));
     }
@@ -44235,7 +45279,7 @@ async function scanIn(state, code, cc, ctx) {
       return;
     }
     const { record: record2 } = await send(ctx, "ScanAndProcess.ApplyScanAction", BinCheckIn.checkInRequest(ids, sid, match));
-    const fields = await fieldsOf2(ctx, match.business_object_id);
+    const fields = await fieldsOf3(ctx, match.business_object_id);
     const entry = {
       ...BinCheckIn.item(match, ids, scan_sessions_exports.identifierFieldId(fields), BinCheckIn.binNameField(ids, fields), true),
       actionId: record2?.id ?? null
@@ -44345,7 +45389,7 @@ async function loadCheckOutBin(state, ids, ctx) {
     const binItems2 = binItemRes.records.filter((r) => !r.archived_on);
     const tiResults = await Promise.all(binItems2.map((bi) => send(ctx, "ScanAndProcess.FetchRecords", BinCheckOut.trackingItemsRequest(ids, bi.id))));
     const tiBoId = BinCheckOut.trackingBoId(tiResults);
-    const idFid = scan_sessions_exports.identifierFieldId(tiBoId !== null ? await fieldsOf2(ctx, tiBoId) : []);
+    const idFid = scan_sessions_exports.identifierFieldId(tiBoId !== null ? await fieldsOf3(ctx, tiBoId) : []);
     for (const i of BinCheckOut.binItems(tiResults, ids, idFid)) {
       state.items[i.record.id] = { ...i, record: slim(i.record), actionId: null };
       state.inBin.push(i.record.id);
@@ -44551,9 +45595,9 @@ function handlerFor(surface) {
 }
 
 // .path-cli/src/pathway-runner/scenario.ts
-import { readFileSync as readFileSync7 } from "fs";
+import { readFileSync as readFileSync8 } from "fs";
 function loadScenario(source) {
-  const text = source.trim().startsWith("[") ? source : readFileSync7(source, "utf-8");
+  const text = source.trim().startsWith("[") ? source : readFileSync8(source, "utf-8");
   const parsed = JSON.parse(text);
   if (!Array.isArray(parsed)) throw new Error("A scenario must be a JSON array of answers");
   return parsed;
@@ -44587,6 +45631,41 @@ function answerToInput(answer) {
   return input;
 }
 
+// .path-cli/src/pathway-runner/present.ts
+function pathwayJson(run) {
+  return { id: run.pathwayId, name: run.pathwayName, info: infoText(run.pathwayInfo) };
+}
+function pathwayInfoLines(info) {
+  return infoLines(info, { indent: "  ", label: "Pathway info" });
+}
+function waitingForJson(run, view4) {
+  const p = run.pending;
+  return {
+    surface: p.surface,
+    step_id: p.stepId,
+    step_title: p.stepTitle,
+    step_type: p.stepType,
+    step_info: infoText(p.stepInfo),
+    heading: view4.heading,
+    text: view4.lines,
+    actions: view4.actions,
+    detail: view4.detail
+  };
+}
+function waitingScreenLines(view4, run, inputError) {
+  const p = run.pending;
+  const lines = [
+    "",
+    `\u2501\u2501 Waiting for input \xB7 step "${p.stepTitle}" [${p.stepType}] \xB7 screen: ${p.surface} \u2501\u2501`,
+    ...infoLines(p.stepInfo, { indent: "  ", label: "Step info" }),
+    view4.heading,
+    ...view4.lines
+  ];
+  if (inputError) lines.push("", `\u2717 ${inputError}`);
+  lines.push("", "Next:", ...view4.actions.map((a) => `  ${a}`), "  pathway-run cancel", `(run ${run.runId})`);
+  return lines;
+}
+
 // .path-cli/src/pathway-runner/runner.ts
 var PathwayRunner = class {
   constructor(opts) {
@@ -44614,6 +45693,7 @@ var PathwayRunner = class {
       userId: user.id ?? null,
       pathwayId: pathway2.id,
       pathwayName: pathway2.name,
+      pathwayInfo: infoText(pathway2.info),
       startingRecordId: startingRecord?.id ?? null,
       taskId: taskId ?? null,
       mode: params.mode,
@@ -44628,6 +45708,7 @@ var PathwayRunner = class {
       surfaceState: {},
       stats: { interactions: 0, requests: 0, failedRequests: 0 }
     };
+    useRunInfoScope(run);
     const session = await this.#session(run, metadata);
     await preloadPathwayFields(metadata, pathway2, startingRecord?.business_object_id);
     this.#indexSteps(session, pathway2);
@@ -44635,6 +45716,7 @@ var PathwayRunner = class {
       kind: "started",
       pathway_id: pathway2.id,
       pathway_name: pathway2.name,
+      pathway_info: run.pathwayInfo,
       record_id: run.startingRecordId,
       task_id: run.taskId,
       account_id: config2.accountId,
@@ -44657,8 +45739,9 @@ var PathwayRunner = class {
       });
     }
     out.line(`Pathway "${pathway2.name}" (${pathway2.id}) \u2014 run ${runId} \xB7 ${params.mode} mode \xB7 launched from ${params.point} \xB7 as ${user.email ?? user.id}`);
+    for (const line of pathwayInfoLines(run.pathwayInfo)) out.line(line);
     if (startingRecord) out.line(`Starting record: ${startingRecord.id}`);
-    out.event({ kind: "started", run_id: runId, pathway_id: pathway2.id, record_id: run.startingRecordId });
+    out.event({ kind: "started", run_id: runId, pathway_id: pathway2.id, pathway_info: run.pathwayInfo, record_id: run.startingRecordId });
     const controller = new AbortController();
     const gen = runWorkflow(
       { apiExecutor: session.apiExecutor, injector: session.services.locator, signal: controller.signal },
@@ -44759,12 +45842,26 @@ var PathwayRunner = class {
   async show(run) {
     if (run.status !== "paused" || !run.pending) return null;
     const metadata = new RunMetadata(this.opts.client, run.accountId);
+    await this.#backfillInfo(run, metadata);
     const session = await this.#session(run, metadata);
     const ctx = this.#surfaceContext(session, run.pending);
     const view4 = await handlerFor(run.pending.surface).view(run.pending.data, ctx);
     run.surfaceState = ctx.state;
     saveRun(run);
     return view4;
+  }
+  /** Runs saved before designer info existed: read the pathway's and the waiting step's info now. */
+  async #backfillInfo(run, metadata) {
+    if (run.pathwayInfo === void 0) {
+      const short = (await metadata.pathways().catch(() => [])).find((p) => p.id === run.pathwayId);
+      if (short) run.pathwayInfo = infoText(short.info);
+    }
+    const pending2 = run.pending;
+    if (pending2 && pending2.stepInfo === void 0) {
+      const pathway2 = await metadata.pathway(pending2.pathwayId).catch(() => void 0);
+      const step = pathway2?.steps.find((s) => String(s.id) === String(pending2.stepId));
+      if (step) pending2.stepInfo = infoText(step.info);
+    }
   }
   #requirePaused(run) {
     if (run.status !== "paused" || !run.pending || !run.snapshot) {
@@ -44973,13 +46070,12 @@ var PathwayRunner = class {
   // plumbing
   // -------------------------------------------------------------------------
   async #session(run, metadata) {
+    useRunInfoScope(run);
     let session;
-    const services = buildServices(
-      metadata,
-      this.opts.config,
-      join4(runDir(run.runId), "downloads"),
-      (pathway2) => this.#indexSteps(session, pathway2)
-    );
+    const services = buildServices(metadata, this.opts.config, join4(runDir(run.runId), "downloads"), (pathway2) => {
+      this.#indexSteps(session, pathway2);
+      this.#announceSubPathway(session, pathway2);
+    });
     session = {
       run,
       metadata,
@@ -45018,6 +46114,16 @@ var PathwayRunner = class {
       });
     });
   }
+  /** A Launch Pathway step starts a child pathway: name it with its designer info. */
+  #announceSubPathway(session, pathway2) {
+    const info = infoText(pathway2.info);
+    if (info) {
+      this.opts.out.line(`\u25B8 Sub-pathway "${pathway2.name ?? pathway2.id}" (${pathway2.id}) starts`);
+      for (const line of pathwayInfoLines(info)) this.opts.out.line(line);
+    }
+    this.opts.out.event({ kind: "sub-pathway", pathway_id: pathway2.id, pathway_name: pathway2.name ?? null, pathway_info: info });
+    appendLog(session.run.runId, { kind: "sub-pathway", pathway_id: pathway2.id, pathway_name: pathway2.name ?? null, pathway_info: info });
+  }
   /** Prints "▸ Step 3: Edit job [edit_record]" the first time a step shows activity. */
   #announceStep(session, stepId, resolvedTitle) {
     const key = String(stepId);
@@ -45052,6 +46158,7 @@ var PathwayRunner = class {
       stepId: event.stepId,
       stepTitle: merged || stepTitleText(step?.title) || event.surface,
       stepType: step?.step_type ?? "unknown",
+      stepInfo: infoText(step?.info),
       turn: event.turn,
       depth: state.depth
     };
@@ -45105,14 +46212,17 @@ var StrictPauseError = class extends Error {
     this.run = run;
   }
 };
+function useRunInfoScope(run) {
+  currentInfoGate()?.useRunScope({ hashes: run.infoShown ??= [], save: (hashes) => saveRunInfoShown(run.runId, hashes) });
+}
 
 // .path-cli/src/pathway-runner/scenario-test.ts
-import { existsSync as existsSync9, readFileSync as readFileSync8, readdirSync as readdirSync2, statSync as statSync4 } from "fs";
+import { existsSync as existsSync9, readFileSync as readFileSync9, readdirSync as readdirSync2, statSync as statSync4 } from "fs";
 import { join as join5, resolve as resolve9 } from "path";
 function loadScenarioTests(paths, cwd) {
   const out = [];
   const addFile = (file) => {
-    const parsed = JSON.parse(readFileSync8(file, "utf-8"));
+    const parsed = JSON.parse(readFileSync9(file, "utf-8"));
     for (const test of Array.isArray(parsed) ? parsed : [parsed]) out.push({ file, test });
   };
   for (const p of paths) {
@@ -45219,8 +46329,8 @@ async function checkRecord(id, want, metadata, client) {
   if (want.milestones_include || want.milestones_exclude) {
     const milestones = await client.get(`/v1/business-objects/${record2.business_object_id}/workflows/milestones`);
     const list3 = Array.isArray(milestones) ? milestones : milestones.items ?? [];
-    const current = new Set(record2.milestones ?? []);
-    const names = list3.filter((m) => current.has(m.id)).map((m) => m.name);
+    const current2 = new Set(record2.milestones ?? []);
+    const names = list3.filter((m) => current2.has(m.id)).map((m) => m.name);
     for (const name of want.milestones_include ?? []) {
       add(`in milestone ${name}`, names.some((n) => n.toLowerCase() === name.toLowerCase()), `current: ${names.join(", ") || "(none)"}`);
     }
@@ -45409,7 +46519,7 @@ async function findPendingTask(client, recordId, name) {
 }
 
 // .path-cli/src/pathway-runner/save-test.ts
-import { dirname as dirname3, relative } from "path";
+import { dirname as dirname4, relative } from "path";
 var RECORD_PICKERS = /* @__PURE__ */ new Set(["lookup-record", "create-or-lookup", "relationship-lookup-record"]);
 var VIEW_ONLY_KEYS = /* @__PURE__ */ new Set(["row"]);
 async function buildTestFromRun(run, log, client, opts) {
@@ -45457,7 +46567,7 @@ function answersFromLog(log, mapId, outFile) {
     if (f.choice) answer.choice = f.choice;
     if (f.skip) answer.skip = true;
     if (f.data !== void 0) answer.data = f.data;
-    if (f.files.length) answer.files = f.files.map((p) => outFile ? relative(dirname3(outFile), p) || p : p);
+    if (f.files.length) answer.files = f.files.map((p) => outFile ? relative(dirname4(outFile), p) || p : p);
     if (f.select !== void 0) {
       const ids = RECORD_PICKERS.has(screen.surface) ? pickedRecordIds(reply) : [];
       answer.select = ids.length ? ids.map(mapId).join(",") : f.select;
@@ -45581,8 +46691,8 @@ function isSystemField(f) {
 }
 
 // .path-cli/src/commands/pathway-run.ts
-import { mkdirSync as mkdirSync6, writeFileSync as writeFileSync6 } from "fs";
-import { dirname as dirname4, resolve as resolvePath3 } from "path";
+import { mkdirSync as mkdirSync7, writeFileSync as writeFileSync7 } from "fs";
+import { dirname as dirname5, resolve as resolvePath3 } from "path";
 function collect(value, previous) {
   return [...previous, value];
 }
@@ -45631,20 +46741,7 @@ function inputFromOpts(opts) {
   return input;
 }
 function printView(view4, run, inputError) {
-  const p = run.pending;
-  console.log("");
-  console.log(`\u2501\u2501 Waiting for input \xB7 step "${p.stepTitle}" [${p.stepType}] \xB7 screen: ${p.surface} \u2501\u2501`);
-  console.log(view4.heading);
-  for (const line of view4.lines) console.log(line);
-  if (inputError) {
-    console.log("");
-    console.log(`\u2717 ${inputError}`);
-  }
-  console.log("");
-  console.log("Next:");
-  for (const action of view4.actions) console.log(`  ${action}`);
-  console.log("  pathway-run cancel");
-  console.log(`(run ${run.runId})`);
+  for (const line of waitingScreenLines(view4, run, inputError)) console.log(line);
 }
 function printOutcome(outcome, json, events) {
   const run = outcome.run;
@@ -45654,18 +46751,9 @@ function printOutcome(outcome, json, events) {
         {
           run_id: run.runId,
           status: run.status,
-          pathway: { id: run.pathwayId, name: run.pathwayName },
+          pathway: pathwayJson(run),
           ...outcome.kind === "paused" ? {
-            waiting_for: {
-              surface: run.pending.surface,
-              step_id: run.pending.stepId,
-              step_title: run.pending.stepTitle,
-              step_type: run.pending.stepType,
-              heading: outcome.view.heading,
-              text: outcome.view.lines,
-              actions: outcome.view.actions,
-              detail: outcome.view.detail
-            },
+            waiting_for: waitingForJson(run, outcome.view),
             ...outcome.inputError ? { input_error: outcome.inputError } : {}
           } : { outcome: run.outcome },
           stats: run.stats,
@@ -45849,12 +46937,24 @@ var showCommand = new Command("show").description("Show a run: the screen it is 
     const { runner } = ctx;
     const view4 = await runner.show(run);
     if (view4) {
-      if (json) console.log(JSON.stringify({ run_id: run.runId, status: run.status, pending: run.pending, view: view4 }, null, 2));
-      else printView(view4, run);
+      if (json) {
+        console.log(
+          JSON.stringify(
+            { run_id: run.runId, status: run.status, pathway: pathwayJson(run), pending: run.pending, waiting_for: waitingForJson(run, view4), view: view4 },
+            null,
+            2
+          )
+        );
+      } else {
+        console.log(`Pathway "${run.pathwayName}" (${run.pathwayId}) \u2014 run ${run.runId}`);
+        for (const line of pathwayInfoLines(run.pathwayInfo)) console.log(line);
+        printView(view4, run);
+      }
     } else if (json) {
       console.log(JSON.stringify(run, null, 2));
     } else {
       console.log(`Run ${run.runId}: "${run.pathwayName}" ${run.status}${run.outcome?.error ? ` \u2014 ${run.outcome.error.message}` : ""}`);
+      for (const line of pathwayInfoLines(run.pathwayInfo)) console.log(line);
     }
   } catch (err) {
     handleRunError(err, json);
@@ -45997,7 +47097,7 @@ var testCommand = new Command("test").description(
       }
       const test = resolveRefs({ ...rawTest, setup: void 0 }, refs, tag);
       for (const a of test.answers ?? []) {
-        if (a.files) a.files = a.files.map((f) => resolvePath3(dirname4(file), f));
+        if (a.files) a.files = a.files.map((f) => resolvePath3(dirname5(file), f));
       }
       let taskId;
       if (test.task !== void 0 && test.task !== null && test.task !== "") {
@@ -46120,8 +47220,8 @@ var saveTestCommand = new Command("save-test").description(
     const test = await buildTestFromRun(run, readLog(run.runId), ctx.client, { name: opts.name, copyStart: !!opts.copyStart, outFile });
     const text = JSON.stringify(test, null, 2) + "\n";
     if (outFile) {
-      mkdirSync6(dirname4(outFile), { recursive: true });
-      writeFileSync6(outFile, text);
+      mkdirSync7(dirname5(outFile), { recursive: true });
+      writeFileSync7(outFile, text);
       console.log(json ? JSON.stringify({ file: outFile, answers: test.answers?.length ?? 0 }) : `Saved test "${test.name}" to ${outFile} (${test.answers?.length ?? 0} answer(s)). Run it with: pathway-run test ${opts.out}`);
     } else {
       process.stdout.write(text);
@@ -46136,7 +47236,7 @@ var pathwayRunCommand = new Command("pathway-run").description(
 
 // .path-cli/src/commands/run-report.ts
 var runReportCommand = new Command("run-report").description(
-  "Run a report and print its rows (the web app's report view; in real-world mode only reports the acting user can open)"
+  `Run a report and print its rows (the web app's report view; in real-world mode only reports the acting user can open). Also gives the report's root business object {id, name, info} and each column's info \u2014 the info of the field the column shows (for a column through relationships, the end field's, with the relationships on the path and their info); count, milestone, step and calculated columns have none, a Time Between / Time Span column on one field has that field's. --json keeps the server's { rows, meta } and adds business_object and columns [{name, column_type, field_id?, relationship_path?, info}]; text output prints a "Business object info:" and a "Column info:" block under the rows (only what has info)`
 ).option("--report-id <id>", "Report ID").option("--report-name <name>", "Report name (resolved to ID)").option("--page <n>", "Page number", "1").option("--per-page <n>", "Rows per page", "50").option(
   "--user-filter <json>",
   `Runtime filters for the report's user-filterable columns, e.g. '[{"entity_id":12,"logic":"equal","values":["John"]}]'`
@@ -46166,18 +47266,68 @@ var runReportCommand = new Command("run-report").description(
     ) : unwrapPaginated(raw);
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim());
+    const context3 = parentOpts.quiet || fields ? null : await reportInfo(new RunMetadata(client, config2.accountId), report2);
+    const output = parentOpts.json && context3 && raw && typeof raw === "object" && !Array.isArray(raw) ? { ...raw, business_object: context3.business_object, columns: context3.columns } : raw;
     console.log(
-      formatOutput(parentOpts.json ? raw : rows, {
+      formatOutput(parentOpts.json ? output : rows, {
         format,
         fields,
         quiet: parentOpts.quiet,
         footer: page.meta ? `[${rows.length} of ${page.meta.total_items ?? rows.length} rows, page ${page.meta.page ?? 1} of ${page.meta.total_pages ?? 1}]` : void 0
       })
     );
+    if (context3 && !parentOpts.json) {
+      const lines = renderReportInfo(context3);
+      if (lines.length) console.log(["", ...lines].join("\n"));
+    }
   } catch (err) {
     handleError(err);
   }
 });
+async function reportInfo(metadata, report2) {
+  const rootBoId = Number(report2.business_object_id);
+  const relationships2 = await metadata.client.get("/v1/init/relationships").then((raw) => unwrapPaginated(raw)).catch(() => []);
+  const relById = new Map(relationships2.map((r) => [r.id, r]));
+  const columns = reportColumns(report2).filter(
+    (c) => c.usage !== "filter" && c.show_column !== false
+  );
+  const out = [];
+  for (const column of columns) {
+    const entry = { name: column.name, column_type: column.column_type, info: null };
+    const mappings = column.relationship_mappings ?? [];
+    const boId3 = mappings.length ? mappings[mappings.length - 1].business_object_id : rootBoId;
+    let fieldId = null;
+    if (column.column_type === "field" && column.column_entity_id) {
+      fieldId = column.column_entity_id;
+    } else if (column.column_type === "timespan" || column.column_type === "time_between") {
+      const sources = [column.from_field, column.to_field].filter((f) => f?.type === "field" && f.field_id).map((f) => f.field_id);
+      if (new Set(sources).size === 1) fieldId = sources[0];
+    }
+    if (fieldId != null) {
+      entry.field_id = fieldId;
+      const field = await metadata.field(boId3, fieldId).catch(() => void 0);
+      entry.info = await fieldInfo(metadata, field, relationships2);
+    }
+    if (mappings.length) {
+      entry.relationship_path = mappings.map((m) => {
+        const rel = relById.get(m.relationship_id);
+        return { id: m.relationship_id, name: rel?.name ?? `Relationship ${m.relationship_id}`, info: infoText(rel?.info) };
+      });
+    }
+    out.push(entry);
+  }
+  const gate = currentInfoGate();
+  for (const c of out) gate?.always(c.info);
+  return { business_object: await businessObjectInfo(metadata, rootBoId), columns: out };
+}
+function renderReportInfo(context3) {
+  const relationships2 = /* @__PURE__ */ new Map();
+  for (const c of context3.columns) for (const r of c.relationship_path ?? []) relationships2.set(r.id, r);
+  return infoContextLines(context3.business_object, [
+    { title: "Column info", entries: context3.columns.map((c) => ({ name: c.name, info: c.info })) },
+    { title: "Relationship info (column paths)", entries: [...relationships2.values()] }
+  ]);
+}
 
 // .path-cli/src/utils/web-links.ts
 function findLinkable(kind, items, key, boId3) {
@@ -47750,18 +48900,34 @@ var clearCacheCommand = new Command("clear-cache").description("Clear the resolv
   }
 });
 
+// .path-cli/src/utils/account-info.ts
+async function fetchAccount(client, accountId) {
+  return client.get(`/v1/accounts/${encodeURIComponent(String(accountId))}`);
+}
+async function accountInfo(client, accountId, listed) {
+  if (listed && "info" in listed) return infoText(listed.info);
+  try {
+    return infoText((await fetchAccount(client, accountId)).info);
+  } catch {
+    return null;
+  }
+}
+function accountInfoLines(info, indent = "  ") {
+  return infoLines(info, { indent, label: "Account info" });
+}
+
 // .path-cli/src/commands/use-account.ts
 var useAccountCommand = new Command("use-account").description(
-  "Set the default account for subsequent commands (persists to ~/.path-cli/.env)"
+  "Set the default account for subsequent commands (persists to ~/.path-cli/.env), and show the account's info (what the business does, written by its designers)"
 ).argument(
   "[account-id]",
   "Account ID to use (omit to print the current default)"
 ).action(async (accountId) => {
   try {
     if (!accountId) {
-      const current = loadConfig().accountId;
-      if (current) {
-        console.log(current);
+      const current2 = loadConfig().accountId;
+      if (current2) {
+        console.log(current2);
       } else {
         console.log(
           "No default account set. Run `use-account <id>` to set one."
@@ -47770,6 +48936,7 @@ var useAccountCommand = new Command("use-account").description(
       return;
     }
     let acctName = "";
+    let info = null;
     try {
       const client = new HttpClient(loadConfig());
       const accounts = await client.get("/v1/accounts");
@@ -47780,6 +48947,7 @@ var useAccountCommand = new Command("use-account").description(
         );
       } else {
         acctName = match.name;
+        info = await accountInfo(client, accountId, match);
       }
     } catch {
     }
@@ -47787,6 +48955,35 @@ var useAccountCommand = new Command("use-account").description(
     console.log(
       `Default account set to ${accountId}${acctName ? ` (${acctName})` : ""}`
     );
+    for (const line of accountInfoLines(info)) console.log(line);
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/get-account.ts
+var SHOWN = ["id", "name", "status", "time_zone", "country"];
+var getAccountCommand = new Command("get-account").description(
+  "Show the active account (or --account-id): its name, time zone, country and info, the designers' description of the business. Read the info at the start of a session; it says what the account's records and pathways are for."
+).option("--account-id <id>", "Account ID (default: the saved / --account account)").action(async (opts) => {
+  try {
+    const parentOpts = getAccountCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({ accountId: parentOpts.account, baseUrl: parentOpts.baseUrl });
+    const accountId = opts.accountId ?? config2.accountId;
+    if (!accountId) {
+      throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
+    }
+    const account = await fetchAccount(new HttpClient(config2), accountId);
+    if (parentOpts.json) {
+      console.log(JSON.stringify({ ...account, info: infoText(account.info) }, null, 2));
+      return;
+    }
+    const record2 = account;
+    for (const key of SHOWN) {
+      if (record2[key] != null && record2[key] !== "") console.log(`${key}: ${String(record2[key])}`);
+    }
+    const info = accountInfoLines(account.info, "");
+    console.log(info.length ? info.join("\n") : "Account info: (none)");
   } catch (err) {
     handleError(err);
   }
@@ -47794,7 +48991,7 @@ var useAccountCommand = new Command("use-account").description(
 
 // .path-cli/src/index.ts
 function createProgram() {
-  const program2 = new Command("path").version("1.0.1").description(
+  const program2 = new Command("path").version("1.0.2").description(
     "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
@@ -47819,10 +49016,12 @@ function createProgram() {
       handleError(err);
     }
   });
+  installInfoHooks(program2);
   program2.addCommand(authCommand);
   program2.addCommand(logoutCommand);
   program2.addCommand(listAccountsCommand);
   program2.addCommand(useAccountCommand);
+  program2.addCommand(getAccountCommand);
   program2.addCommand(listBusinessObjectsCommand);
   program2.addCommand(getBusinessObjectCommand);
   program2.addCommand(listFieldsCommand);
@@ -47835,6 +49034,7 @@ function createProgram() {
   program2.addCommand(listFoldersCommand);
   program2.addCommand(listRecordsCommand);
   program2.addCommand(getRecordCommand);
+  program2.addCommand(listRelatedRecordsCommand);
   program2.addCommand(listRecordFilesCommand);
   program2.addCommand(downloadRecordFileCommand);
   program2.addCommand(listRecordTasksCommand);
@@ -47925,16 +49125,16 @@ var LONG_COMMANDS = /* @__PURE__ */ new Set([
 var LONG_WITH_ANSWERS = /* @__PURE__ */ new Set(["pathway-run start", "pathway-run submit"]);
 function commandPath(program2, argv) {
   const path = [];
-  let current = program2;
+  let current2 = program2;
   for (const token of argv) {
     if (token.startsWith("-")) continue;
-    const sub = current.commands.find((c) => c.name() === token || c.aliases().includes(token));
+    const sub = current2.commands.find((c) => c.name() === token || c.aliases().includes(token));
     if (!sub) {
       if (path.length) break;
       continue;
     }
     path.push(sub.name());
-    current = sub;
+    current2 = sub;
     if (!sub.commands.length) break;
   }
   return path.join(" ");
@@ -47989,7 +49189,7 @@ function installRouting() {
     console[method] = (...args) => {
       const ctx = runContext.getStore();
       if (!ctx) return original(...args);
-      ctx[sink].push(Buffer.from(formatArgs(args), "utf-8"));
+      ctx[sink].push(Buffer.from(formatArgs(sink === "stdout" ? filterOutputArgs(args) : args), "utf-8"));
     };
   };
   wrapConsole("log", "stdout");
@@ -48057,10 +49257,10 @@ function runCli(argv) {
       }
     });
     let timer;
-    const timeout = new Promise((resolve11) => {
+    const timeout = new Promise((resolve12) => {
       timer = setTimeout(() => {
         controller.abort();
-        resolve11(124);
+        resolve12(124);
       }, limit);
       timer.unref?.();
     });
@@ -54158,7 +55358,7 @@ var Protocol = class {
           return;
         }
         const pollInterval = task2.pollInterval ?? this._options?.defaultTaskPollInterval ?? 1e3;
-        await new Promise((resolve11) => setTimeout(resolve11, pollInterval));
+        await new Promise((resolve12) => setTimeout(resolve12, pollInterval));
         options?.signal?.throwIfAborted();
       }
     } catch (error2) {
@@ -54175,7 +55375,7 @@ var Protocol = class {
    */
   request(request, resultSchema, options) {
     const { relatedRequestId, resumptionToken, onresumptiontoken, task, relatedTask } = options ?? {};
-    return new Promise((resolve11, reject) => {
+    return new Promise((resolve12, reject) => {
       const earlyReject = (error2) => {
         reject(error2);
       };
@@ -54253,7 +55453,7 @@ var Protocol = class {
           if (!parseResult.success) {
             reject(parseResult.error);
           } else {
-            resolve11(parseResult.data);
+            resolve12(parseResult.data);
           }
         } catch (error2) {
           reject(error2);
@@ -54514,12 +55714,12 @@ var Protocol = class {
       }
     } catch {
     }
-    return new Promise((resolve11, reject) => {
+    return new Promise((resolve12, reject) => {
       if (signal.aborted) {
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
         return;
       }
-      const timeoutId = setTimeout(resolve11, interval);
+      const timeoutId = setTimeout(resolve12, interval);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
@@ -55610,7 +56810,7 @@ var McpServer = class {
     let task = createTaskResult.task;
     const pollInterval = task.pollInterval ?? 5e3;
     while (task.status !== "completed" && task.status !== "failed" && task.status !== "cancelled") {
-      await new Promise((resolve11) => setTimeout(resolve11, pollInterval));
+      await new Promise((resolve12) => setTimeout(resolve12, pollInterval));
       const updatedTask = await extra.taskStore.getTask(taskId);
       if (!updatedTask) {
         throw new McpError(ErrorCode.InternalError, `Task ${taskId} not found during polling`);
@@ -56179,8 +57379,8 @@ var EMPTY_COMPLETION_RESULT = {
 };
 
 // .path-mcp/src/server.ts
-import { readFileSync as readFileSync9, existsSync as existsSync10 } from "fs";
-import { resolve as resolve10, dirname as dirname5 } from "path";
+import { readFileSync as readFileSync10, existsSync as existsSync10 } from "fs";
+import { resolve as resolve10, dirname as dirname6 } from "path";
 import { fileURLToPath } from "url";
 
 // .path-mcp/src/command-parser.ts
@@ -56188,7 +57388,7 @@ import { homedir as homedir4 } from "node:os";
 function parseCommand(command) {
   const args = [];
   const chars = [...command.replace(/\r\n?/g, "\n")];
-  let current = "";
+  let current2 = "";
   let inToken = false;
   let inSingle = false;
   let inDouble = false;
@@ -56196,28 +57396,28 @@ function parseCommand(command) {
     const char = chars[i];
     if (inSingle) {
       if (char === "'") inSingle = false;
-      else current += char;
+      else current2 += char;
       continue;
     }
     if (char === "\\") {
       const next = chars[i + 1];
       if (next === void 0) {
-        current += char;
+        current2 += char;
         inToken = true;
       } else if (next === "\n") {
         i++;
       } else if (!inDouble || '"\\$`'.includes(next)) {
-        current += next;
+        current2 += next;
         inToken = true;
         i++;
       } else {
-        current += char;
+        current2 += char;
       }
       continue;
     }
     if (inDouble) {
       if (char === '"') inDouble = false;
-      else current += char;
+      else current2 += char;
       continue;
     }
     if (char === "'") {
@@ -56232,22 +57432,22 @@ function parseCommand(command) {
     }
     if (char === " " || char === "\n" || char === "	") {
       if (inToken) {
-        args.push(current);
-        current = "";
+        args.push(current2);
+        current2 = "";
         inToken = false;
       }
       continue;
     }
-    if (char === "~" && (!inToken || /^--[^=]+=$/.test(current)) && isTildeEnd(chars[i + 1])) {
-      current += homedir4();
+    if (char === "~" && (!inToken || /^--[^=]+=$/.test(current2)) && isTildeEnd(chars[i + 1])) {
+      current2 += homedir4();
       inToken = true;
       continue;
     }
-    current += char;
+    current2 += char;
     inToken = true;
   }
   if (inToken) {
-    args.push(current);
+    args.push(current2);
   }
   return args;
 }
@@ -56256,7 +57456,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.1";
+var VERSION = "1.0.2";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;
@@ -56288,7 +57488,7 @@ var PATH_CLI_SERVER = {
   devReferencePaths: [".claude/skills/path-cli/SKILL.md"]
 };
 function loadCommandReference(options) {
-  const scriptDir = dirname5(fileURLToPath(import.meta.url));
+  const scriptDir = dirname6(fileURLToPath(import.meta.url));
   const repoDir = resolve10(scriptDir, "..", "..");
   const candidates = [
     resolve10(scriptDir, "command-reference.md"),
@@ -56296,16 +57496,19 @@ function loadCommandReference(options) {
   ];
   for (const candidate of candidates) {
     if (existsSync10(candidate)) {
-      return readFileSync9(candidate, "utf-8");
+      return readFileSync10(candidate, "utf-8");
     }
   }
   return "Command reference not found. Ensure command-reference.md is next to the MCP server script, or run from the repo.";
 }
-function createServer2(options = PATH_CLI_SERVER) {
-  const server = new McpServer({
-    name: options.name,
-    version: VERSION
-  });
+function createServer2(options = PATH_CLI_SERVER, extras = {}) {
+  const server = new McpServer(
+    {
+      name: options.name,
+      version: VERSION
+    },
+    extras.instructions ? { instructions: extras.instructions } : void 0
+  );
   let agentDetected = false;
   const detectAgent = () => {
     if (agentDetected) return;
@@ -56441,13 +57644,16 @@ ${pendingAuth.authorizeUrl}`
       try {
         const accounts = await fetchAccounts(config2);
         const list3 = accounts.map((a) => `  ${a.id}: ${a.name}`).join("\n");
+        const current2 = config2.accountId ? accounts.find((a) => String(a.id) === String(config2.accountId)) : void 0;
+        const defaultLines = current2 ? [
+          `Default account: ${current2.id} (${current2.name})`,
+          ...accountInfoLines(await accountInfo(new HttpClient(config2), current2.id, current2))
+        ] : [];
         return {
           content: [
             {
               type: "text",
-              text: accounts.length ? `Signed in.
-Available accounts:
-${list3}` : "Signed in (no accounts available)."
+              text: accounts.length ? [`Signed in.`, `Available accounts:`, list3, ...defaultLines].join("\n") : "Signed in (no accounts available)."
             }
           ]
         };
@@ -56571,9 +57777,29 @@ ${list3}` : "Signed in (no accounts available)."
 }
 
 // .path-mcp/src/stdio.ts
+async function accountInstructions(timeoutMs = 2e3) {
+  try {
+    const config2 = loadConfig();
+    if (!config2.accessToken || !config2.accountId) return void 0;
+    const accountId = String(config2.accountId);
+    let timer;
+    const account = await Promise.race([
+      new HttpClient(config2).get(`/v1/accounts/${encodeURIComponent(accountId)}`),
+      new Promise((done) => {
+        timer = setTimeout(() => done(null), timeoutMs);
+      })
+    ]).finally(() => clearTimeout(timer));
+    if (!account) return void 0;
+    const summary = accountSummaryOf(account, accountId);
+    if (summary.info && summary.info.length > INFO_TEXT_CAP) summary.info = `${summary.info.slice(0, INFO_TEXT_CAP).trimEnd()} \u2026`;
+    return ["PATH account in use (the saved default; --account overrides it):", ...accountBlockLines(summary)].join("\n");
+  } catch {
+    return void 0;
+  }
+}
 async function serveStdio(options) {
   trustSystemCertificates();
-  if (dirname6(process.cwd()) === process.cwd()) process.chdir(homedir5());
+  if (dirname7(process.cwd()) === process.cwd()) process.chdir(homedir5());
   const exit = process.exit.bind(process);
   const logError = process.stderr.write.bind(process.stderr);
   const name = options?.name ?? "path-mcp";
@@ -56594,7 +57820,9 @@ async function serveStdio(options) {
   const stop = () => void closeTabs().finally(() => exit(0));
   process.on("SIGTERM", stop);
   process.on("SIGINT", stop);
-  const server = createServer2(options);
+  useFileInfoStore(resolve11(getConfigDir(), "info-seen.json"));
+  setInfoSessionAnchor(`app:${process.ppid}`);
+  const server = createServer2(options, { instructions: await accountInstructions() });
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }

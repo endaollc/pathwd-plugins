@@ -15,6 +15,7 @@ Put these before the command name.
 | `--no-cache` | Bypass resolver cache for this invocation |
 | `--as-user <id|email|name>` | Act as another member of the account, as the web's Impersonate does (account Admins only; not yourself or a deactivated user) |
 | `--implicit-json` | JSON because the caller left the format to the default |
+| `--with-info` | Repeat designer info (and the account block) that was already shown earlier this session — e.g. after your context was compacted |
 
 ## Commands
 
@@ -347,12 +348,26 @@ Options:
   --by <bo|record>  Group by business object or record (default: "bo")
 ```
 
+### `get-account`
+
+```
+Usage: get-account [options]
+
+Show the active account (or --account-id): its name, time zone, country and
+info, the designers' description of the business. Read the info at the start of
+a session; it says what the account's records and pathways are for.
+
+Options:
+  --account-id <id>  Account ID (default: the saved / --account account)
+```
+
 ### `get-business-object`
 
 ```
 Usage: get-business-object [options]
 
-Get a single business object
+Get a single business object, with its info (the designer's description of what
+it is for)
 
 Options:
   --bo-id <id>      Business object ID
@@ -388,7 +403,8 @@ Options:
 ```
 Usage: get-field [options]
 
-Get a single field on a business object
+Get a single field on a business object, with its info (the designer's
+description of what the field holds and when to fill it)
 
 Options:
   --bo-id <id>         Business object ID
@@ -449,11 +465,6 @@ Options:
   --max-width <n>         Max characters for the CHANGES and METADATA cells;
                           cut between entries with "(+N more)" (0 = unlimited)
                           (default: "60")
-  --source <source>       Only sessions from one source: web_app (people in the
-                          web app), cli (people typing CLI commands), agent
-                          (any agent), claude_code, claude_cowork,
-                          claude_desktop, or system (integrations, scheduled
-                          actions, emails received)
 ```
 
 ### `get-history-session`
@@ -510,7 +521,14 @@ Options:
 ```
 Usage: get-record [options]
 
-Get a single record by ID
+Get a single record by ID, as the record viewer shows it to you. Also gives the
+designer info of what it shows: business_object {id, name, info}, field_info
+{<field name>: info} and relationship_info {<relationship name>: info} (only
+entries that have info; a relationship field without its own shows the related
+field's). In the record view, related_ids gives each related record's id (open
+it with get-record). Text output ends with a compact info block. Lists of
+related records (inverse relationship tabs, linked records):
+list-related-records
 
 Options:
   --record-id <id>  Record ID
@@ -573,7 +591,8 @@ Options:
 ```
 Usage: list-business-objects [options]
 
-List business objects
+List business objects (--json adds each one's info: what the designer says it
+is for)
 
 Options:
 ```
@@ -636,7 +655,7 @@ Options:
 ```
 Usage: list-field-groups [options]
 
-List field groups for a business object
+List field groups for a business object (--json adds each one's info)
 
 Options:
   --bo-id <id>      Business object ID
@@ -649,7 +668,8 @@ Options:
 ```
 Usage: list-fields [options]
 
-List fields for a business object
+List fields for a business object (--json adds each field's info: what it holds
+and when to fill it)
 
 Options:
   --bo-id <id>      Business object ID
@@ -680,7 +700,10 @@ Options:
 ```
 Usage: list-folders [options]
 
-List folders
+List folders. Each folder_stickers[] entry carries its info; a copy of a
+business object sticker with no info of its own also gets bo_sticker_info (the
+business object sticker's info, which the copy shows). Text output lists
+sticker info under the table
 
 Options:
   --bo-id <id>      Filter by business object ID
@@ -708,7 +731,7 @@ Options:
 ```
 Usage: list-pathways [options]
 
-List pathways
+List pathways (--json adds each pathway's info: what the designer built it for)
 
 Options:
 ```
@@ -784,7 +807,14 @@ Options:
 ```
 Usage: list-records [options]
 
-List records in a folder, or recent records
+List records in a folder (--folder-id / --folder-name), or your recent records.
+JSON is { business_object: {id, name, info}, field_info: [{field_id, name,
+info}], items } for a folder — field_info lists the folder's columns that have
+designer info (a relationship field without its own shows the related field's)
+— and { business_objects: [{id, name, info, field_info}], items } for recent
+records (one entry per business object present). items is the record list as
+before. Text output prints the table, then a "Business object info:" and a
+"Field info:" block (only what has info)
 
 Options:
   --folder-id <id>      Folder ID to list records from
@@ -796,12 +826,46 @@ Options:
                         "30")
 ```
 
+### `list-related-records`
+
+```
+Usage: list-related-records [options]
+
+A record's related records as the record viewer shows them to you. Without
+--relationship-*: every related list the record viewer shows — direct
+relationships (the records this one links to: relationship cards, Contacts,
+People, Addresses) and inverse relationship tabs (records that link to this
+one), each with direction, relationship id, name, the related business object
+{id, name, info}, the relationship's info and a count. With --relationship-id /
+--relationship-name: that list's records with the record viewer's columns — an
+inverse tab's Table Columns (fields, linked-record lookups, nested tables,
+pathway buttons, milestones), a direct relationship's identifier, milestones
+and linked fields (an address's Street / City / State / Zip). JSON: { record,
+direction, relationship {id, name, info}, business_object {id, name, info},
+columns [{kind, name, field_id?, relationship_id?, pathway_id?, info}], items
+[{id, identifier, values, linked_ids?}] } — a column's info is the info of the
+field / relationship / pathway it is based on, shown every time. Open any
+listed record with get-record --record-id <id>. Relationships the record viewer
+doesn't show you (hidden, visibility rules, business objects you can't view)
+are refused
+
+Options:
+  --record-id <id>            The record whose related records to list
+  --relationship-id <id>      The relationship (from the overview)
+  --relationship-name <name>  The relationship by name or inverse tab name
+                              (case-insensitive)
+  --direction <direction>     direct or inverse, when a name or a
+                              self-relationship matches both
+  --no-count                  Overview: skip the per-tab record counts (one
+                              small request each)
+```
+
 ### `list-relationships`
 
 ```
 Usage: list-relationships [options]
 
-List relationships for a business object
+List relationships for a business object (--json adds each one's info)
 
 Options:
   --bo-id <id>      Business object ID
@@ -875,7 +939,7 @@ Options:
 ```
 Usage: list-workflow-milestones [options]
 
-List workflow milestones for a business object
+List workflow milestones for a business object (--json adds each one's info)
 
 Options:
   --bo-id <id>      Business object ID
@@ -888,7 +952,7 @@ Options:
 ```
 Usage: list-workflow-steps [options]
 
-List workflow steps for a business object
+List workflow steps for a business object (--json adds each one's info)
 
 Options:
   --bo-id <id>      Business object ID
@@ -900,7 +964,7 @@ Options:
 ```
 Usage: list-workflow-tasks [options]
 
-List workflow tasks for a business object
+List workflow tasks for a business object (--json adds each one's info)
 
 Options:
   --bo-id <id>      Business object ID
@@ -1239,7 +1303,15 @@ Options:
 Usage: run-report [options]
 
 Run a report and print its rows (the web app's report view; in real-world mode
-only reports the acting user can open)
+only reports the acting user can open). Also gives the report's root business
+object {id, name, info} and each column's info — the info of the field the
+column shows (for a column through relationships, the end field's, with the
+relationships on the path and their info); count, milestone, step and
+calculated columns have none, a Time Between / Time Span column on one field
+has that field's. --json keeps the server's { rows, meta } and adds
+business_object and columns [{name, column_type, field_id?, relationship_path?,
+info}]; text output prints a "Business object info:" and a "Column info:" block
+under the rows (only what has info)
 
 Options:
   --report-id <id>      Report ID
@@ -1546,7 +1618,8 @@ Options:
 ```
 Usage: use-account [options] [account-id]
 
-Set the default account for subsequent commands (persists to ~/.path-cli/.env)
+Set the default account for subsequent commands (persists to ~/.path-cli/.env),
+and show the account's info (what the business does, written by its designers)
 
 Arguments:
   account-id  Account ID to use (omit to print the current default)
