@@ -35,9 +35,13 @@ Then restart Claude Code.
 
 ### Claude desktop app (Cowork) and claude.ai
 
-1. Open **Settings** and go to **Plugins** (in some versions it's under **Customize**).
-2. Choose **Add marketplace** and enter `endaollc/pathwd-plugins`.
-3. Install **path-cli** from the **pathwd** marketplace.
+1. Open **Customize** and go to **Plugins**.
+2. Choose **Add**, then **Add marketplace**, and enter `endaollc/pathwd-plugins`.
+3. Open the **Discover** tab, find **PATH WD** and choose **Add**.
+
+Turn on **Sync automatically** for the marketplace to get new versions as they come out (it's off by default).
+
+The PATH tools run in Cowork. In regular chat, in the desktop app or on claude.ai, Claude gets the skills but not the tools.
 
 ## Sign in
 
@@ -59,11 +63,15 @@ Ask Claude to **"sign in to PATH"**. Claude opens PATH's sign-in page in your br
 New versions are published here. To get the latest one:
 
 - **Claude Code:** run `/plugin marketplace update pathwd`, then restart Claude Code. Turn on auto-update for the marketplace in `/plugin` to get new versions automatically.
-- **Claude desktop app:** update the **pathwd** marketplace from the plugin settings, then restart the app.
+- **Claude desktop app:** with **Sync automatically** on, new versions arrive on their own. Otherwise go to **Customize → Plugins**, sync the **pathwd** marketplace, then restart the app.
 
 ## Support
 
 Questions or problems? Use **Submit Support Ticket** at the bottom of the menu in PATH, or email [support@pathwd.com](mailto:support@pathwd.com). Include what you asked Claude and the exact error message.
+
+## Privacy
+
+The plugin runs on your computer and talks only to PATH, using your own sign-in. See the [PathWD privacy policy](https://www.pathwd.com/privacy-policy).
 
 ## License
 

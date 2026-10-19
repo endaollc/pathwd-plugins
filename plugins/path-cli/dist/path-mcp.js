@@ -588,14 +588,14 @@ var require_help = __commonJS({
        * @return {string}
        *
        */
-      wrap(str, width, indent, minColumnWidth = 40) {
+      wrap(str2, width, indent, minColumnWidth = 40) {
         const indents = " \\f\\t\\v\xA0\u1680\u2000-\u200A\u202F\u205F\u3000\uFEFF";
         const manualIndent = new RegExp(`[\\n][${indents}]+`);
-        if (str.match(manualIndent)) return str;
+        if (str2.match(manualIndent)) return str2;
         const columnWidth = width - indent;
-        if (columnWidth < minColumnWidth) return str;
-        const leadingStr = str.slice(0, indent);
-        const columnText = str.slice(indent).replace("\r\n", "\n");
+        if (columnWidth < minColumnWidth) return str2;
+        const leadingStr = str2.slice(0, indent);
+        const columnText = str2.slice(indent).replace("\r\n", "\n");
         const indentString = " ".repeat(indent);
         const zeroWidthSpace = "\u200B";
         const breaks = `\\s${zeroWidthSpace}`;
@@ -865,9 +865,9 @@ var require_option = __commonJS({
         return option.negate === (negativeValue === value);
       }
     };
-    function camelcase(str) {
-      return str.split("-").reduce((str2, word) => {
-        return str2 + word[0].toUpperCase() + word.slice(1);
+    function camelcase(str2) {
+      return str2.split("-").reduce((str3, word) => {
+        return str3 + word[0].toUpperCase() + word.slice(1);
       });
     }
     function splitOptionFlags(flags) {
@@ -1023,11 +1023,11 @@ var require_command = __commonJS({
         this._showHelpAfterError = false;
         this._showSuggestionAfterError = true;
         this._outputConfiguration = {
-          writeOut: (str) => process3.stdout.write(str),
-          writeErr: (str) => process3.stderr.write(str),
+          writeOut: (str2) => process3.stdout.write(str2),
+          writeErr: (str2) => process3.stderr.write(str2),
           getOutHelpWidth: () => process3.stdout.isTTY ? process3.stdout.columns : void 0,
           getErrHelpWidth: () => process3.stderr.isTTY ? process3.stderr.columns : void 0,
-          outputError: (str, write) => write(str)
+          outputError: (str2, write) => write(str2)
         };
         this._hidden = false;
         this._helpOption = void 0;
@@ -2663,18 +2663,18 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @param {string} [description]
        * @return {(this | string | undefined)} `this` command for chaining, or version string if no arguments
        */
-      version(str, flags, description) {
-        if (str === void 0) return this._version;
-        this._version = str;
+      version(str2, flags, description) {
+        if (str2 === void 0) return this._version;
+        this._version = str2;
         flags = flags || "-V, --version";
         description = description || "output the version number";
         const versionOption = this.createOption(flags, description);
         this._versionOptionName = versionOption.attributeName();
         this._registerOption(versionOption);
         this.on("option:" + versionOption.name(), () => {
-          this._outputConfiguration.writeOut(`${str}
+          this._outputConfiguration.writeOut(`${str2}
 `);
-          this._exit(0, "commander.version", str);
+          this._exit(0, "commander.version", str2);
         });
         return this;
       }
@@ -2685,10 +2685,10 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @param {object} [argsDescription]
        * @return {(string|Command)}
        */
-      description(str, argsDescription) {
-        if (str === void 0 && argsDescription === void 0)
+      description(str2, argsDescription) {
+        if (str2 === void 0 && argsDescription === void 0)
           return this._description;
-        this._description = str;
+        this._description = str2;
         if (argsDescription) {
           this._argsDescription = argsDescription;
         }
@@ -2700,9 +2700,9 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @param {string} [str]
        * @return {(string|Command)}
        */
-      summary(str) {
-        if (str === void 0) return this._summary;
-        this._summary = str;
+      summary(str2) {
+        if (str2 === void 0) return this._summary;
+        this._summary = str2;
         return this;
       }
       /**
@@ -2750,8 +2750,8 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @param {string} [str]
        * @return {(string|Command)}
        */
-      usage(str) {
-        if (str === void 0) {
+      usage(str2) {
+        if (str2 === void 0) {
           if (this._usage) return this._usage;
           const args = this.registeredArguments.map((arg) => {
             return humanReadableArgName(arg);
@@ -2762,7 +2762,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
             this.registeredArguments.length ? args : []
           ).join(" ");
         }
-        this._usage = str;
+        this._usage = str2;
         return this;
       }
       /**
@@ -2771,9 +2771,9 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @param {string} [str]
        * @return {(string|Command)}
        */
-      name(str) {
-        if (str === void 0) return this._name;
-        this._name = str;
+      name(str2) {
+        if (str2 === void 0) return this._name;
+        this._name = str2;
         return this;
       }
       /**
@@ -3104,7 +3104,7 @@ var require_code = __commonJS({
     }
     exports._ = _;
     var plus = new _Code("+");
-    function str(strs, ...args) {
+    function str2(strs, ...args) {
       const expr = [safeStringify(strs[0])];
       let i = 0;
       while (i < args.length) {
@@ -3115,7 +3115,7 @@ var require_code = __commonJS({
       optimize(expr);
       return new _Code(expr);
     }
-    exports.str = str;
+    exports.str = str2;
     function addCodeArg(code, arg) {
       if (arg instanceof _Code)
         code.push(...arg._items);
@@ -3158,7 +3158,7 @@ var require_code = __commonJS({
       return;
     }
     function strConcat(c1, c2) {
-      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str`${c1}${c2}`;
+      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str2`${c1}${c2}`;
     }
     exports.strConcat = strConcat;
     function interpolate(x) {
@@ -4120,22 +4120,22 @@ var require_util = __commonJS({
       return (0, codegen_1._)`${topSchemaRef}${schemaPath}${(0, codegen_1.getProperty)(keyword)}`;
     }
     exports.schemaRefOrVal = schemaRefOrVal;
-    function unescapeFragment(str) {
-      return unescapeJsonPointer(decodeURIComponent(str));
+    function unescapeFragment(str2) {
+      return unescapeJsonPointer(decodeURIComponent(str2));
     }
     exports.unescapeFragment = unescapeFragment;
-    function escapeFragment(str) {
-      return encodeURIComponent(escapeJsonPointer(str));
+    function escapeFragment(str2) {
+      return encodeURIComponent(escapeJsonPointer(str2));
     }
     exports.escapeFragment = escapeFragment;
-    function escapeJsonPointer(str) {
-      if (typeof str == "number")
-        return `${str}`;
-      return str.replace(/~/g, "~0").replace(/\//g, "~1");
+    function escapeJsonPointer(str2) {
+      if (typeof str2 == "number")
+        return `${str2}`;
+      return str2.replace(/~/g, "~0").replace(/\//g, "~1");
     }
     exports.escapeJsonPointer = escapeJsonPointer;
-    function unescapeJsonPointer(str) {
-      return str.replace(/~1/g, "/").replace(/~0/g, "~");
+    function unescapeJsonPointer(str2) {
+      return str2.replace(/~1/g, "/").replace(/~0/g, "~");
     }
     exports.unescapeJsonPointer = unescapeJsonPointer;
     function eachItem(xs, f) {
@@ -5160,8 +5160,8 @@ var require_json_schema_traverse = __commonJS({
         post(schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
       }
     }
-    function escapeJsonPtr(str) {
-      return str.replace(/~/g, "~0").replace(/\//g, "~1");
+    function escapeJsonPtr(str2) {
+      return str2.replace(/~/g, "~0").replace(/\//g, "~1");
     }
   }
 });
@@ -6258,10 +6258,10 @@ var require_utils = __commonJS({
         isIPV6: true
       };
     }
-    function findToken(str, token) {
+    function findToken(str2, token) {
       let ind = 0;
-      for (let i = 0; i < str.length; i++) {
-        if (str[i] === token) ind++;
+      for (let i = 0; i < str2.length; i++) {
+        if (str2[i] === token) ind++;
       }
       return ind;
     }
@@ -7275,7 +7275,7 @@ var require_core = __commonJS({
     var util_1 = require_util();
     var $dataRefSchema = require_data();
     var uri_1 = require_uri();
-    var defaultRegExp = (str, flags) => new RegExp(str, flags);
+    var defaultRegExp = (str2, flags) => new RegExp(str2, flags);
     defaultRegExp.code = "new RegExp";
     var META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"];
     var EXT_SCOPE_NAMES = /* @__PURE__ */ new Set([
@@ -8070,16 +8070,16 @@ var require_ucs2length = __commonJS({
   ".path-mcp/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    function ucs2length(str) {
-      const len = str.length;
+    function ucs2length(str2) {
+      const len = str2.length;
       let length = 0;
       let pos = 0;
       let value;
       while (pos < len) {
         length++;
-        value = str.charCodeAt(pos++);
+        value = str2.charCodeAt(pos++);
         if (value >= 55296 && value <= 56319 && pos < len) {
-          value = str.charCodeAt(pos);
+          value = str2.charCodeAt(pos);
           if ((value & 64512) === 56320)
             pos++;
         }
@@ -9962,8 +9962,8 @@ var require_formats = __commonJS({
     }
     var DATE2 = /^(\d\d\d\d)-(\d\d)-(\d\d)$/;
     var DAYS2 = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    function date3(str) {
-      const matches = DATE2.exec(str);
+    function date3(str2) {
+      const matches = DATE2.exec(str2);
       if (!matches)
         return false;
       const year = +matches[1];
@@ -9982,8 +9982,8 @@ var require_formats = __commonJS({
     }
     var TIME2 = /^(\d\d):(\d\d):(\d\d(?:\.\d+)?)(z|([+-])(\d\d)(?::?(\d\d))?)?$/i;
     function getTime(strictTimeZone) {
-      return function time3(str) {
-        const matches = TIME2.exec(str);
+      return function time3(str2) {
+        const matches = TIME2.exec(str2);
         if (!matches)
           return false;
         const hr = +matches[1];
@@ -10029,8 +10029,8 @@ var require_formats = __commonJS({
     var DATE_TIME_SEPARATOR = /t|\s/i;
     function getDateTime(strictTimeZone) {
       const time3 = getTime(strictTimeZone);
-      return function date_time(str) {
-        const dateTime = str.split(DATE_TIME_SEPARATOR);
+      return function date_time(str2) {
+        const dateTime = str2.split(DATE_TIME_SEPARATOR);
         return dateTime.length === 2 && date3(dateTime[0]) && time3(dateTime[1]);
       };
     }
@@ -10055,13 +10055,13 @@ var require_formats = __commonJS({
     }
     var NOT_URI_FRAGMENT = /\/|:/;
     var URI = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i;
-    function uri(str) {
-      return NOT_URI_FRAGMENT.test(str) && URI.test(str);
+    function uri(str2) {
+      return NOT_URI_FRAGMENT.test(str2) && URI.test(str2);
     }
     var BYTE = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/gm;
-    function byte(str) {
+    function byte(str2) {
       BYTE.lastIndex = 0;
-      return BYTE.test(str);
+      return BYTE.test(str2);
     }
     var MIN_INT32 = -(2 ** 31);
     var MAX_INT32 = 2 ** 31 - 1;
@@ -10075,11 +10075,11 @@ var require_formats = __commonJS({
       return true;
     }
     var Z_ANCHOR = /[^\\]\\Z/;
-    function regex(str) {
-      if (Z_ANCHOR.test(str))
+    function regex(str2) {
+      if (Z_ANCHOR.test(str2))
         return false;
       try {
-        new RegExp(str);
+        new RegExp(str2);
         return true;
       } catch (e) {
         return false;
@@ -10423,14 +10423,14 @@ function promiseAllObject(promisesObj) {
 }
 function randomString(length = 10) {
   const chars = "abcdefghijklmnopqrstuvwxyz";
-  let str = "";
+  let str2 = "";
   for (let i = 0; i < length; i++) {
-    str += chars[Math.floor(Math.random() * chars.length)];
+    str2 += chars[Math.floor(Math.random() * chars.length)];
   }
-  return str;
+  return str2;
 }
-function esc(str) {
-  return JSON.stringify(str);
+function esc(str2) {
+  return JSON.stringify(str2);
 }
 var captureStackTrace = Error.captureStackTrace ? Error.captureStackTrace : (..._args) => {
 };
@@ -10518,8 +10518,8 @@ var getParsedType = (data) => {
 };
 var propertyKeyTypes = /* @__PURE__ */ new Set(["string", "number", "symbol"]);
 var primitiveTypes = /* @__PURE__ */ new Set(["string", "number", "bigint", "boolean", "symbol", "undefined"]);
-function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function escapeRegex(str2) {
+  return str2.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function clone(inst, def, params) {
   const cl = new inst._zod.constr(def ?? inst._zod.def);
@@ -16881,7 +16881,7 @@ var INFO_SESSION_IDLE_MS = 2 * 60 * 6e4;
 var MIN_ELIDE_CHARS = 40;
 var MAX_HASHES = 5e3;
 var FORGET_AFTER_MS2 = 7 * 24 * 60 * 6e4;
-var EXPLICIT_INFO_COMMANDS = /* @__PURE__ */ new Set(["get-info", "set-info", "get-account", "pathway-run show"]);
+var EXPLICIT_INFO_COMMANDS = /* @__PURE__ */ new Set(["get-info", "set-info", "get-account"]);
 var MemoryStore = class {
   #sessions = /* @__PURE__ */ new Map();
   get(anchor) {
@@ -16952,8 +16952,6 @@ var InfoGate = class {
   #state;
   #seenAtStart;
   #new = /* @__PURE__ */ new Set();
-  #always = /* @__PURE__ */ new Set();
-  #run = null;
   /** Labels of what was elided, in order. */
   elided = [];
   #reported = 0;
@@ -16968,19 +16966,6 @@ var InfoGate = class {
     this.#state = previous && now - previous.lastUsedAt <= INFO_SESSION_IDLE_MS ? { ...previous, lastUsedAt: now } : { lastUsedAt: now, hashes: [] };
     this.#seenAtStart = new Set(this.#state.hashes);
   }
-  /** This info shows in full on this command whatever was shown before (table columns). */
-  always(value) {
-    const text = clean(value);
-    if (text) this.#always.add(infoHash(text));
-  }
-  /** Pathway-runner commands: dedupe against the run, not the session. */
-  useRunScope(scope) {
-    scope.hashes ??= [];
-    this.#run = { scope, seenAtStart: new Set(scope.hashes) };
-  }
-  get runScoped() {
-    return this.#run !== null;
-  }
   /**
    * Whether `value` is shown on this command (true), or was shown earlier and
    * is elided (false, `label` noted). Records the text as shown either way.
@@ -16990,11 +16975,15 @@ var InfoGate = class {
     if (!text) return true;
     const hash = infoHash(text);
     this.#new.add(hash);
-    if (this.#run && !this.#run.scope.hashes.includes(hash)) this.#run.scope.hashes.push(hash);
-    if (this.withInfo || this.#always.has(hash) || text.length < MIN_ELIDE_CHARS) return true;
-    const seen = this.#run ? this.#run.seenAtStart.has(hash) : this.#seenAtStart.has(hash);
+    if (this.withInfo || text.length < MIN_ELIDE_CHARS) return true;
+    const seen = this.#seenAtStart.has(hash);
     if (seen) this.elided.push(label);
     return !seen;
+  }
+  /** Info this command just wrote: counts as shown from now on, and is never reported as elided. */
+  written(value) {
+    const text = clean(value);
+    if (text) this.#new.add(infoHash(text));
   }
   /** The account block: due when this account's block wasn't shown this session (or changed). */
   accountDue(summary) {
@@ -17022,7 +17011,6 @@ var InfoGate = class {
   }
   /** Saves what this command showed into the session. */
   commit(now = Date.now()) {
-    if (this.#run?.scope.save) this.#run.scope.save(this.#run.scope.hashes);
     const hashes = [...this.#state.hashes.filter((h) => !this.#new.has(h)), ...this.#new].slice(-MAX_HASHES);
     store2.set(this.anchor, { ...this.#state, hashes, lastUsedAt: now });
   }
@@ -17037,15 +17025,13 @@ function setCurrentInfoGate(gate) {
   if (scope) scope.info = gate ?? void 0;
   else current = gate;
 }
-function elidedText(gate) {
-  return gate?.runScoped ? "(shown earlier in this run)" : "(shown earlier this session)";
-}
-function elidedSummaryLine(labels, runScoped = false) {
+var ELIDED_TEXT = "(shown earlier this session)";
+function elidedSummaryLine(labels) {
   if (!labels.length) return null;
   const names = [...new Set(labels)];
   const shown = names.slice(0, 6).join(", ");
   const more = names.length > 6 ? ` and ${names.length - 6} more` : "";
-  return `Info for ${shown}${more} was shown earlier ${runScoped ? "in this run" : "this session"} (pass --with-info to repeat).`;
+  return `Info for ${shown}${more} was shown earlier this session (pass --with-info to repeat).`;
 }
 var INFO_KEY = /^(info|.+_info)$/;
 function labelOf(obj, key) {
@@ -17137,11 +17123,11 @@ function filterOutputArgs(args, gate = currentInfoGate()) {
       parsed.info_shown_earlier = {
         count: elided.length,
         items: [...new Set(elided)].slice(0, 30),
-        note: `Removed because it was shown earlier ${gate.runScoped ? "in this run" : "this session"} (the "<key>_elided" flags mark where); pass --with-info to repeat.`
+        note: 'Removed because it was shown earlier this session (the "<key>_elided" flags mark where); pass --with-info to repeat.'
       };
     }
   } else {
-    const line = elidedSummaryLine(elided, gate.runScoped);
+    const line = elidedSummaryLine(elided);
     if (line) console.error(line);
   }
   const indented = /^\s*[[{]\s*\n/.test(raw);
@@ -17193,19 +17179,19 @@ function endInfoCommand(print3 = (line) => console.log(line)) {
     gate.pendingAccount = null;
   }
   if (!gate.jsonPrinted) {
-    const line = elidedSummaryLine(gate.takeElided(), gate.runScoped);
+    const line = elidedSummaryLine(gate.takeElided());
     if (line) print3(line);
   }
   gate.commit();
   setCurrentInfoGate(null);
 }
 function accountSummaryOf(account, accountId) {
-  const str = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
+  const str2 = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
   return {
     id: String(account.id ?? accountId),
-    name: str(account.name),
-    time_zone: str(account.time_zone),
-    country: str(account.country),
+    name: str2(account.name),
+    time_zone: str2(account.time_zone),
+    country: str2(account.country),
     info: clean(account.info)
   };
 }
@@ -17603,6 +17589,9 @@ async function assertRecordViewable(client, recordId, what) {
 async function assertCreateFolder(client, boId3) {
   await assertBusinessObject(client, boId3, "create_folders", `create a folder on ${await boLabel(client, boId3)}`);
 }
+async function assertCreateReport(client, boId3) {
+  await assertBusinessObject(client, boId3, "create_reports", `create a report on ${await boLabel(client, boId3)}`);
+}
 async function assertFolderEdit(client, folderId, what) {
   const access = await realWorldAccess(client);
   if (!access) return;
@@ -17710,6 +17699,8 @@ async function checkTaskAction(client, recordId, taskId, action) {
 }
 
 // .path-cli/src/utils/info-text.ts
+import { readFileSync as readFileSync3 } from "node:fs";
+var MAX_INFO_LENGTH = 5e4;
 var INFO_TEXT_CAP = 1e3;
 function infoText(value) {
   if (typeof value !== "string") return null;
@@ -17722,7 +17713,7 @@ function infoLines(value, opts = {}) {
   const indent = opts.indent ?? "  ";
   const label = opts.label ?? "info";
   const gate = currentInfoGate();
-  if (gate && !gate.shows(text, label)) return [`${indent}${label}: ${elidedText(gate)}`];
+  if (gate && !gate.shows(text, label)) return [`${indent}${label}: ${ELIDED_TEXT}`];
   if (opts.cap !== void 0 && text.length > opts.cap) {
     text = `${text.slice(0, opts.cap).trimEnd()} \u2026(see --json)`;
   }
@@ -17733,11 +17724,23 @@ function infoLines(value, opts = {}) {
 function infoBlock(info, label = "info") {
   if (info === null || info === void 0 || typeof info === "string" && !info.trim()) return `${label}: (none)`;
   const gate = currentInfoGate();
-  if (typeof info === "string" && gate && !gate.shows(info, label)) return `${label}: ${elidedText(gate)}`;
+  if (typeof info === "string" && gate && !gate.shows(info, label)) return `${label}: ${ELIDED_TEXT}`;
   const text = typeof info === "string" ? info.replace(/\s+$/, "") : JSON.stringify(info);
   if (!text.includes("\n") && text.length <= 100) return `${label}: ${text}`;
   return `${label}:
 ${text.split("\n").map((line) => line ? `  ${line}` : "").join("\n")}`;
+}
+function infoFromOptions(opts) {
+  if (opts.info !== void 0 && opts.infoFile !== void 0) throw new Error("Pass --info or --info-file, not both");
+  const info = opts.infoFile !== void 0 ? readFileSync3(opts.infoFile, "utf-8") : opts.info;
+  return checkInfo(info, "--info");
+}
+function checkInfo(value, where = "info") {
+  if (value === void 0) return void 0;
+  if (value === null) return "";
+  if (typeof value !== "string") throw new Error(`${where} must be text (or null to clear it)`);
+  if (value.length > MAX_INFO_LENGTH) throw new Error(`The info is ${value.length} characters; PATH keeps at most ${MAX_INFO_LENGTH}`);
+  return value.trim() ? value : "";
 }
 
 // .path-cli/src/output/formatter.ts
@@ -17823,7 +17826,7 @@ function formatQuiet(data) {
 }
 
 // .path-cli/src/cache.ts
-import { readFileSync as readFileSync3, writeFileSync as writeFileSync3, existsSync as existsSync2, mkdirSync as mkdirSync3, rmSync } from "fs";
+import { readFileSync as readFileSync4, writeFileSync as writeFileSync3, existsSync as existsSync2, mkdirSync as mkdirSync3, rmSync } from "fs";
 import { resolve as resolve2 } from "path";
 import { homedir as homedir2 } from "os";
 var DEFAULT_TTL_MS = 10 * 60 * 1e3;
@@ -17846,7 +17849,7 @@ function cacheGet(accountId, key, ttlMs = DEFAULT_TTL_MS) {
   const filePath = getCacheFilePath(accountId, key);
   if (!existsSync2(filePath)) return null;
   try {
-    const raw = readFileSync3(filePath, "utf-8");
+    const raw = readFileSync4(filePath, "utf-8");
     const entry = JSON.parse(raw);
     if (Date.now() - entry.cachedAt > ttlMs) return null;
     return entry.data;
@@ -20054,8 +20057,55 @@ function folderStickerInfoLines(folders) {
   return lines.length ? ["", "Sticker info:", ...lines] : [];
 }
 
+// .path-cli/src/utils/designer-info-context.ts
+function businessObjectName(bo, id) {
+  return bo?.plural_name || bo?.name || bo?.singular_name || `Business object ${bo?.id ?? id}`;
+}
+async function businessObjectInfo(metadata, boId3) {
+  const bo = await metadata.businessObject(boId3).catch(() => void 0);
+  return { id: boId3, name: businessObjectName(bo, boId3), info: infoText(bo?.info) };
+}
+async function fieldInfo(metadata, field, relationships2) {
+  if (!field) return null;
+  const own = infoText(field.info);
+  if (own || field.relationship_id == null || field.reference_field_id == null) return own;
+  const relationship = relationships2.find((r) => r.id === field.relationship_id);
+  if (!relationship) return null;
+  const referenced = await metadata.field(relationship.to_business_object_id, field.reference_field_id).catch(() => void 0);
+  return infoText(referenced?.info);
+}
+function infoByName(entries) {
+  const out = {};
+  for (const { name, info } of entries) {
+    const text = infoText(info);
+    if (!text) continue;
+    let key = name;
+    for (let n = 2; key in out; n++) key = `${name} (${n})`;
+    out[key] = text;
+  }
+  return out;
+}
+function ownInfoLines(title, own) {
+  const lines = own ? infoLines(own.info, { indent: "  ", label: own.name, cap: INFO_TEXT_CAP }) : [];
+  return lines.length ? [`${title}:`, ...lines] : [];
+}
+function listInfoLines(title, items) {
+  const lines = items.flatMap((item2) => infoLines(item2.info, { indent: "  ", label: `${item2.name} (${item2.id})`, cap: INFO_TEXT_CAP }));
+  return lines.length ? ["", `${title}:`, ...lines] : [];
+}
+function infoContextLines(businessObject, sections = []) {
+  const lines = [];
+  const boLines = businessObject ? infoLines(businessObject.info, { indent: "  ", label: businessObject.name, cap: INFO_TEXT_CAP }) : [];
+  if (boLines.length) lines.push("Business object info:", ...boLines);
+  for (const section of sections) {
+    const entryLines = section.entries.flatMap((e) => infoLines(e.info, { indent: "  ", label: e.name, cap: INFO_TEXT_CAP }));
+    if (entryLines.length) lines.push(`${section.title}:`, ...entryLines);
+  }
+  return lines;
+}
+
 // .path-cli/src/commands/list-folders.ts
-var listFoldersCommand = new Command("list-folders").description("List folders. Each folder_stickers[] entry carries its info; a copy of a business object sticker with no info of its own also gets bo_sticker_info (the business object sticker's info, which the copy shows). Text output lists sticker info under the table").option("--bo-id <id>", "Filter by business object ID").option("--bo-name <name>", "Filter by business object name").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
+var listFoldersCommand = new Command("list-folders").description("List folders. Each folder carries its own info (what the folder is for, who uses it; once per session like all info). Each folder_stickers[] entry carries its info; a copy of a business object sticker with no info of its own also gets bo_sticker_info (the business object sticker's info, which the copy shows). Text output lists folder info and sticker info under the table").option("--bo-id <id>", "Filter by business object ID").option("--bo-name <name>", "Filter by business object name").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
   try {
     const parentOpts = listFoldersCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -20101,6 +20151,8 @@ var listFoldersCommand = new Command("list-folders").description("List folders. 
       })
     );
     if (!format && !parentOpts.quiet) {
+      const folderInfo = data.map((f) => ({ id: f.id, name: f.folder_name ?? `Folder ${f.id}`, info: infoText(f.info) }));
+      for (const line of listInfoLines("Folder info", folderInfo)) console.log(line);
       for (const line of folderStickerInfoLines(data)) console.log(line);
     }
   } catch (err) {
@@ -30564,7 +30616,10 @@ async function sourceRecords(field, metadata) {
       business_object_ids: [field.select_business_object_id],
       filters: { type: "group", condition: "and", for_groups: true, filter_types: [] }
     }),
-    with_relationships: false
+    with_relationships: false,
+    // As the web app's SelectOptionsService: options of a BO the user can't
+    // view come back as each record's id and the values a dropdown shows.
+    purpose: "options"
   });
   return res.items ?? [];
 }
@@ -30773,10 +30828,10 @@ function formatPhone(value) {
   if (typeof value !== "string") return rawText(value);
   const d = value.replace(/[^\d]/g, "");
   if (!(d.length === 7 || d.length >= 10 && d.length <= 12)) return value;
-  let str = `${d.slice(-7, -4)}-${d.slice(-4)}`;
-  if (d.length > 7) str = `(${d.slice(-10, -7)}) ${str}`;
-  if (d.length > 10) str = `+${d.slice(0, -10)} ${str}`;
-  return str;
+  let str2 = `${d.slice(-7, -4)}-${d.slice(-4)}`;
+  if (d.length > 7) str2 = `(${d.slice(-10, -7)}) ${str2}`;
+  if (d.length > 10) str2 = `+${d.slice(0, -10)} ${str2}`;
+  return str2;
 }
 function formatNumber2(field, n, formatting) {
   const percent = isPercentField(field);
@@ -31642,48 +31697,9 @@ function hiddenNote(parts) {
   return bits.length ? `Real-world mode: hid ${bits.join(", ")} the acting user doesn't see in the web app.` : null;
 }
 
-// .path-cli/src/utils/designer-info-context.ts
-function businessObjectName(bo, id) {
-  return bo?.plural_name || bo?.name || bo?.singular_name || `Business object ${bo?.id ?? id}`;
-}
-async function businessObjectInfo(metadata, boId3) {
-  const bo = await metadata.businessObject(boId3).catch(() => void 0);
-  return { id: boId3, name: businessObjectName(bo, boId3), info: infoText(bo?.info) };
-}
-async function fieldInfo(metadata, field, relationships2) {
-  if (!field) return null;
-  const own = infoText(field.info);
-  if (own || field.relationship_id == null || field.reference_field_id == null) return own;
-  const relationship = relationships2.find((r) => r.id === field.relationship_id);
-  if (!relationship) return null;
-  const referenced = await metadata.field(relationship.to_business_object_id, field.reference_field_id).catch(() => void 0);
-  return infoText(referenced?.info);
-}
-function infoByName(entries) {
-  const out = {};
-  for (const { name, info } of entries) {
-    const text = infoText(info);
-    if (!text) continue;
-    let key = name;
-    for (let n = 2; key in out; n++) key = `${name} (${n})`;
-    out[key] = text;
-  }
-  return out;
-}
-function infoContextLines(businessObject, sections = []) {
-  const lines = [];
-  const boLines = businessObject ? infoLines(businessObject.info, { indent: "  ", label: businessObject.name, cap: INFO_TEXT_CAP }) : [];
-  if (boLines.length) lines.push("Business object info:", ...boLines);
-  for (const section of sections) {
-    const entryLines = section.entries.flatMap((e) => infoLines(e.info, { indent: "  ", label: e.name, cap: INFO_TEXT_CAP }));
-    if (entryLines.length) lines.push(`${section.title}:`, ...entryLines);
-  }
-  return lines;
-}
-
 // .path-cli/src/commands/list-records.ts
 var listRecordsCommand = new Command("list-records").description(
-  `List records in a folder (--folder-id / --folder-name), or your recent records. JSON is { business_object: {id, name, info}, field_info: [{field_id, name, info}], items } for a folder \u2014 field_info lists the folder's columns that have designer info (a relationship field without its own shows the related field's) \u2014 and { business_objects: [{id, name, info, field_info}], items } for recent records (one entry per business object present). items is the record list as before. Text output prints the table, then a "Business object info:" and a "Field info:" block (only what has info)`
+  `List records in a folder (--folder-id / --folder-name), or your recent records. JSON is { folder: {id, name, info}, business_object: {id, name, info}, field_info: [{field_id, name, info}], items } for a folder \u2014 folder.info is the folder's own info (what it is for, who uses it), field_info lists the folder's columns that have designer info (a relationship field without its own shows the related field's) \u2014 and { business_objects: [{id, name, info, field_info}], items } for recent records (one entry per business object present). items is the record list as before. Text output prints the table, then a "Folder info:", a "Business object info:" and a "Field info:" block (only what has info). Like all info, each is shown once per session; later calls leave it out (pass --with-info to repeat)`
 ).option("--folder-id <id>", "Folder ID to list records from").option("--folder-name <name>", "Folder name (requires --bo-id or --bo-name)").option("--bo-id <id>", "Business object ID (for --folder-name)").option("--bo-name <name>", "Business object name (for --folder-name)").option(
   "--page <n>",
   "Fetch only this single page (disables auto-pagination)"
@@ -31796,16 +31812,15 @@ async function recordListInfo(metadata, records, folder2) {
     return [...ids].sort((a, b) => a - b).map((id) => ({ id }));
   };
   if (folder2) {
+    const own = { id: folder2.id, name: folder2.folder_name?.trim() || `Folder ${folder2.id}`, info: infoText(folder2.info) };
     const boId3 = folder2.business_object_id ?? records[0]?.business_object_id;
-    if (boId3 == null) return { business_object: { id: 0, name: "Business object", info: null }, field_info: [] };
+    if (boId3 == null) return { folder: own, business_object: { id: 0, name: "Business object", info: null }, field_info: [] };
     const columns = [...folder2.folder_columns ?? []].sort((a, b) => (a.order_number ?? 0) - (b.order_number ?? 0)).map((c) => ({ id: c.field_id, name: c.custom_name }));
     const [business_object, field_info] = await Promise.all([
       businessObjectInfo(metadata, boId3),
       fieldEntries2(metadata, boId3, columns.length ? columns : carried(records), relationships2)
     ]);
-    const gate = currentInfoGate();
-    for (const entry of field_info) gate?.always(entry.info);
-    return { business_object, field_info };
+    return { folder: own, business_object, field_info };
   }
   const byBo = /* @__PURE__ */ new Map();
   for (const r of records) {
@@ -31822,7 +31837,10 @@ async function recordListInfo(metadata, records, folder2) {
 }
 function renderRecordListInfo(context3) {
   if ("business_object" in context3) {
-    return infoContextLines(context3.business_object, [{ title: "Field info", entries: context3.field_info }]);
+    return [
+      ...ownInfoLines("Folder info", context3.folder),
+      ...infoContextLines(context3.business_object, [{ title: "Field info", entries: context3.field_info }])
+    ];
   }
   return context3.business_objects.flatMap(
     (bo) => infoContextLines(bo, [{ title: `Field info (${bo.name})`, entries: bo.field_info }])
@@ -32272,7 +32290,7 @@ async function inverseList(visibility2, record2, tab) {
 
 // .path-cli/src/commands/list-related-records.ts
 var listRelatedRecordsCommand = new Command("list-related-records").description(
-  "A record's related records as the record viewer shows them to you. Without --relationship-*: every related list the record viewer shows \u2014 direct relationships (the records this one links to: relationship cards, Contacts, People, Addresses) and inverse relationship tabs (records that link to this one), each with direction, relationship id, name, the related business object {id, name, info}, the relationship's info and a count. With --relationship-id / --relationship-name: that list's records with the record viewer's columns \u2014 an inverse tab's Table Columns (fields, linked-record lookups, nested tables, pathway buttons, milestones), a direct relationship's identifier, milestones and linked fields (an address's Street / City / State / Zip). JSON: { record, direction, relationship {id, name, info}, business_object {id, name, info}, columns [{kind, name, field_id?, relationship_id?, pathway_id?, info}], items [{id, identifier, values, linked_ids?}] } \u2014 a column's info is the info of the field / relationship / pathway it is based on, shown every time. Open any listed record with get-record --record-id <id>. Relationships the record viewer doesn't show you (hidden, visibility rules, business objects you can't view) are refused"
+  "A record's related records as the record viewer shows them to you. Without --relationship-*: every related list the record viewer shows \u2014 direct relationships (the records this one links to: relationship cards, Contacts, People, Addresses) and inverse relationship tabs (records that link to this one), each with direction, relationship id, name, the related business object {id, name, info}, the relationship's info and a count. With --relationship-id / --relationship-name: that list's records with the record viewer's columns \u2014 an inverse tab's Table Columns (fields, linked-record lookups, nested tables, pathway buttons, milestones), a direct relationship's identifier, milestones and linked fields (an address's Street / City / State / Zip). JSON: { record, direction, relationship {id, name, info}, business_object {id, name, info}, columns [{kind, name, field_id?, relationship_id?, pathway_id?, info}], items [{id, identifier, values, linked_ids?}] } \u2014 a column's info is the info of the field / relationship / pathway it is based on (once per session, like all info). Open any listed record with get-record --record-id <id>. Relationships the record viewer doesn't show you (hidden, visibility rules, business objects you can't view) are refused"
 ).requiredOption("--record-id <id>", "The record whose related records to list").option("--relationship-id <id>", "The relationship (from the overview)").option("--relationship-name <name>", "The relationship by name or inverse tab name (case-insensitive)").option("--direction <direction>", "direct or inverse, when a name or a self-relationship matches both").option("--no-count", "Overview: skip the per-tab record counts (one small request each)").action(async (opts) => {
   try {
     const parentOpts = listRelatedRecordsCommand.parent?.opts() ?? {};
@@ -32317,8 +32335,6 @@ var listRelatedRecordsCommand = new Command("list-related-records").description(
     }
     const tab = pickTab(tabs, wanted, opts.relationshipId !== void 0, opts.direction, visibility2.access.label);
     const list3 = tab.direction === "direct" ? await directList(visibility2, record2, tab) : await inverseList(visibility2, record2, tab);
-    const gate = currentInfoGate();
-    for (const column of list3.columns) gate?.always(column.info);
     if (parentOpts.json) {
       console.log(JSON.stringify({ record: { id: record2.id }, ...list3 }, null, 2));
       return;
@@ -33228,7 +33244,9 @@ var listCalendarEventsCommand = new Command("list-calendar-events").alias("list-
 });
 
 // .path-cli/src/commands/list-reports.ts
-var listReportsCommand = new Command("list-reports").description("List reports").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
+var listReportsCommand = new Command("list-reports").description(
+  "List reports. Each report carries its own info (what the report is for, how to read it; once per session like all info); text output lists it under the table"
+).option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
   try {
     const parentOpts = listReportsCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -33259,6 +33277,10 @@ var listReportsCommand = new Command("list-reports").description("List reports")
         quiet: parentOpts.quiet
       })
     );
+    if (!format && !parentOpts.quiet) {
+      const reportInfo2 = data.map((r) => ({ id: r.id, name: r.name ?? `Report ${r.id}`, info: infoText(r.info) }));
+      for (const line of listInfoLines("Report info", reportInfo2)) console.log(line);
+    }
   } catch (err) {
     handleError(err);
   }
@@ -33302,9 +33324,9 @@ function fieldPath(field) {
 function sameName(a, b) {
   return a.localeCompare(b, void 0, { sensitivity: "accent" }) === 0;
 }
-function preferExactCase(matches, typed, nameOf2) {
+function preferExactCase(matches, typed, nameOf3) {
   if (matches.length <= 1) return matches;
-  const exact = matches.filter((m) => nameOf2(m) === typed);
+  const exact = matches.filter((m) => nameOf3(m) === typed);
   return exact.length === 1 ? exact : matches;
 }
 function findFieldByPath(catalog, rawPath) {
@@ -33504,9 +33526,9 @@ function settingOutputType(settingType) {
 function sameName2(a, b) {
   return a.localeCompare(b, void 0, { sensitivity: "accent" }) === 0;
 }
-function preferExactCase2(matches, typed, nameOf2) {
+function preferExactCase2(matches, typed, nameOf3) {
   if (matches.length <= 1) return matches;
-  const exact = matches.filter((m) => nameOf2(m) === typed);
+  const exact = matches.filter((m) => nameOf3(m) === typed);
   return exact.length === 1 ? exact : matches;
 }
 function nativeFieldsAt(catalog, businessObjectId) {
@@ -38548,7 +38570,9 @@ function columnToCreate(col) {
     // reference column_key, and Custom Fields keep usage 'filter'.
     id: col.id,
     column_key: col.column_key,
-    usage: col.usage ?? "column"
+    usage: col.usage ?? "column",
+    // The column's own info, resent so a save keeps it (absent = unchanged).
+    ...typeof col.info === "string" ? { info: col.info } : {}
   };
 }
 function schedulingToCreate(s) {
@@ -39032,6 +39056,26 @@ function reportColumns(report2) {
     (a, b) => Number(a.order_number) - Number(b.order_number)
   );
 }
+function findReportColumn2(report2, ref) {
+  const columns = reportColumns(report2);
+  const wanted = ref.trim().toLowerCase();
+  const byId = /^\d+$/.test(ref.trim()) ? columns.find((c) => Number(c.id) === Number(ref)) : void 0;
+  if (byId) return byId;
+  const byKey = columns.find((c) => c.column_key === ref);
+  if (byKey) return byKey;
+  const matches = columns.filter((c) => String(c.name ?? "").trim().toLowerCase() === wanted);
+  const listed = (rows) => rows.map((c) => `  ${c.id}: ${c.name}${c.usage === "filter" ? " (Custom Field)" : ""}`).join("\n") || "  (none)";
+  if (matches.length === 1) return matches[0];
+  if (matches.length > 1) throw new Error(`Ambiguous column name "${ref}" on report ${report2.id} \u2014 use its id. Matches:
+${listed(matches)}`);
+  throw new Error(`No column "${ref}" on report ${report2.id}. Columns:
+${listed(columns)}`);
+}
+function columnsWithInfo(report2, infos) {
+  const changed = /* @__PURE__ */ new Map();
+  for (const [ref, info] of Object.entries(infos)) changed.set(findReportColumn2(report2, ref), info ?? "");
+  return reportColumns(report2).map((c) => changed.has(c) ? { ...columnToCreate(c), info: changed.get(c) } : columnToCreate(c));
+}
 function findCustomField(report2, nameOrKey) {
   const wanted = nameOrKey.trim().toLowerCase();
   const fields = reportColumns(report2).filter((c) => c.usage === "filter");
@@ -39244,7 +39288,7 @@ async function definitionFrom(client, accountId, report2, opts) {
   };
 }
 var getReportCommand = new Command("get-report").description(
-  "Show a report's columns (with column_key / usage), its filter-only Custom Fields and its filter as formula text"
+  "Show a report's columns (with column_key / usage), its filter-only Custom Fields, its filter as formula text, and the report's and each column's own info (what it is for; JSON keys info and columns[].info, once per session like all info)"
 ).argument("<report-id>", "Report ID").action(async (idArg) => {
   try {
     const { parentOpts, config: config2, client } = setup3(getReportCommand);
@@ -39274,6 +39318,7 @@ var getReportCommand = new Command("get-report").description(
         `  #${c.order_number} ${c.name} [${c.column_type}${c.show_column ? "" : ", hidden"}] id=${c.id} key=${c.column_key}` + (filterable ? ` \u2014 filter: COLUMN("${c.name}") (${filterable.kind})` : "") + (computed ? `
       ${computed}` : "")
       );
+      for (const line of infoLines(c.info, { indent: "      ", label: "info", cap: INFO_TEXT_CAP })) console.log(line);
     }
     const fields = columns.filter((c) => c.usage === "filter");
     console.log("\ncustom fields:");
@@ -39287,6 +39332,7 @@ var getReportCommand = new Command("get-report").description(
         `  ${c.name} id=${c.id} key=${c.column_key} \u2014 CUSTOMFIELD("${c.name}") (${entry?.kind ?? "not comparable"})${used ? "" : " [unused]"}
       ${describeComputedColumn(c, exprCatalog)}`
       );
+      for (const line of infoLines(c.info, { indent: "      ", label: "info", cap: INFO_TEXT_CAP })) console.log(line);
     }
     console.log("\nfilter:");
     if (isEmptyPipeline(report2.filter_condition)) {
@@ -39309,6 +39355,8 @@ var getReportCommand = new Command("get-report").description(
 user filters: ${ticked.map((l) => l.user_filter_label || l.uid).join(", ")}`
       );
     }
+    console.log(`
+${infoBlock(report2.info)}`);
   } catch (err) {
     handleError(err);
   }
@@ -39318,7 +39366,7 @@ var createCustomFieldCommand = new Command("create-custom-field").description(
 ).argument("<report-id>", "Report ID").requiredOption(
   "--name <name>",
   "Custom Field name (unique among the report custom columns/fields)"
-).option("--expression <formula>", 'Calculation, e.g. "[Total] - [Paid]"').option("--from <source>", "Time Between start").option("--to <source>", "Time Between end").option("--from-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--to-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--dry-run", "Print the column without saving").action(async (idArg, opts) => {
+).option("--expression <formula>", 'Calculation, e.g. "[Total] - [Paid]"').option("--from <source>", "Time Between start").option("--to <source>", "Time Between end").option("--from-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--to-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--info <text>", "The Custom Field's info: what it measures and why the filter compares it (at most 50,000 characters)").option("--info-file <path>", "Read the info from a text or markdown file (instead of --info)").option("--dry-run", "Print the column without saving").action(async (idArg, opts) => {
   try {
     const { parentOpts, config: config2, client } = setup3(createCustomFieldCommand);
     const report2 = await fetchReport(client, parseInt(idArg, 10));
@@ -39337,9 +39385,11 @@ var createCustomFieldCommand = new Command("create-custom-field").description(
     if (!definition) {
       throw new Error("Provide --expression <formula> or --from/--to");
     }
+    const info = infoFromOptions(opts);
     const column = {
       ...customFieldColumn(opts.name.trim(), definition),
-      column_key: crypto.randomUUID()
+      column_key: crypto.randomUUID(),
+      ...info ? { info } : {}
     };
     if (opts.dryRun) {
       console.log(JSON.stringify(column, null, 2));
@@ -39361,8 +39411,8 @@ var createCustomFieldCommand = new Command("create-custom-field").description(
   }
 });
 var updateCustomFieldCommand = new Command("update-custom-field").description(
-  "Change a report Custom Field's name or definition (--expression, or --from/--to). Filter rules keep working: they reference the field's key, not its name."
-).argument("<report-id>", "Report ID").argument("<field>", "Custom Field name or column_key").option("--name <name>", "New name").option("--expression <formula>", "New calculation").option("--from <source>", "New Time Between start").option("--to <source>", "New Time Between end").option("--from-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--to-occurrence <first|most_recent>", OCCURRENCE_HELP).action(async (idArg, fieldArg, opts) => {
+  "Change a report Custom Field's name, definition (--expression, or --from/--to) or info (--info / --info-file). Filter rules keep working: they reference the field's key, not its name."
+).argument("<report-id>", "Report ID").argument("<field>", "Custom Field name or column_key").option("--name <name>", "New name").option("--expression <formula>", "New calculation").option("--from <source>", "New Time Between start").option("--to <source>", "New Time Between end").option("--from-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--to-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--info <text>", 'New info for the Custom Field ("" clears it)').option("--info-file <path>", "Read the new info from a text or markdown file (instead of --info)").action(async (idArg, fieldArg, opts) => {
   try {
     const { parentOpts, config: config2, client } = setup3(updateCustomFieldCommand);
     const report2 = await fetchReport(client, parseInt(idArg, 10));
@@ -39381,12 +39431,16 @@ var updateCustomFieldCommand = new Command("update-custom-field").description(
       report2,
       opts
     );
-    if (!definition && !opts.name) {
+    const info = infoFromOptions(opts);
+    if (!definition && !opts.name && info === void 0) {
       throw new Error(
-        "Nothing to change: pass --name, --expression or --from/--to"
+        "Nothing to change: pass --name, --expression, --from/--to or --info"
       );
     }
-    const updated = definition ? customFieldColumn(name, definition, field) : { ...columnToCreate(field), name };
+    const updated = {
+      ...definition ? customFieldColumn(name, definition, field) : { ...columnToCreate(field), name },
+      ...info !== void 0 ? { info } : {}
+    };
     const saved = await saveReportColumns(
       client,
       report2,
@@ -39632,13 +39686,16 @@ function formatPermissions(config2) {
   if (config2.deletion) parts.push("delete");
   return parts.join(",");
 }
-var createFolderCommand = new Command("create-folder").description("Create a folder with permissions").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name (resolved to ID)").requiredOption("--folder-name <name>", "Folder name").option("--roles <names>", "Comma-separated role names").option("--role-permissions <perms>", "Comma-separated: view,edit,delete").option("--users <names>", "Comma-separated user full names").option("--user-permissions <perms>", "Comma-separated: view,edit,delete").option(
+var createFolderCommand = new Command("create-folder").description("Create a folder with permissions (and its info: --info / --info-file)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name (resolved to ID)").requiredOption("--folder-name <name>", "Folder name").option("--roles <names>", "Comma-separated role names").option("--role-permissions <perms>", "Comma-separated: view,edit,delete").option("--users <names>", "Comma-separated user full names").option("--user-permissions <perms>", "Comma-separated: view,edit,delete").option(
   "--logic <formula>",
   `Logic Builder formula, e.g. '[Department] = "Residential" AND INMILESTONE("Won")' \u2014 see /path-logic-formula-syntax`
 ).option("--logic-raw <json>", "Raw GroupFilter JSON (escape hatch for edge cases)").option(
   "--map-relationship <name-or-id>",
   "Relationship (name or ID) from this folder's BO to the account's Address BO; sets map_enabled and map_relationship_id"
-).option("--dry-run", "Parse/build the request bodies and print them, but create nothing").action(async (opts) => {
+).option(
+  "--info <text>",
+  "The folder's info: what it is for, who uses it, what its records have in common \u2014 shown with the folder to people and AI agents (at most 50,000 characters)"
+).option("--info-file <path>", "Read the folder's info from a text or markdown file (instead of --info)").option("--dry-run", "Parse/build the request bodies and print them, but create nothing").action(async (opts) => {
   try {
     const parentOpts = createFolderCommand.parent?.opts?.() ?? {};
     const config2 = loadConfig({
@@ -39690,13 +39747,15 @@ var createFolderCommand = new Command("create-folder").description("Create a fol
     if (opts.mapRelationship) {
       mapRelationship = await resolveMapRelationship(client, boId3, opts.mapRelationship);
     }
+    const info = infoFromOptions(opts);
     const folderBody2 = {
       folder_name: opts.folderName,
       is_custom: false,
       include_archived: false,
       filter_condition: filterCondition,
       sorts: [],
-      ...mapRelationship ? { map_enabled: true, map_relationship_id: mapRelationship.id } : {}
+      ...mapRelationship ? { map_enabled: true, map_relationship_id: mapRelationship.id } : {},
+      ...info ? { info } : {}
     };
     const roleConfig = parsePermissions(opts.rolePermissions);
     const userConfig = parsePermissions(opts.userPermissions);
@@ -39771,6 +39830,826 @@ var createFolderCommand = new Command("create-folder").description("Create a fol
         );
       }
     }
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/utils/report-builder.ts
+var NUMERIC_FIELD_TYPES = /* @__PURE__ */ new Set(["number", "currency", "percent", "auto_number", "aggregate_number", "calculation", "id"]);
+var DATE_FIELD_TYPES2 = /* @__PURE__ */ new Set(["date", "date_time"]);
+var GROUPING_BY = /* @__PURE__ */ new Set(["day", "week", "month", "quarter", "year"]);
+var CALCULATIONS = {
+  total: "Total",
+  sum: "Total",
+  average: "Average",
+  avg: "Average",
+  minimum: "Minimum",
+  min: "Minimum",
+  maximum: "Maximum",
+  max: "Maximum"
+};
+var MAX_GROUP_COLUMNS = 3;
+var COMPUTED_TYPES = /* @__PURE__ */ new Set(["custom_calculation", "timespan", "time_between"]);
+var DURATION_PARTS = ["days", "hours", "minutes", "seconds"];
+var REPORT_TYPES = ["detail", "grouped"];
+var KNOWN_OPTIONS = /* @__PURE__ */ new Set([
+  "name",
+  "as",
+  "info",
+  "detail",
+  "group",
+  "calculate",
+  ...Object.keys(CALCULATIONS),
+  "sort",
+  "width",
+  "occurrence",
+  "from-occurrence",
+  "to-occurrence",
+  "group-expression",
+  "format",
+  "decimals",
+  "commas",
+  "currency",
+  "percent",
+  "duration"
+]);
+function splitTopLevel(text, separators) {
+  const parts = [];
+  let depthParen = 0;
+  let depthBracket = 0;
+  let quote4 = null;
+  let start = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (quote4) {
+      if (ch === quote4) quote4 = null;
+      continue;
+    }
+    if (ch === '"' || ch === "'") quote4 = ch;
+    else if (ch === "(") depthParen++;
+    else if (ch === ")") depthParen = Math.max(0, depthParen - 1);
+    else if (ch === "[") depthBracket++;
+    else if (ch === "]") depthBracket = Math.max(0, depthBracket - 1);
+    else if (depthParen === 0 && depthBracket === 0 && separators.includes(ch)) {
+      parts.push(text.slice(start, i));
+      start = i + 1;
+    }
+  }
+  parts.push(text.slice(start));
+  return parts.map((p) => p.trim()).filter(Boolean);
+}
+function unquote(value) {
+  const v = value.trim();
+  if (v.length >= 2 && (v[0] === '"' || v[0] === "'") && v[v.length - 1] === v[0]) return v.slice(1, -1);
+  return v;
+}
+function parseSource(text) {
+  const t = text.trim();
+  const call = /^(CALC|TIMEBETWEEN)\s*\(([\s\S]*)\)$/i.exec(t);
+  if (call) {
+    const inner = call[2].trim();
+    if (call[1].toUpperCase() === "CALC") return { kind: "calc", expression: inner };
+    const ends = splitTopLevel(inner, ",");
+    if (ends.length !== 2) throw new Error("TIMEBETWEEN needs two sources: TIMEBETWEEN(<from>, <to>)");
+    return { kind: "timebetween", from: unquote(ends[0]), to: unquote(ends[1]) };
+  }
+  if (/^count$/i.test(t)) return { kind: "count" };
+  const stripped = t.startsWith("[") && t.endsWith("]") ? t.slice(1, -1).trim() : t;
+  const kinded = /^(?:(.*)\.)?(milestone|step)\s*:\s*(.+)$/is.exec(stripped);
+  if (kinded) {
+    const prefix = kinded[1]?.trim();
+    const name = kinded[3].trim();
+    return { kind: kinded[2].toLowerCase(), path: prefix ? `${prefix}.${name}` : name };
+  }
+  if (/^milestones$/i.test(stripped) || /\.milestones$/i.test(stripped)) {
+    return { kind: "milestones", path: stripped };
+  }
+  if (!stripped) throw new Error("empty column");
+  return { kind: "field", path: stripped };
+}
+function parseColumnSpec(text) {
+  const [sourceText, ...optionTexts] = splitTopLevel(text, "|");
+  if (!sourceText) throw new Error(`Column "${text}" has no source`);
+  const options = /* @__PURE__ */ new Map();
+  for (const opt of optionTexts) {
+    const eq = opt.indexOf("=");
+    const key = (eq === -1 ? opt : opt.slice(0, eq)).trim().toLowerCase();
+    if (!KNOWN_OPTIONS.has(key)) {
+      throw new Error(`Column "${text}": unknown option "${key}". Options: name=, info=, detail, group[=\u2026], total, average, minimum, maximum, sort=, width=, occurrence=, from-occurrence=, to-occurrence=, group-expression=, format=, decimals=, commas, currency[=\u2026], percent, duration=`);
+    }
+    if (options.has(key)) throw new Error(`Column "${text}": option "${key}" given twice`);
+    options.set(key, eq === -1 ? true : unquote(opt.slice(eq + 1)));
+  }
+  return { text: text.trim(), source: parseSource(sourceText), options };
+}
+function parseColumnList(lists3) {
+  return lists3.flatMap((list3) => splitTopLevel(list3, ",;\n")).map(parseColumnSpec);
+}
+function str(options, key) {
+  const v = options.get(key);
+  if (v === void 0) return void 0;
+  if (v === true) throw new Error(`${key} needs a value (${key}=\u2026)`);
+  return v;
+}
+function occurrenceOf(value, what) {
+  if (value === void 0) return void 0;
+  const v = value.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  if (v === "first") return "first";
+  if (v === "most_recent" || v === "recent" || v === "last") return "most_recent";
+  throw new Error(`${what} must be first or most_recent, got "${value}"`);
+}
+function durationMinutes(text) {
+  const t = text.trim().toLowerCase();
+  const clock = /^(?:(\d+)\s*d\s*)?(\d+):(\d{2})$/.exec(t);
+  if (clock) return Number(clock[1] ?? 0) * 1440 + Number(clock[2]) * 60 + Number(clock[3]);
+  const parts = /^(?:(\d+)\s*d)?\s*(?:(\d+)\s*h)?\s*(?:(\d+)\s*m)?$/.exec(t);
+  if (parts && (parts[1] || parts[2] || parts[3])) {
+    return Number(parts[1] ?? 0) * 1440 + Number(parts[2] ?? 0) * 60 + Number(parts[3] ?? 0);
+  }
+  return null;
+}
+function staticName(label, relationshipNames) {
+  const rel = relationshipNames[relationshipNames.length - 1]?.trim();
+  return rel ? `${rel} ${label}` : label;
+}
+function mappingsFor(catalog, relationshipIds) {
+  const mappings = [];
+  const names = [];
+  for (const id of relationshipIds) {
+    const rel = (catalog.relationships ?? []).find((r) => r.id === id);
+    if (!rel) throw new Error(`relationship ${id} not found`);
+    mappings.push({ relationship_id: rel.id, business_object_id: rel.to_business_object_id });
+    names.push(rel.name);
+  }
+  return { mappings, names };
+}
+function parseGroupExpression(text, catalog) {
+  const result = parseExpressionText(text, catalog, { allowAggregateFunctions: true, allowEntryDateOperands: true });
+  if (result.errors.length > 0 || !result.expression) throw new Error(describeParseErrors(text, result.errors));
+  const resolve12 = remoteFieldResolver(catalog);
+  const output = inferOutputType(result.expression, catalog.fields, resolve12, catalog.settings);
+  return toBackendFormat({ output, expression: result.expression }, catalog.fields, resolve12, catalog.settings);
+}
+function baseColumn(spec, ctx, asCustomField) {
+  const { catalog } = ctx;
+  const src = spec.source;
+  const base = (over) => ({
+    order_number: 0,
+    is_grouped: false,
+    show_column: true,
+    column_entity_id: 0,
+    relationship_mappings: [],
+    formatting: null,
+    expressions: null,
+    width: null,
+    grouping_by: null,
+    report_column_type: "detail",
+    group_range_size: null,
+    group_range_unit: null,
+    calculation: null,
+    occurrence: null,
+    from_field: null,
+    to_field: null,
+    show_user_filter: null,
+    ...over
+  });
+  if (asCustomField && src.kind !== "calc" && src.kind !== "timebetween") {
+    throw new Error("a Custom Field is a CALC(\u2026) or TIMEBETWEEN(\u2026, \u2026)");
+  }
+  switch (src.kind) {
+    case "field": {
+      const found2 = findFilterField(catalog, src.path);
+      if (!found2.ok) throw new Error(found2.message);
+      const { mappings } = mappingsFor(catalog, found2.relationshipIds);
+      return base({
+        name: found2.item.name,
+        entity_name: found2.item.name,
+        column_type: "field",
+        column_entity_id: found2.item.id,
+        relationship_mappings: mappings,
+        field_type: found2.item.field_type
+      });
+    }
+    case "milestone":
+    case "step": {
+      const found2 = resolvePath(catalog, src.path, {
+        itemsAt: (boId3) => src.kind === "milestone" ? milestonesAt(catalog, boId3) : stepsAt(catalog, boId3),
+        idOf: (e) => e.id,
+        nameOf: (e) => e.name,
+        kind: src.kind === "milestone" ? "milestone" : "workflow step"
+      });
+      if (!found2.ok) throw new Error(found2.message);
+      const { mappings } = mappingsFor(catalog, found2.relationshipIds);
+      return base({
+        name: found2.item.name,
+        entity_name: found2.item.name,
+        column_type: src.kind === "milestone" ? "milestone" : "workflow_step",
+        column_entity_id: found2.item.id,
+        relationship_mappings: mappings
+      });
+    }
+    case "milestones": {
+      const marker = { id: -1, name: "milestones" };
+      const found2 = resolvePath(catalog, src.path, { itemsAt: () => [marker], idOf: (e) => e.id, nameOf: (e) => e.name, kind: "relationship path" });
+      if (!found2.ok) throw new Error(found2.message);
+      const { mappings, names } = mappingsFor(catalog, found2.relationshipIds);
+      return base({ name: staticName("Milestones", names), entity_name: "Milestones", column_type: "milestones_as_field", relationship_mappings: mappings });
+    }
+    case "count":
+      return base({ name: "Count", entity_name: "Count", column_type: "count" });
+    case "calc": {
+      if (!ctx.expressions) throw new Error("expression catalog not loaded");
+      const groupText = str(spec.options, "group-expression");
+      if (!src.expression && !groupText) throw new Error("CALC needs an expression: CALC(<expression>) and/or group-expression=<expression>");
+      if (asCustomField && !src.expression) throw new Error("a Custom Field needs a per-record expression: CALC(<expression>)");
+      const detail = src.expression ? parseCustomFieldExpression(src.expression, ctx.expressions) : void 0;
+      const group2 = groupText ? parseGroupExpression(groupText, ctx.expressions) : void 0;
+      return base({
+        name: "Custom Calculation",
+        entity_name: "Custom Calculation",
+        column_type: "custom_calculation",
+        expressions: { ...detail ? { detail } : {}, ...group2 ? { group: group2 } : {} }
+      });
+    }
+    case "timebetween": {
+      if (!ctx.expressions) throw new Error("expression catalog not loaded");
+      const fromOcc = occurrenceOf(str(spec.options, "from-occurrence"), "from-occurrence") ?? "most_recent";
+      const toOcc = occurrenceOf(str(spec.options, "to-occurrence"), "to-occurrence") ?? "most_recent";
+      const from = parseTimeBetweenSource(src.from, ctx.expressions, fromOcc);
+      const to = parseTimeBetweenSource(src.to, ctx.expressions, toOcc);
+      return base({ name: "Time Between", entity_name: "Time Between", column_type: "timespan", from_field: from, to_field: to });
+    }
+  }
+}
+function displaySettings(spec, column) {
+  const o = spec.options;
+  const type = String(column.column_type);
+  const fieldType = column.field_type ?? void 0;
+  const isTimeSpan = fieldType === "time_span" || type === "timespan";
+  const isNumeric = NUMERIC_FIELD_TYPES.has(fieldType ?? "");
+  const isDateLike = DATE_FIELD_TYPES2.has(fieldType ?? "") || type === "workflow_step" || type === "milestone";
+  const calcWords = [...o.keys()].filter((k) => k in CALCULATIONS);
+  if (o.has("calculate")) calcWords.push(String(o.get("calculate")).toLowerCase());
+  const wants = [o.has("detail") ? "detail" : null, o.has("group") ? "group" : null, calcWords.length ? "calculation" : null].filter(Boolean);
+  if (wants.length > 1 || calcWords.length > 1) throw new Error("pick one of detail, group or a calculation (total, average, minimum, maximum)");
+  const display = wants[0] ?? "detail";
+  if (type === "custom_calculation" && display !== "detail") {
+    throw new Error("a CALC column is always a detail column (give it a group-expression= for its group rows)");
+  }
+  const out = { report_column_type: display, is_grouped: display === "group", grouping_by: null, group_range_size: null, group_range_unit: null, calculation: null };
+  if (display === "calculation") {
+    if (!isTimeSpan && !isNumeric) {
+      throw new Error(`total / average / minimum / maximum need a number, currency, percent or time span column${fieldType ? ` (this one is ${fieldType})` : ""}`);
+    }
+    const calc = CALCULATIONS[calcWords[0]];
+    if (!calc) throw new Error(`calculate must be total, average, minimum or maximum, got "${calcWords[0]}"`);
+    out.calculation = calc;
+  }
+  const groupValue = o.get("group");
+  if (display === "group" && typeof groupValue === "string") {
+    const v = groupValue.trim().toLowerCase();
+    if (GROUPING_BY.has(v)) {
+      if (!isDateLike) throw new Error(`group=${v} groups dates: it needs a date field, milestone or step column`);
+      out.grouping_by = v;
+    } else if (isTimeSpan) {
+      const minutes = durationMinutes(v);
+      if (minutes == null) throw new Error(`group=${groupValue}: a time span groups in ranges like 1d, 12h, 90m or 1d 4:30`);
+      out.group_range_unit = minutes;
+    } else if (isNumeric) {
+      const size = Number(v);
+      if (!Number.isFinite(size) || size <= 0) throw new Error(`group=${groupValue}: a number column groups in ranges of a positive size, e.g. group=1000`);
+      out.group_range_size = size;
+    } else {
+      throw new Error(`group=${groupValue}: only date (day \u2026 year), number (range size) and time span (1d, 12h\u2026) columns take a group setting; use plain "group"`);
+    }
+  } else if (display === "group" && isTimeSpan) {
+    out.group_range_unit = 0;
+  }
+  return out;
+}
+function formattingFor(spec, column) {
+  const o = spec.options;
+  const type = String(column.column_type);
+  const fieldType = column.field_type ?? void 0;
+  const isStepOrMilestone = type === "workflow_step" || type === "milestone";
+  const format = str(o, "format") ?? (isStepOrMilestone ? "M/d/yyyy" : "");
+  const decimals = str(o, "decimals");
+  if (decimals !== void 0 && !/^\d+$/.test(decimals.trim())) throw new Error(`decimals must be a whole number, got "${decimals}"`);
+  const currency = o.get("currency");
+  const duration3 = str(o, "duration");
+  let durationOption = { days: true, hours: true, minutes: true, seconds: true };
+  if (duration3 !== void 0) {
+    const parts = duration3.toLowerCase().split(/[\s+,]+/).filter(Boolean);
+    const bad = parts.filter((p) => !DURATION_PARTS.includes(p));
+    if (bad.length || !parts.length) throw new Error(`duration lists days, hours, minutes, seconds (e.g. duration=days+hours), got "${duration3}"`);
+    durationOption = { days: parts.includes("days"), hours: parts.includes("hours"), minutes: parts.includes("minutes"), seconds: parts.includes("seconds") };
+  }
+  return {
+    use_comma_separator: o.has("commas"),
+    use_decimal_separator: decimals !== void 0 && Number(decimals) > 0,
+    decimal_precision: decimals !== void 0 ? Number(decimals) : 0,
+    use_currency_symbol: currency !== void 0,
+    currency_symbol: typeof currency === "string" && currency ? currency : "$",
+    use_percentage_symbol: fieldType === "percent" ? true : o.has("percent"),
+    // The web keeps "" on a date column with no format picked; the gateway refuses an empty format, so it is left out.
+    ...format ? { format } : {},
+    duration_option: durationOption
+  };
+}
+function displayColumn(spec, ctx) {
+  const column = baseColumn(spec, ctx, false);
+  const o = spec.options;
+  const sort = str(o, "sort");
+  if (sort !== void 0 && !["asc", "desc", "none"].includes(sort.toLowerCase())) throw new Error(`sort must be asc or desc, got "${sort}"`);
+  const width = str(o, "width");
+  if (width !== void 0 && !/^\d+$/.test(width.trim())) throw new Error(`width must be a whole number, got "${width}"`);
+  const occurrence2 = occurrenceOf(str(o, "occurrence"), "occurrence");
+  if (occurrence2 && column.column_type !== "milestone" && column.column_type !== "workflow_step") {
+    throw new Error("occurrence= is for milestone: and step: columns (TIMEBETWEEN takes from-occurrence= / to-occurrence=)");
+  }
+  if ((o.has("from-occurrence") || o.has("to-occurrence")) && column.column_type !== "timespan") {
+    throw new Error("from-occurrence= / to-occurrence= are for TIMEBETWEEN columns");
+  }
+  if (o.has("group-expression") && column.column_type !== "custom_calculation") throw new Error("group-expression= is for CALC columns");
+  return {
+    ...column,
+    name: nameOf(spec, column),
+    ...infoOf(spec),
+    show_column: true,
+    ...displaySettings(spec, column),
+    width: width !== void 0 ? Number(width) : null,
+    formatting: formattingFor(spec, column),
+    occurrence: occurrence2 ?? "first",
+    // "none" is sent explicitly, as the web does (the DB default is 'asc').
+    sorting: sort && sort.toLowerCase() !== "none" ? sort.toLowerCase() : "none",
+    column_key: ctx.newKey(),
+    usage: "column"
+  };
+}
+function customFieldColumn2(spec, ctx) {
+  const column = baseColumn(spec, ctx, true);
+  const allowed = /* @__PURE__ */ new Set(["name", "as", "info", "from-occurrence", "to-occurrence"]);
+  const extra = [...spec.options.keys()].filter((k) => !allowed.has(k));
+  if (extra.length) throw new Error(`a Custom Field takes only name=, info= (and from-occurrence= / to-occurrence=), not ${extra.join(", ")}`);
+  const { entity_name: _entity, ...rest } = column;
+  return {
+    ...rest,
+    name: nameOf(spec, column),
+    ...infoOf(spec),
+    column_entity_id: null,
+    show_column: false,
+    is_grouped: false,
+    report_column_type: "detail",
+    sorting: "none",
+    usage: "filter",
+    column_key: ctx.newKey()
+  };
+}
+function nameOf(spec, column) {
+  const given = spec.options.get("name") ?? spec.options.get("as");
+  if (given === true) throw new Error("name needs a value (name=\u2026)");
+  const name = (given ?? String(column.name)).trim();
+  if (!name) throw new Error("the column name is empty");
+  return name;
+}
+function infoOf(spec) {
+  const info = checkInfo(str(spec.options, "info"), "info");
+  return info ? { info } : {};
+}
+function buildReportColumns(display, customFields, ctx) {
+  const errors = [];
+  const shown = [];
+  const fields = [];
+  for (const [list3, out, build] of [
+    [display, shown, displayColumn],
+    [customFields, fields, customFieldColumn2]
+  ]) {
+    for (const spec of list3) {
+      try {
+        out.push(build(spec, ctx));
+      } catch (err) {
+        errors.push(`${list3 === display ? "Column" : "Custom Field"} "${spec.text}": ${err.message}`);
+      }
+    }
+  }
+  const columns = [...shown, ...fields].map((c, i) => ({ ...c, order_number: i }));
+  errors.push(...checkColumns(columns));
+  return { columns, errors };
+}
+function checkColumns(columns) {
+  const errors = [];
+  const seen = /* @__PURE__ */ new Map();
+  for (const c of columns) {
+    if (!COMPUTED_TYPES.has(String(c.column_type))) continue;
+    const key = String(c.name).trim().toLowerCase();
+    if (seen.has(key)) errors.push(`Two custom columns / Custom Fields are named "${c.name}" \u2014 give one a different name= (filters tell them apart by name)`);
+    seen.set(key, String(c.name));
+  }
+  const groups = columns.filter((c) => c.report_column_type === "group" && c.usage !== "filter").length;
+  if (groups > MAX_GROUP_COLUMNS) errors.push(`${groups} Group columns \u2014 the report builder allows at most ${MAX_GROUP_COLUMNS}`);
+  if (!columns.some((c) => c.show_column && c.usage !== "filter")) errors.push("A report needs at least one column it shows (--columns)");
+  return errors;
+}
+function filterableColumns(columns) {
+  return columns.map((c) => reportColumnCatalogEntry(c)).filter((c) => c != null);
+}
+function defaultScheduling(now = /* @__PURE__ */ new Date()) {
+  return { is_enabled: false, is_repeating: false, repeat_interval: "daily", repeat_every: 1, start_on: now.toISOString(), recipients: [] };
+}
+function reportTypeOf(columns) {
+  return columns.some((c) => c.report_column_type === "group" && c.usage !== "filter") ? "grouped" : "detail";
+}
+function applyColumnInfo(columns, json) {
+  if (json === void 0) return columns;
+  let parsed;
+  try {
+    parsed = JSON.parse(json);
+  } catch (err) {
+    throw new Error(`--column-info is not valid JSON: ${err.message}`);
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error('--column-info must be a JSON object: {"<column name>": "info text"}');
+  const out = columns.map((c) => ({ ...c }));
+  for (const [name, value] of Object.entries(parsed)) {
+    const wanted = name.trim().toLowerCase();
+    const matches = out.filter((c) => String(c.name).trim().toLowerCase() === wanted);
+    if (matches.length !== 1) {
+      throw new Error(
+        matches.length ? `--column-info: ${matches.length} columns are named "${name}" \u2014 give them different name= options` : `--column-info: no column named "${name}". Columns: ${out.map((c) => `"${c.name}"`).join(", ")}`
+      );
+    }
+    const info = checkInfo(value, `--column-info "${name}"`);
+    if (info) matches[0].info = info;
+    else delete matches[0].info;
+  }
+  return out;
+}
+
+// utils/deep-link-urls.ts
+function normalizeAppUrl(appUrl) {
+  return appUrl.replace(/\/+$/, "");
+}
+function buildRecordDeepLinkUrl(appUrl, accountId, recordId, tab) {
+  const record2 = tab ? `${recordId}:${encodeURIComponent(tab)}` : `${recordId}`;
+  return `${normalizeAppUrl(appUrl)}/accounts/${accountId}/dashboard?record=${record2}`;
+}
+function buildFolderDeepLinkUrl(appUrl, accountId, businessObjectId, folderId) {
+  return `${normalizeAppUrl(appUrl)}/accounts/${accountId}/dashboard/business-objects/${businessObjectId}/folders/${folderId}`;
+}
+function buildReportDeepLinkUrl(appUrl, accountId, businessObjectId, reportId) {
+  return `${normalizeAppUrl(appUrl)}/accounts/${accountId}/dashboard/business-objects/${businessObjectId}/reports/${reportId}`;
+}
+
+// .path-cli/src/commands/create-report.ts
+var CREATE_REPORT_DATA_KEYS = [
+  "name",
+  "info",
+  "report_type",
+  "scheduling",
+  "columns",
+  "filter_condition",
+  "include_archived",
+  "show_user_filter",
+  "user_filter_condition_keys"
+];
+function parseReportPermissions(perms) {
+  if (!perms) return { owner: false, view: true, edit: false, deletion: false };
+  const parts = perms.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+  const bad = parts.filter((p) => !["view", "edit", "delete"].includes(p));
+  if (bad.length) throw new Error(`Permissions are view, edit, delete (comma-separated), not ${bad.join(", ")}. The report's owner is always you, its creator.`);
+  return {
+    owner: false,
+    view: true,
+    edit: parts.includes("edit") || parts.includes("delete"),
+    deletion: parts.includes("delete")
+  };
+}
+function permissionWords(c) {
+  return [c.owner ? "owner" : null, c.view ? "view" : null, c.edit ? "edit" : null, c.deletion ? "delete" : null].filter(Boolean).join(",");
+}
+function parseData(data) {
+  if (data === void 0) return {};
+  let parsed;
+  try {
+    parsed = JSON.parse(data);
+  } catch (err) {
+    throw new Error(`--data is not valid JSON: ${err.message}`);
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("--data must be a JSON object (the report create body)");
+  const row = parsed;
+  const unknown2 = Object.keys(row).filter((k) => !CREATE_REPORT_DATA_KEYS.includes(k) && k !== "business_object_id" && k !== "permissions");
+  if (unknown2.length) throw new Error(`--data keys: ${CREATE_REPORT_DATA_KEYS.join(", ")} \u2014 not ${unknown2.join(", ")}`);
+  return row;
+}
+async function buildReportPlan(client, accountId, boId3, opts, newKey = () => crypto.randomUUID()) {
+  const data = parseData(opts.data);
+  const name = (opts.name ?? (typeof data.name === "string" ? data.name : "")).trim();
+  if (!name) throw new Error("Name the report: --name <name>");
+  const displaySpecs = [...opts.columns ? parseColumnList([opts.columns]) : [], ...(opts.column ?? []).map(parseColumnSpec)];
+  const fieldSpecs = (opts.customField ?? []).map(parseColumnSpec);
+  if (displaySpecs.length && data.columns !== void 0) throw new Error("Give the columns with --columns / --column or in --data, not both");
+  if (!displaySpecs.length && data.columns === void 0) {
+    throw new Error('A report needs columns: --columns "<field>, <Relationship.Field>, milestone:<name>, count, CALC(<expression>) | name=<title>, \u2026"');
+  }
+  if (opts.logic !== void 0 && data.filter_condition !== void 0) throw new Error("Give the filter with --logic or in --data filter_condition, not both");
+  const loader = await FilterCatalogLoader.load(client, accountId, boId3);
+  const needsExpressions = [...displaySpecs, ...fieldSpecs].some((s) => s.source.kind === "calc" || s.source.kind === "timebetween");
+  const expressions = needsExpressions ? await loadExpressionCatalog(client, accountId, boId3) : void 0;
+  let columns;
+  if (displaySpecs.length) {
+    const built = await loader.resolve(() => buildReportColumns(displaySpecs, fieldSpecs, { catalog: loader.catalog, expressions, newKey }));
+    if (built.errors.length) throw new Error(built.errors.join("\n"));
+    columns = built.columns;
+  } else {
+    if (!Array.isArray(data.columns) || !data.columns.length) throw new Error("--data columns must be a non-empty array of report columns");
+    const extra = fieldSpecs.length ? await loader.resolve(() => buildReportColumns([], fieldSpecs, { catalog: loader.catalog, expressions, newKey })) : { columns: [], errors: [] };
+    const fieldErrors = extra.errors.filter((e) => !e.startsWith("A report needs"));
+    if (fieldErrors.length) throw new Error(fieldErrors.join("\n"));
+    columns = [...data.columns.map((c) => ({ ...c, column_key: c.column_key || newKey() })), ...extra.columns].map((c, i) => ({
+      ...c,
+      order_number: typeof c.order_number === "number" && !fieldSpecs.length ? c.order_number : i
+    }));
+    const errors = checkColumns(columns);
+    if (errors.length) throw new Error(errors.join("\n"));
+  }
+  columns = applyColumnInfo(columns, opts.columnInfo);
+  const derived = reportTypeOf(columns);
+  const askedType = opts.type ?? (typeof data.report_type === "string" ? data.report_type : void 0);
+  if (askedType !== void 0) {
+    const t = askedType.trim().toLowerCase();
+    if (!REPORT_TYPES.includes(t)) throw new Error(`--type is detail or grouped, not "${askedType}"`);
+    if (t !== derived) {
+      throw new Error(
+        t === "grouped" ? 'A grouped report needs a Group column: add "| group" to the column(s) to group by (at most 3)' : 'A detail report has no Group columns: drop "| group" from the columns, or use --type grouped'
+      );
+    }
+  }
+  let filter = data.filter_condition ?? null;
+  let formula = null;
+  if (opts.logic !== void 0 && opts.logic.trim()) {
+    loader.catalog.reportColumns = filterableColumns(columns);
+    const result = await loader.parse(opts.logic, { allowEntryDates: true, allowBlankValues: true });
+    if (result.errors.length > 0 || !result.filter) throw new Error(describeParseErrors(opts.logic, result.errors));
+    if (result.filter.filter_types.length) {
+      filter = withFilters(null, boId3, result.filter);
+      await validatePipeline(client, filter);
+      formula = await loader.print(filter.filters);
+    }
+  }
+  const info = infoFromOptions(opts) ?? checkInfo(data.info, "--data info");
+  const body = {
+    name,
+    ...info ? { info } : {},
+    business_object_id: boId3,
+    report_type: derived,
+    scheduling: data.scheduling ?? defaultScheduling(),
+    columns,
+    filter_condition: filter,
+    include_archived: opts.includeArchived ?? data.include_archived ?? false,
+    // No permissions in the save body (the web sends an empty array); the owner row follows the create.
+    permissions: [],
+    show_user_filter: data.show_user_filter ?? false,
+    user_filter_condition_keys: data.user_filter_condition_keys ?? []
+  };
+  return { body, formula };
+}
+function reportPermissionRows(reportId, ownerId, users, roles, userConfig, roleConfig) {
+  const owner = { owner: true, view: true, edit: true, deletion: true };
+  return {
+    users: [
+      { user_id: ownerId, entity_type: "report", entity_id: reportId, config: owner },
+      ...users.filter((u) => u.id !== ownerId).map((u) => ({ user_id: u.id, entity_type: "report", entity_id: reportId, config: userConfig }))
+    ],
+    roles: roles.map((r) => ({ role_id: r.id, entity_type: "report", entity_id: reportId, config: roleConfig }))
+  };
+}
+function collect(value, previous = []) {
+  return [...previous, value];
+}
+var createReportCommand = new Command("create-report").description(
+  "Create a report the way the web report builder does: columns (fields, Relationship.Field, milestone/step dates, Milestones, Count, CALC(<expression>), TIMEBETWEEN(<from>, <to>)), Group / Calculation columns, a Logic Builder filter, Custom Fields, info. You become its owner; --users / --roles share it. Needs Create Reports on the business object."
+).option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name (resolved to ID)").option("--name <name>", "Report name (unique on the business object)").option(
+  "--columns <specs>",
+  "Columns, in order, separated by commas: <source> [| option \u2026]. Sources: Field, Relationship.Field ([\u2026] for names with commas), milestone:<name>, step:<name>, milestones, count, CALC(<expression>), TIMEBETWEEN(<from>, <to>) with from/to = today | field:<date field> | milestone:<name> | step:<name>. Options: name=<title>, info=<text>, group[=day|week|month|quarter|year|<range>|<1d, 12h\u2026>], total|average|minimum|maximum, sort=asc|desc, width=<n>, occurrence=first|most_recent, from-occurrence=, to-occurrence=, group-expression=<TOTAL([x])\u2026>, format=<date format>, decimals=<n>, commas, currency[=<symbol>], percent, duration=days+hours+minutes+seconds"
+).option("--column <spec>", "One more column (repeatable; same spec as --columns, handy for CALC expressions with commas)", collect).option(
+  "--custom-field <spec>",
+  'A filter-only Custom Field (repeatable): CALC(<expression>) | name=<n> or TIMEBETWEEN(<from>, <to>) | name=<n> \u2014 never shown, compared in --logic with CUSTOMFIELD("<n>")',
+  collect
+).option("--type <type>", `Report type: ${REPORT_TYPES.join(" | ")} (the web picks it: grouped once a column is a Group column); checked against the columns`).option("--logic <formula>", `Filter, a Logic Builder formula (see /path-logic-formula-syntax); COLUMN("<computed column>") and CUSTOMFIELD("<custom field>") compare this report's own`).option("--include-archived", "Include archived records").option("--info <text>", "The report's info: what it is for, who uses it, how to read it \u2014 shown with it to people and AI agents (at most 50,000 characters)").option("--info-file <path>", "Read the report's info from a text or markdown file (instead of --info)").option("--column-info <json>", `Info on columns by name, e.g. '{"Margin":"Sell minus cost, per job"}' (computed columns: say how they are calculated)`).option("--roles <names>", "Share with these roles (comma-separated)").option("--role-permissions <perms>", "Comma-separated: view,edit,delete (default view)").option("--users <names>", "Share with these users (comma-separated full names)").option("--user-permissions <perms>", "Comma-separated: view,edit,delete (default view)").option("--data <json>", `Escape hatch: the create body as JSON (keys: ${CREATE_REPORT_DATA_KEYS.join(", ")}); flags override it`).option("--dry-run", "Build and validate the body and print it, but create nothing").action(async (opts) => {
+  try {
+    const parentOpts = createReportCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({ accountId: parentOpts.account, baseUrl: parentOpts.baseUrl });
+    if (!config2.accountId) throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
+    const client = new HttpClient(config2);
+    let boId3;
+    let boName;
+    if (opts.boId) {
+      boId3 = parseInt(opts.boId, 10);
+      boName = `BO ${boId3}`;
+    } else if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      boId3 = bo.id;
+      boName = bo.plural_name || bo.singular_name;
+    } else {
+      throw new Error("Provide either --bo-id or --bo-name");
+    }
+    await assertCreateReport(client, boId3);
+    const userConfig = parseReportPermissions(opts.userPermissions);
+    const roleConfig = parseReportPermissions(opts.rolePermissions);
+    const [plan, roles, users, access] = await Promise.all([
+      buildReportPlan(client, config2.accountId, boId3, opts),
+      opts.roles ? resolveRolesByNames(client, String(opts.roles).split(",").map((s) => s.trim())) : Promise.resolve([]),
+      opts.users ? resolveUsersByNames(client, String(opts.users).split(",").map((s) => s.trim())) : Promise.resolve([]),
+      UserAccess.load(client)
+    ]);
+    const { body } = plan;
+    const columns = body.columns;
+    if (opts.dryRun) {
+      console.log(`Dry run \u2014 not created: report "${body.name}" on ${boName} (BO ID: ${boId3})`);
+      console.log(JSON.stringify(body, null, 2));
+      if (plan.formula) console.log(`filter: ${plan.formula}`);
+      console.log(`Owner after creation: ${access.label} (owner,view,edit,delete)`);
+      if (roles.length || users.length) {
+        console.log("Shared after creation:");
+        if (roles.length) console.log(`  Roles (${permissionWords(roleConfig)}): ${roles.map((r) => `${r.name} (ID: ${r.id})`).join(", ")}`);
+        if (users.length) console.log(`  Users (${permissionWords(userConfig)}): ${users.map((u) => `${u.name} (ID: ${u.id})`).join(", ")}`);
+      }
+      return;
+    }
+    const created = await client.post(`/v1/business-objects/${boId3}/reports`, body);
+    const reportId = Number(created.id);
+    const gate = currentInfoGate();
+    gate?.written(body.info);
+    for (const c of columns) gate?.written(c.info);
+    const permissions = reportPermissionRows(reportId, access.user.id, users, roles, userConfig, roleConfig);
+    await client.post("/v1/permissions", permissions);
+    const url = buildReportDeepLinkUrl(config2.webBaseUrl, config2.accountId, boId3, reportId);
+    if (parentOpts.json) {
+      console.log(JSON.stringify({ report: created, url, permissions }, null, 2));
+      return;
+    }
+    if (parentOpts.quiet) {
+      console.log(String(reportId));
+      return;
+    }
+    const shown = columns.filter((c) => c.usage !== "filter");
+    const fields = columns.filter((c) => c.usage === "filter");
+    console.log(
+      `Created report "${body.name}" (ID: ${reportId}) on ${boName} (BO ID: ${boId3}) \u2014 ${body.report_type}, ${shown.length} column${shown.length === 1 ? "" : "s"}` + (fields.length ? `, ${fields.length} Custom Field${fields.length === 1 ? "" : "s"}` : "")
+    );
+    console.log(`  columns: ${shown.map((c) => `${c.name}${c.report_column_type === "group" ? " (group)" : c.calculation ? ` (${String(c.calculation).toLowerCase()})` : ""}`).join(", ")}`);
+    if (plan.formula) console.log(`  filter: ${plan.formula}`);
+    console.log(`  owner: ${access.label}`);
+    if (roles.length) console.log(`  shared with roles (${permissionWords(roleConfig)}): ${roles.map((r) => `${r.name} (ID: ${r.id})`).join(", ")}`);
+    if (users.length) console.log(`  shared with users (${permissionWords(userConfig)}): ${users.map((u) => `${u.name} (ID: ${u.id})`).join(", ")}`);
+    console.log(`  link: ${url}`);
+    console.log(`Check it: run-report --report-id ${reportId}. Change it: update-report, set-filter report ${reportId}, create-custom-field ${reportId}.`);
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/update-folder-report.ts
+var FOLDER_DATA_KEYS = [
+  "folder_name",
+  "include_archived",
+  "columns",
+  "sorts",
+  "default_sort_field",
+  "default_sort_direction",
+  "map_enabled",
+  "map_relationship_id",
+  "info"
+];
+var REPORT_DATA_KEYS = ["name", "include_archived", "info", "column_info"];
+function parseData2(data) {
+  if (data === void 0) return {};
+  let parsed;
+  try {
+    parsed = JSON.parse(data);
+  } catch (err) {
+    throw new Error(`--data is not valid JSON: ${err.message}`);
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("--data must be a JSON object");
+  return parsed;
+}
+function changesFrom(data, opts, allowed, what, elsewhere) {
+  const changes = parseData2(data);
+  const unknown2 = Object.keys(changes).filter((k) => !allowed.includes(k));
+  if (unknown2.length) {
+    throw new Error(`update-${what} doesn't change ${unknown2.join(", ")}. --data keys: ${allowed.join(", ")}. ${elsewhere}`);
+  }
+  if ("info" in changes) changes.info = checkInfo(changes.info, "--data info");
+  const flag = infoFromOptions(opts);
+  if (flag !== void 0) changes.info = flag;
+  if (!Object.keys(changes).length) {
+    throw new Error(`Nothing to change: pass --info <text>, --info-file <path> or --data <json> (keys: ${allowed.join(", ")})`);
+  }
+  return changes;
+}
+function folderUpdateBody(folder2, changes) {
+  return folderBody(folder2, changes);
+}
+function reportChangeBody(report2, changes) {
+  const { column_info: columnInfo, ...rest } = changes;
+  if (columnInfo === void 0) return { ...reportUpdateBody(report2, {}), ...rest };
+  if (!columnInfo || typeof columnInfo !== "object" || Array.isArray(columnInfo)) {
+    throw new Error('column_info must be an object: {"<column id, column_key or name>": "info text" | null}');
+  }
+  const infos = {};
+  for (const [ref, value] of Object.entries(columnInfo)) infos[ref] = checkInfo(value, `column_info "${ref}"`) ?? "";
+  return { ...reportUpdateBody(report2, { columns: columnsWithInfo(report2, infos) }), ...rest };
+}
+async function resolveReport(client, opts) {
+  if (opts.reportId) return fetchReport(client, parseInt(opts.reportId, 10));
+  if (!opts.reportName) throw new Error("Name the report with --report-id <id> or --report-name <name>");
+  const reports = unwrapPaginated(await client.get("/v1/reports", { all: "true" }));
+  const lower = opts.reportName.trim().toLowerCase();
+  const matches = reports.filter((r) => String(r.name ?? "").trim().toLowerCase() === lower);
+  if (matches.length === 1) return matches[0];
+  const listed = (rows) => rows.map((r) => `  ${r.id}: ${r.name}`).join("\n") || "  (none)";
+  if (matches.length > 1) throw new Error(`Ambiguous report name "${opts.reportName}" \u2014 use --report-id. Matches:
+${listed(matches)}`);
+  throw new Error(`Report "${opts.reportName}" not found`);
+}
+function savedLine(what, changes) {
+  const parts = Object.keys(changes).map((k) => {
+    if (k === "column_info") return `column info (${Object.keys(changes.column_info ?? {}).join(", ")})`;
+    if (k !== "info") return k;
+    const info = String(changes.info ?? "");
+    return info ? `info (${info.length} characters)` : "info (cleared)";
+  });
+  return `Updated ${what}: ${parts.join(", ")}`;
+}
+function setup4(command) {
+  const parentOpts = command.parent?.opts() ?? {};
+  const config2 = loadConfig({ accountId: parentOpts.account, baseUrl: parentOpts.baseUrl });
+  if (!config2.accountId) throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
+  return { parentOpts, client: new HttpClient(config2) };
+}
+function markShown(changes) {
+  const gate = currentInfoGate();
+  gate?.written(changes.info);
+  for (const value of Object.values(changes.column_info ?? {})) gate?.written(value);
+}
+var INFO_HELP = 'Info: what it is for, who uses it, how to read it \u2014 shown with it to people and AI agents ("" clears it; at most 50,000 characters)';
+var updateFolderCommand = new Command("update-folder").description(
+  `Change a folder's info or settings, saved the way the folder form saves it (everything else as stored). Needs Edit on the folder. --data keys: ${FOLDER_DATA_KEYS.join(", ")} (criteria: set-filter folder; sticker criteria: set-filter folder-sticker)`
+).option("--folder-id <id>", "Folder ID").option("--folder-name <name>", "Folder name (requires --bo-id or --bo-name)").option("--bo-id <id>", "Business object ID (for --folder-name)").option("--bo-name <name>", "Business object name (for --folder-name)").option("--info <text>", INFO_HELP).option("--info-file <path>", "Read the info from a text or markdown file (instead of --info)").option("--data <json>", `JSON object of folder keys to change, e.g. '{"folder_name":"Active Jobs","info":"\u2026"}'`).option("--dry-run", "Print the save body without saving").action(async (opts) => {
+  try {
+    const { parentOpts, client } = setup4(updateFolderCommand);
+    const changes = changesFrom(opts.data, opts, FOLDER_DATA_KEYS, "folder", "Criteria: set-filter folder.");
+    let folderId;
+    if (opts.folderId) {
+      folderId = parseInt(opts.folderId, 10);
+    } else if (opts.folderName) {
+      const boId3 = opts.boId ? parseInt(opts.boId, 10) : opts.boName ? (await resolveBusinessObjectByName(client, opts.boName)).id : null;
+      if (boId3 == null) throw new Error("--folder-name requires --bo-id or --bo-name to identify the business object");
+      folderId = (await resolveFolderByName(client, opts.folderName, boId3)).id;
+    } else {
+      throw new Error("Name the folder with --folder-id <id> or --folder-name <name> (with --bo-id/--bo-name)");
+    }
+    const folder2 = await loadFolder(client, folderId);
+    const label = `folder ${folder2.id} "${folder2.folder_name}"`;
+    await assertFolderEdit(client, folder2.id, `change ${label}`);
+    const body = folderUpdateBody(folder2, changes);
+    if (opts.dryRun) {
+      console.log(`Dry run \u2014 not saved: ${label}`);
+      console.log(JSON.stringify(body, null, 2));
+      return;
+    }
+    const saved = await client.put(`/v1/business-objects/${folder2.business_object_id}/folders/${folder2.id}`, body);
+    markShown(changes);
+    if (parentOpts.json) console.log(JSON.stringify(saved ?? body, null, 2));
+    else if (parentOpts.quiet) console.log(String(folder2.id));
+    else console.log(savedLine(label, changes));
+  } catch (err) {
+    handleError(err);
+  }
+});
+var updateReportCommand = new Command("update-report").description(
+  `Change a report's info or settings, saved the way the report form saves it (columns, filter, scheduling as stored). Needs Edit on the report. --data keys: ${REPORT_DATA_KEYS.join(", ")} (filter: set-filter report; Custom Fields: create-custom-field / update-custom-field)`
+).option("--report-id <id>", "Report ID").option("--report-name <name>", "Report name (resolved to ID)").option("--info <text>", INFO_HELP).option("--info-file <path>", "Read the info from a text or markdown file (instead of --info)").option(
+  "--data <json>",
+  `JSON object of report keys to change, e.g. '{"name":"Open Quotes","info":"\u2026","column_info":{"Total":"Quoted price incl. tax"}}' \u2014 column_info sets each named column's own info (by column id, column_key or name; null clears it, and the column shows its field's info again)`
+).option("--dry-run", "Print the save body without saving").action(async (opts) => {
+  try {
+    const { parentOpts, client } = setup4(updateReportCommand);
+    const changes = changesFrom(opts.data, opts, REPORT_DATA_KEYS, "report", "Filter: set-filter report; Custom Fields: create-custom-field / update-custom-field.");
+    const report2 = await resolveReport(client, opts);
+    const label = `report ${report2.id} "${report2.name}"`;
+    await assertReportEdit(client, report2, `change ${label}`);
+    const body = reportChangeBody(report2, changes);
+    if (opts.dryRun) {
+      console.log(`Dry run \u2014 not saved: ${label}`);
+      console.log(JSON.stringify(body, null, 2));
+      return;
+    }
+    const saved = await client.put(`/v1/business-objects/${report2.business_object_id}/reports/${report2.id}`, body);
+    markShown(changes);
+    if (parentOpts.json) console.log(JSON.stringify(saved ?? body, null, 2));
+    else if (parentOpts.quiet) console.log(String(report2.id));
+    else console.log(savedLine(label, changes));
   } catch (err) {
     handleError(err);
   }
@@ -40233,7 +41112,7 @@ function stepTitleText(title) {
 }
 
 // .path-cli/src/pathway-runner/run-store.ts
-import { appendFileSync, existsSync as existsSync5, mkdirSync as mkdirSync5, readdirSync, readFileSync as readFileSync4, rmSync as rmSync2, writeFileSync as writeFileSync5 } from "fs";
+import { appendFileSync, existsSync as existsSync5, mkdirSync as mkdirSync5, readdirSync, readFileSync as readFileSync5, rmSync as rmSync2, writeFileSync as writeFileSync5 } from "fs";
 import { homedir as homedir3 } from "os";
 import { join as join2, resolve as resolve5 } from "path";
 function runsDir() {
@@ -40251,16 +41130,6 @@ function saveRun(run) {
   writeFileSync5(join2(dir, "run.json"), JSON.stringify(run, null, 2));
   writeFileSync5(join2(runsDir(), "current"), run.runId);
 }
-function saveRunInfoShown(runId, hashes) {
-  const path = join2(runDir(runId), "run.json");
-  if (!existsSync5(path)) return;
-  try {
-    const run = JSON.parse(readFileSync4(path, "utf-8"));
-    run.infoShown = [.../* @__PURE__ */ new Set([...run.infoShown ?? [], ...hashes])];
-    writeFileSync5(path, JSON.stringify(run, null, 2));
-  } catch {
-  }
-}
 function loadRun(runId) {
   const id = runId || currentRunId();
   if (!id) {
@@ -40270,14 +41139,14 @@ function loadRun(runId) {
   if (!existsSync5(path)) {
     throw new Error(`Pathway run ${id} not found. "pathway-run list" shows saved runs.`);
   }
-  return JSON.parse(readFileSync4(path, "utf-8"));
+  return JSON.parse(readFileSync5(path, "utf-8"));
 }
 function currentRunId() {
   const path = join2(runsDir(), "current");
-  return existsSync5(path) ? readFileSync4(path, "utf-8").trim() || null : null;
+  return existsSync5(path) ? readFileSync5(path, "utf-8").trim() || null : null;
 }
 function listRuns() {
-  return readdirSync(runsDir(), { withFileTypes: true }).filter((d) => d.isDirectory() && existsSync5(join2(runDir(d.name), "run.json"))).map((d) => JSON.parse(readFileSync4(join2(runDir(d.name), "run.json"), "utf-8"))).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return readdirSync(runsDir(), { withFileTypes: true }).filter((d) => d.isDirectory() && existsSync5(join2(runDir(d.name), "run.json"))).map((d) => JSON.parse(readFileSync5(join2(runDir(d.name), "run.json"), "utf-8"))).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 function deleteRun(runId) {
   rmSync2(runDir(runId), { recursive: true, force: true });
@@ -40290,7 +41159,7 @@ function appendLog(runId, entry) {
 function readLog(runId) {
   const path = join2(runDir(runId), "log.jsonl");
   if (!existsSync5(path)) return [];
-  return readFileSync4(path, "utf-8").split("\n").filter(Boolean).map((line) => JSON.parse(line));
+  return readFileSync5(path, "utf-8").split("\n").filter(Boolean).map((line) => JSON.parse(line));
 }
 function recordsCreatedInRun(log) {
   const started = log.find((e) => e.kind === "started");
@@ -41229,7 +42098,7 @@ var editRecordTable = {
 import { deflateSync } from "zlib";
 
 // .path-cli/src/utils/file-upload.ts
-import { existsSync as existsSync6, readFileSync as readFileSync5, statSync as statSync3 } from "fs";
+import { existsSync as existsSync6, readFileSync as readFileSync6, statSync as statSync3 } from "fs";
 import { basename as basename3, extname, resolve as resolve6 } from "path";
 var MIME_TYPES = {
   ".pdf": "application/pdf",
@@ -41259,7 +42128,7 @@ function readUploadFile(path) {
   if (!existsSync6(full)) throw new Error(`File not found: ${full}`);
   if (!statSync3(full).isFile()) throw new Error(`Not a file: ${full}`);
   const type = MIME_TYPES[extname(full).toLowerCase()] ?? "application/octet-stream";
-  return { blob: new Blob([readFileSync5(full)], { type }), name: basename3(full) };
+  return { blob: new Blob([readFileSync6(full)], { type }), name: basename3(full) };
 }
 
 // .path-cli/src/pathway-runner/surfaces/files.ts
@@ -42670,7 +43539,7 @@ var scheduling = {
 };
 
 // .path-cli/src/pathway-runner/surfaces/send-email.ts
-import { existsSync as existsSync7, readFileSync as readFileSync6 } from "fs";
+import { existsSync as existsSync7, readFileSync as readFileSync7 } from "fs";
 import { isAbsolute as isAbsolute2, resolve as resolve7 } from "path";
 var ACCEPTED2 = ["to", "cc", "bcc", "subject", "body", "body file", "remove upload"];
 var stateKey5 = (ctx) => `send-email:${ctx.stepId}`;
@@ -42818,7 +43687,7 @@ async function applyInput5(data, input, ctx) {
       case "body file": {
         const path = isAbsolute2(value) ? value : resolve7(ctx.cwd, value);
         if (!existsSync7(path)) throw new SurfaceInputError(`File not found: ${value}`);
-        form.body = contentWithTokens(bodyHtml(readFileSync6(path, "utf8")), form.body);
+        form.body = contentWithTokens(bodyHtml(readFileSync7(path, "utf8")), form.body);
         break;
       }
       case "remove upload": {
@@ -42940,7 +43809,7 @@ var sendEmail = {
 };
 
 // .path-cli/src/pathway-runner/surfaces/edit-document.ts
-import { existsSync as existsSync8, readFileSync as readFileSync7 } from "fs";
+import { existsSync as existsSync8, readFileSync as readFileSync8 } from "fs";
 import { isAbsolute as isAbsolute3, resolve as resolve8 } from "path";
 
 // utils/html-document-template/html-template-source.ts
@@ -43051,7 +43920,7 @@ function editedBody(data, input, ctx) {
   if (file !== void 0) {
     const path = isAbsolute3(file) ? file : resolve8(ctx.cwd, file);
     if (!existsSync8(path)) throw new SurfaceInputError(`File not found: ${file}`);
-    return readFileSync7(path, "utf8");
+    return readFileSync8(path, "utf8");
   }
   return getSet(input, "body") ?? data.source.body;
 }
@@ -44417,7 +45286,7 @@ async function refresh(ctx, p, pallet) {
 function find2(p, code) {
   return p ? Pallets.findPallet(indexOf(p), code) : null;
 }
-function nameOf(p, index, record2) {
+function nameOf2(p, index, record2) {
   return p && index ? Pallets.palletOf(index, p.ids, record2)?.name ?? null : null;
 }
 var failure2 = Pallets.failure;
@@ -44766,7 +45635,7 @@ var loadingMode = {
     lines.push(`  To Load (${v.toLoadCount}):`);
     if (!v.toLoadCount) lines.push("    All items loaded");
     const palletIndex = state.pallets ? indexOf(state.pallets) : null;
-    const palletOf2 = (i) => i.kind === "tracking" ? nameOf(state.pallets, palletIndex, i.record) : null;
+    const palletOf2 = (i) => i.kind === "tracking" ? nameOf2(state.pallets, palletIndex, i.record) : null;
     const appt = (i) => {
       const label = i.appointmentId !== data.record.id ? state.appointmentLabels?.[i.appointmentId] : void 0;
       return label ? `  Appt ${label}` : "";
@@ -45083,7 +45952,7 @@ var deliveryMode = {
     lines.push(`  To Deliver (${v.toDeliverCount}):`);
     if (!v.toDeliverCount) lines.push("    All items delivered");
     const palletIndex = state.pallets ? indexOf(state.pallets) : null;
-    const binOf = (i) => i.binName || nameOf(state.pallets, palletIndex, i.record) || "";
+    const binOf = (i) => i.binName || nameOf2(state.pallets, palletIndex, i.record) || "";
     const bin = (i) => binOf(i) ? ` \u27A1\uFE0F ${binOf(i)}` : "";
     for (const i of v.pendingTracking) lines.push(`  ${rowNo(state, i.record.id)} ${i.identifier}${bin(i)}${i.desc ? ` \u2014 ${i.desc}` : ""}  ${state.canMark ? "[mark \u2192 Delivered]" : ""}`);
     for (const a of v.pendingApptLeft) {
@@ -45595,9 +46464,9 @@ function handlerFor(surface) {
 }
 
 // .path-cli/src/pathway-runner/scenario.ts
-import { readFileSync as readFileSync8 } from "fs";
+import { readFileSync as readFileSync9 } from "fs";
 function loadScenario(source) {
-  const text = source.trim().startsWith("[") ? source : readFileSync8(source, "utf-8");
+  const text = source.trim().startsWith("[") ? source : readFileSync9(source, "utf-8");
   const parsed = JSON.parse(text);
   if (!Array.isArray(parsed)) throw new Error("A scenario must be a JSON array of answers");
   return parsed;
@@ -45708,7 +46577,6 @@ var PathwayRunner = class {
       surfaceState: {},
       stats: { interactions: 0, requests: 0, failedRequests: 0 }
     };
-    useRunInfoScope(run);
     const session = await this.#session(run, metadata);
     await preloadPathwayFields(metadata, pathway2, startingRecord?.business_object_id);
     this.#indexSteps(session, pathway2);
@@ -46070,7 +46938,6 @@ var PathwayRunner = class {
   // plumbing
   // -------------------------------------------------------------------------
   async #session(run, metadata) {
-    useRunInfoScope(run);
     let session;
     const services = buildServices(metadata, this.opts.config, join4(runDir(run.runId), "downloads"), (pathway2) => {
       this.#indexSteps(session, pathway2);
@@ -46212,17 +47079,14 @@ var StrictPauseError = class extends Error {
     this.run = run;
   }
 };
-function useRunInfoScope(run) {
-  currentInfoGate()?.useRunScope({ hashes: run.infoShown ??= [], save: (hashes) => saveRunInfoShown(run.runId, hashes) });
-}
 
 // .path-cli/src/pathway-runner/scenario-test.ts
-import { existsSync as existsSync9, readFileSync as readFileSync9, readdirSync as readdirSync2, statSync as statSync4 } from "fs";
+import { existsSync as existsSync9, readFileSync as readFileSync10, readdirSync as readdirSync2, statSync as statSync4 } from "fs";
 import { join as join5, resolve as resolve9 } from "path";
 function loadScenarioTests(paths, cwd) {
   const out = [];
   const addFile = (file) => {
-    const parsed = JSON.parse(readFileSync9(file, "utf-8"));
+    const parsed = JSON.parse(readFileSync10(file, "utf-8"));
     for (const test of Array.isArray(parsed) ? parsed : [parsed]) out.push({ file, test });
   };
   for (const p of paths) {
@@ -46437,10 +47301,10 @@ async function link(client, boId3, selfId, relKey, otherId) {
     recordContextHeaders(own ? selfId : otherId)
   );
 }
-async function runSetup(setup5, client, metadata, tag, userId) {
+async function runSetup(setup6, client, metadata, tag, userId) {
   const result = { refs: {}, created: [] };
   try {
-    for (const [name, raw] of Object.entries(setup5)) {
+    for (const [name, raw] of Object.entries(setup6)) {
       if (!/^[A-Za-z_][\w-]*$/.test(name)) throw new Error(`Setup name "${name}" must be a plain word (letters, digits, _ or -)`);
       const spec = resolveRefs(raw, result.refs, tag);
       const source = spec.copy_of ? await client.get(`/v1/records/${encodeURIComponent(spec.copy_of)}`) : null;
@@ -46693,10 +47557,10 @@ function isSystemField(f) {
 // .path-cli/src/commands/pathway-run.ts
 import { mkdirSync as mkdirSync7, writeFileSync as writeFileSync7 } from "fs";
 import { dirname as dirname5, resolve as resolvePath3 } from "path";
-function collect(value, previous) {
+function collect2(value, previous) {
   return [...previous, value];
 }
-async function setup4(command, accountOverride, asUser) {
+async function setup5(command, accountOverride, asUser) {
   const globals = command.optsWithGlobals();
   await applyActingUser(
     {
@@ -46843,13 +47707,13 @@ function launchPoint(opts) {
 function runMode(value) {
   return parseMode(value);
 }
-var startCommand = new Command("start").description("Start a pathway run, exactly as the web app runs it; stops at the first screen that needs input").option("--pathway-id <id>", "Pathway ID").option("--pathway-name <name>", "Pathway name (resolved to ID)").option("--record-id <id>", "Starting record ID").option("--copy-of <id>", "Start on a fresh copy of this record (its editable fields and links), made just for this run").option("--copy-set <Field=value>", "With --copy-of: a field value for the copy (repeatable)", collect, []).option("--task-id <id>", "Launch by completing this task on --record-id (Complete Task steps complete it)").option("--folder-id <id>", "Launch from this folder's header").option("--from <point>", "Where it is launched: record | dashboard | folder | task (default: from the other flags)").option(
+var startCommand = new Command("start").description("Start a pathway run, exactly as the web app runs it; stops at the first screen that needs input").option("--pathway-id <id>", "Pathway ID").option("--pathway-name <name>", "Pathway name (resolved to ID)").option("--record-id <id>", "Starting record ID").option("--copy-of <id>", "Start on a fresh copy of this record (its editable fields and links), made just for this run").option("--copy-set <Field=value>", "With --copy-of: a field value for the copy (repeatable)", collect2, []).option("--task-id <id>", "Launch by completing this task on --record-id (Complete Task steps complete it)").option("--folder-id <id>", "Launch from this folder's header").option("--from <point>", "Where it is launched: record | dashboard | folder | task (default: from the other flags)").option(
   "--mode <mode>",
   "real-world (default: only launches the user could make in the web app) | super-user (also when the pathway's visibility criteria don't match the record; Admin or Designer only, this run only)"
-).option("--as-user <id|email|name>", "Run as another account member (admin impersonation session)").option("--tag <tag>", 'Pre-run tag choice for created records: "<tag name|id>" or "<group id>=<tag>" (repeatable)', collect, []).option("--answers <file|json>", "Scenario: JSON array of scripted answers, consumed in order").option("--strict", "Fail (exit 4) instead of pausing when a screen has no usable scripted answer").action(async (opts) => {
+).option("--as-user <id|email|name>", "Run as another account member (admin impersonation session)").option("--tag <tag>", 'Pre-run tag choice for created records: "<tag name|id>" or "<group id>=<tag>" (repeatable)', collect2, []).option("--answers <file|json>", "Scenario: JSON array of scripted answers, consumed in order").option("--strict", "Fail (exit 4) instead of pausing when a screen has no usable scripted answer").action(async (opts) => {
   let json = false;
   try {
-    const ctx = await setup4(startCommand, void 0, opts.asUser);
+    const ctx = await setup5(startCommand, void 0, opts.asUser);
     json = ctx.json;
     const { client, config: config2, runner, events } = ctx;
     let pathwayId;
@@ -46901,11 +47765,11 @@ var startCommand = new Command("start").description("Start a pathway run, exactl
     handleRunError(err, json);
   }
 });
-var submitCommand = new Command("submit").description("Answer the paused screen (only what that screen allows) and continue the run").option("--run <id>", "Run ID (default: the most recent run)").option("--set <key=value>", 'A field or form value, e.g. --set "Status=Won" (repeatable)', collect, []).option("--yes", "Answer a Yes/No question with Yes").option("--no", "Answer a Yes/No question with No").option("--select <items>", "Pick listed item(s) by number or id, comma-separated").option("--file <path>", "Local file to upload / sign with (repeatable)", collect, []).option("--skip", `Use the screen's "continue without" option where it has one`).option("--data <json>", "Raw result exactly as the web screen would return it (bypasses the screen's checks)").option("--answers <file|json>", "Scripted answers for the screens after this one").option("--strict", "Fail (exit 4) instead of pausing when a later screen has no scripted answer").action(async (opts) => {
+var submitCommand = new Command("submit").description("Answer the paused screen (only what that screen allows) and continue the run").option("--run <id>", "Run ID (default: the most recent run)").option("--set <key=value>", 'A field or form value, e.g. --set "Status=Won" (repeatable)', collect2, []).option("--yes", "Answer a Yes/No question with Yes").option("--no", "Answer a Yes/No question with No").option("--select <items>", "Pick listed item(s) by number or id, comma-separated").option("--file <path>", "Local file to upload / sign with (repeatable)", collect2, []).option("--skip", `Use the screen's "continue without" option where it has one`).option("--data <json>", "Raw result exactly as the web screen would return it (bypasses the screen's checks)").option("--answers <file|json>", "Scripted answers for the screens after this one").option("--strict", "Fail (exit 4) instead of pausing when a later screen has no scripted answer").action(async (opts) => {
   const run = loadRun(opts.run);
   let json = false;
   try {
-    const ctx = await setup4(submitCommand, run.accountId, run.asUserId);
+    const ctx = await setup5(submitCommand, run.accountId, run.asUserId);
     json = ctx.json;
     const { runner, events } = ctx;
     const outcome = await runner.submit(run, inputFromOpts(opts), opts.answers ? loadScenario(opts.answers) : void 0);
@@ -46914,11 +47778,11 @@ var submitCommand = new Command("submit").description("Answer the paused screen 
     handleRunError(err, json);
   }
 });
-var actCommand = new Command("act").description("A non-advancing action on the paused screen, e.g. a lookup search: --set search=Acme [--set page=2]").option("--run <id>", "Run ID (default: the most recent run)").option("--set <key=value>", "Action input (repeatable)", collect, []).option("--select <items>", "Pick / toggle listed item(s) by number or id, comma-separated").option("--file <path>", "Local file to upload (repeatable)", collect, []).action(async (opts) => {
+var actCommand = new Command("act").description("A non-advancing action on the paused screen, e.g. a lookup search: --set search=Acme [--set page=2]").option("--run <id>", "Run ID (default: the most recent run)").option("--set <key=value>", "Action input (repeatable)", collect2, []).option("--select <items>", "Pick / toggle listed item(s) by number or id, comma-separated").option("--file <path>", "Local file to upload (repeatable)", collect2, []).action(async (opts) => {
   const run = loadRun(opts.run);
   let json = false;
   try {
-    const ctx = await setup4(actCommand, run.accountId, run.asUserId);
+    const ctx = await setup5(actCommand, run.accountId, run.asUserId);
     json = ctx.json;
     const { runner } = ctx;
     const view4 = await runner.act(run, inputFromOpts(opts));
@@ -46932,7 +47796,7 @@ var showCommand = new Command("show").description("Show a run: the screen it is 
   const run = loadRun(opts.run);
   let json = false;
   try {
-    const ctx = await setup4(showCommand, run.accountId, run.asUserId);
+    const ctx = await setup5(showCommand, run.accountId, run.asUserId);
     json = ctx.json;
     const { runner } = ctx;
     const view4 = await runner.show(run);
@@ -47027,7 +47891,7 @@ var deleteCommand = new Command("delete").description("Delete a saved run and it
 var availableCommand = new Command("available").description("Which pathways a user could start from a launch point (a record's Pathways tab, the dashboard, a folder or a task), with the reason for each one left out").option("--record-id <id>", "Record viewer of this record").option("--task-id <id>", "Completing this task (with --record-id)").option("--folder-id <id>", "This folder's header").option("--from <point>", "record | dashboard | folder | task (default: from the other flags)").option("--as-user <id|email|name>", "Check for another account member (admin impersonation session)").option("--all", "Also list the pathways that are not available, with why").action(async (opts) => {
   let json = false;
   try {
-    const ctx = await setup4(availableCommand, void 0, opts.asUser);
+    const ctx = await setup5(availableCommand, void 0, opts.asUser);
     json = ctx.json;
     const metadata = new RunMetadata(ctx.client, ctx.config.accountId);
     const point = launchPoint(opts);
@@ -47106,7 +47970,7 @@ var testCommand = new Command("test").description(
         else taskId = await findPendingTask(adminClient, test.record, String(test.task));
       }
       if (runMode(test.mode) === "super-user") await assertSuperUserAllowed(adminConfig);
-      const ctx = await setup4(command, void 0, test.as_user ?? null);
+      const ctx = await setup5(command, void 0, test.as_user ?? null);
       const client = ctx.client;
       const strictRunner = new PathwayRunner({
         config: ctx.config,
@@ -47193,7 +48057,7 @@ var cleanupCommand = new Command("cleanup").description("Archive a run's test re
   try {
     const run = loadRun(opts.run);
     if (run.status === "paused" || run.status === "running") throw new Error(`Run ${run.runId} is ${run.status}; finish or cancel it first`);
-    const ctx = await setup4(command, run.accountId, null);
+    const ctx = await setup5(command, run.accountId, null);
     const records = [...run.setupRecords ?? [], ...createdByRun(run.runId)];
     if (!records.length) {
       console.log("Nothing to archive: the run made no records.");
@@ -47211,7 +48075,7 @@ var saveTestCommand = new Command("save-test").description(
 ).option("--run <id>", "Run ID (default: the most recent run)").option("--out <file>", "Write the scenario here (default: print it)").option("--name <name>", "Test name").option("--copy-start", 'Run the test on a fresh copy of the starting record each time (a "setup" entry), so it can run again and again').action(async (opts, command) => {
   try {
     const run = loadRun(opts.run);
-    const ctx = await setup4(command, run.accountId, run.asUserId ?? null);
+    const ctx = await setup5(command, run.accountId, run.asUserId ?? null);
     const json = ctx.json;
     if (run.status === "paused" || run.status === "running") {
       throw new Error(`Run ${run.runId} is ${run.status}; finish or cancel it first, then save it as a test`);
@@ -47236,7 +48100,7 @@ var pathwayRunCommand = new Command("pathway-run").description(
 
 // .path-cli/src/commands/run-report.ts
 var runReportCommand = new Command("run-report").description(
-  `Run a report and print its rows (the web app's report view; in real-world mode only reports the acting user can open). Also gives the report's root business object {id, name, info} and each column's info \u2014 the info of the field the column shows (for a column through relationships, the end field's, with the relationships on the path and their info); count, milestone, step and calculated columns have none, a Time Between / Time Span column on one field has that field's. --json keeps the server's { rows, meta } and adds business_object and columns [{name, column_type, field_id?, relationship_path?, info}]; text output prints a "Business object info:" and a "Column info:" block under the rows (only what has info)`
+  `Run a report and print its rows (the web app's report view; in real-world mode only reports the acting user can open). Also gives the report's own info (report {id, name, info}: what it is for, how to read it), its root business object {id, name, info} and each column's info \u2014 the column's own info when the report has one on it, otherwise the info of the field the column shows (for a column through relationships, the end field's, with the relationships on the path and their info); count, milestone, step and calculated columns have only their own, a Time Between / Time Span column on one field falls back to that field's. Filter-only Custom Fields (compared by the filter, not shown) come with their own info. --json keeps the server's { rows, meta } and adds report, business_object, columns [{name, column_type, field_id?, relationship_path?, info}] and custom_fields [{name, column_type, info}]; text output prints a "Report info:", a "Business object info:", a "Column info:" and a "Custom Field info" block under the rows (only what has info). Like all info, each is shown once per session; later runs leave it out (pass --with-info to repeat)`
 ).option("--report-id <id>", "Report ID").option("--report-name <name>", "Report name (resolved to ID)").option("--page <n>", "Page number", "1").option("--per-page <n>", "Rows per page", "50").option(
   "--user-filter <json>",
   `Runtime filters for the report's user-filterable columns, e.g. '[{"entity_id":12,"logic":"equal","values":["John"]}]'`
@@ -47267,7 +48131,13 @@ var runReportCommand = new Command("run-report").description(
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim());
     const context3 = parentOpts.quiet || fields ? null : await reportInfo(new RunMetadata(client, config2.accountId), report2);
-    const output = parentOpts.json && context3 && raw && typeof raw === "object" && !Array.isArray(raw) ? { ...raw, business_object: context3.business_object, columns: context3.columns } : raw;
+    const output = parentOpts.json && context3 && raw && typeof raw === "object" && !Array.isArray(raw) ? {
+      ...raw,
+      report: context3.report,
+      business_object: context3.business_object,
+      columns: context3.columns,
+      ...context3.custom_fields.length ? { custom_fields: context3.custom_fields } : {}
+    } : raw;
     console.log(
       formatOutput(parentOpts.json ? output : rows, {
         format,
@@ -47288,9 +48158,8 @@ async function reportInfo(metadata, report2) {
   const rootBoId = Number(report2.business_object_id);
   const relationships2 = await metadata.client.get("/v1/init/relationships").then((raw) => unwrapPaginated(raw)).catch(() => []);
   const relById = new Map(relationships2.map((r) => [r.id, r]));
-  const columns = reportColumns(report2).filter(
-    (c) => c.usage !== "filter" && c.show_column !== false
-  );
+  const all4 = reportColumns(report2);
+  const columns = all4.filter((c) => c.usage !== "filter" && c.show_column !== false);
   const out = [];
   for (const column of columns) {
     const entry = { name: column.name, column_type: column.column_type, info: null };
@@ -47305,8 +48174,14 @@ async function reportInfo(metadata, report2) {
     }
     if (fieldId != null) {
       entry.field_id = fieldId;
-      const field = await metadata.field(boId3, fieldId).catch(() => void 0);
-      entry.info = await fieldInfo(metadata, field, relationships2);
+      const own = infoText(column.info);
+      if (own) entry.info = own;
+      else {
+        const field = await metadata.field(boId3, fieldId).catch(() => void 0);
+        entry.info = await fieldInfo(metadata, field, relationships2);
+      }
+    } else {
+      entry.info = infoText(column.info);
     }
     if (mappings.length) {
       entry.relationship_path = mappings.map((m) => {
@@ -47316,17 +48191,21 @@ async function reportInfo(metadata, report2) {
     }
     out.push(entry);
   }
-  const gate = currentInfoGate();
-  for (const c of out) gate?.always(c.info);
-  return { business_object: await businessObjectInfo(metadata, rootBoId), columns: out };
+  return {
+    report: { id: report2.id, name: report2.name?.trim() || `Report ${report2.id}`, info: infoText(report2.info) },
+    business_object: await businessObjectInfo(metadata, rootBoId),
+    columns: out,
+    custom_fields: all4.filter((c) => c.usage === "filter").map((c) => ({ name: c.name, column_type: c.column_type, info: infoText(c.info) }))
+  };
 }
 function renderReportInfo(context3) {
   const relationships2 = /* @__PURE__ */ new Map();
   for (const c of context3.columns) for (const r of c.relationship_path ?? []) relationships2.set(r.id, r);
-  return infoContextLines(context3.business_object, [
+  return [...ownInfoLines("Report info", context3.report), ...infoContextLines(context3.business_object, [
     { title: "Column info", entries: context3.columns.map((c) => ({ name: c.name, info: c.info })) },
-    { title: "Relationship info (column paths)", entries: [...relationships2.values()] }
-  ]);
+    { title: "Relationship info (column paths)", entries: [...relationships2.values()] },
+    { title: "Custom Field info (compared by the filter, not shown)", entries: context3.custom_fields }
+  ])];
 }
 
 // .path-cli/src/utils/web-links.ts
@@ -47348,21 +48227,6 @@ function findLinkable(kind, items, key, boId3) {
 ${list3}`);
   }
   throw new Error(`${kind} "${key}" not found${boId3 === void 0 ? "" : ` on business object ${boId3}`}`);
-}
-
-// utils/deep-link-urls.ts
-function normalizeAppUrl(appUrl) {
-  return appUrl.replace(/\/+$/, "");
-}
-function buildRecordDeepLinkUrl(appUrl, accountId, recordId, tab) {
-  const record2 = tab ? `${recordId}:${encodeURIComponent(tab)}` : `${recordId}`;
-  return `${normalizeAppUrl(appUrl)}/accounts/${accountId}/dashboard?record=${record2}`;
-}
-function buildFolderDeepLinkUrl(appUrl, accountId, businessObjectId, folderId) {
-  return `${normalizeAppUrl(appUrl)}/accounts/${accountId}/dashboard/business-objects/${businessObjectId}/folders/${folderId}`;
-}
-function buildReportDeepLinkUrl(appUrl, accountId, businessObjectId, reportId) {
-  return `${normalizeAppUrl(appUrl)}/accounts/${accountId}/dashboard/business-objects/${businessObjectId}/reports/${reportId}`;
 }
 
 // .path-cli/src/commands/web-link.ts
@@ -48991,7 +49855,7 @@ var getAccountCommand = new Command("get-account").description(
 
 // .path-cli/src/index.ts
 function createProgram() {
-  const program2 = new Command("path").version("1.0.2").description(
+  const program2 = new Command("path").version("1.0.3").description(
     "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
@@ -49065,11 +49929,14 @@ function createProgram() {
   program2.addCommand(listTagGroupsCommand);
   program2.addCommand(listReportsCommand);
   program2.addCommand(getReportCommand);
+  program2.addCommand(createReportCommand);
+  program2.addCommand(updateReportCommand);
   program2.addCommand(createCustomFieldCommand);
   program2.addCommand(updateCustomFieldCommand);
   program2.addCommand(deleteCustomFieldCommand);
   program2.addCommand(searchCommand);
   program2.addCommand(createFolderCommand);
+  program2.addCommand(updateFolderCommand);
   program2.addCommand(createRecordCommand);
   program2.addCommand(updateRecordCommand);
   program2.addCommand(linkRecordCommand);
@@ -57379,7 +58246,7 @@ var EMPTY_COMPLETION_RESULT = {
 };
 
 // .path-mcp/src/server.ts
-import { readFileSync as readFileSync10, existsSync as existsSync10 } from "fs";
+import { readFileSync as readFileSync11, existsSync as existsSync10 } from "fs";
 import { resolve as resolve10, dirname as dirname6 } from "path";
 import { fileURLToPath } from "url";
 
@@ -57456,7 +58323,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.2";
+var VERSION = "1.0.3";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;
@@ -57496,7 +58363,7 @@ function loadCommandReference(options) {
   ];
   for (const candidate of candidates) {
     if (existsSync10(candidate)) {
-      return readFileSync10(candidate, "utf-8");
+      return readFileSync11(candidate, "utf-8");
     }
   }
   return "Command reference not found. Ensure command-reference.md is next to the MCP server script, or run from the repo.";

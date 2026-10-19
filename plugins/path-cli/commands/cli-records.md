@@ -180,7 +180,9 @@ Before creating, present a plain language summary:
 
 ### Designer info on records
 
-`get-record`, `list-records --folder-id`, `list-related-records` and `run-report` carry the info of what they show: the business object's (`business_object.info`), each field's / column's (`field_info`, `columns[].info`) and each relationship's (`relationship_info`). Read it before changing a record: it is what the designer meant the field for. Info is given once per session. Later calls leave out what you were already shown (`info_elided` / `*_elided` flags and an `info_shown_earlier` summary). Pass `--with-info` to see it again. A folder's, a report's and a related-record table's columns show their info every time. `list-records --folder-id ... --json` is an object: the records are in `items`.
+`get-record`, `list-records --folder-id`, `list-related-records` and `run-report` carry the info of what they show: the folder's or report's own (`folder.info`, `report.info`: what it is for, who uses it), the business object's (`business_object.info`), each field's / column's (`field_info`, `columns[].info`: a report column's own info when it has one, otherwise its field's; a report's filter-only Custom Fields in `custom_fields[]`) and each relationship's (`relationship_info`). Read it before changing a record: it is what the designer (or the folder's / report's owner) meant it for. Every info is given once per session, with no exceptions: later calls, including a second view of the same folder or report, leave out what you were already shown (`info_elided` / `*_elided` flags and an `info_shown_earlier` summary). Pass `--with-info` to see it again. `list-records --folder-id ... --json` is an object: the records are in `items`.
+
+To make a new report (`create-report`), or to change a report's info, column info, filter and Custom Fields, use the `cli-reports-skill` command.
 
 ### Linking Records
 

@@ -192,6 +192,8 @@ Options:
   --to <source>                          Time Between end
   --from-occurrence <first|most_recent>  For milestone/step sources: first | most_recent (default most_recent)
   --to-occurrence <first|most_recent>    For milestone/step sources: first | most_recent (default most_recent)
+  --info <text>                          The Custom Field's info: what it measures and why the filter compares it (at most 50,000 characters)
+  --info-file <path>                     Read the info from a text or markdown file (instead of --info)
   --dry-run                              Print the column without saving
 ```
 
@@ -200,7 +202,7 @@ Options:
 ```
 Usage: create-folder [options]
 
-Create a folder with permissions
+Create a folder with permissions (and its info: --info / --info-file)
 
 Options:
   --bo-id <id>                     Business object ID
@@ -218,6 +220,12 @@ Options:
   --map-relationship <name-or-id>  Relationship (name or ID) from this folder's
                                    BO to the account's Address BO; sets
                                    map_enabled and map_relationship_id
+  --info <text>                    The folder's info: what it is for, who uses
+                                   it, what its records have in common — shown
+                                   with the folder to people and AI agents (at
+                                   most 50,000 characters)
+  --info-file <path>               Read the folder's info from a text or
+                                   markdown file (instead of --info)
   --dry-run                        Parse/build the request bodies and print
                                    them, but create nothing
 ```
@@ -234,6 +242,75 @@ Options:
   --bo-name <name>  Business object name (resolved to ID)
   --data <json>     JSON body with business_object_id (optional), fields, and
                     optional user_id
+```
+
+### `create-report`
+
+```
+Usage: create-report [options]
+
+Create a report the way the web report builder does: columns (fields,
+Relationship.Field, milestone/step dates, Milestones, Count,
+CALC(<expression>), TIMEBETWEEN(<from>, <to>)), Group / Calculation columns, a
+Logic Builder filter, Custom Fields, info. You become its owner; --users /
+--roles share it. Needs Create Reports on the business object.
+
+Options:
+  --bo-id <id>                Business object ID
+  --bo-name <name>            Business object name (resolved to ID)
+  --name <name>               Report name (unique on the business object)
+  --columns <specs>           Columns, in order, separated by commas: <source>
+                              [| option …]. Sources: Field, Relationship.Field
+                              ([…] for names with commas), milestone:<name>,
+                              step:<name>, milestones, count,
+                              CALC(<expression>), TIMEBETWEEN(<from>, <to>)
+                              with from/to = today | field:<date field> |
+                              milestone:<name> | step:<name>. Options:
+                              name=<title>, info=<text>,
+                              group[=day|week|month|quarter|year|<range>|<1d,
+                              12h…>], total|average|minimum|maximum,
+                              sort=asc|desc, width=<n>,
+                              occurrence=first|most_recent, from-occurrence=,
+                              to-occurrence=, group-expression=<TOTAL([x])…>,
+                              format=<date format>, decimals=<n>, commas,
+                              currency[=<symbol>], percent,
+                              duration=days+hours+minutes+seconds
+  --column <spec>             One more column (repeatable; same spec as
+                              --columns, handy for CALC expressions with
+                              commas)
+  --custom-field <spec>       A filter-only Custom Field (repeatable):
+                              CALC(<expression>) | name=<n> or
+                              TIMEBETWEEN(<from>, <to>) | name=<n> — never
+                              shown, compared in --logic with
+                              CUSTOMFIELD("<n>")
+  --type <type>               Report type: detail | grouped (the web picks it:
+                              grouped once a column is a Group column); checked
+                              against the columns
+  --logic <formula>           Filter, a Logic Builder formula (see
+                              /path-logic-formula-syntax); COLUMN("<computed
+                              column>") and CUSTOMFIELD("<custom field>")
+                              compare this report's own
+  --include-archived          Include archived records
+  --info <text>               The report's info: what it is for, who uses it,
+                              how to read it — shown with it to people and AI
+                              agents (at most 50,000 characters)
+  --info-file <path>          Read the report's info from a text or markdown
+                              file (instead of --info)
+  --column-info <json>        Info on columns by name, e.g. '{"Margin":"Sell
+                              minus cost, per job"}' (computed columns: say how
+                              they are calculated)
+  --roles <names>             Share with these roles (comma-separated)
+  --role-permissions <perms>  Comma-separated: view,edit,delete (default view)
+  --users <names>             Share with these users (comma-separated full
+                              names)
+  --user-permissions <perms>  Comma-separated: view,edit,delete (default view)
+  --data <json>               Escape hatch: the create body as JSON (keys:
+                              name, info, report_type, scheduling, columns,
+                              filter_condition, include_archived,
+                              show_user_filter, user_filter_condition_keys);
+                              flags override it
+  --dry-run                   Build and validate the body and print it, but
+                              create nothing
 ```
 
 ### `delete-calendar-event`
@@ -543,7 +620,9 @@ Options:
 Usage: get-report [options] <report-id>
 
 Show a report's columns (with column_key / usage), its filter-only Custom
-Fields and its filter as formula text
+Fields, its filter as formula text, and the report's and each column's own info
+(what it is for; JSON keys info and columns[].info, once per session like all
+info)
 
 Arguments:
   report-id   Report ID
@@ -700,10 +779,11 @@ Options:
 ```
 Usage: list-folders [options]
 
-List folders. Each folder_stickers[] entry carries its info; a copy of a
-business object sticker with no info of its own also gets bo_sticker_info (the
-business object sticker's info, which the copy shows). Text output lists
-sticker info under the table
+List folders. Each folder carries its own info (what the folder is for, who
+uses it; once per session like all info). Each folder_stickers[] entry carries
+its info; a copy of a business object sticker with no info of its own also gets
+bo_sticker_info (the business object sticker's info, which the copy shows).
+Text output lists folder info and sticker info under the table
 
 Options:
   --bo-id <id>      Filter by business object ID
@@ -808,13 +888,16 @@ Options:
 Usage: list-records [options]
 
 List records in a folder (--folder-id / --folder-name), or your recent records.
-JSON is { business_object: {id, name, info}, field_info: [{field_id, name,
-info}], items } for a folder — field_info lists the folder's columns that have
-designer info (a relationship field without its own shows the related field's)
-— and { business_objects: [{id, name, info, field_info}], items } for recent
-records (one entry per business object present). items is the record list as
-before. Text output prints the table, then a "Business object info:" and a
-"Field info:" block (only what has info)
+JSON is { folder: {id, name, info}, business_object: {id, name, info},
+field_info: [{field_id, name, info}], items } for a folder — folder.info is the
+folder's own info (what it is for, who uses it), field_info lists the folder's
+columns that have designer info (a relationship field without its own shows the
+related field's) — and { business_objects: [{id, name, info, field_info}],
+items } for recent records (one entry per business object present). items is
+the record list as before. Text output prints the table, then a "Folder info:",
+a "Business object info:" and a "Field info:" block (only what has info). Like
+all info, each is shown once per session; later calls leave it out (pass
+--with-info to repeat)
 
 Options:
   --folder-id <id>      Folder ID to list records from
@@ -844,10 +927,10 @@ and linked fields (an address's Street / City / State / Zip). JSON: { record,
 direction, relationship {id, name, info}, business_object {id, name, info},
 columns [{kind, name, field_id?, relationship_id?, pathway_id?, info}], items
 [{id, identifier, values, linked_ids?}] } — a column's info is the info of the
-field / relationship / pathway it is based on, shown every time. Open any
-listed record with get-record --record-id <id>. Relationships the record viewer
-doesn't show you (hidden, visibility rules, business objects you can't view)
-are refused
+field / relationship / pathway it is based on (once per session, like all
+info). Open any listed record with get-record --record-id <id>. Relationships
+the record viewer doesn't show you (hidden, visibility rules, business objects
+you can't view) are refused
 
 Options:
   --record-id <id>            The record whose related records to list
@@ -880,7 +963,8 @@ Options:
 ```
 Usage: list-reports [options]
 
-List reports
+List reports. Each report carries its own info (what the report is for, how to
+read it; once per session like all info); text output lists it under the table
 
 Options:
   --page <n>      Page number (default: "1")
@@ -1303,15 +1387,20 @@ Options:
 Usage: run-report [options]
 
 Run a report and print its rows (the web app's report view; in real-world mode
-only reports the acting user can open). Also gives the report's root business
-object {id, name, info} and each column's info — the info of the field the
-column shows (for a column through relationships, the end field's, with the
-relationships on the path and their info); count, milestone, step and
-calculated columns have none, a Time Between / Time Span column on one field
-has that field's. --json keeps the server's { rows, meta } and adds
-business_object and columns [{name, column_type, field_id?, relationship_path?,
-info}]; text output prints a "Business object info:" and a "Column info:" block
-under the rows (only what has info)
+only reports the acting user can open). Also gives the report's own info
+(report {id, name, info}: what it is for, how to read it), its root business
+object {id, name, info} and each column's info — the column's own info when the
+report has one on it, otherwise the info of the field the column shows (for a
+column through relationships, the end field's, with the relationships on the
+path and their info); count, milestone, step and calculated columns have only
+their own, a Time Between / Time Span column on one field falls back to that
+field's. Filter-only Custom Fields (compared by the filter, not shown) come
+with their own info. --json keeps the server's { rows, meta } and adds report,
+business_object, columns [{name, column_type, field_id?, relationship_path?,
+info}] and custom_fields [{name, column_type, info}]; text output prints a
+"Report info:", a "Business object info:", a "Column info:" and a "Custom Field
+info" block under the rows (only what has info). Like all info, each is shown
+once per session; later runs leave it out (pass --with-info to repeat)
 
 Options:
   --report-id <id>      Report ID
@@ -1511,9 +1600,9 @@ Options:
 ```
 Usage: update-custom-field [options] <report-id> <field>
 
-Change a report Custom Field's name or definition (--expression, or
---from/--to). Filter rules keep working: they reference the field's key, not
-its name.
+Change a report Custom Field's name, definition (--expression, or --from/--to)
+or info (--info / --info-file). Filter rules keep working: they reference the
+field's key, not its name.
 
 Arguments:
   report-id                              Report ID
@@ -1526,6 +1615,34 @@ Options:
   --to <source>                          New Time Between end
   --from-occurrence <first|most_recent>  For milestone/step sources: first | most_recent (default most_recent)
   --to-occurrence <first|most_recent>    For milestone/step sources: first | most_recent (default most_recent)
+  --info <text>                          New info for the Custom Field ("" clears it)
+  --info-file <path>                     Read the new info from a text or markdown file (instead of --info)
+```
+
+### `update-folder`
+
+```
+Usage: update-folder [options]
+
+Change a folder's info or settings, saved the way the folder form saves it
+(everything else as stored). Needs Edit on the folder. --data keys:
+folder_name, include_archived, columns, sorts, default_sort_field,
+default_sort_direction, map_enabled, map_relationship_id, info (criteria:
+set-filter folder; sticker criteria: set-filter folder-sticker)
+
+Options:
+  --folder-id <id>      Folder ID
+  --folder-name <name>  Folder name (requires --bo-id or --bo-name)
+  --bo-id <id>          Business object ID (for --folder-name)
+  --bo-name <name>      Business object name (for --folder-name)
+  --info <text>         Info: what it is for, who uses it, how to read it —
+                        shown with it to people and AI agents ("" clears it; at
+                        most 50,000 characters)
+  --info-file <path>    Read the info from a text or markdown file (instead of
+                        --info)
+  --data <json>         JSON object of folder keys to change, e.g.
+                        '{"folder_name":"Active Jobs","info":"…"}'
+  --dry-run             Print the save body without saving
 ```
 
 ### `update-message`
@@ -1596,6 +1713,33 @@ Options:
   --record-id <id>  Record ID
   --file-id <id>    File ID
   --data <json>     JSON body with fields to update
+```
+
+### `update-report`
+
+```
+Usage: update-report [options]
+
+Change a report's info or settings, saved the way the report form saves it
+(columns, filter, scheduling as stored). Needs Edit on the report. --data keys:
+name, include_archived, info, column_info (filter: set-filter report; Custom
+Fields: create-custom-field / update-custom-field)
+
+Options:
+  --report-id <id>      Report ID
+  --report-name <name>  Report name (resolved to ID)
+  --info <text>         Info: what it is for, who uses it, how to read it —
+                        shown with it to people and AI agents ("" clears it; at
+                        most 50,000 characters)
+  --info-file <path>    Read the info from a text or markdown file (instead of
+                        --info)
+  --data <json>         JSON object of report keys to change, e.g.
+                        '{"name":"Open
+                        Quotes","info":"…","column_info":{"Total":"Quoted price
+                        incl. tax"}}' — column_info sets each named column's
+                        own info (by column id, column_key or name; null clears
+                        it, and the column shows its field's info again)
+  --dry-run             Print the save body without saving
 ```
 
 ### `upload-record-file`

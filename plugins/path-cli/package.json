@@ -1,6 +1,6 @@
 {
   "name": "path-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "PATH plugin for Claude: skills, slash commands, and an MCP server for the PATH user app.",
   "type": "module",

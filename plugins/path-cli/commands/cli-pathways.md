@@ -111,7 +111,7 @@ Automatic steps run, server steps run on the server, and each screen that needs 
 - the waiting step's info under the "Waiting for input · step …" heading (JSON: `waiting_for.step_info`);
 - each field's info on a line under the field on forms (`detail.fields[].info`, `detail.create_fields[].info`, `detail.info` on Edit Record Field) and tables (`detail.columns[].info`, `detail.detail_columns[].info`). A table column has no info of its own: it shows the info of the field or relationship field it's based on.
 
-Text output cuts a field's info past 1,000 characters ("…(see --json)"); JSON always has all of it. Read the info before you answer a screen. Use it to work out what the step is for, which questions to ask the user, and what a sensible answer looks like. It is guidance, not an answer: never fill a value from info when the user hasn't decided it. Ask them.
+Each info is given once per session, like all info: a revisited step, and a second run of the same pathway in the same session, leave out the pathway, step and field info you were already shown (JSON `*_elided` flags, text `(shown earlier this session)`); pass `--with-info` to repeat it. Text output cuts a field's info past 1,000 characters ("…(see --json)"); JSON always has all of it. Read the info before you answer a screen. Use it to work out what the step is for, which questions to ask the user, and what a sensible answer looks like. It is guidance, not an answer: never fill a value from info when the user hasn't decided it. Ask them.
 
 **Headlessly (no person in the loop):**
 

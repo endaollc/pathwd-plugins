@@ -48,28 +48,34 @@ If the user hasn't specified an account ID, ask which account to use or run the 
 
 ## Your Workflow
 
-### Step 1: Discover the Business Object and Its Fields
+### Step 1: Load the business object (always, before writing the filter or running create-folder)
 
-Run these to understand the data model:
+Field names and types and the designers' info decide which fields the filter should use, so load them first:
 
 ```
 # Find the BO
 --account <ID> list-business-objects
 
-# Get fields (needed to build filters)
+# The BO itself, with its info
+--account <ID> get-business-object --bo-name <name>
+
+# Its fields, with each field's type and info
 --account <ID> list-fields --bo-name <name> --json
 
-# Get milestones if user referenced milestone conditions (e.g. "has been won")
---account <ID> list-workflow-milestones --bo-name <name> --json
-
-# Get steps if user referenced step conditions (e.g. "delivery scheduled")
---account <ID> list-workflow-steps --bo-name <name> --json
-
-# Get relationships if user referenced linked records
+# Its relationships (linked records), with their info
 --account <ID> list-relationships --bo-name <name> --json
+
+# The fields of every related BO a filter leaf reaches through a relationship
+--account <ID> list-fields --bo-id <related BO id> --json
+
+# Milestones / steps, if the request mentions them (e.g. "has been won", "delivery scheduled")
+--account <ID> list-workflow-milestones --bo-name <name> --json
+--account <ID> list-workflow-steps --bo-name <name> --json
 ```
 
-Only run the lookups you actually need based on what the user described.
+Skip what you already loaded this session. If your context no longer has it (for example after compaction), run it again with the global `--with-info` option (`--account <ID> --with-info list-fields …`): info is shown once per session, so a plain re-run leaves it out.
+
+Map each of the user's words to a real field, milestone or step. Read the info: it says what each field is for and often settles which one the user means. If two could fit, ask.
 
 ### Step 2: Build the Filter Logic
 
@@ -123,6 +129,9 @@ Try `--dry-run` first to print the request bodies (folder + permissions) without
 | `--users <names>` | Comma-separated user full names to grant access |
 | `--user-permissions <perms>` | Comma-separated: `view`, `edit`, `delete` (default: view) |
 | `--map-relationship <name-or-id>` | Relationship (name or ID) from this BO to the account's Address BO — enables Folder Map (`map_enabled` + `map_relationship_id`). Only valid if such a relationship exists. |
+| `--info <text>` / `--info-file <path>` | The folder's info: one or two sentences on what the folder is for, who uses it and what its records have in common. Give every new folder one (from what the user told you; don't invent a purpose). People and AI agents see it whenever they open the folder |
+
+**Changing a folder later:** `update-folder --folder-id <id> --info "<text>"` (or `--info-file`, or `--data '{"folder_name":"…","info":"…"}'`) saves it the way the folder form does, everything else kept; `--info ""` clears the info. It needs Edit on the folder. Criteria go through `set-filter folder <id> --text '<formula>'`. Reports work the same way with `update-report --report-id <id> --info "<text>"`.
 
 **Permission levels:**
 - **View only** (default): `--role-permissions "view"`
@@ -160,13 +169,15 @@ Tell the user what was created:
 | Command | Purpose |
 |---------|---------|
 | `list-business-objects` | Find BO by name |
-| `list-fields --bo-name <n> --json` | Get fields for filter building |
+| `get-business-object --bo-name <n>` | The BO and its info (load before building the filter) |
+| `list-fields --bo-name <n> --json` | Fields with their types and info, for filter building (also for each related BO the filter reaches) |
 | `list-workflow-milestones --bo-name <n>` | Get milestones for filter building |
 | `list-workflow-steps --bo-name <n>` | Get steps for filter building |
 | `list-relationships --bo-name <n>` | Get relationships for filter building |
 | `parse-filter --bo-name <n> --text '<formula>'` | Validate the formula before creating (see the `path-logic-formula-syntax` skill) |
 | `list-roles` | Find role names (for "all users" role lookup) |
 | `create-folder` | Create folder with filter and permissions (`--dry-run` to preview) |
+| `update-folder --folder-id <id> --info <text>` | Change the folder's info (or `--data` settings) later |
 | `list-folders` | Verify folder was created |
 | `list-records --folder-id <id>` | Test which records match |
 

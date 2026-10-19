@@ -30,7 +30,7 @@ Figure out from the request what kind of criteria this is and where it's rooted:
 |---|---|---|
 | Which records a folder shows | `folder` (existing) or `create-folder --logic` (new) | the folder's BO |
 | When a folder sticker lights up | `folder-sticker` (needs `--sticker <folder sticker id>`) | the folder's BO |
-| Which records a report includes | `report` | the report's BO |
+| Which records a report includes | `report` (existing) or `create-report --logic` (new) | the report's BO |
 
 Anything else (a BO sticker, task, milestone, Fork, pathway or visibility rule): that's Designer work (PATH's Designer, or the PATH Designer plugin if it's installed). To explain one, read it with `get-filter <target> <id>` and describe it.
 
@@ -76,6 +76,7 @@ Do not save until the user confirms.
 
 - Existing object: `--account <ID> set-filter <target> <id> --text '<formula>'` (try `--dry-run` first if you want to inspect the pipeline before writing).
 - New folder: `--account <ID> create-folder --bo-name <n> --folder-name "<name>" --logic '<formula>' ...` (see the `cli-folders-skill` command for the rest of folder creation — permissions, columns).
+- New report: `--account <ID> create-report --bo-name <n> --name "<name>" --columns '<columns>' --logic '<formula>' ...` — the formula can compare the report's own calculated columns and Custom Fields (`COLUMN("…")`, `CUSTOMFIELD("…")`); see the `cli-reports-skill` command for the rest (columns, grouping, info, sharing).
 
 `--logic-raw <json>` exists on `create-folder` as an escape hatch for the rare filter the formula language can't express (check with `get-filter`, which prints `UNSUPPORTED(...)` for such rules).
 
