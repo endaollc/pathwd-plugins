@@ -131,7 +131,7 @@ Try `--dry-run` first to print the request bodies (folder + permissions) without
 | `--map-relationship <name-or-id>` | Relationship (name or ID) from this BO to the account's Address BO — enables Folder Map (`map_enabled` + `map_relationship_id`). Only valid if such a relationship exists. |
 | `--info <text>` / `--info-file <path>` | The folder's info: one or two sentences on what the folder is for, who uses it and what its records have in common. Give every new folder one (from what the user told you; don't invent a purpose). People and AI agents see it whenever they open the folder |
 
-**Changing a folder later:** `update-folder --folder-id <id> --info "<text>"` (or `--info-file`, or `--data '{"folder_name":"…","info":"…"}'`) saves it the way the folder form does, everything else kept; `--info ""` clears the info. It needs Edit on the folder. Criteria go through `set-filter folder <id> --text '<formula>'`. Reports work the same way with `update-report --report-id <id> --info "<text>"`.
+**Changing a folder later:** `update-folder --folder-id <id> --info "<text>"` (or `--info-file`, or `--data '{"folder_name":"…","info":"…"}'`) saves it the way the folder form does, everything else kept; `--info ""` clears the info. A sticker's own info: `--data '{"sticker_info":{"<sticker name>":"…"}}'`. It needs Edit on the folder. Criteria go through `set-filter folder <id> --text '<formula>'`. Reports work the same way with `update-report --report-id <id> --info "<text>"`.
 
 **Permission levels:**
 - **View only** (default): `--role-permissions "view"`

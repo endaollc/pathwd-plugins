@@ -689,8 +689,8 @@ var require_option = __commonJS({
        * @param {(string | string[])} names
        * @return {Option}
        */
-      conflicts(names) {
-        this.conflictsWith = this.conflictsWith.concat(names);
+      conflicts(names2) {
+        this.conflictsWith = this.conflictsWith.concat(names2);
         return this;
       }
       /**
@@ -1265,8 +1265,8 @@ var require_command = __commonJS({
        * @param {string} names
        * @return {Command} `this` command for chaining
        */
-      arguments(names) {
-        names.trim().split(/ +/).forEach((detail) => {
+      arguments(names2) {
+        names2.trim().split(/ +/).forEach((detail) => {
           this.argument(detail);
         });
         return this;
@@ -3084,10 +3084,10 @@ var require_code = __commonJS({
       }
       get names() {
         var _a;
-        return (_a = this._names) !== null && _a !== void 0 ? _a : this._names = this._items.reduce((names, c) => {
+        return (_a = this._names) !== null && _a !== void 0 ? _a : this._names = this._items.reduce((names2, c) => {
           if (c instanceof Name)
-            names[c.str] = (names[c.str] || 0) + 1;
-          return names;
+            names2[c.str] = (names2[c.str] || 0) + 1;
+          return names2;
         }, {});
       }
     };
@@ -3413,11 +3413,11 @@ var require_codegen = __commonJS({
         const rhs = this.rhs === void 0 ? "" : ` = ${this.rhs}`;
         return `${varKind} ${this.name}${rhs};` + _n;
       }
-      optimizeNames(names, constants) {
-        if (!names[this.name.str])
+      optimizeNames(names2, constants) {
+        if (!names2[this.name.str])
           return;
         if (this.rhs)
-          this.rhs = optimizeExpr(this.rhs, names, constants);
+          this.rhs = optimizeExpr(this.rhs, names2, constants);
         return this;
       }
       get names() {
@@ -3434,15 +3434,15 @@ var require_codegen = __commonJS({
       render({ _n }) {
         return `${this.lhs} = ${this.rhs};` + _n;
       }
-      optimizeNames(names, constants) {
-        if (this.lhs instanceof code_1.Name && !names[this.lhs.str] && !this.sideEffects)
+      optimizeNames(names2, constants) {
+        if (this.lhs instanceof code_1.Name && !names2[this.lhs.str] && !this.sideEffects)
           return;
-        this.rhs = optimizeExpr(this.rhs, names, constants);
+        this.rhs = optimizeExpr(this.rhs, names2, constants);
         return this;
       }
       get names() {
-        const names = this.lhs instanceof code_1.Name ? {} : { ...this.lhs.names };
-        return addExprNames(names, this.rhs);
+        const names2 = this.lhs instanceof code_1.Name ? {} : { ...this.lhs.names };
+        return addExprNames(names2, this.rhs);
       }
     };
     var AssignOp = class extends Assign {
@@ -3498,8 +3498,8 @@ var require_codegen = __commonJS({
       optimizeNodes() {
         return `${this.code}` ? this : void 0;
       }
-      optimizeNames(names, constants) {
-        this.code = optimizeExpr(this.code, names, constants);
+      optimizeNames(names2, constants) {
+        this.code = optimizeExpr(this.code, names2, constants);
         return this;
       }
       get names() {
@@ -3528,20 +3528,20 @@ var require_codegen = __commonJS({
         }
         return nodes.length > 0 ? this : void 0;
       }
-      optimizeNames(names, constants) {
+      optimizeNames(names2, constants) {
         const { nodes } = this;
         let i = nodes.length;
         while (i--) {
           const n = nodes[i];
-          if (n.optimizeNames(names, constants))
+          if (n.optimizeNames(names2, constants))
             continue;
-          subtractNames(names, n.names);
+          subtractNames(names2, n.names);
           nodes.splice(i, 1);
         }
         return nodes.length > 0 ? this : void 0;
       }
       get names() {
-        return this.nodes.reduce((names, n) => addNames(names, n.names), {});
+        return this.nodes.reduce((names2, n) => addNames(names2, n.names), {});
       }
     };
     var BlockNode = class extends ParentNode {
@@ -3586,20 +3586,20 @@ var require_codegen = __commonJS({
           return void 0;
         return this;
       }
-      optimizeNames(names, constants) {
+      optimizeNames(names2, constants) {
         var _a;
-        this.else = (_a = this.else) === null || _a === void 0 ? void 0 : _a.optimizeNames(names, constants);
-        if (!(super.optimizeNames(names, constants) || this.else))
+        this.else = (_a = this.else) === null || _a === void 0 ? void 0 : _a.optimizeNames(names2, constants);
+        if (!(super.optimizeNames(names2, constants) || this.else))
           return;
-        this.condition = optimizeExpr(this.condition, names, constants);
+        this.condition = optimizeExpr(this.condition, names2, constants);
         return this;
       }
       get names() {
-        const names = super.names;
-        addExprNames(names, this.condition);
+        const names2 = super.names;
+        addExprNames(names2, this.condition);
         if (this.else)
-          addNames(names, this.else.names);
-        return names;
+          addNames(names2, this.else.names);
+        return names2;
       }
     };
     If.kind = "if";
@@ -3614,10 +3614,10 @@ var require_codegen = __commonJS({
       render(opts) {
         return `for(${this.iteration})` + super.render(opts);
       }
-      optimizeNames(names, constants) {
-        if (!super.optimizeNames(names, constants))
+      optimizeNames(names2, constants) {
+        if (!super.optimizeNames(names2, constants))
           return;
-        this.iteration = optimizeExpr(this.iteration, names, constants);
+        this.iteration = optimizeExpr(this.iteration, names2, constants);
         return this;
       }
       get names() {
@@ -3638,8 +3638,8 @@ var require_codegen = __commonJS({
         return `for(${varKind} ${name}=${from}; ${name}<${to}; ${name}++)` + super.render(opts);
       }
       get names() {
-        const names = addExprNames(super.names, this.from);
-        return addExprNames(names, this.to);
+        const names2 = addExprNames(super.names, this.from);
+        return addExprNames(names2, this.to);
       }
     };
     var ForIter = class extends For {
@@ -3653,10 +3653,10 @@ var require_codegen = __commonJS({
       render(opts) {
         return `for(${this.varKind} ${this.name} ${this.loop} ${this.iterable})` + super.render(opts);
       }
-      optimizeNames(names, constants) {
-        if (!super.optimizeNames(names, constants))
+      optimizeNames(names2, constants) {
+        if (!super.optimizeNames(names2, constants))
           return;
-        this.iterable = optimizeExpr(this.iterable, names, constants);
+        this.iterable = optimizeExpr(this.iterable, names2, constants);
         return this;
       }
       get names() {
@@ -3698,20 +3698,20 @@ var require_codegen = __commonJS({
         (_b = this.finally) === null || _b === void 0 ? void 0 : _b.optimizeNodes();
         return this;
       }
-      optimizeNames(names, constants) {
+      optimizeNames(names2, constants) {
         var _a, _b;
-        super.optimizeNames(names, constants);
-        (_a = this.catch) === null || _a === void 0 ? void 0 : _a.optimizeNames(names, constants);
-        (_b = this.finally) === null || _b === void 0 ? void 0 : _b.optimizeNames(names, constants);
+        super.optimizeNames(names2, constants);
+        (_a = this.catch) === null || _a === void 0 ? void 0 : _a.optimizeNames(names2, constants);
+        (_b = this.finally) === null || _b === void 0 ? void 0 : _b.optimizeNames(names2, constants);
         return this;
       }
       get names() {
-        const names = super.names;
+        const names2 = super.names;
         if (this.catch)
-          addNames(names, this.catch.names);
+          addNames(names2, this.catch.names);
         if (this.finally)
-          addNames(names, this.finally.names);
-        return names;
+          addNames(names2, this.finally.names);
+        return names2;
       }
     };
     var Catch = class extends BlockNode {
@@ -3995,15 +3995,15 @@ var require_codegen = __commonJS({
       }
     };
     exports.CodeGen = CodeGen;
-    function addNames(names, from) {
+    function addNames(names2, from) {
       for (const n in from)
-        names[n] = (names[n] || 0) + (from[n] || 0);
-      return names;
+        names2[n] = (names2[n] || 0) + (from[n] || 0);
+      return names2;
     }
-    function addExprNames(names, from) {
-      return from instanceof code_1._CodeOrName ? addNames(names, from.names) : names;
+    function addExprNames(names2, from) {
+      return from instanceof code_1._CodeOrName ? addNames(names2, from.names) : names2;
     }
-    function optimizeExpr(expr, names, constants) {
+    function optimizeExpr(expr, names2, constants) {
       if (expr instanceof code_1.Name)
         return replaceName(expr);
       if (!canOptimize(expr))
@@ -4019,28 +4019,28 @@ var require_codegen = __commonJS({
       }, []));
       function replaceName(n) {
         const c = constants[n.str];
-        if (c === void 0 || names[n.str] !== 1)
+        if (c === void 0 || names2[n.str] !== 1)
           return n;
-        delete names[n.str];
+        delete names2[n.str];
         return c;
       }
       function canOptimize(e) {
-        return e instanceof code_1._Code && e._items.some((c) => c instanceof code_1.Name && names[c.str] === 1 && constants[c.str] !== void 0);
+        return e instanceof code_1._Code && e._items.some((c) => c instanceof code_1.Name && names2[c.str] === 1 && constants[c.str] !== void 0);
       }
     }
-    function subtractNames(names, from) {
+    function subtractNames(names2, from) {
       for (const n in from)
-        names[n] = (names[n] || 0) - (from[n] || 0);
+        names2[n] = (names2[n] || 0) - (from[n] || 0);
     }
     function not(x) {
       return typeof x == "boolean" || typeof x == "number" || x === null ? !x : (0, code_1._)`!${par(x)}`;
     }
     exports.not = not;
     var andCode = mappend(exports.operators.AND);
-    function and(...args) {
+    function and2(...args) {
       return args.reduce(andCode);
     }
-    exports.and = and;
+    exports.and = and2;
     var orCode = mappend(exports.operators.OR);
     function or(...args) {
       return args.reduce(orCode);
@@ -4228,7 +4228,7 @@ var require_names = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
-    var names = {
+    var names2 = {
       // validation function arguments
       data: new codegen_1.Name("data"),
       // data passed to validation function
@@ -4257,7 +4257,7 @@ var require_names = __commonJS({
       jsonLen: new codegen_1.Name("jsonLen"),
       jsonPart: new codegen_1.Name("jsonPart")
     };
-    exports.default = names;
+    exports.default = names2;
   }
 });
 
@@ -17028,9 +17028,9 @@ function setCurrentInfoGate(gate) {
 var ELIDED_TEXT = "(shown earlier this session)";
 function elidedSummaryLine(labels) {
   if (!labels.length) return null;
-  const names = [...new Set(labels)];
-  const shown = names.slice(0, 6).join(", ");
-  const more = names.length > 6 ? ` and ${names.length - 6} more` : "";
+  const names2 = [...new Set(labels)];
+  const shown = names2.slice(0, 6).join(", ");
+  const more = names2.length > 6 ? ` and ${names2.length - 6} more` : "";
   return `Info for ${shown}${more} was shown earlier this session (pass --with-info to repeat).`;
 }
 var INFO_KEY = /^(info|.+_info)$/;
@@ -17134,13 +17134,13 @@ function filterOutputArgs(args, gate = currentInfoGate()) {
   return [indented ? JSON.stringify(parsed, null, 2) : JSON.stringify(parsed)];
 }
 function commandPathOf(command) {
-  const names = [];
+  const names2 = [];
   let c = command;
   while (c && c.parent) {
-    names.unshift(c.name());
+    names2.unshift(c.name());
     c = c.parent;
   }
-  return names.join(" ");
+  return names2.join(" ");
 }
 var NO_ACCOUNT_BLOCK = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache", "get-account"]);
 async function beginInfoCommand(opts) {
@@ -17477,14 +17477,14 @@ async function impersonate(config2, userKey) {
   }
   return { token: token.access_token, userId: user.id, name: displayName(user) };
 }
-async function applyActingUser(opts, load3) {
+async function applyActingUser(opts, load4) {
   if (opts.mode !== void 0) {
     const mode = parseMode(opts.mode);
-    if (mode === "super-user") await assertSuperUserAllowed(load3({ accountId: opts.account, baseUrl: opts.baseUrl }));
+    if (mode === "super-user") await assertSuperUserAllowed(load4({ accountId: opts.account, baseUrl: opts.baseUrl }));
     setCommandEnv("PATH_ACTIVE_MODE", mode);
   }
   if (!opts.asUser || commandEnv("PATH_ACTING_USER_ID")) return;
-  const config2 = load3({ accountId: opts.account, baseUrl: opts.baseUrl });
+  const config2 = load4({ accountId: opts.account, baseUrl: opts.baseUrl });
   if (!config2.accountId) throw new Error("--as-user needs an account (--account <id>)");
   const session = await impersonate(config2, opts.asUser);
   setCommandEnv("PATH_SIGNED_IN_TOKEN", config2.accessToken);
@@ -17745,6 +17745,9 @@ function checkInfo(value, where = "info") {
 
 // .path-cli/src/output/formatter.ts
 function formatOutput(data, opts) {
+  if (data === void 0 || data === null) {
+    return opts.format === "json" ? "null" : "";
+  }
   if (opts.quiet) return formatQuiet(data);
   if (opts.format === "json" || opts.fields === void 0 && Array.isArray(data)) {
   }
@@ -17759,6 +17762,7 @@ function formatOutput(data, opts) {
         opts.footer
       );
     case "compact":
+      if (typeof data !== "object") return String(data);
       return formatCompact(data, opts.fields);
     case "quiet":
       return formatQuiet(data);
@@ -19162,8 +19166,8 @@ var RunMetadata = class {
     return this.#pathways;
   }
   /** Account dynamic settings — the list the web app merges `{setting}` tokens from. */
-  dynamicSettings(refresh2 = false) {
-    if (refresh2 || !this.#settings) {
+  dynamicSettings(refresh = false) {
+    if (refresh || !this.#settings) {
       this.#settings = this.client.get(
         `/v1/accounts/${this.accountId}/dynamic-settings`
       ).then((res) => res.dynamic_settings ?? []);
@@ -19301,9 +19305,9 @@ var getHistorySessionCommand = new Command("get-history-session").description(
       console.log(JSON.stringify(session, null, 2));
       return;
     }
-    const names = await displayNames(client, accountId);
+    const names2 = await displayNames(client, accountId);
     const rows = flattenHistory([session], {
-      ...names,
+      ...names2,
       includeViews: true,
       includeIds: true,
       includeRecord: true,
@@ -19312,12 +19316,12 @@ var getHistorySessionCommand = new Command("get-history-session").description(
       maxWidth: parseInt(String(opts.maxWidth ?? "60"), 10) || 0,
       metadataKeys: opts.metadataKeys ? String(opts.metadataKeys).split(",").map((k) => k.trim()).filter(Boolean) : void 0
     }).map(({ session: _number2, type: _type, user: _user, source: _source, ...row }) => row);
-    const when = (iso) => iso ? formatTimeIn(iso, names.timeZone) : "\u2026";
+    const when = (iso) => iso ? formatTimeIn(iso, names2.timeZone) : "\u2026";
     const source = sessionSourceLabel(session);
     console.log(
       [
-        `Session ${session.activitySessionId}: ${sessionTypeLabel(session, names.pathwayNames)}`,
-        `user: ${userName(session.userId, names.userNames)}${session.userId != null ? ` (${session.userId})` : ""}${source ? ` \xB7 ${source}` : ""} \xB7 ${session.platform ?? ""} \xB7 ${when(session.startedAt)} \u2013 ${when(session.endedAt)}${session.recordId ? ` \xB7 record ${session.recordId}` : ""}`,
+        `Session ${session.activitySessionId}: ${sessionTypeLabel(session, names2.pathwayNames)}`,
+        `user: ${userName(session.userId, names2.userNames)}${session.userId != null ? ` (${session.userId})` : ""}${source ? ` \xB7 ${source}` : ""} \xB7 ${session.platform ?? ""} \xB7 ${when(session.startedAt)} \u2013 ${when(session.endedAt)}${session.recordId ? ` \xB7 record ${session.recordId}` : ""}`,
         ""
       ].join("\n")
     );
@@ -19453,6 +19457,33 @@ function resultPage(message2) {
 </head><body><div class="box">${message2}</div></body></html>`;
 }
 
+// .path-cli/src/utils/active-accounts.ts
+function isActiveAccount(account) {
+  return !account.user_account?.deactivated_on;
+}
+async function listActiveAccounts(client) {
+  return (await client.get("/v1/accounts")).filter(isActiveAccount);
+}
+function inactiveAccountReason(accounts, accountId) {
+  const account = accounts.find((a) => String(a.id) === String(accountId));
+  if (!account) {
+    return `Account ${accountId} isn't one of your accounts. Run "path list-accounts" to see the accounts you can use.`;
+  }
+  if (!isActiveAccount(account)) {
+    return `You're deactivated in account ${account.id} (${account.name}), so you can't use it. Run "path list-accounts" to see the accounts you can use.`;
+  }
+  return null;
+}
+var ACTIVE_CHECK_TTL_MS = 6e4;
+var passed = /* @__PURE__ */ new Map();
+async function assertActiveAccount(client, accountId, cacheKey) {
+  const key = cacheKey ? `${cacheKey}|${accountId}` : null;
+  if (key && (passed.get(key) ?? 0) > Date.now()) return;
+  const reason = inactiveAccountReason(await client.get("/v1/accounts"), accountId);
+  if (reason) throw new Error(reason);
+  if (key) passed.set(key, Date.now() + ACTIVE_CHECK_TTL_MS);
+}
+
 // .path-cli/src/commands/auth.ts
 var authCommand = new Command("auth").description("Authenticate and store token (browser sign-in by default)").option(
   "--email <email>",
@@ -19540,7 +19571,7 @@ async function browserLogin(baseUrl, noOpen = false) {
 async function printAccounts(baseUrl) {
   try {
     const authClient = new HttpClient(loadConfig({ baseUrl }));
-    const accounts = await authClient.get("/v1/accounts");
+    const accounts = await listActiveAccounts(authClient);
     if (accounts.length > 0) {
       console.log("\nAvailable accounts:");
       for (const acct of accounts) {
@@ -19567,14 +19598,14 @@ var logoutCommand = new Command("logout").description("Clear stored auth tokens"
 });
 
 // .path-cli/src/commands/list-accounts.ts
-var listAccountsCommand = new Command("list-accounts").description("List available accounts").action(async () => {
+var listAccountsCommand = new Command("list-accounts").description("List your accounts (not the ones you've been deactivated in)").action(async () => {
   try {
     const parentOpts = listAccountsCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
       baseUrl: parentOpts.baseUrl
     });
     const client = new HttpClient(config2);
-    const accounts = await client.get("/v1/accounts");
+    const accounts = await listActiveAccounts(client);
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name"];
     console.log(
@@ -19832,7 +19863,7 @@ var listFieldGroupsCommand = new Command("list-field-groups").description("List 
 });
 
 // .path-cli/src/commands/list-relationships.ts
-var listRelationshipsCommand = new Command("list-relationships").description("List relationships for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
+var listRelationshipsCommand = new Command("list-relationships").description("List relationships for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--page <n>", "Fetch only this single page (default: all relationships)").option("--per-page <n>", "Items per page (single-page mode)", "50").option("--all", "Fetch all relationships (this is now the default)").action(async (opts) => {
   try {
     const parentOpts = listRelationshipsCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -19855,7 +19886,8 @@ var listRelationshipsCommand = new Command("list-relationships").description("Li
     }
     await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
     let data;
-    if (opts.all) {
+    const singlePage = opts.page !== void 0 && !opts.all;
+    if (!singlePage) {
       const raw = await client.get("/v1/init/relationships");
       const items = unwrapPaginated(raw);
       data = items.filter((r) => r.business_object_id === Number(boId3));
@@ -20105,7 +20137,7 @@ function infoContextLines(businessObject, sections = []) {
 }
 
 // .path-cli/src/commands/list-folders.ts
-var listFoldersCommand = new Command("list-folders").description("List folders. Each folder carries its own info (what the folder is for, who uses it; once per session like all info). Each folder_stickers[] entry carries its info; a copy of a business object sticker with no info of its own also gets bo_sticker_info (the business object sticker's info, which the copy shows). Text output lists folder info and sticker info under the table").option("--bo-id <id>", "Filter by business object ID").option("--bo-name <name>", "Filter by business object name").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
+var listFoldersCommand = new Command("list-folders").description("List folders. Each folder carries its own info (what the folder is for, who uses it; once per session like all info). Each folder_stickers[] entry carries its info; a copy of a business object sticker with no info of its own also gets bo_sticker_info (the business object sticker's info, which the copy shows). Text output lists folder info and sticker info under the table").option("--bo-id <id>", "Filter by business object ID").option("--bo-name <name>", "Filter by business object name").option("--page <n>", "Fetch only this single page (default: all folders)").option("--per-page <n>", "Items per page (single-page mode)", "50").option("--all", "Fetch all folders (this is now the default)").action(async (opts) => {
   try {
     const parentOpts = listFoldersCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -20118,11 +20150,7 @@ var listFoldersCommand = new Command("list-folders").description("List folders. 
       );
     }
     const client = new HttpClient(config2);
-    const query = {
-      page: opts.page,
-      perPage: opts.perPage
-    };
-    if (opts.all) query.all = "true";
+    const query = opts.page !== void 0 && !opts.all ? { page: opts.page, perPage: opts.perPage } : { all: "true" };
     if (opts.boName) {
       const bo = await resolveBusinessObjectByName(client, opts.boName);
       query["business_object_ids[]"] = String(bo.id);
@@ -24997,6 +25025,11 @@ function resolveWiring(settings2, productFields = [], poFields = []) {
   const byName2 = (fields, name) => fields.find((f) => f.name.toLowerCase() === name.toLowerCase())?.id;
   const product = (name) => byName2(productFields, name);
   const notTrackedSetting = field("ProductNotTrackedField");
+  const oliBo = bo("OmOrderLineItemBO");
+  const oliProductRel = find3(
+    "relationship_mapping",
+    "OmOrderLineItemProductRel"
+  );
   return {
     bo: {
       purchaseOrder: bo("PurchaseOrderBO"),
@@ -25007,7 +25040,8 @@ function resolveWiring(settings2, productFields = [], poFields = []) {
       shipmentStop: bo("ShipmentStopBO"),
       scanSession: bo("ScanSessionBO"),
       scanSessionAction: bo("ScanSessionActionBO"),
-      orderTruck: bo("OrderTruckBO")
+      orderTruck: bo("OrderTruckBO"),
+      orderLineItem: oliBo
     },
     rel: {
       productPurchaseOrder: rel("ProductPurchaseOrderRel"),
@@ -25028,7 +25062,8 @@ function resolveWiring(settings2, productFields = [], poFields = []) {
       orderTruckPurchaseOrder: rel("OrderTruckPurchaseOrderRel"),
       orderTruckJob: rel("OrderTruckJobRel"),
       orderTruckService: rel("OrderTruckServiceRel"),
-      spShipment: rel("ShipmentProductShipmentRel")
+      spShipment: rel("ShipmentProductShipmentRel"),
+      orderLineItemProduct: oliProductRel?.id
     },
     field: {
       sessionActionType: field("SessionActionActionTypeField"),
@@ -25056,6 +25091,7 @@ function resolveWiring(settings2, productFields = [], poFields = []) {
       labelLineLocation: field("LabelLineLocationField"),
       barcodeCounter: field("TrackingItemBarcodeCounter"),
       barcodeValue: field("TrackingItemBarcodeValueField"),
+      oliQtyTracked: field("OmOrderLineItemQtyTrackedField"),
       lineNumber: field("ProductLineField") ?? product("Line #"),
       orderNumber: field("ProductOrderField") ?? product("Order #"),
       // Location and Mark Unit are the same slot — accounts name it either way.
@@ -25069,6 +25105,7 @@ function resolveWiring(settings2, productFields = [], poFields = []) {
       // Fee / accounting lines (Not Tracked = true) never get labels.
       notTracked: notTrackedSetting ?? product("Not Tracked")
     },
+    orderLineItemHoldsLink: !!oliProductRel && oliProductRel.business_object_id === oliBo,
     notTrackedFromSetting: notTrackedSetting !== void 0,
     barcodePrefix: find3("text", "TrackingItemBarcodePrefix")
   };
@@ -25088,14 +25125,27 @@ function stopsRequest(stopBoId, page = 1) {
     pagination: { page, offset: STOPS_PAGE_SIZE }
   };
 }
+var STOP_PAGE_CONCURRENCY = 6;
 async function loadAllStops(stopBoId, fetchPage2) {
-  const stops = [];
-  for (let page = 1; page <= MAX_STOP_PAGES; page++) {
-    const { items, meta } = await fetchPage2(stopsRequest(stopBoId, page));
-    stops.push(...items ?? []);
-    if (!items?.length || page >= (meta?.total_pages ?? 1)) break;
-  }
-  return stops;
+  const first = await fetchPage2(stopsRequest(stopBoId, 1));
+  if (!first.items?.length) return [];
+  const totalPages = Math.min(first.meta?.total_pages ?? 1, MAX_STOP_PAGES);
+  const pages = [first.items];
+  let next = 2;
+  const worker = async () => {
+    while (next <= totalPages) {
+      const page = next++;
+      const { items } = await fetchPage2(stopsRequest(stopBoId, page));
+      pages[page - 1] = items ?? [];
+    }
+  };
+  await Promise.all(
+    Array.from(
+      { length: Math.min(STOP_PAGE_CONCURRENCY, totalPages - 1) },
+      worker
+    )
+  );
+  return pages.flat();
 }
 function stopOptions(initial, stops, identifierOf2) {
   const all4 = initial && !stops.some((s) => s.id === initial.id) ? [initial, ...stops] : [...stops];
@@ -25460,7 +25510,8 @@ function submitPayload(w, config2, args) {
       sp_product_rel_id: spProdRel,
       ti_sp_rel_id: tiSpRel,
       sp_shipment_rel_id: w.rel.spShipment ?? null,
-      qty_shipped_field_id: w.field.spQtyShipped ?? null
+      qty_shipped_field_id: w.field.spQtyShipped ?? null,
+      ti_tracking_qty_field_id: w.field.trackingQty ?? null
     } : null,
     order_truck: otBoId && otStopRel && otPoRel ? {
       bo_id: otBoId,
@@ -25482,7 +25533,14 @@ function submitPayload(w, config2, args) {
     // The refresh runs when NOT closing; the server recomputes the stop /
     // truck identifiers either way via the refresh levels it builds.
     refresh: stopBoId ? { stop_bo_id: stopBoId, shipment_bo_id: shipmentBoId ?? null } : null,
-    line_bo_id: w.bo.product ?? null
+    line_bo_id: w.bo.product ?? null,
+    tracked_qty: w.bo.orderLineItem && w.rel.orderLineItemProduct && w.field.oliQtyTracked && w.field.trackingQty ? {
+      oli_bo_id: w.bo.orderLineItem,
+      oli_product_rel_id: w.rel.orderLineItemProduct,
+      oli_holds_link: w.orderLineItemHoldsLink,
+      oli_qty_tracked_field_id: w.field.oliQtyTracked,
+      ti_tracking_qty_field_id: w.field.trackingQty
+    } : null
   };
 }
 function submitWarnings(result) {
@@ -26103,6 +26161,7 @@ __export(scan_sessions_exports, {
   IDENTIFIER: () => IDENTIFIER,
   Loading: () => loading_exports,
   NOT_CONFIGURED_MESSAGE: () => NOT_CONFIGURED_MESSAGE2,
+  OmProcess: () => om_process_exports,
   Pallets: () => pallets_exports,
   PoReceiving: () => po_receiving_exports,
   SESSION_NOT_READY: () => SESSION_NOT_READY,
@@ -27743,12 +27802,12 @@ __export(pallets_exports, {
   palletBinItemsRequest: () => palletBinItemsRequest,
   palletBinsRequest: () => palletBinsRequest,
   palletOf: () => palletOf,
-  palletTrackingItemsRequest: () => palletTrackingItemsRequest,
   processedMessage: () => processedMessage,
   refreshPallet: () => refreshPallet,
   refusedChip: () => refusedChip,
   refusedMessage: () => refusedMessage,
   resolveIds: () => resolveIds7,
+  scanOutcome: () => scanOutcome,
   shouldRefresh: () => shouldRefresh,
   trackingItemsRequest: () => trackingItemsRequest7
 });
@@ -27821,12 +27880,6 @@ function palletBinsRequest(ids) {
 function palletBinItemsRequest(ids) {
   return palletFilterRequest(ids, ids.binItemBoId, [ids.binItemBinRelId]);
 }
-function palletTrackingItemsRequest(ids) {
-  return palletFilterRequest(ids, ids.tiBoId, [
-    ids.tiBinItemRelId,
-    ids.binItemBinRelId
-  ]);
-}
 function binItemsRequest3(ids, binId) {
   return relationshipFetchRequest(binId, ids.binItemBinRelId);
 }
@@ -27837,7 +27890,7 @@ function trackingItemsRequest7(ids, binItemIds) {
     lookup_relationship: { ...req.lookup_relationship, ids: binItemIds }
   };
 }
-function buildIndex(ids, bins, binIdFid, binItems2, trackingItems) {
+function buildIndex(ids, bins, binIdFid, binItems2) {
   const byId = /* @__PURE__ */ new Map();
   const byBarcode = /* @__PURE__ */ new Map();
   for (const b of bins) {
@@ -27848,7 +27901,8 @@ function buildIndex(ids, bins, binIdFid, binItems2, trackingItems) {
       name: fieldText(b, binIdFid, b.id),
       barcode,
       binItemIds: [],
-      trackingItems: []
+      trackingItems: [],
+      contentsLoaded: false
     };
     byId.set(b.id, pallet);
     if (barcode) byBarcode.set(barcode.toLowerCase(), pallet);
@@ -27863,21 +27917,15 @@ function buildIndex(ids, bins, binIdFid, binItems2, trackingItems) {
     pallet.binItemIds.push(bi.id);
     byBinItemId.set(bi.id, pallet);
   }
-  const index = { byBarcode, byBinItemId };
-  for (const ti of trackingItems) {
-    if (ti.archived_on) continue;
-    palletOf(index, ids, ti)?.trackingItems.push(ti);
-  }
-  return index;
+  return { byBarcode, byBinItemId };
 }
 async function loadIndex(ids, fetch2, binIdFid) {
-  const [bins, binItems2, trackingItems, idFid] = await Promise.all([
+  const [bins, binItems2, idFid] = await Promise.all([
     fetch2(palletBinsRequest(ids)),
     fetch2(palletBinItemsRequest(ids)),
-    fetch2(palletTrackingItemsRequest(ids)),
     binIdFid
   ]);
-  return buildIndex(ids, bins, idFid, binItems2, trackingItems);
+  return buildIndex(ids, bins, idFid, binItems2);
 }
 async function refreshPallet(index, ids, pallet, fetch2) {
   const binItems2 = (await fetch2(binItemsRequest3(ids, pallet.id))).filter(
@@ -27889,6 +27937,7 @@ async function refreshPallet(index, ids, pallet, fetch2) {
   pallet.binItemIds = binItemIds;
   for (const bi of binItemIds) index.byBinItemId.set(bi, pallet);
   pallet.trackingItems = trackingItems.filter((ti) => !ti.archived_on);
+  pallet.contentsLoaded = true;
 }
 function palletOf(index, ids, ti) {
   if (!index || !ids) return null;
@@ -27921,8 +27970,18 @@ function evaluateScan(pallet, ids, scheduledOn, isDone, tiIdFid, verb) {
   }
   return { kind: "process", items: todo };
 }
-function shouldRefresh(outcome) {
-  return outcome.kind === "refused" || outcome.kind === "empty";
+function shouldRefresh(outcome2) {
+  return outcome2.kind === "refused" || outcome2.kind === "empty";
+}
+async function scanOutcome(index, ids, pallet, fetch2, evaluate) {
+  const fresh = !pallet.contentsLoaded;
+  if (fresh) await refreshPallet(index, ids, pallet, fetch2);
+  let outcome2 = evaluate();
+  if (!fresh && shouldRefresh(outcome2)) {
+    await refreshPallet(index, ids, pallet, fetch2);
+    outcome2 = evaluate();
+  }
+  return outcome2;
 }
 function isDoneBy(doneIds, listedIds, flagFid) {
   return (ti) => doneIds.has(ti.id) || !listedIds.has(ti.id) && flagFid !== null && Boolean(ti.fields[flagFid]);
@@ -27952,14 +28011,14 @@ function processedMessage(name, count, verb) {
     color: "success"
   };
 }
-function failure(outcome) {
-  if (outcome.kind === "refused") {
+function failure(outcome2) {
+  if (outcome2.kind === "refused") {
     return {
       reason: "pallet-refused",
-      detail: `Not scheduled: ${outcome.unscheduled.join(", ")}`
+      detail: `Not scheduled: ${outcome2.unscheduled.join(", ")}`
     };
   }
-  return { reason: outcome.kind === "empty" ? "pallet-empty" : "duplicate" };
+  return { reason: outcome2.kind === "empty" ? "pallet-empty" : "duplicate" };
 }
 function mergeRequests(requests) {
   return {
@@ -27967,6 +28026,134 @@ function mergeRequests(requests) {
     updates: requests.flatMap((r) => r.updates ?? []),
     links: requests.flatMap((r) => r.links ?? []),
     creates: requests.flatMap((r) => r.create ? [r.create] : [])
+  };
+}
+
+// libs/pathway-executor/src/surfaces/scan-sessions/om-process.ts
+var om_process_exports = {};
+__export(om_process_exports, {
+  BOTH: () => BOTH,
+  adminItemBoId: () => adminItemBoId,
+  adminItemFields: () => adminItemFields,
+  adminItemsRequest: () => adminItemsRequest,
+  fromAdminItems: () => fromAdminItems,
+  fromSettings: () => fromSettings,
+  load: () => load
+});
+var BOTH = { loading: true, delivery: true };
+var SETTING_LOADING = "OmLoading";
+var SETTING_DELIVERY = "OmDelivery";
+var ADMIN_ITEM_BO = "admin item";
+var ADMIN_ITEM_BO_PLURAL = "admin items";
+var ADMIN_ITEM_LOADING = "OM Loading";
+var ADMIN_ITEM_DELIVERY = "OM Delivery";
+function settingFlag(list3, name) {
+  const v = list3.find((s) => s.name === name)?.value;
+  if (typeof v === "boolean") return v;
+  if (typeof v === "string") {
+    const t = v.trim().toLowerCase();
+    if (t === "true") return true;
+    if (t === "false") return false;
+  }
+  return null;
+}
+function fromSettings(list3) {
+  return {
+    loading: settingFlag(list3, SETTING_LOADING),
+    delivery: settingFlag(list3, SETTING_DELIVERY)
+  };
+}
+function adminItemBoId(businessObjects2) {
+  const names2 = /* @__PURE__ */ new Set([ADMIN_ITEM_BO, ADMIN_ITEM_BO_PLURAL]);
+  const match = (s) => names2.has(s?.trim().toLowerCase() ?? "");
+  return businessObjects2.find(
+    (b) => match(b.name) || match(b.singular_name) || match(b.plural_name)
+  )?.id ?? null;
+}
+function adminItemFields(fields) {
+  const own = (name) => fields.find(
+    (f) => f.relationship_id == null && f.name?.toLowerCase() === name
+  )?.id ?? null;
+  const nameFid = own("name");
+  const enabledFid = own("enabled");
+  return nameFid !== null && enabledFid !== null ? { nameFid, enabledFid } : null;
+}
+function adminItemsRequest(boId3, nameFid) {
+  const contains = (value) => ({
+    type: "field",
+    logic: "contains",
+    field_id: nameFid,
+    relationship_ids: [],
+    for_field: false,
+    for_setting: false,
+    for_current_user: false,
+    comparison_relationship_ids: [],
+    value,
+    display_value: "",
+    quick_search: false
+  });
+  const filter = {
+    version: 1,
+    business_object_ids: [boId3],
+    filters: {
+      type: "group",
+      condition: "or",
+      for_groups: true,
+      relationship_ids: [],
+      filter_types: [
+        contains(ADMIN_ITEM_LOADING),
+        contains(ADMIN_ITEM_DELIVERY)
+      ]
+    },
+    quick_search: [],
+    sorting: []
+  };
+  return {
+    stage: "fetch-records",
+    step_type: "record",
+    lookup_record: {
+      stage: "filter",
+      business_object_id: boId3,
+      filter_condition: JSON.stringify(filter),
+      pagination: { page: 1, offset: 100, all: true }
+    }
+  };
+}
+function fromAdminItems(records, f) {
+  const flag = (name) => {
+    const matches = records.filter(
+      (r) => !r.archived_on && String(r.fields[f.nameFid] ?? "").trim().toLowerCase() === name.toLowerCase()
+    );
+    return matches.length ? matches.some((r) => r.fields[f.enabledFid] === true) : null;
+  };
+  return {
+    loading: flag(ADMIN_ITEM_LOADING),
+    delivery: flag(ADMIN_ITEM_DELIVERY)
+  };
+}
+async function load(settings2, host) {
+  const s = fromSettings(settings2);
+  if (s.loading !== null && s.delivery !== null) {
+    return { loading: s.loading, delivery: s.delivery };
+  }
+  let admin = {
+    loading: null,
+    delivery: null
+  };
+  try {
+    const boId3 = adminItemBoId(await host.businessObjects());
+    const f = boId3 !== null ? adminItemFields(await host.fields(boId3)) : null;
+    if (boId3 !== null && f) {
+      admin = fromAdminItems(
+        await host.fetch(adminItemsRequest(boId3, f.nameFid)),
+        f
+      );
+    }
+  } catch {
+  }
+  return {
+    loading: s.loading ?? admin.loading ?? true,
+    delivery: s.delivery ?? admin.delivery ?? true
   };
 }
 
@@ -32609,7 +32796,7 @@ var listRecordTasksCommand = new Command("list-record-tasks").description("List 
 });
 
 // .path-cli/src/commands/list-record-messages.ts
-var listRecordMessagesCommand = new Command("list-record-messages").description("List messages on a record").requiredOption("--record-id <id>", "Record ID").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "15").option("--all", "Fetch all messages").action(async (opts) => {
+var listRecordMessagesCommand = new Command("list-record-messages").description("List messages on a record").requiredOption("--record-id <id>", "Record ID").option("--page <n>", "Fetch only this single page (default: all messages)").option("--per-page <n>", "Items per page (single-page mode)", "15").option("--all", "Fetch all messages (this is now the default)").action(async (opts) => {
   try {
     const parentOpts = listRecordMessagesCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -32622,11 +32809,7 @@ var listRecordMessagesCommand = new Command("list-record-messages").description(
       );
     const client = new HttpClient(config2);
     await assertRecordViewable(client, opts.recordId, `read the messages of record ${opts.recordId}`);
-    const query = {
-      page: opts.page,
-      perPage: opts.perPage
-    };
-    if (opts.all) query.all = "true";
+    const query = opts.page !== void 0 && !opts.all ? { page: opts.page, perPage: opts.perPage } : { all: "true" };
     const raw = await client.get(
       `/v1/records/${opts.recordId}/messages`,
       query
@@ -32647,7 +32830,7 @@ var listRecordMessagesCommand = new Command("list-record-messages").description(
 });
 
 // .path-cli/src/commands/list-record-emails.ts
-var listRecordEmailsCommand = new Command("list-record-emails").description("List emails on a record").requiredOption("--record-id <id>", "Record ID").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "15").action(async (opts) => {
+var listRecordEmailsCommand = new Command("list-record-emails").description("List emails on a record").requiredOption("--record-id <id>", "Record ID").option("--page <n>", "Fetch only this single page (default: all emails)").option("--per-page <n>", "Items per page (single-page mode)", "15").option("--all", "Fetch all emails (this is now the default)").action(async (opts) => {
   try {
     const parentOpts = listRecordEmailsCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -32660,15 +32843,10 @@ var listRecordEmailsCommand = new Command("list-record-emails").description("Lis
       );
     const client = new HttpClient(config2);
     await assertRecordViewable(client, opts.recordId, `read the emails of record ${opts.recordId}`);
-    const query = {
-      page: opts.page,
-      perPage: opts.perPage
-    };
-    const raw = await client.get(
-      `/v1/records/${opts.recordId}/emails`,
-      query
-    );
-    const data = unwrapPaginated(raw);
+    const path = `/v1/records/${opts.recordId}/emails`;
+    const data = opts.page !== void 0 && !opts.all ? unwrapPaginated(
+      await client.get(path, { page: opts.page, perPage: opts.perPage })
+    ) : await fetchAllPages(client, path, {}, 100);
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim());
     console.log(
@@ -32928,7 +33106,7 @@ var getEventMetadataCommand = new Command("get-event-metadata").description(
 });
 
 // .path-cli/src/commands/list-users.ts
-var listUsersCommand = new Command("list-users").description("List users").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
+var listUsersCommand = new Command("list-users").description("List users").option("--page <n>", "Fetch only this single page (default: all users)").option("--per-page <n>", "Items per page (single-page mode)", "50").option("--all", "Fetch all users (this is now the default)").action(async (opts) => {
   try {
     const parentOpts = listUsersCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -32941,11 +33119,7 @@ var listUsersCommand = new Command("list-users").description("List users").optio
       );
     }
     const client = new HttpClient(config2);
-    const query = {
-      page: opts.page,
-      perPage: opts.perPage
-    };
-    if (opts.all) query.all = "true";
+    const query = opts.page !== void 0 && !opts.all ? { page: opts.page, perPage: opts.perPage } : { all: "true" };
     const raw = await client.get("/v1/users", query);
     const data = unwrapPaginated(raw);
     const format = parentOpts.json ? "json" : void 0;
@@ -32963,7 +33137,7 @@ var listUsersCommand = new Command("list-users").description("List users").optio
 });
 
 // .path-cli/src/commands/list-roles.ts
-var listRolesCommand = new Command("list-roles").description("List roles").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
+var listRolesCommand = new Command("list-roles").description("List roles").option("--page <n>", "Fetch only this single page (default: all roles)").option("--per-page <n>", "Items per page (single-page mode)", "50").option("--all", "Fetch all roles (this is now the default)").action(async (opts) => {
   try {
     const parentOpts = listRolesCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -32976,11 +33150,7 @@ var listRolesCommand = new Command("list-roles").description("List roles").optio
       );
     }
     const client = new HttpClient(config2);
-    const query = {
-      page: opts.page,
-      perPage: opts.perPage
-    };
-    if (opts.all) query.all = "true";
+    const query = opts.page !== void 0 && !opts.all ? { page: opts.page, perPage: opts.perPage } : { all: "true" };
     const raw = await client.get("/v1/roles", query);
     const data = unwrapPaginated(raw);
     const format = parentOpts.json ? "json" : void 0;
@@ -33246,7 +33416,7 @@ var listCalendarEventsCommand = new Command("list-calendar-events").alias("list-
 // .path-cli/src/commands/list-reports.ts
 var listReportsCommand = new Command("list-reports").description(
   "List reports. Each report carries its own info (what the report is for, how to read it; once per session like all info); text output lists it under the table"
-).option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "50").option("--all", "Fetch all pages").action(async (opts) => {
+).option("--page <n>", "Fetch only this single page (default: all reports)").option("--per-page <n>", "Items per page (single-page mode)", "50").option("--all", "Fetch all reports (this is now the default)").action(async (opts) => {
   try {
     const parentOpts = listReportsCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -33258,18 +33428,19 @@ var listReportsCommand = new Command("list-reports").description(
         'Missing --account <id>. Run "path list-accounts" to see available accounts.'
       );
     const client = new HttpClient(config2);
-    const query = {
-      page: opts.page,
-      perPage: opts.perPage
-    };
-    if (opts.all) query.all = "true";
+    const query = opts.page !== void 0 && !opts.all ? { page: opts.page, perPage: opts.perPage } : { all: "true" };
     const raw = await client.get("/v1/reports", query);
     const data = await filterVisibleReports(
       client,
       unwrapPaginated(raw)
     );
     const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim());
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? [
+      "id",
+      "name",
+      "business_object_id",
+      "report_type"
+    ];
     console.log(
       formatOutput(data, {
         format,
@@ -33310,12 +33481,12 @@ function remoteFieldResolver(catalog) {
   return (fieldId, relationshipIds) => resolveRemoteField(catalog, fieldId, relationshipIds);
 }
 function remoteFieldPath(catalog, fieldId, relationshipIds) {
-  const names = relationshipIds.map((id) => {
+  const names2 = relationshipIds.map((id) => {
     const rel = (catalog.relationships ?? []).find((r) => r.id === id);
     return rel ? rel.name : `#${id}`;
   });
   const field = resolveRemoteField(catalog, fieldId, relationshipIds);
-  return [...names, field ? field.name : `#${fieldId}`].join(".");
+  return [...names2, field ? field.name : `#${fieldId}`].join(".");
 }
 function fieldPath(field) {
   if (field.is_primary_object || !field.relationship_name) return field.name;
@@ -36449,10 +36620,10 @@ var Parser2 = class {
     return this.#build(operand, logic, values, span2);
   }
   #recordStateCall(spec, nameToken) {
-    const names = [];
+    const names2 = [];
     let placeholder = null;
     while (this.#peek().type !== "rparen") {
-      if (names.length > 0 || placeholder) {
+      if (names2.length > 0 || placeholder) {
         this.#expect("comma", `"," or ")" in ${spec.name}(...)`);
       }
       const arg = this.#peek();
@@ -36469,13 +36640,13 @@ var Parser2 = class {
         );
       }
       this.#pos++;
-      names.push(arg);
+      names2.push(arg);
     }
     const close = this.#expect("rparen", `")" to close ${spec.name}(...)`);
     const span2 = { start: nameToken.start, end: close.end };
     const type = spec.category === "milestone" ? "milestone" /* Milestone */ : "step" /* Step */;
     if (spec.name === "NOMILESTONES" || spec.name === "NOSTEPS") {
-      if (placeholder || names.length > 1) {
+      if (placeholder || names2.length > 1) {
         throw new ParseFailure2(
           `${spec.name} takes at most one relationship name`,
           span2.start,
@@ -36483,10 +36654,10 @@ var Parser2 = class {
         );
       }
       let relationshipIds2 = [];
-      if (names.length === 1) {
-        const chain = findRelationshipChain(this.catalog, names[0].text);
+      if (names2.length === 1) {
+        const chain = findRelationshipChain(this.catalog, names2[0].text);
         if (!chain.ok) {
-          throw new ParseFailure2(chain.message, names[0].start, names[0].end);
+          throw new ParseFailure2(chain.message, names2[0].start, names2[0].end);
         }
         relationshipIds2 = chain.relationshipIds;
       }
@@ -36497,7 +36668,7 @@ var Parser2 = class {
       });
     }
     if (placeholder) {
-      if (names.length > 0) {
+      if (names2.length > 0) {
         throw new ParseFailure2(
           "Use ? on its own to leave the value blank",
           placeholder.start,
@@ -36505,7 +36676,7 @@ var Parser2 = class {
         );
       }
       this.#requireBlankAllowed(placeholder);
-    } else if (names.length === 0) {
+    } else if (names2.length === 0) {
       throw new ParseFailure2(
         `${spec.name} needs at least one ${spec.category} name`,
         span2.start,
@@ -36514,7 +36685,7 @@ var Parser2 = class {
     }
     const ids = [];
     let relationshipIds = null;
-    for (const name of names) {
+    for (const name of names2) {
       const found2 = type === "milestone" /* Milestone */ ? findFilterMilestone(this.catalog, name.text) : findFilterStep(this.catalog, name.text);
       if (!found2.ok)
         throw new ParseFailure2(found2.message, name.start, name.end);
@@ -37727,7 +37898,7 @@ var FilterCatalogLoader = class _FilterCatalogLoader {
   catalog;
   #steps = /* @__PURE__ */ new Map();
   #wanted = /* @__PURE__ */ new Set();
-  static async load(client, accountId, boId3) {
+  static async load(client, accountId, boId3, only) {
     if (boId3 == null) {
       const [settings3, timeZone2] = await Promise.all([
         loadSettings(client, accountId),
@@ -37755,8 +37926,8 @@ var FilterCatalogLoader = class _FilterCatalogLoader {
     return new _FilterCatalogLoader(
       client,
       boId3,
-      fields,
-      relationships2,
+      only?.field ? fields.filter(only.field) : fields,
+      only?.relationship ? relationships2.filter(only.relationship) : relationships2,
       milestones,
       steps,
       settings2,
@@ -38793,21 +38964,33 @@ var FILTER_TARGETS = [
     "Milestones in Card View"
   )
 ];
-function findTarget(name) {
-  const target = FILTER_TARGETS.find((t) => t.name === name.toLowerCase());
+var USER_APP_TARGETS = /* @__PURE__ */ new Set(["folder", "folder-sticker", "report"]);
+function targetsFor(scope) {
+  return scope === "designer" ? FILTER_TARGETS.filter((t) => !USER_APP_TARGETS.has(t.name)) : FILTER_TARGETS;
+}
+function findTarget(name, scope = "path") {
+  const key = name.toLowerCase();
+  if (scope === "designer" && USER_APP_TARGETS.has(key)) {
+    throw new Error(
+      "Folder, folder sticker and report filters are user-app objects: read and change them with the PATH CLI (get-filter / set-filter there)."
+    );
+  }
+  const targets = targetsFor(scope);
+  const target = targets.find((t) => t.name === key);
   if (!target) {
     throw new Error(
-      `Unknown target "${name}". Targets: ${FILTER_TARGETS.map((t) => t.name).join(", ")}`
+      `Unknown target "${name}". Targets: ${targets.map((t) => t.name).join(", ")}`
     );
   }
   return target;
 }
-function targetHelp() {
-  const width = Math.max(...FILTER_TARGETS.map((t) => t.name.length));
+function targetHelp(scope = "path") {
+  const targets = targetsFor(scope);
+  const width = Math.max(...targets.map((t) => t.name.length));
   return [
     "",
     "Targets:",
-    ...FILTER_TARGETS.map((t) => `  ${t.name.padEnd(width)}  ${t.summary}`)
+    ...targets.map((t) => `  ${t.name.padEnd(width)}  ${t.summary}`)
   ].join("\n");
 }
 
@@ -39081,9 +39264,9 @@ function findCustomField(report2, nameOrKey) {
   const fields = reportColumns(report2).filter((c) => c.usage === "filter");
   const match = fields.find((c) => c.column_key === nameOrKey) ?? fields.find((c) => String(c.name).trim().toLowerCase() === wanted);
   if (!match) {
-    const names = fields.map((c) => `"${c.name}"`).join(", ") || "(none)";
+    const names2 = fields.map((c) => `"${c.name}"`).join(", ") || "(none)";
     throw new Error(
-      `No Custom Field "${nameOrKey}" on report ${report2.id}. Custom Fields: ${names}`
+      `No Custom Field "${nameOrKey}" on report ${report2.id}. Custom Fields: ${names2}`
     );
   }
   return match;
@@ -39493,7 +39676,7 @@ var deleteCustomFieldCommand = new Command("delete-custom-field").description(
 });
 
 // .path-cli/src/commands/search.ts
-var searchCommand = new Command("search").description("Search records globally").requiredOption("--query <text>", "Search query").option("--bo-id <id>", "Filter by business object ID").option("--bo-name <name>", "Filter by business object name (resolved to ID)").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "15").action(async (opts) => {
+var searchCommand = new Command("search").description("Search records globally, like the web's search (archived records left out unless --include-archived)").requiredOption("--query <text>", "Search query").option("--bo-id <id>", "Filter by business object ID").option("--bo-name <name>", "Filter by business object name (resolved to ID)").option("--include-archived", "Include archived records (the web search's Include Archived toggle; off by default)").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "15").action(async (opts) => {
   try {
     const parentOpts = searchCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -39516,6 +39699,7 @@ var searchCommand = new Command("search").description("Search records globally")
       page: opts.page,
       perPage: opts.perPage
     };
+    if (opts.includeArchived) query.includeArchived = "true";
     const searchable = await searchableBusinessObjectIds(client);
     if (searchable && boId3 && !searchable.includes(Number(boId3))) {
       const access = await UserAccess.load(client);
@@ -39550,290 +39734,239 @@ var searchCommand = new Command("search").description("Search records globally")
   }
 });
 
-// .path-cli/src/resolvers/resolve-relationship.ts
-async function resolveRelationshipByName(client, name, boId3) {
-  const relsRaw = await cachedFetch(
-    () => client.get(`/v1/business-objects/${boId3}/relationships`, {
-      all: "true"
-    }),
-    `relationships--${boId3}`,
-    `/v1/business-objects/${boId3}/relationships`
-  );
-  const rels2 = unwrapPaginated(relsRaw);
-  const lower = name.toLowerCase();
-  const matches = rels2.filter((r) => r.name.toLowerCase() === lower);
-  if (matches.length === 0) {
-    const available = rels2.map((r) => `  ${r.id}: ${r.name}`).join("\n");
-    throw new Error(
-      `Relationship "${name}" not found on BO ${boId3}. Available:
-${available}`
-    );
-  }
-  if (matches.length > 1) {
-    const ambiguous = matches.map((r) => `  ${r.id}: ${r.name}`).join("\n");
-    throw new Error(
-      `Ambiguous relationship name "${name}". Matches:
-${ambiguous}`
-    );
-  }
-  return matches[0];
+// .path-cli/src/access/search-visibility.ts
+var PATH_LEAF_TYPES = /* @__PURE__ */ new Set(["field", "milestone", "step"]);
+function logicOf(settings2) {
+  const group2 = settings2?.filters?.filters;
+  return group2 && (group2.filter_types ?? []).length > 0 ? group2 : null;
 }
-
-// .path-cli/src/resolvers/resolve-roles.ts
-async function resolveRolesByNames(client, names) {
-  const response = await cachedFetch(
-    () => client.get("/v1/roles", { all: "true" }),
-    "roles",
-    "/v1/roles"
-  );
-  const allRoles = response.items;
-  const resolved = [];
-  const notFound4 = [];
-  for (const name of names) {
-    const lower = name.trim().toLowerCase();
-    const match = allRoles.find((r) => r.name.toLowerCase() === lower);
-    if (match) {
-      resolved.push({ id: match.id, name: match.name });
-    } else {
-      notFound4.push(name.trim());
-    }
-  }
-  if (notFound4.length > 0) {
-    console.warn(`WARNING: Roles not found: ${notFound4.join(", ")}`);
-  }
-  return resolved;
-}
-
-// .path-cli/src/resolvers/resolve-users.ts
-async function resolveUsersByNames(client, names) {
-  const response = await cachedFetch(
-    () => client.get("/v1/users", { all: "true" }),
-    "users",
-    "/v1/users"
-  );
-  const allUsers = response.items;
-  const resolved = [];
-  const notFound4 = [];
-  for (const name of names) {
-    const lower = name.trim().toLowerCase();
-    const match = allUsers.find((u) => {
-      const fullName = `${u.profile.first_name} ${u.profile.last_name}`.toLowerCase();
-      return fullName === lower || u.email?.toLowerCase() === lower;
-    });
-    if (match) {
-      resolved.push({
-        id: match.id,
-        name: `${match.profile.first_name} ${match.profile.last_name}`
-      });
-    } else {
-      notFound4.push(name.trim());
-    }
-  }
-  if (notFound4.length > 0) {
-    console.warn(`WARNING: Users not found: ${notFound4.join(", ")}`);
-  }
-  return resolved;
-}
-
-// .path-cli/src/commands/create-folder.ts
-async function resolveMapRelationship(client, boId3, nameOrId) {
-  let relationship;
-  if (/^\d+$/.test(nameOrId)) {
-    const rels2 = await cachedFetch(
-      () => client.get(`/v1/business-objects/${boId3}/relationships`, {
-        all: "true"
-      }),
-      `relationships--${boId3}`,
-      `/v1/business-objects/${boId3}/relationships`
-    );
-    const id = parseInt(nameOrId, 10);
-    const found2 = rels2.find((r) => r.id === id);
-    if (!found2) {
-      throw new Error(`Relationship ID ${id} not found on BO ${boId3}.`);
-    }
-    relationship = found2;
-  } else {
-    relationship = await resolveRelationshipByName(client, nameOrId, boId3);
-  }
-  const businessObjects2 = await cachedFetch(
-    () => client.get("/v1/business-objects"),
-    "business-objects",
-    "/v1/business-objects"
-  );
-  const targetBo = businessObjects2.find(
-    (bo) => bo.id === relationship.to_business_object_id
-  );
-  if (!targetBo || targetBo.bo_type !== "address") {
-    throw new Error(
-      `Relationship "${relationship.name}" (ID: ${relationship.id}) does not target the account's Address business object.`
-    );
-  }
-  return relationship;
-}
-function parsePermissions(perms) {
-  if (!perms) return { view: true, edit: false, deletion: false };
-  const parts = perms.split(",").map((s) => s.trim().toLowerCase());
-  return {
-    view: parts.includes("view") || parts.includes("edit"),
-    edit: parts.includes("edit"),
-    deletion: parts.includes("delete")
-  };
-}
-function formatPermissions(config2) {
-  const parts = [];
-  if (config2.view) parts.push("view");
-  if (config2.edit) parts.push("edit");
-  if (config2.deletion) parts.push("delete");
-  return parts.join(",");
-}
-var createFolderCommand = new Command("create-folder").description("Create a folder with permissions (and its info: --info / --info-file)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name (resolved to ID)").requiredOption("--folder-name <name>", "Folder name").option("--roles <names>", "Comma-separated role names").option("--role-permissions <perms>", "Comma-separated: view,edit,delete").option("--users <names>", "Comma-separated user full names").option("--user-permissions <perms>", "Comma-separated: view,edit,delete").option(
-  "--logic <formula>",
-  `Logic Builder formula, e.g. '[Department] = "Residential" AND INMILESTONE("Won")' \u2014 see /path-logic-formula-syntax`
-).option("--logic-raw <json>", "Raw GroupFilter JSON (escape hatch for edge cases)").option(
-  "--map-relationship <name-or-id>",
-  "Relationship (name or ID) from this folder's BO to the account's Address BO; sets map_enabled and map_relationship_id"
-).option(
-  "--info <text>",
-  "The folder's info: what it is for, who uses it, what its records have in common \u2014 shown with the folder to people and AI agents (at most 50,000 characters)"
-).option("--info-file <path>", "Read the folder's info from a text or markdown file (instead of --info)").option("--dry-run", "Parse/build the request bodies and print them, but create nothing").action(async (opts) => {
-  try {
-    const parentOpts = createFolderCommand.parent?.opts?.() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId) {
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    }
-    const client = new HttpClient(config2);
-    let boId3;
-    let boName;
-    if (opts.boId) {
-      boId3 = parseInt(opts.boId, 10);
-      boName = `BO ${boId3}`;
-    } else if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      boId3 = bo.id;
-      boName = bo.singular_name;
-    } else {
-      throw new Error("Provide either --bo-id or --bo-name");
-    }
-    await assertCreateFolder(client, boId3);
-    let filterCondition = null;
-    if (opts.logicRaw) {
-      filterCondition = JSON.parse(opts.logicRaw);
-    } else if (opts.logic) {
-      const loader = await FilterCatalogLoader.load(client, config2.accountId, boId3);
-      const result = await loader.parse(opts.logic, {
-        allowEntryDates: true,
-        allowBlankValues: true
-      });
-      if (result.errors.length > 0 || !result.filter) {
-        throw new Error(describeParseErrors(opts.logic, result.errors));
-      }
-      const pipeline = withFilters(null, boId3, result.filter);
-      filterCondition = {
-        version: pipeline.version,
-        business_object_ids: pipeline.business_object_ids,
-        filters: pipeline.filters,
-        sorting: [],
-        stickers: [],
-        quick_search: []
+function rerootGroup(group2, prefix) {
+  if (prefix.length === 0) return group2;
+  const node = (n) => {
+    const leaf2 = n;
+    if (leaf2.type === "group") {
+      const g = n;
+      return {
+        ...g,
+        ...g.relationship_ids?.length ? { relationship_ids: [...prefix, ...g.relationship_ids] } : {},
+        filter_types: g.filter_types.map(node)
       };
     }
-    let mapRelationship;
-    if (opts.mapRelationship) {
-      mapRelationship = await resolveMapRelationship(client, boId3, opts.mapRelationship);
+    const out = { ...leaf2 };
+    if (PATH_LEAF_TYPES.has(leaf2.type)) {
+      out.relationship_ids = [...prefix, ...leaf2.relationship_ids ?? []];
     }
-    const info = infoFromOptions(opts);
-    const folderBody2 = {
-      folder_name: opts.folderName,
-      is_custom: false,
-      include_archived: false,
-      filter_condition: filterCondition,
-      sorts: [],
-      ...mapRelationship ? { map_enabled: true, map_relationship_id: mapRelationship.id } : {},
-      ...info ? { info } : {}
-    };
-    const roleConfig = parsePermissions(opts.rolePermissions);
-    const userConfig = parsePermissions(opts.userPermissions);
-    let resolvedRoles = [];
-    let resolvedUsers = [];
-    if (opts.roles) {
-      const roleNames = opts.roles.split(",").map((s) => s.trim());
-      resolvedRoles = await resolveRolesByNames(client, roleNames);
+    if (leaf2.for_field) {
+      out.comparison_relationship_ids = [...prefix, ...leaf2.comparison_relationship_ids ?? []];
     }
-    if (opts.users) {
-      const userNames = opts.users.split(",").map((s) => s.trim());
-      resolvedUsers = await resolveUsersByNames(client, userNames);
+    return out;
+  };
+  return node(group2);
+}
+function and(first, rest) {
+  if (rest.length === 0) return first;
+  return {
+    type: "group",
+    condition: "and",
+    for_groups: true,
+    relationship_ids: [],
+    filter_types: [first, ...rest]
+  };
+}
+var SearchVisibility = class _SearchVisibility {
+  constructor(access, fields, groups, relationships2) {
+    this.access = access;
+    for (const f of fields) {
+      this.#fields.set(f.id, f);
+      const list3 = this.#fieldsByBo.get(f.business_object_id) ?? [];
+      list3.push(f);
+      this.#fieldsByBo.set(f.business_object_id, list3);
     }
-    if (opts.dryRun) {
-      console.log(`Dry run \u2014 not created: folder "${opts.folderName}" on ${boName} (BO ID: ${boId3})`);
-      console.log(JSON.stringify(folderBody2, null, 2));
-      if (resolvedRoles.length > 0 || resolvedUsers.length > 0) {
-        console.log("Permissions that would be granted (entity_id filled in after creation):");
-        console.log(
-          JSON.stringify(
-            {
-              roles: resolvedRoles.map((r) => ({ role_id: r.id, name: r.name, config: roleConfig })),
-              users: resolvedUsers.map((u) => ({ user_id: u.id, name: u.name, config: userConfig }))
-            },
-            null,
-            2
-          )
-        );
-      }
-      return;
-    }
-    const folder2 = await client.post(
-      `/v1/business-objects/${boId3}/folders`,
-      folderBody2
-    );
-    const folderId = folder2.id;
-    console.log(
-      `Created folder "${opts.folderName}" (ID: ${folderId}) on ${boName} (BO ID: ${boId3})`
-    );
-    if (mapRelationship) {
-      console.log(
-        `Map enabled via relationship "${mapRelationship.name}" (ID: ${mapRelationship.id})`
-      );
-    }
-    const batchBody = {
-      roles: resolvedRoles.map((r) => ({
-        role_id: r.id,
-        entity_type: "folder",
-        entity_id: folderId,
-        config: roleConfig
-      })),
-      users: resolvedUsers.map((u) => ({
-        user_id: u.id,
-        entity_type: "folder",
-        entity_id: folderId,
-        config: userConfig
-      }))
-    };
-    if (batchBody.roles.length > 0 || batchBody.users.length > 0) {
-      await client.post("/v1/permissions", batchBody);
-      console.log("Permissions granted:");
-      if (resolvedRoles.length > 0) {
-        const roleList = resolvedRoles.map((r) => `${r.name} (ID: ${r.id})`).join(", ");
-        console.log(
-          `  Roles (${formatPermissions(roleConfig)}): ${roleList}`
-        );
-      }
-      if (resolvedUsers.length > 0) {
-        const userList = resolvedUsers.map((u) => `${u.name} (ID: ${u.id})`).join(", ");
-        console.log(
-          `  Users (${formatPermissions(userConfig)}): ${userList}`
-        );
-      }
-    }
-  } catch (err) {
-    handleError(err);
+    for (const g of groups) this.#groups.set(g.id, g);
+    for (const r of relationships2) this.#relationships.set(r.id, r);
   }
-});
+  #fieldsByBo = /* @__PURE__ */ new Map();
+  #fields = /* @__PURE__ */ new Map();
+  #groups = /* @__PURE__ */ new Map();
+  #relationships = /* @__PURE__ */ new Map();
+  /** The account's fields, field groups and relationships (the /init lists, once per command). */
+  static async load(client, access) {
+    const [fields, groups, relationships2] = await Promise.all([
+      listOnce(client, "/v1/init/fields"),
+      listOnce(client, "/v1/init/field_groups"),
+      listOnce(client, "/v1/init/relationships")
+    ]);
+    return new _SearchVisibility(access, fields, groups, relationships2);
+  }
+  field(id) {
+    return this.#fields.get(id);
+  }
+  fieldsOf(boId3) {
+    return this.#fieldsByBo.get(boId3) ?? [];
+  }
+  fieldGroup(id) {
+    return id == null ? void 0 : this.#groups.get(id);
+  }
+  relationship(id) {
+    return this.#relationships.get(id);
+  }
+  /** users/roles lists: empty = everyone; else the user or one of their roles must be listed. */
+  #listed(settings2) {
+    const users = settings2?.users ?? [];
+    const roles = settings2?.roles ?? [];
+    if (!users.length && !roles.length) return true;
+    return users.includes(this.access.user.id) || this.access.roleIds.some((id) => roles.includes(id));
+  }
+  /** The relationship followed from a record of `fromBoId` (the record viewer's isRelationshipVisible). */
+  hop(relationship, fromBoId) {
+    const side = relationship.business_object_id === fromBoId ? "source" : "target";
+    return {
+      relationship,
+      side,
+      toBoId: side === "source" ? relationship.to_business_object_id : relationship.business_object_id
+    };
+  }
+  hopRule({ relationship, side, toBoId }) {
+    const name = `relationship "${relationship.name ?? relationship.id}"`;
+    if (relationship.is_hidden) return { usable: false, reason: `${name} is hidden` };
+    if (!this.access.canBusinessObject(toBoId, "view")) {
+      return { usable: false, reason: `${name} leads to records you can't view` };
+    }
+    const settings2 = side === "source" ? relationship.source_visibility_settings : relationship.target_visibility_settings;
+    if (!this.#listed(settings2)) return { usable: false, reason: `${name} isn't shown to you` };
+    const logic = logicOf(settings2);
+    return { usable: true, logic: logic ? [logic] : [] };
+  }
+  /** Whether the record viewer can show `field` to the user, and on which records (its logic). */
+  fieldRule(field) {
+    const name = `field "${field.name}"`;
+    if (ALWAYS_SHOWN_FIELD_TYPES.has(field.standard_field_type ?? "")) return { usable: true, logic: [] };
+    if (field.is_hidden && !HEADER_FIELD_TYPES.has(field.standard_field_type ?? "")) {
+      return { usable: false, reason: `${name} is hidden` };
+    }
+    const settings2 = field.visibility_settings;
+    if (field.visible_to_user === false || !this.#listed(settings2)) {
+      return { usable: false, reason: `${name} isn't shown to you` };
+    }
+    const logic = [];
+    const group2 = field.field_type === "appointment" ? void 0 : this.fieldGroup(field.field_group_id);
+    if (group2) {
+      if (group2.visible_to_user === false) {
+        return { usable: false, reason: `${name} is in field group "${group2.name ?? group2.id}", which isn't shown to you` };
+      }
+      const groupLogic = logicOf(group2.visibility_settings);
+      if (groupLogic) logic.push(groupLogic);
+    }
+    if (field.relationship_id != null) {
+      const relationship = this.relationship(field.relationship_id);
+      if (relationship && relationship.business_object_id === field.business_object_id) {
+        const rule = this.hopRule(this.hop(relationship, field.business_object_id));
+        if (!rule.usable) return { usable: false, reason: `${name} belongs to ${rule.reason}` };
+        logic.push(...rule.logic);
+      }
+    }
+    const own = logicOf(settings2);
+    if (own) logic.push(own);
+    return { usable: true, logic };
+  }
+  /** The fields of `boId` the user may name in a formula (visible on at least some records). */
+  usableFields(boId3) {
+    return this.fieldsOf(boId3).filter((f) => this.fieldRule(f).usable);
+  }
+  /** The fields a formula names directly ([Field]): the business object's own, visible ones. */
+  searchableFields(boId3) {
+    return this.usableFields(boId3).filter((f) => f.is_primary_object);
+  }
+  /** The relationships a formula may follow from a record of `boId`. */
+  usableHops(boId3) {
+    const out = [];
+    for (const relationship of this.#relationships.values()) {
+      if (relationship.business_object_id !== boId3 && relationship.to_business_object_id !== boId3) continue;
+      const hop = this.hop(relationship, boId3);
+      const rule = this.hopRule(hop);
+      if (rule.usable) out.push({ ...hop, conditional: rule.logic.length > 0 });
+    }
+    return out;
+  }
+  /** Whether a relationship may be named at all (shown on at least one side). */
+  relationshipUsable(relationship) {
+    return [relationship.business_object_id, relationship.to_business_object_id].some(
+      (from) => this.access.canBusinessObject(from, "view") && this.hopRule(this.hop(relationship, from)).usable
+    );
+  }
+  /**
+   * Follows `path` from a record of `rootBoId`. Throws if a relationship
+   * isn't shown; returns the business object reached and the visibility
+   * logic of each hop, re-rooted on the root record.
+   */
+  #walk(rootBoId, path) {
+    let boId3 = rootBoId;
+    const logic = [];
+    path.forEach((id, i) => {
+      const relationship = this.relationship(id);
+      if (!relationship) throw new Error(`Not searchable: relationship ${id} doesn't exist`);
+      const hop = this.hop(relationship, boId3);
+      const rule = this.hopRule(hop);
+      if (!rule.usable) throw new Error(`Not searchable: ${rule.reason}`);
+      logic.push(...rule.logic.map((g) => rerootGroup(g, path.slice(0, i))));
+      boId3 = hop.toBoId;
+    });
+    return { boId: boId3, logic };
+  }
+  /** The field rule on `fieldId` reached through `path`, re-rooted on the root record; throws if hidden. */
+  #fieldAt(rootBoId, path, fieldId) {
+    const walked = this.#walk(rootBoId, path);
+    const field = this.field(fieldId);
+    if (!field || field.business_object_id !== walked.boId) {
+      throw new Error(`Not searchable: field ${fieldId} isn't a field of the record the rule reads`);
+    }
+    const rule = this.fieldRule(field);
+    if (!rule.usable) throw new Error(`Not searchable: ${rule.reason}`);
+    return [...walked.logic, ...rule.logic.map((g) => rerootGroup(g, path))];
+  }
+  /**
+   * The formula, limited to what the user sees: each rule ANDed with the
+   * visibility logic of everything it reads. Throws on anything hidden from
+   * the user whatever the record.
+   */
+  restrict(group2, rootBoId) {
+    const node = (n) => {
+      const leaf2 = n;
+      if (leaf2.type === "group") {
+        const g = n;
+        const path2 = g.relationship_ids ?? [];
+        const extra = path2.length ? this.#walk(rootBoId, path2).logic : [];
+        const inner = { ...g, filter_types: g.filter_types.map(node) };
+        return and(inner, extra);
+      }
+      const logic = [];
+      const path = leaf2.relationship_ids ?? [];
+      if (leaf2.type === "field") {
+        logic.push(...this.#fieldAt(rootBoId, path, leaf2.field_id));
+      } else if (leaf2.type === "milestone" || leaf2.type === "step") {
+        logic.push(...this.#walk(rootBoId, path).logic);
+      } else if (leaf2.type === "relationship") {
+        logic.push(...this.#walk(rootBoId, [Number(leaf2.relationship_id)]).logic);
+      }
+      if (leaf2.for_field && typeof leaf2.value === "number") {
+        logic.push(...this.#fieldAt(rootBoId, leaf2.comparison_relationship_ids ?? [], leaf2.value));
+      }
+      return and(n, logic);
+    };
+    return node(group2);
+  }
+  /** A sort field: it must show on every record (sorting on a field hidden on some would order by hidden values). */
+  assertSortable(field, rootBoId) {
+    if (field.business_object_id !== rootBoId) {
+      throw new Error(`Can't sort by "${field.name}": only the searched business object's own fields sort`);
+    }
+    const rule = this.fieldRule(field);
+    if (!rule.usable) throw new Error(`Can't sort: ${rule.reason}`);
+    if (rule.logic.length) {
+      throw new Error(`Can't sort by "${field.name}": whether you see it depends on the record`);
+    }
+  }
+};
 
 // .path-cli/src/utils/report-builder.ts
 var NUMERIC_FIELD_TYPES = /* @__PURE__ */ new Set(["number", "currency", "percent", "auto_number", "aggregate_number", "calculation", "id"]);
@@ -39975,14 +40108,14 @@ function staticName(label, relationshipNames) {
 }
 function mappingsFor(catalog, relationshipIds) {
   const mappings = [];
-  const names = [];
+  const names2 = [];
   for (const id of relationshipIds) {
     const rel = (catalog.relationships ?? []).find((r) => r.id === id);
     if (!rel) throw new Error(`relationship ${id} not found`);
     mappings.push({ relationship_id: rel.id, business_object_id: rel.to_business_object_id });
-    names.push(rel.name);
+    names2.push(rel.name);
   }
-  return { mappings, names };
+  return { mappings, names: names2 };
 }
 function parseGroupExpression(text, catalog) {
   const result = parseExpressionText(text, catalog, { allowAggregateFunctions: true, allowEntryDateOperands: true });
@@ -40053,8 +40186,8 @@ function baseColumn(spec, ctx, asCustomField) {
       const marker = { id: -1, name: "milestones" };
       const found2 = resolvePath(catalog, src.path, { itemsAt: () => [marker], idOf: (e) => e.id, nameOf: (e) => e.name, kind: "relationship path" });
       if (!found2.ok) throw new Error(found2.message);
-      const { mappings, names } = mappingsFor(catalog, found2.relationshipIds);
-      return base({ name: staticName("Milestones", names), entity_name: "Milestones", column_type: "milestones_as_field", relationship_mappings: mappings });
+      const { mappings, names: names2 } = mappingsFor(catalog, found2.relationshipIds);
+      return base({ name: staticName("Milestones", names2), entity_name: "Milestones", column_type: "milestones_as_field", relationship_mappings: mappings });
     }
     case "count":
       return base({ name: "Count", entity_name: "Count", column_type: "count" });
@@ -40285,6 +40418,841 @@ function applyColumnInfo(columns, json) {
   return out;
 }
 
+// .path-cli/src/utils/report-cells.ts
+function reportCellText(cell2, formatting, timeZone) {
+  if (!cell2) return "";
+  if (cell2.date_value) {
+    if (formatting?.format) return formatDate2(new Date(cell2.date_value), formatting.format, timeZone);
+    const when = formatTimeIn(cell2.date_value, timeZone);
+    return when.endsWith(" 12:00am") ? when.slice(0, -" 12:00am".length) : when;
+  }
+  if (cell2.string_value) return cell2.string_value;
+  if (typeof cell2.numeric_value === "number") return formatReportNumber(cell2.numeric_value, formatting);
+  if (typeof cell2.bool_value === "boolean") return String(cell2.bool_value);
+  return "";
+}
+function formatReportNumber(value, formatting) {
+  if (!formatting) return String(value);
+  const useDecimal = formatting.use_decimal_separator ?? false;
+  const precision = formatting.decimal_precision ?? 0;
+  let formatted;
+  if (formatting.use_comma_separator) {
+    formatted = value.toLocaleString("en-US", useDecimal ? { minimumFractionDigits: precision, maximumFractionDigits: precision } : {});
+  } else if (useDecimal) {
+    formatted = value.toFixed(precision);
+  } else {
+    formatted = String(value);
+  }
+  if (formatting.use_currency_symbol && formatting.currency_symbol) formatted = `${formatting.currency_symbol}${formatted}`;
+  if (formatting.use_percentage_symbol) formatted = `${formatted}%`;
+  return formatted;
+}
+
+// utils/reports/report-column-formatting.ts
+var NUMBER_FIELD_TYPES = /* @__PURE__ */ new Set([
+  "number",
+  "currency",
+  "percent",
+  "auto_number",
+  "aggregate_number",
+  "aggregate_count",
+  "calculation"
+]);
+var DATE_FIELD_TYPES3 = /* @__PURE__ */ new Set([
+  "date",
+  "date_time",
+  "appointment",
+  "calculation"
+]);
+var NUMBER_KEYS = [
+  "use_comma_separator",
+  "use_decimal_separator",
+  "decimal_precision",
+  "use_currency_symbol",
+  "currency_symbol",
+  "use_percentage_symbol"
+];
+var DEPRECATED_STANDARD_DATE_TIME_FORMAT2 = "yyyy-MM-dd H:mm:ss";
+var STANDARD_DATE_TIME_DISPLAY = "M/d/yyyy h:mm a";
+function fieldReportFormatting(field) {
+  const formatting = field?.formatting;
+  const type = field?.field_type ?? "";
+  if (!formatting || typeof formatting !== "object") return null;
+  const out = {};
+  if (NUMBER_FIELD_TYPES.has(type)) {
+    for (const key of NUMBER_KEYS) {
+      if (formatting[key] !== void 0 && formatting[key] !== null) {
+        out[key] = formatting[key];
+      }
+    }
+  }
+  const format = formatting["format"];
+  if (DATE_FIELD_TYPES3.has(type) && typeof format === "string" && format) {
+    out.format = format === DEPRECATED_STANDARD_DATE_TIME_FORMAT2 ? STANDARD_DATE_TIME_DISPLAY : format;
+  }
+  return Object.keys(out).length ? out : null;
+}
+function effectiveColumnFormatting(columnFormatting, field) {
+  const fromField = fieldReportFormatting(field);
+  if (!columnFormatting) return fromField;
+  if (!columnFormatting.format && fromField?.format) {
+    return { ...columnFormatting, format: fromField.format };
+  }
+  return columnFormatting;
+}
+
+// .path-cli/src/utils/report-run.ts
+function runUnsavedReport(client, boId3, report2, opts = {}) {
+  return client.post(`/v1/business-objects/${boId3}/reports/run`, {
+    columns: report2.columns,
+    filter_condition: report2.filter_condition ?? null,
+    include_archived: report2.include_archived ?? false,
+    ...opts.groupsOnly ? { groups_only: true } : {},
+    ...opts.all ? { all: true } : { page: opts.page ?? 1, per_page: opts.perPage ?? 50 }
+  });
+}
+async function columnField(metadata, rootBoId, column) {
+  if (column.column_type !== "field" || column.column_entity_id == null) return void 0;
+  const chain = column.relationship_mappings ?? [];
+  const boId3 = chain.length ? chain[chain.length - 1].business_object_id : rootBoId;
+  const fields = await metadata.fields(boId3).catch(() => []);
+  return fields.find((f) => f.id === Number(column.column_entity_id));
+}
+async function columnFormattings(metadata, rootBoId, columns) {
+  const entries = await Promise.all(
+    columns.map(async (c) => {
+      const field = await columnField(metadata, rootBoId, c);
+      return [String(c.name), effectiveColumnFormatting(c.formatting, field)];
+    })
+  );
+  return new Map(entries);
+}
+async function seedFieldFormatting(metadata, rootBoId, columns, keep = () => false) {
+  return Promise.all(
+    columns.map(async (column, index) => {
+      if (keep(column, index)) return column;
+      const fromField = fieldReportFormatting(await columnField(metadata, rootBoId, column));
+      return fromField ? { ...column, formatting: { ...column.formatting ?? {}, ...fromField } } : column;
+    })
+  );
+}
+function dateBucketColumns(columns) {
+  return new Set(columns.filter((c) => !!c.grouping_by).map((c) => String(c.name)));
+}
+function flattenReportRows(page, formattingByName, timeZone, bucketColumns = /* @__PURE__ */ new Set()) {
+  const formattingFor2 = (name, summary) => {
+    const formatting = formattingByName.get(name);
+    return summary && bucketColumns.has(name) && formatting?.format ? { ...formatting, format: null } : formatting;
+  };
+  return (page.rows ?? []).map((row) => ({
+    ...Object.fromEntries((row.values ?? []).map((v) => [v.column_name, reportCellText(v, formattingFor2(v.column_name, !!row.is_summary), timeZone)])),
+    ...row.is_summary ? { summary: "yes" } : {},
+    record_id: row.record_id ?? ""
+  }));
+}
+function reportRowsSummary(rows, page) {
+  const totals = rows.filter((r) => r.summary === "yes").length;
+  const records = rows.length - totals;
+  return `${records} of ${page.meta?.total_items ?? records} rows${totals ? ` + ${totals} group total${totals === 1 ? "" : "s"}` : ""}`;
+}
+
+// .path-cli/src/utils/find-records-groups.ts
+var TOTALS = [
+  { option: "sum", calculation: "total", label: "total" },
+  { option: "avg", calculation: "average", label: "average" },
+  { option: "min", calculation: "minimum", label: "minimum" },
+  { option: "max", calculation: "maximum", label: "maximum" }
+];
+var DATE_UNITS = /* @__PURE__ */ new Set(["day", "week", "month", "quarter", "year"]);
+function wantsGroups(opts) {
+  return !!opts.groupBy || TOTALS.some((t) => !!opts[t.option]);
+}
+function names(list3) {
+  return list3 ? splitTopLevel(list3, ",;") : [];
+}
+function groupColumnSpecs(opts) {
+  const groups = names(opts.groupBy);
+  if (!groups.length) throw new Error('--sum / --avg / --min / --max total each group: add --group-by "<field>"');
+  const specs = groups.map((text) => {
+    const byUnit = /^(.*\S)\s+by\s+(\w+)$/i.exec(text);
+    if (byUnit && DATE_UNITS.has(byUnit[2].toLowerCase())) return parseColumnSpec(`${byUnit[1]} | group=${byUnit[2].toLowerCase()}`);
+    return parseColumnSpec(`${text} | group`);
+  });
+  specs.push(parseColumnSpec("count"));
+  for (const total of TOTALS) {
+    for (const text of names(opts[total.option])) specs.push(parseColumnSpec(`${text} | ${total.calculation}`));
+  }
+  return specs;
+}
+function labelTotals(columns) {
+  return columns.map((c) => {
+    if (c.report_column_type !== "calculation") return c;
+    const total = TOTALS.find((t) => t.calculation === String(c.calculation).toLowerCase());
+    return { ...c, name: `${c.name} (${total?.label ?? String(c.calculation).toLowerCase()})` };
+  });
+}
+function assertGroupable(visibility2, rootBoId, column) {
+  const what = `Can't group or total "${column.name}"`;
+  let fromBoId = rootBoId;
+  for (const mapping of column.relationship_mappings ?? []) {
+    const relationship = visibility2.relationship(mapping.relationship_id);
+    if (!relationship) throw new Error(`${what}: relationship ${mapping.relationship_id} isn't shown to you`);
+    const rule2 = visibility2.hopRule(visibility2.hop(relationship, fromBoId));
+    if (!rule2.usable) throw new Error(`${what}: ${rule2.reason}`);
+    if (rule2.logic.length) throw new Error(`${what}: relationship "${relationship.name}" is shown only on some records`);
+    fromBoId = mapping.business_object_id;
+  }
+  if (column.column_type !== "field") return;
+  const field = visibility2.field(Number(column.column_entity_id));
+  if (!field) throw new Error(`${what}: the field isn't shown to you`);
+  const rule = visibility2.fieldRule(field);
+  if (!rule.usable) throw new Error(`${what}: ${rule.reason}`);
+  if (rule.logic.length) throw new Error(`${what}: field "${field.name}" is shown only on some records`);
+}
+function cellValue(cell2) {
+  if (!cell2) return null;
+  if (typeof cell2.numeric_value === "number") return cell2.numeric_value;
+  if (cell2.date_value) return Date.parse(cell2.date_value);
+  if (typeof cell2.bool_value === "boolean") return cell2.bool_value ? 1 : 0;
+  return cell2.string_value ?? null;
+}
+function groupSort(columns, text) {
+  const shown = columns.map((c) => String(c.name));
+  if (!text) {
+    const firstTotal = columns.find((c) => c.report_column_type === "calculation");
+    return { name: firstTotal ? String(firstTotal.name) : "Count", direction: -1 };
+  }
+  const match = /^(.*?)(?:\s+(asc|desc))?$/i.exec(text.trim());
+  const wanted = (match?.[1] ?? "").trim().replace(/^\[(.*)\]$/, "$1").toLowerCase();
+  const direction = match?.[2]?.toLowerCase() === "desc" ? -1 : 1;
+  const exact = shown.find((n) => n.toLowerCase() === wanted);
+  if (exact) return { name: exact, direction };
+  const totals = shown.filter((n) => n.toLowerCase().startsWith(`${wanted} (`));
+  if (totals.length === 1) return { name: totals[0], direction };
+  throw new Error(`Can't sort the groups by "${match?.[1]?.trim()}": sort by one of ${shown.map((n) => `"${n}"`).join(", ")}`);
+}
+function sortGroups(rows, by) {
+  const compare = (a, b) => {
+    if (a === b) return 0;
+    if (a === null || a === "") return 1;
+    if (b === null || b === "") return -1;
+    if (typeof a === "number" && typeof b === "number") return (a - b) * by.direction;
+    if (typeof a === "number") return -1;
+    if (typeof b === "number") return 1;
+    return a.localeCompare(b, void 0, { numeric: true, sensitivity: "base" }) * by.direction;
+  };
+  return [...rows].sort((x, y) => compare(x.value[by.name] ?? null, y.value[by.name] ?? null));
+}
+
+// .path-cli/src/commands/find-records.ts
+var MAX_PER_PAGE = 100;
+var CATALOG_OPTIONS_CAP = 50;
+var findRecordsCommand = new Command("find-records").description(
+  `Advanced search: the records of one business object that match a Logic Builder formula (e.g. 'ISLASTWEEK([Created Date]) AND HASSTEP("Quote Sent")'), run on the fly without saving a folder or report. Only what the record viewer shows you can be searched: hidden fields, fields in hidden field groups and hidden relationships are unknown to the formula, and a rule on a field whose visibility depends on the record only matches records that show it. Archived records are left out unless --include-archived. --catalog lists what you can search on (fields with their options, relationships, milestones, steps) with each one's designer info. --group-by groups the matches instead of listing them (as a grouped report does, run on the fly): one row per group with its record count and any --sum / --avg / --min / --max totals; only fields and relationships every record shows you can be grouped or totaled. JSON is { business_object, formula, total, page, per_page, columns, items: [{ id, record, milestones, values }] }, or with --group-by { business_object, formula, total, groups, columns, items: [{ <column>: text }] }. Formula syntax: the path-logic-formula-syntax skill`
+).option("--bo-id <id>", "Business object ID to search").option("--bo-name <name>", "Business object name (resolved to ID)").option("--logic <formula>", "The search as a Logic Builder formula").option("--catalog", "List what you can search on in this business object, with designer info, instead of searching").option("--include-archived", "Include archived records (left out by default)").option("--columns <names>", "Comma-separated field / relationship names to show (default: the ones the formula uses)").option("--sort <field>", 'Sort by a field of the business object; add " desc" for descending (e.g. "Created Date desc")').option("--count", "Print only how many records match").option("--page <n>", "Page to show", "1").option("--per-page <n>", `Records per page (max ${MAX_PER_PAGE})`, "25").option("--all", "Every matching record (pages through them)").option(
+  "--group-by <names>",
+  `Group the matching records instead of listing them: comma-separated fields (at most 3; [Relationship.Field] for a linked record's field; "<date field> by day|week|month|quarter|year"; milestones for the current milestones). Each group comes with its record count`
+).option("--sum <names>", "With --group-by: total these number / currency fields in each group").option("--avg <names>", "With --group-by: average these number / currency fields in each group").option("--min <names>", "With --group-by: the smallest value of these fields in each group").option("--max <names>", "With --group-by: the largest value of these fields in each group").option("--top <n>", 'With --group-by: only the first n groups (after sorting). Groups sort by --sort "<column> [desc]" (Count, a total like "Qty (total)", a group field); default the first total, else Count, largest first').action(async (opts) => {
+  try {
+    const parentOpts = findRecordsCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({ accountId: parentOpts.account, baseUrl: parentOpts.baseUrl });
+    if (!config2.accountId) {
+      throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
+    }
+    const client = new HttpClient(config2);
+    let boId3;
+    if (opts.boId) boId3 = parseInt(opts.boId, 10);
+    else if (opts.boName) boId3 = (await resolveBusinessObjectByName(client, opts.boName)).id;
+    else throw new Error("Provide --bo-id or --bo-name");
+    await assertBusinessObjectReadable(client, boId3, `search business object ${boId3}`);
+    const access = await realWorldAccess(client);
+    if (!access) throw new Error("find-records runs as a user of the PATH app; the Designer CLI has no searches");
+    const visibility2 = await SearchVisibility.load(client, access);
+    const metadata = new RunMetadata(client, config2.accountId);
+    const json = !!parentOpts.json;
+    if (opts.catalog) {
+      const catalog = await searchCatalog(client, metadata, visibility2, boId3);
+      if (json) console.log(JSON.stringify(catalog, null, 2));
+      else console.log(renderCatalog(catalog).join("\n"));
+      return;
+    }
+    if (!opts.logic) throw new Error("Provide --logic <formula> (or --catalog to see what you can search on)");
+    const loader = await FilterCatalogLoader.load(client, config2.accountId, boId3, {
+      field: (f) => {
+        const field = visibility2.field(f.id);
+        return !!field && visibility2.fieldRule(field).usable;
+      },
+      relationship: (r) => {
+        const relationship = visibility2.relationship(r.id);
+        return !!relationship && visibility2.relationshipUsable(relationship);
+      }
+    });
+    const parsed = await loader.parse(opts.logic, { allowEntryDates: true, allowBlankValues: false });
+    if (parsed.errors.length > 0 || !parsed.filter) {
+      throw new Error(describeParseErrors(opts.logic, parsed.errors));
+    }
+    const formula = await loader.print(parsed.filter) || opts.logic;
+    const pipeline = withFilters(null, boId3, parsed.filter);
+    pipeline.filters = visibility2.restrict(pipeline.filters, boId3);
+    pipeline.include_archived = !!opts.includeArchived;
+    pipeline.quick_search = [];
+    const grouping = wantsGroups(opts);
+    pipeline.sorting = opts.sort && !grouping ? [sortField(visibility2, boId3, opts.sort)] : [];
+    if (grouping) {
+      if (opts.columns) throw new Error("--columns picks what a record list shows; with --group-by, use --sum / --avg / --min / --max");
+      const built = await loader.resolve(() => buildReportColumns(groupColumnSpecs(opts), [], { catalog: loader.catalog, newKey: () => crypto.randomUUID() }));
+      if (built.errors.length) throw new Error(built.errors.join("\n"));
+      for (const column of built.columns) assertGroupable(visibility2, boId3, column);
+      const columns2 = labelTotals(await seedFieldFormatting(metadata, boId3, built.columns));
+      const buckets = dateBucketColumns(columns2);
+      const by = groupSort(columns2, opts.sort);
+      const page2 = await runUnsavedReport(client, boId3, { columns: columns2, filter_condition: pipeline, include_archived: !!opts.includeArchived }, { groupsOnly: true, all: true });
+      const timeZone = json ? void 0 : await metadata.userTimeZone().catch(() => void 0);
+      const names2 = columns2.map((c) => String(c.name));
+      const formatting = new Map(
+        columns2.map((c) => {
+          const own = c.formatting;
+          return [String(c.name), buckets.has(String(c.name)) && own?.format ? { ...own, format: null } : own];
+        })
+      );
+      let groups = (page2.rows ?? []).map((row) => {
+        const cells = new Map((row.values ?? []).map((v) => [v.column_name, v]));
+        return {
+          text: Object.fromEntries(names2.map((n) => [n, reportCellText(cells.get(n), formatting.get(n), timeZone)])),
+          value: Object.fromEntries(names2.map((n) => [n, cellValue(cells.get(n))]))
+        };
+      });
+      groups = sortGroups(groups, by);
+      const groupCount = groups.length;
+      const top = opts.top ? Math.max(parseInt(opts.top, 10) || 0, 0) : 0;
+      if (top) groups = groups.slice(0, top);
+      const total2 = page2.meta?.total_items ?? 0;
+      const businessObject2 = await businessObjectInfo(metadata, boId3);
+      if (json) {
+        console.log(JSON.stringify({ business_object: businessObject2, formula, total: total2, groups: groupCount, columns: names2, items: groups.map((g) => g.text) }, null, 2));
+        return;
+      }
+      console.log(`${total2} ${businessObject2.name} match: ${formula}`);
+      if (!groupCount) return;
+      console.log(
+        formatOutput(
+          groups.map((g) => g.text),
+          { footer: `[${groups.length}${groups.length < groupCount ? ` of ${groupCount}` : ""} group${groupCount === 1 ? "" : "s"}, by ${by.name}${by.direction === -1 ? " (largest first)" : ""}]` }
+        )
+      );
+      const info2 = infoContextLines(businessObject2);
+      if (info2.length) console.log(["", ...info2].join("\n"));
+      return;
+    }
+    const fetchPage2 = (page2, perPage2) => client.post("/v1/folders/filter-records", {
+      filter_condition: JSON.stringify(pipeline),
+      with_relationships: true,
+      per_page: perPage2,
+      page: page2
+    });
+    const businessObject = await businessObjectInfo(metadata, boId3);
+    if (opts.count) {
+      const total2 = totalOf(await fetchPage2(1, 1));
+      if (json) console.log(JSON.stringify({ business_object: businessObject, formula, total: total2 }, null, 2));
+      else console.log(`${total2} ${businessObject.name} match: ${formula}`);
+      return;
+    }
+    const perPage = Math.min(Math.max(parseInt(opts.perPage, 10) || 25, 1), MAX_PER_PAGE);
+    let page = Math.max(parseInt(opts.page, 10) || 1, 1);
+    let records = [];
+    let total;
+    if (opts.all) {
+      page = 1;
+      const first = await fetchPage2(1, MAX_PER_PAGE);
+      total = totalOf(first);
+      records = unwrapPaginated(first);
+      for (let p = 2; records.length < total; p++) {
+        const next = unwrapPaginated(await fetchPage2(p, MAX_PER_PAGE));
+        if (next.length === 0) break;
+        records.push(...next);
+      }
+    } else {
+      const response = await fetchPage2(page, perPage);
+      total = totalOf(response);
+      records = unwrapPaginated(response);
+    }
+    const columns = opts.columns ? resolveColumns(visibility2, boId3, String(opts.columns)) : formulaColumns(visibility2, boId3, parsed.filter);
+    const items = [];
+    for (const record2 of records) {
+      const shown = await recordDisplayFor(client, config2.accountId, record2, "search this business object");
+      if (!shown) continue;
+      const { display } = shown;
+      const values = {};
+      for (const column of columns) {
+        values[column.name] = column.kind === "field" ? display.fields[column.name] ?? "" : display.related[column.name] ?? "";
+      }
+      items.push({
+        id: display.id,
+        record: display.record,
+        milestones: display.milestones,
+        ...display.archived ? { archived: true } : {},
+        values
+      });
+    }
+    if (json) {
+      console.log(
+        JSON.stringify(
+          {
+            business_object: businessObject,
+            formula,
+            total,
+            page: opts.all ? null : page,
+            per_page: opts.all ? null : perPage,
+            columns: columns.map((c) => c.name),
+            items
+          },
+          null,
+          2
+        )
+      );
+      return;
+    }
+    const shownFrom = opts.all ? 1 : (page - 1) * perPage + 1;
+    console.log(`${total} ${businessObject.name} match: ${formula}`);
+    if (items.length === 0) {
+      if (total > 0) console.log(`(page ${page} is past the last one)`);
+      return;
+    }
+    const rows = items.map((item2) => ({
+      id: item2.id,
+      record: item2.archived ? `${item2.record} (archived)` : item2.record,
+      milestones: item2.milestones.join(", "),
+      ...item2.values
+    }));
+    console.log(
+      formatOutput(rows, {
+        footer: `[${shownFrom}\u2013${shownFrom + items.length - 1} of ${total}]${!opts.all && shownFrom + items.length - 1 < total ? ` --page ${page + 1} for more, --all for every one` : ""}`
+      })
+    );
+    const info = infoContextLines(businessObject);
+    if (info.length) console.log(["", ...info].join("\n"));
+  } catch (err) {
+    handleError(err);
+  }
+});
+function totalOf(response) {
+  if (Array.isArray(response)) return response.length;
+  return typeof response.meta?.total_items === "number" ? response.meta.total_items : (response.items ?? []).length;
+}
+function sortField(visibility2, boId3, text) {
+  const match = /^(.*?)(?:\s+(asc|desc))?$/i.exec(text.trim());
+  const name = (match?.[1] ?? "").trim().replace(/^\[(.*)\]$/, "$1");
+  const field = findField2(visibility2.searchableFields(boId3), name);
+  if (!field) throw new Error(`Can't sort: no field "${name}" you can see`);
+  visibility2.assertSortable(field, boId3);
+  return { type: "field", field_id: field.id, direction: match?.[2]?.toLowerCase() === "desc" ? -1 : 1 };
+}
+function findField2(fields, name) {
+  const key = name.toLowerCase();
+  return fields.find((f) => f.name === name) ?? fields.find((f) => f.name.toLowerCase() === key);
+}
+function resolveColumns(visibility2, boId3, text) {
+  const fields = visibility2.searchableFields(boId3);
+  const hops = visibility2.usableHops(boId3).filter((h) => h.side === "source");
+  return text.split(",").map((s) => s.trim().replace(/^\[(.*)\]$/, "$1")).filter(Boolean).map((name) => {
+    const field = findField2(fields, name);
+    if (field) return { name: field.name, kind: "field" };
+    const hop = hops.find((h) => (h.relationship.name ?? "").toLowerCase() === name.toLowerCase());
+    if (hop) return { name: hop.relationship.name ?? name, kind: "relationship" };
+    throw new Error(`Unknown column "${name}": use a field of the business object or one of its relationships you can see`);
+  });
+}
+function formulaColumns(visibility2, boId3, group2) {
+  const out = [];
+  const add = (column) => {
+    if (!out.some((c) => c.name === column.name)) out.push(column);
+  };
+  const walk = (node) => {
+    const leaf2 = node;
+    if (leaf2.type === "group") {
+      (leaf2.filter_types ?? []).forEach(walk);
+      return;
+    }
+    const path = leaf2.relationship_ids ?? [];
+    if (path.length) {
+      const relationship = visibility2.relationship(path[0]);
+      if (relationship?.business_object_id === boId3 && relationship.name) add({ name: relationship.name, kind: "relationship" });
+      return;
+    }
+    if (leaf2.type !== "field" || leaf2.field_id == null) return;
+    const field = visibility2.field(leaf2.field_id);
+    if (field && field.business_object_id === boId3 && field.is_primary_object) add({ name: field.name, kind: "field" });
+  };
+  walk(group2);
+  return out;
+}
+async function searchCatalog(client, metadata, visibility2, boId3) {
+  const [businessObject, bos, milestones, steps] = await Promise.all([
+    businessObjectInfo(metadata, boId3),
+    metadata.businessObjects().catch(() => []),
+    listOnce(client, "/v1/init/milestones"),
+    listOnce(client, `/v1/business-objects/${boId3}/workflows/steps`, { all: "true" })
+  ]);
+  const boName = (id) => businessObjectName(bos.find((b) => b.id === id), id);
+  const withInfo = (entry, info) => {
+    const text = infoText(info);
+    return text ? { ...entry, info: text } : entry;
+  };
+  const fields = visibility2.searchableFields(boId3);
+  const groupIds = new Set(fields.map((f) => f.field_group_id).filter((id) => id != null));
+  const fieldGroups = [...groupIds].map((id) => visibility2.fieldGroup(id)).filter((g) => g != null).map((g) => withInfo({ name: g.name ?? `Field group ${g.id}`, ...g.visibility_settings?.filters?.filters?.filter_types?.length ? { shown_on_some_records: true } : {} }, g.info));
+  return {
+    business_object: businessObject,
+    field_groups: fieldGroups,
+    fields: fields.map((f) => {
+      const options = f.select_options ?? [];
+      const entry = {
+        name: f.name,
+        type: f.field_type ?? "unknown",
+        ...visibility2.fieldGroup(f.field_group_id)?.name ? { group: visibility2.fieldGroup(f.field_group_id).name } : {},
+        ...options.length ? { options: options.slice(0, CATALOG_OPTIONS_CAP).map((o) => o.option_value) } : {},
+        ...options.length > CATALOG_OPTIONS_CAP ? { more_options: options.length - CATALOG_OPTIONS_CAP } : {},
+        ...conditional(visibility2, f) ? { shown_on_some_records: true } : {}
+      };
+      return withInfo(entry, f.info);
+    }),
+    // A formula follows relationships forward only (from the record that holds the link).
+    relationships: visibility2.usableHops(boId3).filter((h) => h.side === "source").map(
+      (h) => withInfo(
+        {
+          name: h.relationship.name ?? `Relationship ${h.relationship.id}`,
+          to: boName(h.toBoId),
+          ...h.conditional ? { shown_on_some_records: true } : {}
+        },
+        h.relationship.info
+      )
+    ),
+    milestones: milestones.filter((m) => m.business_object_id === boId3).map((m) => withInfo({ name: m.name, ...m.is_enabled === false ? { disabled: true } : {} }, m.info)),
+    steps: steps.map((s) => withInfo({ name: s.name, ...s.is_enabled === false ? { disabled: true } : {} }, s.info))
+  };
+}
+function conditional(visibility2, field) {
+  const rule = visibility2.fieldRule(field);
+  return rule.usable && rule.logic.length > 0;
+}
+function renderCatalog(catalog) {
+  const lines = [`Searchable in ${catalog.business_object.name} (${catalog.business_object.id}):`];
+  const section = (title, entries) => {
+    if (entries.length) lines.push("", `${title}:`, ...entries.map((e) => `  ${e}`));
+  };
+  section(
+    "Fields",
+    catalog.fields.map(
+      (f) => [
+        `[${f.name}] (${f.type})`,
+        f.options ? `options: ${f.options.join(" | ")}${f.more_options ? ` \u2026 +${f.more_options}` : ""}` : "",
+        f.shown_on_some_records ? "shown on some records only" : ""
+      ].filter(Boolean).join(" \u2014 ")
+    )
+  );
+  section(
+    'Relationships ([Relationship.Field], INMILESTONE("Relationship.Milestone"))',
+    catalog.relationships.map((r) => `${r.name} (to ${r.to})${r.shown_on_some_records ? " \u2014 shown on some records only" : ""}`)
+  );
+  section("Milestones", catalog.milestones.map((m) => `${m.name}${m.disabled ? " (disabled)" : ""}`));
+  section("Steps", catalog.steps.map((s) => `${s.name}${s.disabled ? " (disabled)" : ""}`));
+  const named = (entries) => entries.map((e) => ({ name: e.name, info: e.info ?? null }));
+  const info = infoContextLines(catalog.business_object, [
+    { title: "Field group info", entries: named(catalog.field_groups) },
+    { title: "Field info", entries: named(catalog.fields) },
+    { title: "Relationship info", entries: named(catalog.relationships) },
+    { title: "Milestone info", entries: named(catalog.milestones) },
+    { title: "Step info", entries: named(catalog.steps) }
+  ]);
+  if (info.length) lines.push("", ...info);
+  return lines;
+}
+
+// .path-cli/src/resolvers/resolve-relationship.ts
+async function resolveRelationshipByName(client, name, boId3) {
+  const relsRaw = await cachedFetch(
+    () => client.get(`/v1/business-objects/${boId3}/relationships`, {
+      all: "true"
+    }),
+    `relationships--${boId3}`,
+    `/v1/business-objects/${boId3}/relationships`
+  );
+  const rels2 = unwrapPaginated(relsRaw);
+  const lower = name.toLowerCase();
+  const matches = rels2.filter((r) => r.name.toLowerCase() === lower);
+  if (matches.length === 0) {
+    const available = rels2.map((r) => `  ${r.id}: ${r.name}`).join("\n");
+    throw new Error(
+      `Relationship "${name}" not found on BO ${boId3}. Available:
+${available}`
+    );
+  }
+  if (matches.length > 1) {
+    const ambiguous = matches.map((r) => `  ${r.id}: ${r.name}`).join("\n");
+    throw new Error(
+      `Ambiguous relationship name "${name}". Matches:
+${ambiguous}`
+    );
+  }
+  return matches[0];
+}
+
+// .path-cli/src/resolvers/resolve-roles.ts
+async function resolveRolesByNames(client, names2) {
+  const response = await cachedFetch(
+    () => client.get("/v1/roles", { all: "true" }),
+    "roles",
+    "/v1/roles"
+  );
+  const allRoles = response.items;
+  const resolved = [];
+  const notFound4 = [];
+  for (const name of names2) {
+    const lower = name.trim().toLowerCase();
+    const match = allRoles.find((r) => r.name.toLowerCase() === lower);
+    if (match) {
+      resolved.push({ id: match.id, name: match.name });
+    } else {
+      notFound4.push(name.trim());
+    }
+  }
+  if (notFound4.length > 0) {
+    console.warn(`WARNING: Roles not found: ${notFound4.join(", ")}`);
+  }
+  return resolved;
+}
+
+// .path-cli/src/resolvers/resolve-users.ts
+async function resolveUsersByNames(client, names2) {
+  const response = await cachedFetch(
+    () => client.get("/v1/users", { all: "true" }),
+    "users",
+    "/v1/users"
+  );
+  const allUsers = response.items;
+  const resolved = [];
+  const notFound4 = [];
+  for (const name of names2) {
+    const lower = name.trim().toLowerCase();
+    const match = allUsers.find((u) => {
+      const fullName = `${u.profile.first_name} ${u.profile.last_name}`.toLowerCase();
+      return fullName === lower || u.email?.toLowerCase() === lower;
+    });
+    if (match) {
+      resolved.push({
+        id: match.id,
+        name: `${match.profile.first_name} ${match.profile.last_name}`
+      });
+    } else {
+      notFound4.push(name.trim());
+    }
+  }
+  if (notFound4.length > 0) {
+    console.warn(`WARNING: Users not found: ${notFound4.join(", ")}`);
+  }
+  return resolved;
+}
+
+// .path-cli/src/commands/create-folder.ts
+async function resolveMapRelationship(client, boId3, nameOrId) {
+  let relationship;
+  if (/^\d+$/.test(nameOrId)) {
+    const rels2 = await cachedFetch(
+      () => client.get(`/v1/business-objects/${boId3}/relationships`, {
+        all: "true"
+      }),
+      `relationships--${boId3}`,
+      `/v1/business-objects/${boId3}/relationships`
+    );
+    const id = parseInt(nameOrId, 10);
+    const found2 = rels2.find((r) => r.id === id);
+    if (!found2) {
+      throw new Error(`Relationship ID ${id} not found on BO ${boId3}.`);
+    }
+    relationship = found2;
+  } else {
+    relationship = await resolveRelationshipByName(client, nameOrId, boId3);
+  }
+  const businessObjects2 = await cachedFetch(
+    () => client.get("/v1/business-objects"),
+    "business-objects",
+    "/v1/business-objects"
+  );
+  const targetBo = businessObjects2.find(
+    (bo) => bo.id === relationship.to_business_object_id
+  );
+  if (!targetBo || targetBo.bo_type !== "address") {
+    throw new Error(
+      `Relationship "${relationship.name}" (ID: ${relationship.id}) does not target the account's Address business object.`
+    );
+  }
+  return relationship;
+}
+function parsePermissions(perms) {
+  if (!perms) return { view: true, edit: false, deletion: false };
+  const parts = perms.split(",").map((s) => s.trim().toLowerCase());
+  return {
+    view: parts.includes("view") || parts.includes("edit"),
+    edit: parts.includes("edit"),
+    deletion: parts.includes("delete")
+  };
+}
+function formatPermissions(config2) {
+  const parts = [];
+  if (config2.view) parts.push("view");
+  if (config2.edit) parts.push("edit");
+  if (config2.deletion) parts.push("delete");
+  return parts.join(",");
+}
+var createFolderCommand = new Command("create-folder").description("Create a folder with permissions (and its info: --info / --info-file)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name (resolved to ID)").requiredOption("--folder-name <name>", "Folder name").option("--roles <names>", "Comma-separated role names").option("--role-permissions <perms>", "Comma-separated: view,edit,delete").option("--users <names>", "Comma-separated user full names").option("--user-permissions <perms>", "Comma-separated: view,edit,delete").option(
+  "--logic <formula>",
+  `Logic Builder formula, e.g. '[Department] = "Residential" AND INMILESTONE("Won")' \u2014 see /path-logic-formula-syntax`
+).option("--logic-raw <json>", "Raw GroupFilter JSON (escape hatch for edge cases)").option(
+  "--map-relationship <name-or-id>",
+  "Relationship (name or ID) from this folder's BO to the account's Address BO; sets map_enabled and map_relationship_id"
+).option(
+  "--info <text>",
+  "The folder's info: what it is for, who uses it, what its records have in common \u2014 shown with the folder to people and AI agents (at most 50,000 characters)"
+).option("--info-file <path>", "Read the folder's info from a text or markdown file (instead of --info)").option("--dry-run", "Parse/build the request bodies and print them, but create nothing").action(async (opts) => {
+  try {
+    const parentOpts = createFolderCommand.parent?.opts?.() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId) {
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    }
+    const client = new HttpClient(config2);
+    let boId3;
+    let boName;
+    if (opts.boId) {
+      boId3 = parseInt(opts.boId, 10);
+      boName = `BO ${boId3}`;
+    } else if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      boId3 = bo.id;
+      boName = bo.singular_name;
+    } else {
+      throw new Error("Provide either --bo-id or --bo-name");
+    }
+    await assertCreateFolder(client, boId3);
+    let filterCondition = null;
+    if (opts.logicRaw) {
+      filterCondition = JSON.parse(opts.logicRaw);
+    } else if (opts.logic) {
+      const loader = await FilterCatalogLoader.load(client, config2.accountId, boId3);
+      const result = await loader.parse(opts.logic, {
+        allowEntryDates: true,
+        allowBlankValues: true
+      });
+      if (result.errors.length > 0 || !result.filter) {
+        throw new Error(describeParseErrors(opts.logic, result.errors));
+      }
+      const pipeline = withFilters(null, boId3, result.filter);
+      filterCondition = {
+        version: pipeline.version,
+        business_object_ids: pipeline.business_object_ids,
+        filters: pipeline.filters,
+        sorting: [],
+        stickers: [],
+        quick_search: []
+      };
+    }
+    let mapRelationship;
+    if (opts.mapRelationship) {
+      mapRelationship = await resolveMapRelationship(client, boId3, opts.mapRelationship);
+    }
+    const info = infoFromOptions(opts);
+    const folderBody2 = {
+      folder_name: opts.folderName,
+      is_custom: false,
+      include_archived: false,
+      filter_condition: filterCondition,
+      sorts: [],
+      ...mapRelationship ? { map_enabled: true, map_relationship_id: mapRelationship.id } : {},
+      ...info ? { info } : {}
+    };
+    const roleConfig = parsePermissions(opts.rolePermissions);
+    const userConfig = parsePermissions(opts.userPermissions);
+    let resolvedRoles = [];
+    let resolvedUsers = [];
+    if (opts.roles) {
+      const roleNames = opts.roles.split(",").map((s) => s.trim());
+      resolvedRoles = await resolveRolesByNames(client, roleNames);
+    }
+    if (opts.users) {
+      const userNames = opts.users.split(",").map((s) => s.trim());
+      resolvedUsers = await resolveUsersByNames(client, userNames);
+    }
+    if (opts.dryRun) {
+      console.log(`Dry run \u2014 not created: folder "${opts.folderName}" on ${boName} (BO ID: ${boId3})`);
+      console.log(JSON.stringify(folderBody2, null, 2));
+      if (resolvedRoles.length > 0 || resolvedUsers.length > 0) {
+        console.log("Permissions that would be granted (entity_id filled in after creation):");
+        console.log(
+          JSON.stringify(
+            {
+              roles: resolvedRoles.map((r) => ({ role_id: r.id, name: r.name, config: roleConfig })),
+              users: resolvedUsers.map((u) => ({ user_id: u.id, name: u.name, config: userConfig }))
+            },
+            null,
+            2
+          )
+        );
+      }
+      return;
+    }
+    const folder2 = await client.post(
+      `/v1/business-objects/${boId3}/folders`,
+      folderBody2
+    );
+    const folderId = folder2.id;
+    console.log(
+      `Created folder "${opts.folderName}" (ID: ${folderId}) on ${boName} (BO ID: ${boId3})`
+    );
+    if (mapRelationship) {
+      console.log(
+        `Map enabled via relationship "${mapRelationship.name}" (ID: ${mapRelationship.id})`
+      );
+    }
+    const batchBody = {
+      roles: resolvedRoles.map((r) => ({
+        role_id: r.id,
+        entity_type: "folder",
+        entity_id: folderId,
+        config: roleConfig
+      })),
+      users: resolvedUsers.map((u) => ({
+        user_id: u.id,
+        entity_type: "folder",
+        entity_id: folderId,
+        config: userConfig
+      }))
+    };
+    if (batchBody.roles.length > 0 || batchBody.users.length > 0) {
+      await client.post("/v1/permissions", batchBody);
+      console.log("Permissions granted:");
+      if (resolvedRoles.length > 0) {
+        const roleList = resolvedRoles.map((r) => `${r.name} (ID: ${r.id})`).join(", ");
+        console.log(
+          `  Roles (${formatPermissions(roleConfig)}): ${roleList}`
+        );
+      }
+      if (resolvedUsers.length > 0) {
+        const userList = resolvedUsers.map((u) => `${u.name} (ID: ${u.id})`).join(", ");
+        console.log(
+          `  Users (${formatPermissions(userConfig)}): ${userList}`
+        );
+      }
+    }
+  } catch (err) {
+    handleError(err);
+  }
+});
+
 // utils/deep-link-urls.ts
 function normalizeAppUrl(appUrl) {
   return appUrl.replace(/\/+$/, "");
@@ -40341,10 +41309,11 @@ function parseData(data) {
   if (unknown2.length) throw new Error(`--data keys: ${CREATE_REPORT_DATA_KEYS.join(", ")} \u2014 not ${unknown2.join(", ")}`);
   return row;
 }
+var FORMATTING_OPTIONS = ["format", "decimals", "commas", "currency", "percent"];
 async function buildReportPlan(client, accountId, boId3, opts, newKey = () => crypto.randomUUID()) {
   const data = parseData(opts.data);
   const name = (opts.name ?? (typeof data.name === "string" ? data.name : "")).trim();
-  if (!name) throw new Error("Name the report: --name <name>");
+  if (!name && !opts.preview) throw new Error("Name the report: --name <name>");
   const displaySpecs = [...opts.columns ? parseColumnList([opts.columns]) : [], ...(opts.column ?? []).map(parseColumnSpec)];
   const fieldSpecs = (opts.customField ?? []).map(parseColumnSpec);
   if (displaySpecs.length && data.columns !== void 0) throw new Error("Give the columns with --columns / --column or in --data, not both");
@@ -40359,7 +41328,12 @@ async function buildReportPlan(client, accountId, boId3, opts, newKey = () => cr
   if (displaySpecs.length) {
     const built = await loader.resolve(() => buildReportColumns(displaySpecs, fieldSpecs, { catalog: loader.catalog, expressions, newKey }));
     if (built.errors.length) throw new Error(built.errors.join("\n"));
-    columns = built.columns;
+    columns = await seedFieldFormatting(
+      new RunMetadata(client, accountId),
+      boId3,
+      built.columns,
+      (column, i) => column.usage === "filter" || i < displaySpecs.length && FORMATTING_OPTIONS.some((o) => displaySpecs[i].options.has(o))
+    );
   } else {
     if (!Array.isArray(data.columns) || !data.columns.length) throw new Error("--data columns must be a non-empty array of report columns");
     const extra = fieldSpecs.length ? await loader.resolve(() => buildReportColumns([], fieldSpecs, { catalog: loader.catalog, expressions, newKey })) : { columns: [], errors: [] };
@@ -40423,6 +41397,31 @@ function reportPermissionRows(reportId, ownerId, users, roles, userConfig, roleC
     roles: roles.map((r) => ({ role_id: r.id, entity_type: "report", entity_id: reportId, config: roleConfig }))
   };
 }
+async function printPreview(client, accountId, boId3, boName, plan, opts, parentOpts) {
+  const { body } = plan;
+  const columns = body.columns;
+  const page = await runUnsavedReport(
+    client,
+    boId3,
+    { columns, filter_condition: body.filter_condition, include_archived: body.include_archived },
+    { groupsOnly: !!opts.groupsOnly, all: !!opts.all, page: Number(opts.page) || 1, perPage: Number(opts.perPage) || 50 }
+  );
+  if (parentOpts.json) {
+    console.log(JSON.stringify({ preview: true, business_object: { id: boId3, name: boName }, report_type: body.report_type, formula: plan.formula, ...page }, null, 2));
+    return;
+  }
+  const metadata = new RunMetadata(client, accountId);
+  const timeZone = await metadata.userTimeZone().catch(() => void 0);
+  const formattingByName = await columnFormattings(metadata, boId3, columns);
+  const rows = flattenReportRows(page, formattingByName, timeZone, dateBucketColumns(columns)).map(({ record_id, summary, ...rest }) => opts.groupsOnly ? rest : { ...rest, ...summary ? { summary } : {}, record_id });
+  console.log(`Preview \u2014 not saved: ${body.report_type} report on ${boName}${plan.formula ? ` where ${plan.formula}` : ""}`);
+  console.log(
+    formatOutput(rows, {
+      footer: `[${opts.groupsOnly ? `${rows.length} group${rows.length === 1 ? "" : "s"} of ${page.meta?.total_items ?? 0} records` : reportRowsSummary(rows, page)}${page.meta && !opts.groupsOnly ? `, page ${page.meta.page ?? 1} of ${page.meta.total_pages ?? 1}` : ""}]`
+    })
+  );
+  console.log("Save it: the same command with --name (and sharing) instead of --preview.");
+}
 function collect(value, previous = []) {
   return [...previous, value];
 }
@@ -40435,7 +41434,10 @@ var createReportCommand = new Command("create-report").description(
   "--custom-field <spec>",
   'A filter-only Custom Field (repeatable): CALC(<expression>) | name=<n> or TIMEBETWEEN(<from>, <to>) | name=<n> \u2014 never shown, compared in --logic with CUSTOMFIELD("<n>")',
   collect
-).option("--type <type>", `Report type: ${REPORT_TYPES.join(" | ")} (the web picks it: grouped once a column is a Group column); checked against the columns`).option("--logic <formula>", `Filter, a Logic Builder formula (see /path-logic-formula-syntax); COLUMN("<computed column>") and CUSTOMFIELD("<custom field>") compare this report's own`).option("--include-archived", "Include archived records").option("--info <text>", "The report's info: what it is for, who uses it, how to read it \u2014 shown with it to people and AI agents (at most 50,000 characters)").option("--info-file <path>", "Read the report's info from a text or markdown file (instead of --info)").option("--column-info <json>", `Info on columns by name, e.g. '{"Margin":"Sell minus cost, per job"}' (computed columns: say how they are calculated)`).option("--roles <names>", "Share with these roles (comma-separated)").option("--role-permissions <perms>", "Comma-separated: view,edit,delete (default view)").option("--users <names>", "Share with these users (comma-separated full names)").option("--user-permissions <perms>", "Comma-separated: view,edit,delete (default view)").option("--data <json>", `Escape hatch: the create body as JSON (keys: ${CREATE_REPORT_DATA_KEYS.join(", ")}); flags override it`).option("--dry-run", "Build and validate the body and print it, but create nothing").action(async (opts) => {
+).option("--type <type>", `Report type: ${REPORT_TYPES.join(" | ")} (the web picks it: grouped once a column is a Group column); checked against the columns`).option("--logic <formula>", `Filter, a Logic Builder formula (see /path-logic-formula-syntax); COLUMN("<computed column>") and CUSTOMFIELD("<custom field>") compare this report's own`).option("--include-archived", "Include archived records").option("--info <text>", "The report's info: what it is for, who uses it, how to read it \u2014 shown with it to people and AI agents (at most 50,000 characters)").option("--info-file <path>", "Read the report's info from a text or markdown file (instead of --info)").option("--column-info <json>", `Info on columns by name, e.g. '{"Margin":"Sell minus cost, per job"}' (computed columns: say how they are calculated)`).option("--roles <names>", "Share with these roles (comma-separated)").option("--role-permissions <perms>", "Comma-separated: view,edit,delete (default view)").option("--users <names>", "Share with these users (comma-separated full names)").option("--user-permissions <perms>", "Comma-separated: view,edit,delete (default view)").option("--data <json>", `Escape hatch: the create body as JSON (keys: ${CREATE_REPORT_DATA_KEYS.join(", ")}); flags override it`).option("--dry-run", "Build and validate the body and print it, but create nothing").option(
+  "--preview",
+  "Run the report as built and print its rows, but save nothing (no --name needed): try a report before creating it, then create it with the same options"
+).option("--groups-only", "With --preview on a grouped report: only the group total rows").option("--page <n>", "With --preview: page to show", "1").option("--per-page <n>", "With --preview: rows per page", "50").option("--all", "With --preview: every row in one page").action(async (opts) => {
   try {
     const parentOpts = createReportCommand.parent?.opts() ?? {};
     const config2 = loadConfig({ accountId: parentOpts.account, baseUrl: parentOpts.baseUrl });
@@ -40452,6 +41454,12 @@ var createReportCommand = new Command("create-report").description(
       boName = bo.plural_name || bo.singular_name;
     } else {
       throw new Error("Provide either --bo-id or --bo-name");
+    }
+    if (opts.preview) {
+      await assertBusinessObjectReadable(client, boId3, `preview a report on ${boName}`);
+      const plan2 = await buildReportPlan(client, config2.accountId, boId3, opts);
+      await printPreview(client, config2.accountId, boId3, boName, plan2, opts, parentOpts);
+      return;
     }
     await assertCreateReport(client, boId3);
     const userConfig = parseReportPermissions(opts.userPermissions);
@@ -40519,7 +41527,8 @@ var FOLDER_DATA_KEYS = [
   "default_sort_direction",
   "map_enabled",
   "map_relationship_id",
-  "info"
+  "info",
+  "sticker_info"
 ];
 var REPORT_DATA_KEYS = ["name", "include_archived", "info", "column_info"];
 function parseData2(data) {
@@ -40548,7 +41557,29 @@ function changesFrom(data, opts, allowed, what, elsewhere) {
   return changes;
 }
 function folderUpdateBody(folder2, changes) {
-  return folderBody(folder2, changes);
+  const { sticker_info: stickerInfo, ...rest } = changes;
+  if (stickerInfo === void 0) return folderBody(folder2, rest);
+  if (!stickerInfo || typeof stickerInfo !== "object" || Array.isArray(stickerInfo)) {
+    throw new Error('sticker_info must be an object: {"<sticker id or name>": "info text" | null}');
+  }
+  if (!folder2.is_custom) throw new Error(`Folder ${folder2.id} "${folder2.folder_name}" is not custom; its stickers can't be changed.`);
+  const stickers = folder2.folder_stickers ?? [];
+  const changed = /* @__PURE__ */ new Map();
+  for (const [ref, value] of Object.entries(stickerInfo)) {
+    changed.set(findFolderSticker(folder2, ref), checkInfo(value, `sticker_info "${ref}"`) ?? "");
+  }
+  return folderBody(folder2, { ...rest, stickers: stickers.map((s) => changed.has(s) ? { ...s, info: changed.get(s) } : s) });
+}
+function findFolderSticker(folder2, ref) {
+  const stickers = folder2.folder_stickers ?? [];
+  const byId = stickers.find((s) => String(s.id) === ref.trim());
+  if (byId) return byId;
+  const wanted = ref.trim().toLowerCase();
+  const matches = stickers.filter((s) => String(s.name ?? "").trim().toLowerCase() === wanted);
+  if (matches.length === 1) return matches[0];
+  const listed = stickers.map((s) => `${s.id} "${s.name}"`).join(", ") || "(none)";
+  if (matches.length > 1) throw new Error(`Folder ${folder2.id} has more than one sticker named "${ref}"; use its id. Stickers: ${listed}`);
+  throw new Error(`No sticker "${ref}" on folder ${folder2.id} "${folder2.folder_name}". Stickers: ${listed}`);
 }
 function reportChangeBody(report2, changes) {
   const { column_info: columnInfo, ...rest } = changes;
@@ -40575,6 +41606,7 @@ ${listed(matches)}`);
 function savedLine(what, changes) {
   const parts = Object.keys(changes).map((k) => {
     if (k === "column_info") return `column info (${Object.keys(changes.column_info ?? {}).join(", ")})`;
+    if (k === "sticker_info") return `sticker info (${Object.keys(changes.sticker_info ?? {}).join(", ")})`;
     if (k !== "info") return k;
     const info = String(changes.info ?? "");
     return info ? `info (${info.length} characters)` : "info (cleared)";
@@ -40590,12 +41622,17 @@ function setup4(command) {
 function markShown(changes) {
   const gate = currentInfoGate();
   gate?.written(changes.info);
-  for (const value of Object.values(changes.column_info ?? {})) gate?.written(value);
+  for (const key of ["column_info", "sticker_info"]) {
+    for (const value of Object.values(changes[key] ?? {})) gate?.written(value);
+  }
 }
 var INFO_HELP = 'Info: what it is for, who uses it, how to read it \u2014 shown with it to people and AI agents ("" clears it; at most 50,000 characters)';
 var updateFolderCommand = new Command("update-folder").description(
   `Change a folder's info or settings, saved the way the folder form saves it (everything else as stored). Needs Edit on the folder. --data keys: ${FOLDER_DATA_KEYS.join(", ")} (criteria: set-filter folder; sticker criteria: set-filter folder-sticker)`
-).option("--folder-id <id>", "Folder ID").option("--folder-name <name>", "Folder name (requires --bo-id or --bo-name)").option("--bo-id <id>", "Business object ID (for --folder-name)").option("--bo-name <name>", "Business object name (for --folder-name)").option("--info <text>", INFO_HELP).option("--info-file <path>", "Read the info from a text or markdown file (instead of --info)").option("--data <json>", `JSON object of folder keys to change, e.g. '{"folder_name":"Active Jobs","info":"\u2026"}'`).option("--dry-run", "Print the save body without saving").action(async (opts) => {
+).option("--folder-id <id>", "Folder ID").option("--folder-name <name>", "Folder name (requires --bo-id or --bo-name)").option("--bo-id <id>", "Business object ID (for --folder-name)").option("--bo-name <name>", "Business object name (for --folder-name)").option("--info <text>", INFO_HELP).option("--info-file <path>", "Read the info from a text or markdown file (instead of --info)").option(
+  "--data <json>",
+  `JSON object of folder keys to change, e.g. '{"folder_name":"Active Jobs","info":"\u2026","sticker_info":{"Late":"Past its due date"}}' \u2014 sticker_info sets each named sticker's own info (by sticker id or name; null clears it)`
+).option("--dry-run", "Print the save body without saving").action(async (opts) => {
   try {
     const { parentOpts, client } = setup4(updateFolderCommand);
     const changes = changesFrom(opts.data, opts, FOLDER_DATA_KEYS, "folder", "Criteria: set-filter folder.");
@@ -41471,11 +42508,11 @@ async function applyTaskForm(value, input, ctx, assignmentOnly = false) {
   }
   if (!value.title.trim()) throw new SurfaceInputError("title is required");
 }
-function formLines(value, users, names) {
+function formLines(value, users, names2) {
   void users;
   return [
     `    title = ${value.title || "(required)"}`,
-    `    assign_to = ${value.assign_to != null ? `${names.get(value.assign_to) ?? value.assign_to} (${value.assign_to})` : "(unassigned)"}`,
+    `    assign_to = ${value.assign_to != null ? `${names2.get(value.assign_to) ?? value.assign_to} (${value.assign_to})` : "(unassigned)"}`,
     `    due_on = ${value.due_on ?? "(none)"}`,
     `    notes = ${value.notes ?? "(none)"}`,
     `    notify_me_when_done = ${value.notify_me_when_done}   notify_assignee_when_due = ${value.notify_assignee_when_due}`,
@@ -41512,12 +42549,12 @@ var createTask = {
   mirrored: true,
   async view(data, ctx) {
     const users = await activeUsers(ctx.metadata);
-    const names = new Map(users.map((u) => [u.id, userDisplayName(u)]));
+    const names2 = new Map(users.map((u) => [u.id, userDisplayName(u)]));
     const lines = [`  on ${await recordLabel(data.record, ctx.metadata)}`];
     const detail = { accepted_keys: ["template", ...FORM_KEYS] };
     if (data.config.create_from_template && data.config.task_id) {
       lines.push(`  Task template ${data.config.task_id} (fixed by the step); title starts as "${data.config.task_name ?? ""}"`);
-      lines.push(...formLines(emptyForm(data.config.task_name ?? ""), users, names));
+      lines.push(...formLines(emptyForm(data.config.task_name ?? ""), users, names2));
     } else {
       const { templates, undecided } = await availableTemplates(data, ctx.metadata);
       detail.templates = templates.map((t) => ({ id: t.id, title: t.title }));
@@ -41525,7 +42562,7 @@ var createTask = {
         templates.length ? `  Templates: ${templates.map((t) => `${t.id} ${quote2(t.title)}`).join(", ")}  (or a custom task)` : "  No templates available here \u2014 custom task only."
       );
       if (undecided.length) lines.push(`  \u26A0 criteria not decidable for: ${undecided.join("; ")}`);
-      lines.push("  Custom task form:", ...formLines(emptyForm(data.config.task_name ?? ""), users, names));
+      lines.push("  Custom task form:", ...formLines(emptyForm(data.config.task_name ?? ""), users, names2));
     }
     return {
       heading: data.title || "Create Task",
@@ -41594,13 +42631,13 @@ var editTask = {
   mirrored: true,
   async view(data, ctx) {
     const users = await activeUsers(ctx.metadata);
-    const names = new Map(users.map((u) => [u.id, userDisplayName(u)]));
+    const names2 = new Map(users.map((u) => [u.id, userDisplayName(u)]));
     const full = await canFullyEdit(data.task, ctx);
     return {
       heading: data.title || "Edit Task",
       lines: [
         `  task ${data.task_id} on ${await recordLabel(data.record, ctx.metadata)}${full ? "" : "  (assignee only \u2014 you did not create it)"}`,
-        ...formLines(editFormFromTask(data.task), users, names)
+        ...formLines(editFormFromTask(data.task), users, names2)
       ],
       actions: ["pathway-run submit --set assign_to=<user> [--set due_on=\u2026] [--set notes=\u2026]"],
       detail: { task_id: data.task_id, assignment_only: !full, accepted_keys: FORM_KEYS }
@@ -42689,14 +43726,14 @@ async function createLabel(data, state, env, ctx, row, line) {
     });
     if (!built.ok) throw new Error(built.reason);
     const result = await executeRequest(ctx.apiExecutor, "CreateBarcode.CreateLabel", built.request);
-    const outcome = create_tracking_labels_exports.createLabelOutcome(data.config, result);
-    if (!outcome.ok) {
-      const archive = create_tracking_labels_exports.removeLabelRequest(env.w, outcome.orphanTrackingItemId);
+    const outcome2 = create_tracking_labels_exports.createLabelOutcome(data.config, result);
+    if (!outcome2.ok) {
+      const archive = create_tracking_labels_exports.removeLabelRequest(env.w, outcome2.orphanTrackingItemId);
       if (archive) await executeRequest(ctx.apiExecutor, "ArchiveRecord", archive).catch(() => void 0);
-      throw new Error(outcome.reason);
+      throw new Error(outcome2.reason);
     }
-    if (outcome.createdShipmentProductId) state.createdSpIds.push(outcome.createdShipmentProductId);
-    Object.assign(row, outcome.patch, { error: void 0 });
+    if (outcome2.createdShipmentProductId) state.createdSpIds.push(outcome2.createdShipmentProductId);
+    Object.assign(row, outcome2.patch, { error: void 0 });
     state.messages.push(
       `Label #${row.seq} ready \u2014 tracking item ${row.trackingItemId}${row.barcodeValue ? `, barcode ${row.barcodeValue}` : ""}${row.labelFileId ? `, label file ${row.labelFileId}` : ""}`
     );
@@ -43753,9 +44790,9 @@ async function render5(data, ctx) {
   );
   lines.push(`  Attachments (${state.selected.length} attached):`);
   rows.forEach((f, i) => {
-    const names = f.file_types.map((t) => typeName.get(t.file_type_id)).filter(Boolean);
+    const names2 = f.file_types.map((t) => typeName.get(t.file_type_id)).filter(Boolean);
     const uploaded = state.uploaded.some((u) => u.file_id === f.file_id) ? " (uploaded here)" : "";
-    lines.push(`   ${String(i + 1).padStart(3)}. [${selected.has(f.file_id) ? "x" : " "}] ${f.file_name}${names.length ? `  [${names.join(", ")}]` : ""}${uploaded}  (file ${f.file_id})`);
+    lines.push(`   ${String(i + 1).padStart(3)}. [${selected.has(f.file_id) ? "x" : " "}] ${f.file_name}${names2.length ? `  [${names2.join(", ")}]` : ""}${uploaded}  (file ${f.file_id})`);
   });
   if (!rows.length) lines.push("    (no files \u2014 upload with --file <path>)");
   const errors = send_email_exports.emailFormErrors(form);
@@ -44575,6 +45612,13 @@ async function settings(ctx) {
 async function fieldsOf3(ctx, boId3) {
   return await ctx.metadata.fields(boId3);
 }
+async function omProcess(ctx, s) {
+  return scan_sessions_exports.OmProcess.load(s, {
+    businessObjects: () => ctx.metadata.businessObjects(),
+    fields: (boId3) => fieldsOf3(ctx, boId3),
+    fetch: async (req) => (await send(ctx, "ScanAndProcess.FetchRecords", req)).records
+  });
+}
 async function canMark2(ctx) {
   const user = await ctx.metadata.currentUser();
   return scan_sessions_exports.canMark(user.effective_permissions);
@@ -44856,13 +45900,13 @@ function requireSession(state) {
 async function scan(state, code, ctx) {
   const { ids, sid } = requireSession(state);
   const { pending: pending2, done } = lists2(state);
-  const outcome = StopReceiving.classifyScan(code, pending2, done);
-  if (outcome.kind !== "match") {
-    say(state, outcome.message);
-    recordFailed(state, code, outcome.kind);
+  const outcome2 = StopReceiving.classifyScan(code, pending2, done);
+  if (outcome2.kind !== "match") {
+    say(state, outcome2.message);
+    recordFailed(state, code, outcome2.kind);
     return;
   }
-  const match = outcome.item;
+  const match = outcome2.item;
   setLists2(state, scan_sessions_exports.moveToDone(pending2, done, match));
   try {
     const { record: record2 } = await send(ctx, "ScanAndProcess.ApplyScanAction", StopReceiving.receiveRequest(ids, sid, match, "SCAN"));
@@ -45065,13 +46109,13 @@ async function receive(state, entry, ctx, barcode) {
 async function scan2(state, code, ctx) {
   requireSession2(state);
   const v = view(state);
-  const outcome = PoReceiving.classifyScan(code, v.pendingTracking, v.doneTracking);
-  if (outcome.kind !== "match") {
-    say(state, outcome.message);
-    recordFailed(state, code, outcome.kind);
+  const outcome2 = PoReceiving.classifyScan(code, v.pendingTracking, v.doneTracking);
+  if (outcome2.kind !== "match") {
+    say(state, outcome2.message);
+    recordFailed(state, code, outcome2.kind);
     return;
   }
-  await receive(state, outcome.item, ctx, code);
+  await receive(state, outcome2.item, ctx, code);
 }
 async function doSet2(state, e, ctx) {
   const { ids, sid } = requireSession2(state);
@@ -45272,7 +46316,7 @@ function fetcher(ctx, ids) {
   const keep = [...relIds(ids), ids.binItemBinRelId];
   return async (req) => (await send(ctx, "ScanAndProcess.FetchRecords", req)).records.filter((r) => !r.archived_on).map((r) => slim(r, keep));
 }
-async function load(ctx, ids) {
+async function load2(ctx, ids) {
   const index = await scan_sessions_exports.Pallets.loadIndex(
     ids,
     fetcher(ctx, ids),
@@ -45280,8 +46324,8 @@ async function load(ctx, ids) {
   );
   return { ids, pallets: [.../* @__PURE__ */ new Set([...index.byBarcode.values(), ...index.byBinItemId.values()])] };
 }
-async function refresh(ctx, p, pallet) {
-  await scan_sessions_exports.Pallets.refreshPallet(indexOf(p), p.ids, pallet, fetcher(ctx, p.ids));
+async function outcome(ctx, p, pallet, evaluate) {
+  return scan_sessions_exports.Pallets.scanOutcome(indexOf(p), p.ids, pallet, fetcher(ctx, p.ids), evaluate);
 }
 function find2(p, code) {
   return p ? Pallets.findPallet(indexOf(p), code) : null;
@@ -45347,8 +46391,9 @@ async function open3(data, ctx) {
   };
   let ids;
   let palletIds;
+  let s;
   try {
-    const s = await settings(ctx);
+    s = await settings(ctx);
     ids = Loading.resolveIds(s);
     palletIds = resolveIds8(s);
   } catch (e) {
@@ -45356,6 +46401,7 @@ async function open3(data, ctx) {
     return state;
   }
   state.ids = ids;
+  const om = omProcess(ctx, s);
   try {
     const { record: record2 } = await send(ctx, "ScanAndProcess.CreateAndLinkRecord", Loading.createSession(ids, await fieldsOf3(ctx, ids.sessionBoId), data.record.id));
     state.session = record2;
@@ -45378,11 +46424,12 @@ async function open3(data, ctx) {
   }
   if (palletIds) {
     try {
-      state.pallets = await load(ctx, palletIds);
+      state.pallets = await load2(ctx, palletIds);
     } catch (e) {
       say(state, `Could not load the pallet bins (${errorText2(e)})`, "warning");
     }
   }
+  state.om = await om;
   return state;
 }
 function requireSession3(state) {
@@ -45391,7 +46438,7 @@ function requireSession3(state) {
 }
 var sessionFor = (state, entry) => Loading.sessionIdFor(new Map(Object.entries(state.sessionByAppointment).map(([k, id]) => [k, { id }])), entry.appointmentId, state.session.id);
 var rels = (state) => relIds(state.pallets?.ids ?? null);
-async function load2(state, entry, ctx, barcode, pulledIn) {
+async function load3(state, entry, ctx, barcode, pulledIn) {
   const { ids } = requireSession3(state);
   const sid = sessionFor(state, entry);
   const { pending: pending2, done } = all2(state);
@@ -45462,7 +46509,7 @@ async function scanFromOtherAppointment(state, code, ctx) {
       number3(state, [built.record.id]);
       entry = built;
     }
-    await load2(state, entry, ctx, code, pulledIn);
+    await load3(state, entry, ctx, code, pulledIn);
     if (appended) {
       try {
         const fetched = await fetchAppointmentItems(ids, appt.id, ctx, rels(state));
@@ -45491,19 +46538,15 @@ async function scanPallet(state, pallet, code, ctx) {
     const done = scan_sessions_exports.Pallets.isDoneBy(new Set(v2.doneTracking.map((i) => i.record.id)), listed, ids.tiLoadedFid);
     return scan_sessions_exports.Pallets.evaluateScan(pallet, p.ids, new Set(Object.keys(state.sessionByAppointment)), done, tiIdFid, "Loaded");
   };
-  let outcome = evaluate();
-  if (scan_sessions_exports.Pallets.shouldRefresh(outcome)) {
-    await refresh(ctx, p, pallet);
-    outcome = evaluate();
-  }
+  const outcome2 = await outcome(ctx, p, pallet, evaluate);
   const v = view2(state);
-  if (outcome.kind !== "process") {
-    say(state, outcome.message);
-    const f = failure2(outcome);
+  if (outcome2.kind !== "process") {
+    say(state, outcome2.message);
+    const f = failure2(outcome2);
     recordFailed(state, code, f.reason, f.detail);
     return;
   }
-  const entries = outcome.items.map(
+  const entries = outcome2.items.map(
     (r) => v.pendingTracking.find((i) => i.record.id === r.id) ?? toItem(Loading.trackingItem(r, ids, tiIdFid, null, scan_sessions_exports.Pallets.appointmentOf(p.ids, r)), rels(state))
   );
   const moved = new Set(entries.map((e) => e.record.id));
@@ -45529,14 +46572,14 @@ async function scanPallet(state, pallet, code, ctx) {
 async function scan3(state, code, ctx) {
   requireSession3(state);
   const v = view2(state);
-  const outcome = Loading.classifyScan(code, v.pendingTracking, v.doneTracking);
-  if (outcome.kind === "duplicate") {
-    say(state, outcome.message);
+  const outcome2 = Loading.classifyScan(code, v.pendingTracking, v.doneTracking);
+  if (outcome2.kind === "duplicate") {
+    say(state, outcome2.message);
     recordFailed(state, code, "duplicate");
     return;
   }
-  if (outcome.kind === "other-appointment") return scanFromOtherAppointment(state, code, ctx);
-  await load2(state, outcome.item, ctx, code);
+  if (outcome2.kind === "other-appointment") return scanFromOtherAppointment(state, code, ctx);
+  await load3(state, outcome2.item, ctx, code);
 }
 async function doSet3(state, e, ctx) {
   const { ids } = requireSession3(state);
@@ -45562,7 +46605,7 @@ async function mark4(state, ref, ctx) {
   const item2 = state.items[picked.record.id];
   if (item2.kind === "tracking") {
     if (!state.canMark) throw new SurfaceInputError("Marking needs the loading permission \u2014 scan the item instead");
-    return load2(state, item2, ctx, null);
+    return load3(state, item2, ctx, null);
   }
   if (!Loading.canLoadAll(item2.confirmedQty, item2.scheduledQty)) throw new SurfaceInputError(`${item2.identifier} has no "Load All"`);
   item2.qty = item2.scheduledQty;
@@ -45635,6 +46678,7 @@ var loadingMode = {
     lines.push(`  To Load (${v.toLoadCount}):`);
     if (!v.toLoadCount) lines.push("    All items loaded");
     const palletIndex = state.pallets ? indexOf(state.pallets) : null;
+    const palletKept = state.om?.delivery !== false;
     const palletOf2 = (i) => i.kind === "tracking" ? nameOf2(state.pallets, palletIndex, i.record) : null;
     const appt = (i) => {
       const label = i.appointmentId !== data.record.id ? state.appointmentLabels?.[i.appointmentId] : void 0;
@@ -45642,7 +46686,7 @@ var loadingMode = {
     };
     const bin = (i) => {
       const pallet = palletOf2(i);
-      return (pallet ? ` (${pallet})` : i.binName ? ` \u27A1\uFE0F ${i.binName}` : "") + appt(i);
+      return (pallet ? palletKept ? ` (${pallet})` : ` \u27A1\uFE0F ${pallet}` : i.binName ? ` \u27A1\uFE0F ${i.binName}` : "") + appt(i);
     };
     for (const i of v.pendingTracking) lines.push(`  ${rowNo(state, i.record.id)} ${i.identifier}${bin(i)}${i.desc ? ` \u2014 ${i.desc}` : ""}  ${state.canMark ? "[mark \u2192 Loaded]" : ""}`);
     for (const a of v.pendingApptLeft) {
@@ -45719,8 +46763,9 @@ async function open4(data, ctx) {
   const state = { ...baseState(), ids: null, canMark: await canMark2(ctx), items: {}, pending: [], done: [], confirmed: [], pallets: null };
   let ids;
   let palletIds;
+  let s;
   try {
-    const s = await settings(ctx);
+    s = await settings(ctx);
     ids = Delivery.resolveIds(s);
     palletIds = resolveIds8(s);
   } catch (e) {
@@ -45737,10 +46782,12 @@ async function open4(data, ctx) {
   }
   let trackingRecords;
   try {
-    const [tiRes, aiRes] = await Promise.all([
+    const [tiRes, aiRes, om] = await Promise.all([
       send(ctx, "ScanAndProcess.FetchRecords", Delivery.trackingItemsRequest(ids, data.record.id)),
-      send(ctx, "ScanAndProcess.FetchRecords", Delivery.appointmentItemsRequest(ids, data.record.id))
+      send(ctx, "ScanAndProcess.FetchRecords", Delivery.appointmentItemsRequest(ids, data.record.id)),
+      omProcess(ctx, s)
     ]);
+    state.om = om;
     const tiBoId = tiRes.records[0]?.business_object_id ?? null;
     const aiBoId = aiRes.records[0]?.business_object_id ?? null;
     const [tiFields, aiFields, apptFields] = await Promise.all([
@@ -45748,7 +46795,7 @@ async function open4(data, ctx) {
       aiBoId !== null ? fieldsOf3(ctx, aiBoId) : Promise.resolve([]),
       data.record.business_object_id ? fieldsOf3(ctx, data.record.business_object_id) : Promise.resolve([])
     ]);
-    const pickup = Delivery.isCustomerPickup(apptFields, data.record);
+    const pickup = !om.loading || Delivery.isCustomerPickup(apptFields, data.record);
     const lists3 = Delivery.lists(
       tiRes.records,
       aiRes.records,
@@ -45772,7 +46819,7 @@ async function open4(data, ctx) {
   }
   if (palletIds) {
     try {
-      state.pallets = await load(ctx, palletIds);
+      state.pallets = await load2(ctx, palletIds);
     } catch (e) {
       say(state, `Could not load the pallet bins (${errorText2(e)})`, "warning");
     }
@@ -45803,27 +46850,23 @@ async function deliver(state, entry, ctx, barcode) {
 async function scanPallet2(state, pallet, code, appointmentId, ctx) {
   const { ids, sid } = requireSession4(state);
   const p = state.pallets;
-  const tiIdFid = scan_sessions_exports.identifierFieldId(await fieldsOf3(ctx, pallet.trackingItems[0]?.business_object_id ?? p.ids.tiBoId));
+  const tiIdFid = scan_sessions_exports.identifierFieldId(await fieldsOf3(ctx, p.ids.tiBoId));
   const evaluate = () => {
     const v2 = view3(state);
     const listed = new Set([...v2.pendingTracking, ...v2.doneTracking].map((i) => i.record.id));
     const done = scan_sessions_exports.Pallets.isDoneBy(new Set(v2.doneTracking.map((i) => i.record.id)), listed, ids.tiDeliveredFid);
     return scan_sessions_exports.Pallets.evaluateScan(pallet, p.ids, /* @__PURE__ */ new Set([appointmentId]), done, tiIdFid, "Delivered");
   };
-  let outcome = evaluate();
-  if (scan_sessions_exports.Pallets.shouldRefresh(outcome)) {
-    await refresh(ctx, p, pallet);
-    outcome = evaluate();
-  }
+  const outcome2 = await outcome(ctx, p, pallet, evaluate);
   const v = view3(state);
-  if (outcome.kind !== "process") {
-    say(state, outcome.message);
-    const f = failure2(outcome);
+  if (outcome2.kind !== "process") {
+    say(state, outcome2.message);
+    const f = failure2(outcome2);
     recordFailed(state, code, f.reason, f.detail);
     return;
   }
   const rels2 = relIds(p.ids);
-  const entries = outcome.items.map(
+  const entries = outcome2.items.map(
     (r) => v.pendingTracking.find((i) => i.record.id === r.id) ?? { ...Delivery.trackingItem(r, ids, tiIdFid, null), record: slim(r, rels2) }
   );
   const moved = new Set(entries.map((e) => e.record.id));
@@ -45845,8 +46888,8 @@ async function scanPallet2(state, pallet, code, appointmentId, ctx) {
 async function scan4(state, code, appointmentId, ctx) {
   requireSession4(state);
   const v = view3(state);
-  const outcome = Delivery.classifyScan(code, v.pendingTracking, v.doneTracking);
-  const pallet = outcome.kind === "not-found" ? find2(state.pallets, code) : null;
+  const outcome2 = Delivery.classifyScan(code, v.pendingTracking, v.doneTracking);
+  const pallet = outcome2.kind === "not-found" ? find2(state.pallets, code) : null;
   if (pallet) {
     try {
       await scanPallet2(state, pallet, code, appointmentId, ctx);
@@ -45856,12 +46899,12 @@ async function scan4(state, code, appointmentId, ctx) {
     }
     return;
   }
-  if (outcome.kind !== "match") {
-    say(state, outcome.message);
-    recordFailed(state, code, outcome.kind);
+  if (outcome2.kind !== "match") {
+    say(state, outcome2.message);
+    recordFailed(state, code, outcome2.kind);
     return;
   }
-  await deliver(state, outcome.item, ctx, code);
+  await deliver(state, outcome2.item, ctx, code);
 }
 async function doSet4(state, e, ctx) {
   const { ids, sid } = requireSession4(state);
@@ -46131,13 +47174,13 @@ async function tryNextBinIn(state, code, cc, ctx) {
 async function scanIn(state, code, cc, ctx) {
   const { ids, sid } = inIds(state);
   const { inBin, out } = inLists(state);
-  const outcome = BinCheckIn.classifyScan(code, inBin, out);
-  if (outcome.kind === "in-bin") {
+  const outcome2 = BinCheckIn.classifyScan(code, inBin, out);
+  if (outcome2.kind === "in-bin") {
     recordFailed(state, code, "duplicate");
     say(state, BinCheckIn.alreadyCheckedIn(code));
     return;
   }
-  if (outcome.kind === "checked-out") return checkBackIn(state, outcome.item, ctx);
+  if (outcome2.kind === "checked-out") return checkBackIn(state, outcome2.item, ctx);
   try {
     const res = await send(ctx, "ScanAndProcess.FetchRecords", BinCheckIn.trackingSearchRequest(ids, code));
     const match = BinCheckIn.findScannedItem(res.records, ids, code);
@@ -46333,14 +47376,14 @@ async function tryNextBinOut(state, code, cc, ctx) {
 async function scanOut(state, code, cc, ctx) {
   const { ids } = outIds(state);
   const { inBin, out } = outLists(state);
-  const outcome = BinCheckOut.classifyScan(code, inBin, out, ids);
-  if (outcome.kind === "duplicate" || outcome.kind === "not-found") {
-    say(state, outcome.message);
-    recordFailed(state, code, outcome.kind);
+  const outcome2 = BinCheckOut.classifyScan(code, inBin, out, ids);
+  if (outcome2.kind === "duplicate" || outcome2.kind === "not-found") {
+    say(state, outcome2.message);
+    recordFailed(state, code, outcome2.kind);
     return;
   }
-  if (outcome.kind === "try-bin") return tryNextBinOut(state, code, cc, ctx);
-  await checkOut(state, outcome.item, "SCAN", ctx);
+  if (outcome2.kind === "try-bin") return tryNextBinOut(state, code, cc, ctx);
+  await checkOut(state, outcome2.item, "SCAN", ctx);
 }
 async function undoOut(state, ref, ctx) {
   const { ids } = outIds(state);
@@ -47194,12 +48237,12 @@ async function checkRecord(id, want, metadata, client) {
     const milestones = await client.get(`/v1/business-objects/${record2.business_object_id}/workflows/milestones`);
     const list3 = Array.isArray(milestones) ? milestones : milestones.items ?? [];
     const current2 = new Set(record2.milestones ?? []);
-    const names = list3.filter((m) => current2.has(m.id)).map((m) => m.name);
+    const names2 = list3.filter((m) => current2.has(m.id)).map((m) => m.name);
     for (const name of want.milestones_include ?? []) {
-      add(`in milestone ${name}`, names.some((n) => n.toLowerCase() === name.toLowerCase()), `current: ${names.join(", ") || "(none)"}`);
+      add(`in milestone ${name}`, names2.some((n) => n.toLowerCase() === name.toLowerCase()), `current: ${names2.join(", ") || "(none)"}`);
     }
     for (const name of want.milestones_exclude ?? []) {
-      add(`not in milestone ${name}`, !names.some((n) => n.toLowerCase() === name.toLowerCase()), `current: ${names.join(", ") || "(none)"}`);
+      add(`not in milestone ${name}`, !names2.some((n) => n.toLowerCase() === name.toLowerCase()), `current: ${names2.join(", ") || "(none)"}`);
     }
   }
   if (want.archived !== void 0) {
@@ -47275,7 +48318,7 @@ async function resolveBo(metadata, key) {
   if (!bo) throw new Error(`Unknown business object "${key}"`);
   return bo.id;
 }
-function findField2(fields, key) {
+function findField3(fields, key) {
   const k = key.toLowerCase();
   const field = /^\d+$/.test(key) ? fields.find((f) => f.id === Number(key)) : fields.find((f) => f.relationship_id == null && f.name.toLowerCase() === k) ?? fields.find((f) => f.name.toLowerCase() === k);
   if (!field) throw new Error(`No field "${key}" on this business object`);
@@ -47321,7 +48364,7 @@ async function runSetup(setup6, client, metadata, tag, userId) {
         }
       }
       for (const [key, v] of Object.entries(spec.fields ?? {})) {
-        const field = findField2(fieldMetas, key);
+        const field = findField3(fieldMetas, key);
         values.set(field.id, await parseFieldInput(field, v === null ? "null" : String(v), { metadata }));
       }
       const res = await client.post("/v1/pathways/-1/execute", {
@@ -47607,8 +48650,8 @@ function inputFromOpts(opts) {
 function printView(view4, run, inputError) {
   for (const line of waitingScreenLines(view4, run, inputError)) console.log(line);
 }
-function printOutcome(outcome, json, events) {
-  const run = outcome.run;
+function printOutcome(outcome2, json, events) {
+  const run = outcome2.run;
   if (json) {
     console.log(
       JSON.stringify(
@@ -47616,9 +48659,9 @@ function printOutcome(outcome, json, events) {
           run_id: run.runId,
           status: run.status,
           pathway: pathwayJson(run),
-          ...outcome.kind === "paused" ? {
-            waiting_for: waitingForJson(run, outcome.view),
-            ...outcome.inputError ? { input_error: outcome.inputError } : {}
+          ...outcome2.kind === "paused" ? {
+            waiting_for: waitingForJson(run, outcome2.view),
+            ...outcome2.inputError ? { input_error: outcome2.inputError } : {}
           } : { outcome: run.outcome },
           stats: run.stats,
           events
@@ -47627,8 +48670,8 @@ function printOutcome(outcome, json, events) {
         2
       )
     );
-  } else if (outcome.kind === "paused") {
-    printView(outcome.view, run, outcome.inputError);
+  } else if (outcome2.kind === "paused") {
+    printView(outcome2.view, run, outcome2.inputError);
   } else {
     console.log("");
     const o = run.outcome;
@@ -47647,7 +48690,7 @@ function printOutcome(outcome, json, events) {
     }
     console.log(`  ${run.stats.requests} server request(s), ${run.stats.failedRequests} failed \xB7 ${run.stats.interactions} screen(s) \xB7 log: pathway-run log --run ${run.runId}`);
   }
-  if (outcome.kind === "paused" && outcome.inputError) setExitCode(2);
+  if (outcome2.kind === "paused" && outcome2.inputError) setExitCode(2);
   if (run.status === "failed") setExitCode(3);
 }
 function handleRunError(err, json) {
@@ -47747,7 +48790,7 @@ var startCommand = new Command("start").description("Start a pathway run, exactl
       setupRecords = made.created.map(({ id, business_object_id }) => ({ id, business_object_id }));
       if (!json) console.log(`Copied ${opts.copyOf} \u2192 ${opts.recordId} for this run`);
     }
-    const outcome = await runner.start({
+    const outcome2 = await runner.start({
       pathwayId,
       mode: runMode(opts.mode),
       point: launchPoint(opts),
@@ -47760,7 +48803,7 @@ var startCommand = new Command("start").description("Start a pathway run, exactl
       tagSelections,
       answers: opts.answers ? loadScenario(opts.answers) : []
     });
-    printOutcome(outcome, json, events);
+    printOutcome(outcome2, json, events);
   } catch (err) {
     handleRunError(err, json);
   }
@@ -47772,8 +48815,8 @@ var submitCommand = new Command("submit").description("Answer the paused screen 
     const ctx = await setup5(submitCommand, run.accountId, run.asUserId);
     json = ctx.json;
     const { runner, events } = ctx;
-    const outcome = await runner.submit(run, inputFromOpts(opts), opts.answers ? loadScenario(opts.answers) : void 0);
-    printOutcome(outcome, json, events);
+    const outcome2 = await runner.submit(run, inputFromOpts(opts), opts.answers ? loadScenario(opts.answers) : void 0);
+    printOutcome(outcome2, json, events);
   } catch (err) {
     handleRunError(err, json);
   }
@@ -47888,7 +48931,9 @@ var deleteCommand = new Command("delete").description("Delete a saved run and it
   deleteRun(opts.run);
   console.log(`Deleted run ${opts.run}.`);
 });
-var availableCommand = new Command("available").description("Which pathways a user could start from a launch point (a record's Pathways tab, the dashboard, a folder or a task), with the reason for each one left out").option("--record-id <id>", "Record viewer of this record").option("--task-id <id>", "Completing this task (with --record-id)").option("--folder-id <id>", "This folder's header").option("--from <point>", "record | dashboard | folder | task (default: from the other flags)").option("--as-user <id|email|name>", "Check for another account member (admin impersonation session)").option("--all", "Also list the pathways that are not available, with why").action(async (opts) => {
+var availableCommand = new Command("available").description(
+  "Which pathways a user could start from a launch point (a record's Pathways tab, the dashboard, a folder or a task), each with its designer info (what it is for: read it to decide whether a pathway does what the user asked), and with --all the reason for each one left out. Like all info, a pathway's is shown once per session (later calls leave it out; --with-info repeats it)"
+).option("--record-id <id>", "Record viewer of this record").option("--task-id <id>", "Completing this task (with --record-id)").option("--folder-id <id>", "This folder's header").option("--from <point>", "record | dashboard | folder | task (default: from the other flags)").option("--as-user <id|email|name>", "Check for another account member (admin impersonation session)").option("--all", "Also list the pathways that are not available, with why").action(async (opts) => {
   let json = false;
   try {
     const ctx = await setup5(availableCommand, void 0, opts.asUser);
@@ -47908,9 +48953,11 @@ var availableCommand = new Command("available").description("Which pathways a us
     for (const pathway2 of pathways) {
       const verdict = await checkLaunch({ pathway: pathway2, point, user, metadata, record: record2, folder: folder2, task });
       if (verdict.allowed || opts.all) {
+        const info = infoText(pathway2.info);
         rows.push({
           id: pathway2.id,
           name: pathway2.name,
+          ...info ? { info } : {},
           available: verdict.allowed,
           why_not: verdict.checks.filter((c) => !c.ok).map((c) => `${c.name}: ${c.detail}`)
         });
@@ -47923,6 +48970,7 @@ var availableCommand = new Command("available").description("Which pathways a us
     console.log(`As ${user.email ?? user.id}, launching from ${point}${opts.recordId ? ` on ${opts.recordId}` : ""}:`);
     for (const row of rows) {
       console.log(`  ${row.available ? "\u2713" : "\u2717"} ${row.id}  ${row.name}${row.why_not.length ? `  \u2014 ${row.why_not.join("; ")}` : ""}`);
+      for (const line of infoLines(row.info, { indent: "      " })) console.log(line);
     }
     if (!rows.length) console.log("  (none)");
   } catch (err) {
@@ -47947,7 +48995,7 @@ var testCommand = new Command("test").description(
     const adminConfig = loadConfig({ accountId: globals.account, baseUrl: globals.baseUrl });
     const adminClient = new HttpClient(adminConfig);
     const toArchive = [];
-    let passed = false;
+    let passed2 = false;
     try {
       const tag = runTag();
       let refs = {};
@@ -47982,7 +49030,7 @@ var testCommand = new Command("test").description(
       const pathwayId = typeof test.pathway === "number" || /^\d+$/.test(String(test.pathway)) ? Number(test.pathway) : (await resolvePathwayByName(client, String(test.pathway))).id;
       let run;
       try {
-        const outcome = await strictRunner.start({
+        const outcome2 = await strictRunner.start({
           pathwayId,
           mode: runMode(test.mode),
           point: launchPoint({ from: test.from, taskId: taskId !== void 0 ? String(taskId) : void 0, recordId: test.record, folderId: test.folder ? String(test.folder) : void 0 }),
@@ -47993,13 +49041,13 @@ var testCommand = new Command("test").description(
           tagSelections: await resolveTagSelections(test.tags ?? [], new RunMetadata(client, ctx.config.accountId)),
           answers: test.answers ?? []
         });
-        run = outcome.run;
+        run = outcome2.run;
       } catch (err) {
         if (err instanceof StrictPauseError) run = err.run;
         else if (err instanceof LaunchDeniedError && test.expect?.launch === "denied") {
           const why = err.checks.filter((c) => !c.ok).map((c) => `${c.name}: ${c.detail}`).join("; ") || err.message;
-          passed = true;
-          summary.push({ name, file, status: "denied", passed, checks: [{ check: "launch denied", ok: true, detail: why }] });
+          passed2 = true;
+          summary.push({ name, file, status: "denied", passed: passed2, checks: [{ check: "launch denied", ok: true, detail: why }] });
           if (!globals.json) console.log(`  \u2713 launch denied \u2014 ${why}
   PASS`);
           throw new TestDone();
@@ -48013,11 +49061,11 @@ var testCommand = new Command("test").description(
         throw new TestDone();
       }
       const checks = await checkExpectations(test, run, client);
-      passed = checks.every((c) => c.ok);
-      summary.push({ name, file, run_id: run.runId, status: run.status, passed, checks });
+      passed2 = checks.every((c) => c.ok);
+      summary.push({ name, file, run_id: run.runId, status: run.status, passed: passed2, checks });
       if (!globals.json) {
         for (const c of checks) console.log(`  ${c.ok ? "\u2713" : "\u2717"} ${c.check} \u2014 ${c.detail}`);
-        console.log(`  ${passed ? "PASS" : "FAIL"}  (run ${run.runId})`);
+        console.log(`  ${passed2 ? "PASS" : "FAIL"}  (run ${run.runId})`);
       }
     } catch (err) {
       if (err instanceof TestDone) {
@@ -48031,7 +49079,7 @@ var testCommand = new Command("test").description(
     const mode = opts.keep ? "keep" : rawTest.cleanup ?? "archive";
     const result = summary[summary.length - 1];
     if (toArchive.length) {
-      if (mode === "always" || mode === "archive" && passed) {
+      if (mode === "always" || mode === "archive" && passed2) {
         resetEnv();
         const failedIds = await archiveRecords(adminClient, toArchive);
         if (!globals.json) console.log(`  cleanup: archived ${toArchive.length - failedIds.length} record(s)${failedIds.length ? `; could not archive ${failedIds.join(", ")}` : ""}`);
@@ -48101,7 +49149,7 @@ var pathwayRunCommand = new Command("pathway-run").description(
 // .path-cli/src/commands/run-report.ts
 var runReportCommand = new Command("run-report").description(
   `Run a report and print its rows (the web app's report view; in real-world mode only reports the acting user can open). Also gives the report's own info (report {id, name, info}: what it is for, how to read it), its root business object {id, name, info} and each column's info \u2014 the column's own info when the report has one on it, otherwise the info of the field the column shows (for a column through relationships, the end field's, with the relationships on the path and their info); count, milestone, step and calculated columns have only their own, a Time Between / Time Span column on one field falls back to that field's. Filter-only Custom Fields (compared by the filter, not shown) come with their own info. --json keeps the server's { rows, meta } and adds report, business_object, columns [{name, column_type, field_id?, relationship_path?, info}] and custom_fields [{name, column_type, info}]; text output prints a "Report info:", a "Business object info:", a "Column info:" and a "Custom Field info" block under the rows (only what has info). Like all info, each is shown once per session; later runs leave it out (pass --with-info to repeat)`
-).option("--report-id <id>", "Report ID").option("--report-name <name>", "Report name (resolved to ID)").option("--page <n>", "Page number", "1").option("--per-page <n>", "Rows per page", "50").option(
+).option("--report-id <id>", "Report ID").option("--report-name <name>", "Report name (resolved to ID)").option("--page <n>", "Page number", "1").option("--per-page <n>", "Rows per page", "50").option("--all", "Every row in one call (--page / --per-page are ignored)").option(
   "--user-filter <json>",
   `Runtime filters for the report's user-filterable columns, e.g. '[{"entity_id":12,"logic":"equal","values":["John"]}]'`
 ).option("--include-archived", "Include archived records (overrides the report's setting)").action(async (opts) => {
@@ -48116,18 +49164,17 @@ var runReportCommand = new Command("run-report").description(
     const report2 = opts.reportId ? reports.find((r) => r.id === Number(opts.reportId)) : reports.find((r) => r.name?.toLowerCase() === String(opts.reportName ?? "").toLowerCase());
     if (!report2) throw new Error(`Report ${opts.reportId ?? `"${opts.reportName}"`} not found`);
     await assertReportAccess(client, report2);
-    const query = { page: opts.page, perPage: opts.perPage };
+    const query = opts.all ? { all: "true" } : { page: opts.page, perPage: opts.perPage };
     if (opts.userFilter) query.userFilter = opts.userFilter;
     if (opts.includeArchived) query.include_archived = "true";
     const raw = await client.get(`/v1/reports/${report2.id}/records`, query);
     const page = raw;
-    const rows = Array.isArray(page.rows) ? page.rows.map(
-      (row) => ({
-        ...Object.fromEntries((row.values ?? []).map((v) => [v.column_name, v.string_value ?? ""])),
-        ...row.is_summary ? { summary: "yes" } : {},
-        record_id: row.record_id ?? ""
-      })
-    ) : unwrapPaginated(raw);
+    const metadata = new RunMetadata(client, config2.accountId);
+    const timeZone = parentOpts.json ? void 0 : await metadata.userTimeZone().catch(() => void 0);
+    const columns = report2.columns ?? [];
+    const formattingByName = await columnFormattings(metadata, Number(report2.business_object_id), columns);
+    const rows = Array.isArray(page.rows) ? flattenReportRows(page, formattingByName, timeZone, dateBucketColumns(columns)) : unwrapPaginated(raw);
+    const shown = reportRowsSummary(rows, page);
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim());
     const context3 = parentOpts.quiet || fields ? null : await reportInfo(new RunMetadata(client, config2.accountId), report2);
@@ -48143,7 +49190,7 @@ var runReportCommand = new Command("run-report").description(
         format,
         fields,
         quiet: parentOpts.quiet,
-        footer: page.meta ? `[${rows.length} of ${page.meta.total_items ?? rows.length} rows, page ${page.meta.page ?? 1} of ${page.meta.total_pages ?? 1}]` : void 0
+        footer: page.meta ? `[${shown}, page ${page.meta.page ?? 1} of ${page.meta.total_pages ?? 1}]` : void 0
       })
     );
     if (context3 && !parentOpts.json) {
@@ -48975,64 +50022,73 @@ var runStepCommand = new Command("run-step").description(
 });
 
 // .path-cli/src/commands/parse-filter.ts
-var parseFilterCommand = new Command("parse-filter").description(
-  `Validate a Logic Builder formula (e.g. '[Status] = "Won" AND INMILESTONE("Lead")') against a business object without saving it. Prints the normalized formula; --json prints the saved GroupFilter JSON.`
-).option("--bo-id <id>", "Business object ID the rules are rooted on").option("--bo-name <name>", "Business object name (resolved to ID)").option("--bo <id>", "Same as --bo-id").requiredOption("--text <formula>", "Formula text").option(
-  "--report",
-  "Report filter: permit MILESTONEFIRSTENTERED/MILESTONELASTENTERED/STEPFIRSTOCCURRED/STEPLASTOCCURRED and ? blank values"
-).option(
-  "--report-id <id>",
-  `Parse as this report's filter: implies --report, roots on its business object and permits COLUMN("\u2026") / CUSTOMFIELD("\u2026") for its custom columns and fields`
-).option("--allow-blank", "Permit ? blank values (folder filters)").option("--allow-entry-dates", "Permit milestone/step entry-date rules").action(async (opts) => {
-  try {
-    const parentOpts = parseFilterCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId) {
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    }
-    const client = new HttpClient(config2);
-    const report2 = opts.reportId ? await fetchReport(client, parseInt(opts.reportId, 10)) : null;
-    const reportMode = !!(opts.report || report2);
-    let boId3;
-    if (report2) {
-      boId3 = report2.business_object_id;
-    } else if (opts.boId || opts.bo) {
-      boId3 = parseInt(opts.boId ?? opts.bo, 10);
-    } else if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      boId3 = bo.id;
-    } else {
-      throw new Error("Provide --bo-id, --bo-name or --report-id");
-    }
-    const loader = await FilterCatalogLoader.load(
-      client,
-      config2.accountId,
-      boId3
-    );
-    if (report2) loader.catalog.reportColumns = reportCatalogColumns(report2);
-    const result = await loader.parse(opts.text, {
-      allowEntryDates: reportMode || !!opts.allowEntryDates,
-      allowBlankValues: reportMode || !!opts.allowBlank
-    });
-    if (result.errors.length > 0 || !result.filter) {
-      throw new Error(describeParseErrors(opts.text, result.errors));
-    }
-    if (parentOpts.json) {
-      console.log(JSON.stringify(result.filter, null, 2));
-      return;
-    }
-    const printed = await loader.print(result.filter);
-    console.log(`formula: ${printed || "(empty)"}`);
-    console.log(`rules:   ${countRules(result.filter)}`);
-  } catch (err) {
-    handleError(err);
+function createParseFilterCommand(scope) {
+  const command = new Command("parse-filter").description(
+    `Validate a Logic Builder formula (e.g. '[Status] = "Won" AND INMILESTONE("Lead")') against a business object without saving it. Prints the normalized formula; --json prints the saved GroupFilter JSON.` + (scope === "designer" ? " Folder and report formulas are checked with the PATH CLI's parse-filter." : "")
+  ).option("--bo-id <id>", "Business object ID the rules are rooted on").option("--bo-name <name>", "Business object name (resolved to ID)").option("--bo <id>", "Same as --bo-id").requiredOption("--text <formula>", "Formula text");
+  if (scope === "path") {
+    command.option(
+      "--report",
+      "Report filter: permit MILESTONEFIRSTENTERED/MILESTONELASTENTERED/STEPFIRSTOCCURRED/STEPLASTOCCURRED and ? blank values"
+    ).option(
+      "--report-id <id>",
+      `Parse as this report's filter: implies --report, roots on its business object and permits COLUMN("\u2026") / CUSTOMFIELD("\u2026") for its custom columns and fields`
+    ).option("--allow-blank", "Permit ? blank values (folder filters)").option("--allow-entry-dates", "Permit milestone/step entry-date rules");
   }
-});
+  return command.action(async (opts) => {
+    try {
+      const parentOpts = command.parent?.opts() ?? {};
+      const config2 = loadConfig({
+        accountId: parentOpts.account,
+        baseUrl: parentOpts.baseUrl
+      });
+      if (!config2.accountId) {
+        throw new Error(
+          'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+        );
+      }
+      const client = new HttpClient(config2);
+      const report2 = opts.reportId ? await fetchReport(client, parseInt(opts.reportId, 10)) : null;
+      const reportMode = !!(opts.report || report2);
+      let boId3;
+      if (report2) {
+        boId3 = report2.business_object_id;
+      } else if (opts.boId || opts.bo) {
+        boId3 = parseInt(opts.boId ?? opts.bo, 10);
+      } else if (opts.boName) {
+        const bo = await resolveBusinessObjectByName(client, opts.boName);
+        boId3 = bo.id;
+      } else {
+        throw new Error(
+          scope === "designer" ? "Provide --bo-id or --bo-name" : "Provide --bo-id, --bo-name or --report-id"
+        );
+      }
+      const loader = await FilterCatalogLoader.load(
+        client,
+        config2.accountId,
+        boId3
+      );
+      if (report2) loader.catalog.reportColumns = reportCatalogColumns(report2);
+      const result = await loader.parse(opts.text, {
+        allowEntryDates: reportMode || !!opts.allowEntryDates,
+        allowBlankValues: reportMode || !!opts.allowBlank
+      });
+      if (result.errors.length > 0 || !result.filter) {
+        throw new Error(describeParseErrors(opts.text, result.errors));
+      }
+      if (parentOpts.json) {
+        console.log(JSON.stringify(result.filter, null, 2));
+        return;
+      }
+      const printed = await loader.print(result.filter);
+      console.log(`formula: ${printed || "(empty)"}`);
+      console.log(`rules:   ${countRules(result.filter)}`);
+    } catch (err) {
+      handleError(err);
+    }
+  });
+}
+var parseFilterCommand = createParseFilterCommand("path");
 function countRules(group2) {
   return (group2.filter_types ?? []).reduce((n, child) => {
     const c = child;
@@ -49050,155 +50106,171 @@ function targetOptions(accountId, opts) {
     sticker: int2(opts.sticker)
   };
 }
-var getFilterCommand = new Command("get-filter").description(
-  "Print a stored Logic Builder filter as formula text (milestone criteria, task criteria, Fork conditions, folder/report/sticker filters, visibility rules). --json prints the stored pipeline JSON."
-).argument("<target>", "Where the filter lives (see Targets below)").argument("<id>", "Id of the object holding the filter").option("--bo <id>", "Business object ID (task targets)").option("--pathway <id>", "Pathway ID (fork, table-filter)").option("--sticker <id>", "Folder sticker ID (folder-sticker)").addHelpText("after", targetHelp()).action(async (targetName, idArg, opts) => {
-  try {
-    const parentOpts = getFilterCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId) {
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    }
-    const client = new HttpClient(config2);
-    const target = findTarget(targetName);
-    const site = await target.locate(
-      client,
-      parseInt(idArg, 10),
-      targetOptions(config2.accountId, opts)
-    );
-    if (parentOpts.json) {
-      console.log(JSON.stringify(site.pipeline, null, 2));
-      return;
-    }
-    if (isEmptyPipeline(site.pipeline)) {
-      console.log("(no filter)");
-      return;
-    }
-    const loader = await FilterCatalogLoader.load(
-      client,
-      config2.accountId,
-      site.rootBoId
-    );
-    if (site.reportColumns) loader.catalog.reportColumns = site.reportColumns;
-    const text = await loader.print(site.pipeline.filters);
-    if (text.includes("UNSUPPORTED(")) {
-      console.error(
-        "NOTE: UNSUPPORTED(...) marks a rule the formula language cannot express; set-filter would reject this text."
-      );
-    }
-    console.log(text);
-    for (const leaf2 of tickedLeaves(site.pipeline)) {
-      const rule = await loader.print({
-        type: "group",
-        condition: "and",
-        for_groups: true,
-        filter_types: [leaf2]
-      });
-      console.log(
-        `user filter${leaf2.user_filter_label ? ` "${leaf2.user_filter_label}"` : ""}: ${rule}`
-      );
-    }
-  } catch (err) {
-    handleError(err);
+function createGetFilterCommand(scope) {
+  const command = new Command("get-filter").description(
+    scope === "designer" ? "Print a stored Logic Builder filter as formula text (milestone criteria, task criteria, Fork conditions, sticker filters, visibility rules). --json prints the stored pipeline JSON. Folder and report filters are the PATH CLI's." : "Print a stored Logic Builder filter as formula text (milestone criteria, task criteria, Fork conditions, folder/report/sticker filters, visibility rules). --json prints the stored pipeline JSON."
+  ).argument("<target>", "Where the filter lives (see Targets below)").argument("<id>", "Id of the object holding the filter").option("--bo <id>", "Business object ID (task targets)").option("--pathway <id>", "Pathway ID (fork, table-filter)");
+  if (scope === "path") {
+    command.option("--sticker <id>", "Folder sticker ID (folder-sticker)");
   }
-});
-
-// .path-cli/src/commands/set-filter.ts
-var setFilterCommand = new Command("set-filter").description(
-  "Replace a stored Logic Builder filter from formula text. Parses against the business object the filter is rooted on, validates the pipeline with the API (as the Logic Builder does), then saves the object with only its filter changed. The PATH CLI changes folder, folder-sticker and report filters (with Edit on them); the other targets are Designer work for the PATH Designer CLI."
-).argument("<target>", "Where the filter lives (see Targets below)").argument("<id>", "Id of the object holding the filter").option(
-  "--text <formula>",
-  `Formula text, e.g. '[Status] = "Won" AND HASSTEP("Send Quote")'`
-).option(
-  "--clear",
-  "Remove the filter (saved as null, as the builder does when emptied)"
-).option("--bo <id>", "Business object ID (task targets)").option("--pathway <id>", "Pathway ID (fork, table-filter)").option("--sticker <id>", "Folder sticker ID (folder-sticker)").option(
-  "--dry-run",
-  "Parse and validate, print the pipeline, but do not save"
-).addHelpText("after", targetHelp()).action(async (targetName, idArg, opts) => {
-  try {
-    const parentOpts = setFilterCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId) {
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    }
-    if (!opts.clear && !opts.text) {
-      throw new Error("Provide --text <formula> or --clear");
-    }
-    const client = new HttpClient(config2);
-    const target = findTarget(targetName);
-    const site = await target.locate(
-      client,
-      parseInt(idArg, 10),
-      targetOptions(config2.accountId, opts)
-    );
-    const id = parseInt(idArg, 10);
-    if (target.name === "folder" || target.name === "folder-sticker") {
-      await assertFolderEdit(client, id, `change ${site.label}`);
-    } else if (target.name === "report") {
-      await assertReportEdit(
-        client,
-        { id, business_object_id: site.rootBoId },
-        `change ${site.label}`
-      );
-    } else if (isRealWorld()) {
-      throw new Error(
-        `${site.label} is Designer work: change it with the PATH Designer CLI (set-filter there). This CLI changes folder, folder-sticker and report filters; get-filter still reads any of them.`
-      );
-    }
-    const loader = await FilterCatalogLoader.load(
-      client,
-      config2.accountId,
-      site.rootBoId
-    );
-    if (site.reportColumns) loader.catalog.reportColumns = site.reportColumns;
-    let pipeline = null;
-    if (!opts.clear) {
-      const result = await loader.parse(opts.text, target.parseOptions);
-      if (result.errors.length > 0 || !result.filter) {
-        throw new Error(describeParseErrors(opts.text, result.errors));
-      }
-      if (result.filter.filter_types.length === 0) {
+  return command.addHelpText("after", targetHelp(scope)).action(async (targetName, idArg, opts) => {
+    try {
+      const parentOpts = command.parent?.opts() ?? {};
+      const config2 = loadConfig({
+        accountId: parentOpts.account,
+        baseUrl: parentOpts.baseUrl
+      });
+      if (!config2.accountId) {
         throw new Error(
-          "The formula is empty \u2014 use --clear to remove the filter."
+          'Missing --account <id>. Run "path list-accounts" to see available accounts.'
         );
       }
-      pipeline = withFilters(site.pipeline, site.rootBoId, result.filter);
-      site.prepare?.(pipeline);
-      if (site.validateWithBuilder !== false) {
-        await validatePipeline(client, pipeline);
+      const client = new HttpClient(config2);
+      const target = findTarget(targetName, scope);
+      const site = await target.locate(
+        client,
+        parseInt(idArg, 10),
+        targetOptions(config2.accountId, opts)
+      );
+      if (parentOpts.json) {
+        console.log(JSON.stringify(site.pipeline, null, 2));
+        return;
       }
+      if (isEmptyPipeline(site.pipeline)) {
+        console.log("(no filter)");
+        return;
+      }
+      const loader = await FilterCatalogLoader.load(
+        client,
+        config2.accountId,
+        site.rootBoId
+      );
+      if (site.reportColumns)
+        loader.catalog.reportColumns = site.reportColumns;
+      const text = await loader.print(site.pipeline.filters);
+      if (text.includes("UNSUPPORTED(")) {
+        console.error(
+          "NOTE: UNSUPPORTED(...) marks a rule the formula language cannot express; set-filter would reject this text."
+        );
+      }
+      console.log(text);
+      for (const leaf2 of tickedLeaves(site.pipeline)) {
+        const rule = await loader.print({
+          type: "group",
+          condition: "and",
+          for_groups: true,
+          filter_types: [leaf2]
+        });
+        console.log(
+          `user filter${leaf2.user_filter_label ? ` "${leaf2.user_filter_label}"` : ""}: ${rule}`
+        );
+      }
+    } catch (err) {
+      handleError(err);
     }
-    if (opts.clear) site.prepare?.(null);
-    for (const note of site.notes?.(pipeline) ?? []) console.error(note);
-    if (opts.dryRun) {
-      console.log(`Dry run \u2014 not saved: ${site.label}`);
-      console.log(JSON.stringify(pipeline, null, 2));
-      return;
-    }
-    const saved = await site.save(pipeline);
-    if (parentOpts.json) {
-      console.log(JSON.stringify(saved, null, 2));
-      return;
-    }
-    console.log(`Updated ${site.label}`);
-    console.log(
-      `formula: ${pipeline ? await loader.print(pipeline.filters) : "(no filter)"}`
-    );
-  } catch (err) {
-    handleError(err);
+  });
+}
+var getFilterCommand = createGetFilterCommand("path");
+
+// .path-cli/src/commands/set-filter.ts
+function createSetFilterCommand(scope) {
+  const command = new Command("set-filter").description(
+    "Replace a stored Logic Builder filter from formula text. Parses against the business object the filter is rooted on, validates the pipeline with the API (as the Logic Builder does), then saves the object with only its filter changed. " + (scope === "designer" ? "Folder, folder-sticker and report filters are the PATH CLI's." : "The PATH CLI changes folder, folder-sticker and report filters (with Edit on them); the other targets are Designer work for the PATH Designer CLI.")
+  ).argument("<target>", "Where the filter lives (see Targets below)").argument("<id>", "Id of the object holding the filter").option(
+    "--text <formula>",
+    `Formula text, e.g. '[Status] = "Won" AND HASSTEP("Send Quote")'`
+  ).option(
+    "--clear",
+    "Remove the filter (saved as null, as the builder does when emptied)"
+  ).option("--bo <id>", "Business object ID (task targets)").option("--pathway <id>", "Pathway ID (fork, table-filter)");
+  if (scope === "path") {
+    command.option("--sticker <id>", "Folder sticker ID (folder-sticker)");
   }
-});
+  return command.option(
+    "--dry-run",
+    "Parse and validate, print the pipeline, but do not save"
+  ).addHelpText("after", targetHelp(scope)).action(async (targetName, idArg, opts) => {
+    try {
+      const parentOpts = command.parent?.opts() ?? {};
+      const config2 = loadConfig({
+        accountId: parentOpts.account,
+        baseUrl: parentOpts.baseUrl
+      });
+      if (!config2.accountId) {
+        throw new Error(
+          'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+        );
+      }
+      if (!opts.clear && !opts.text) {
+        throw new Error("Provide --text <formula> or --clear");
+      }
+      const client = new HttpClient(config2);
+      const target = findTarget(targetName, scope);
+      const site = await target.locate(
+        client,
+        parseInt(idArg, 10),
+        targetOptions(config2.accountId, opts)
+      );
+      const id = parseInt(idArg, 10);
+      if (target.name === "folder" || target.name === "folder-sticker") {
+        await assertFolderEdit(client, id, `change ${site.label}`);
+      } else if (target.name === "report") {
+        await assertReportEdit(
+          client,
+          { id, business_object_id: site.rootBoId },
+          `change ${site.label}`
+        );
+      } else if (isRealWorld()) {
+        throw new Error(
+          `${site.label} is Designer work: change it with the PATH Designer CLI (set-filter there). This CLI changes folder, folder-sticker and report filters; get-filter still reads any of them.`
+        );
+      }
+      const loader = await FilterCatalogLoader.load(
+        client,
+        config2.accountId,
+        site.rootBoId
+      );
+      if (site.reportColumns)
+        loader.catalog.reportColumns = site.reportColumns;
+      let pipeline = null;
+      if (!opts.clear) {
+        const result = await loader.parse(opts.text, target.parseOptions);
+        if (result.errors.length > 0 || !result.filter) {
+          throw new Error(describeParseErrors(opts.text, result.errors));
+        }
+        if (result.filter.filter_types.length === 0) {
+          throw new Error(
+            "The formula is empty \u2014 use --clear to remove the filter."
+          );
+        }
+        pipeline = withFilters(site.pipeline, site.rootBoId, result.filter);
+        site.prepare?.(pipeline);
+        if (site.validateWithBuilder !== false) {
+          await validatePipeline(client, pipeline);
+        }
+      }
+      if (opts.clear) site.prepare?.(null);
+      for (const note of site.notes?.(pipeline) ?? []) console.error(note);
+      if (opts.dryRun) {
+        console.log(`Dry run \u2014 not saved: ${site.label}`);
+        console.log(JSON.stringify(pipeline, null, 2));
+        return;
+      }
+      const saved = await site.save(pipeline);
+      if (parentOpts.json) {
+        console.log(JSON.stringify(saved, null, 2));
+        return;
+      }
+      console.log(`Updated ${site.label}`);
+      console.log(
+        `formula: ${pipeline ? await loader.print(pipeline.filters) : "(no filter)"}`
+      );
+    } catch (err) {
+      handleError(err);
+    }
+  });
+}
+var setFilterCommand = createSetFilterCommand("path");
 
 // .path-cli/src/commands/list-file-types.ts
 var listFileTypesCommand = new Command("list-file-types").description(
@@ -49312,7 +50384,7 @@ var deleteRecordFileCommand = new Command("delete-record-file").description("Del
     await assertDeleteFiles(client, `delete file ${opts.fileId}`);
     const result = await client.delete(
       `/v1/records/${opts.recordId}/files/${opts.fileId}`
-    );
+    ) ?? { deleted: true, record_id: Number(opts.recordId), file_id: Number(opts.fileId) };
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim());
     console.log(
@@ -49801,19 +50873,14 @@ var useAccountCommand = new Command("use-account").description(
     }
     let acctName = "";
     let info = null;
-    try {
-      const client = new HttpClient(loadConfig());
-      const accounts = await client.get("/v1/accounts");
+    const client = new HttpClient(loadConfig());
+    const accounts = await client.get("/v1/accounts").catch(() => null);
+    if (accounts) {
+      const reason = inactiveAccountReason(accounts, accountId);
+      if (reason) throw new Error(reason);
       const match = accounts.find((a) => String(a.id) === String(accountId));
-      if (!match) {
-        console.error(
-          `Warning: account ${accountId} not found in your account list. Saving anyway.`
-        );
-      } else {
-        acctName = match.name;
-        info = await accountInfo(client, accountId, match);
-      }
-    } catch {
+      acctName = match.name;
+      info = await accountInfo(client, accountId, match);
     }
     updateEnvValue("PATH_ACCOUNT_ID", accountId);
     console.log(
@@ -49854,8 +50921,9 @@ var getAccountCommand = new Command("get-account").description(
 });
 
 // .path-cli/src/index.ts
+var ACCOUNT_CHECK_EXEMPT = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache"]);
 function createProgram() {
-  const program2 = new Command("path").version("1.0.3").description(
+  const program2 = new Command("path").version("1.0.4").description(
     "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
@@ -49875,6 +50943,12 @@ function createProgram() {
     const accountId = opts.account || loadConfig().accountId;
     setCacheAccountId(accountId || "");
     try {
+      const command = actionCommand.name();
+      const target = command === "get-account" ? actionCommand.opts().accountId ?? accountId : accountId;
+      const config2 = loadConfig({ baseUrl: opts.baseUrl });
+      if (target && config2.accessToken && !ACCOUNT_CHECK_EXEMPT.has(command)) {
+        await assertActiveAccount(new HttpClient(config2), target, `${config2.baseUrl}|${config2.accessToken}`);
+      }
       await applyActingUser({ ...opts, mode: actionCommand.opts().mode }, loadConfig);
     } catch (err) {
       handleError(err);
@@ -49935,6 +51009,7 @@ function createProgram() {
   program2.addCommand(updateCustomFieldCommand);
   program2.addCommand(deleteCustomFieldCommand);
   program2.addCommand(searchCommand);
+  program2.addCommand(findRecordsCommand);
   program2.addCommand(createFolderCommand);
   program2.addCommand(updateFolderCommand);
   program2.addCommand(createRecordCommand);
@@ -55766,6 +56841,9 @@ var Protocol = class {
       this.setRequestHandler(GetTaskPayloadRequestSchema, async (request, extra) => {
         const handleTaskResult = async () => {
           const taskId = request.params.taskId;
+          if (!await this._taskStore.getTask(taskId, extra.sessionId)) {
+            throw new McpError(ErrorCode.InvalidParams, `Task not found: ${taskId}`);
+          }
           if (this._taskMessageQueue) {
             let queuedMessage;
             while (queuedMessage = await this._taskMessageQueue.dequeue(taskId, extra.sessionId)) {
@@ -55796,12 +56874,12 @@ var Protocol = class {
             throw new McpError(ErrorCode.InvalidParams, `Task not found: ${taskId}`);
           }
           if (!isTerminal(task.status)) {
-            await this._waitForTaskUpdate(taskId, extra.signal);
+            await this._waitForTaskUpdate(taskId, extra.signal, extra.sessionId);
             return await handleTaskResult();
           }
           if (isTerminal(task.status)) {
             const result = await this._taskStore.getTaskResult(taskId, extra.sessionId);
-            this._clearTaskQueue(taskId);
+            this._clearTaskQueue(taskId, extra.sessionId);
             return {
               ...result,
               _meta: {
@@ -55838,7 +56916,7 @@ var Protocol = class {
             throw new McpError(ErrorCode.InvalidParams, `Cannot cancel task in terminal status: ${task.status}`);
           }
           await this._taskStore.updateTaskStatus(request.params.taskId, "cancelled", "Client cancelled task execution.", extra.sessionId);
-          this._clearTaskQueue(request.params.taskId);
+          this._clearTaskQueue(request.params.taskId, extra.sessionId);
           const cancelledTask = await this._taskStore.getTask(request.params.taskId, extra.sessionId);
           if (!cancelledTask) {
             throw new McpError(ErrorCode.InvalidParams, `Task not found after cancellation: ${request.params.taskId}`);
@@ -55966,6 +57044,19 @@ var Protocol = class {
     const handler = this._requestHandlers.get(request.method) ?? this.fallbackRequestHandler;
     const capturedTransport = this._transport;
     const relatedTaskId = request.params?._meta?.[RELATED_TASK_META_KEY]?.taskId;
+    const sessionId = capturedTransport?.sessionId;
+    const store3 = this._taskStore;
+    let relatedTaskFound = true;
+    let relatedTaskLookup;
+    if (relatedTaskId && store3 && this._taskMessageQueue && sessionId !== void 0) {
+      relatedTaskFound = false;
+      relatedTaskLookup = (async () => {
+        if (!await store3.getTask(relatedTaskId, sessionId)) {
+          throw new McpError(ErrorCode.InvalidParams, `Task not found: ${relatedTaskId}`);
+        }
+        relatedTaskFound = true;
+      })();
+    }
     if (handler === void 0) {
       const errorResponse = {
         jsonrpc: "2.0",
@@ -55975,7 +57066,10 @@ var Protocol = class {
           message: "Method not found"
         }
       };
-      if (relatedTaskId && this._taskMessageQueue) {
+      if (relatedTaskId && relatedTaskLookup) {
+        const queuedError = { type: "error", message: errorResponse, timestamp: Date.now() };
+        relatedTaskLookup.then(() => this._enqueueTaskMessage(relatedTaskId, queuedError, sessionId), () => capturedTransport?.send(errorResponse)).catch((error2) => this._onerror(new Error(`Failed to send an error response: ${error2}`)));
+      } else if (relatedTaskId && this._taskMessageQueue) {
         this._enqueueTaskMessage(relatedTaskId, {
           type: "error",
           message: errorResponse,
@@ -56026,7 +57120,10 @@ var Protocol = class {
       closeSSEStream: extra?.closeSSEStream,
       closeStandaloneSSEStream: extra?.closeStandaloneSSEStream
     };
-    Promise.resolve().then(() => {
+    (relatedTaskLookup ?? Promise.resolve()).then(() => {
+      if (relatedTaskLookup && abortController.signal.aborted) {
+        throw new McpError(ErrorCode.ConnectionClosed, "Request was cancelled");
+      }
       if (taskCreationParams) {
         this.assertTaskHandlerCapability(request.method);
       }
@@ -56061,7 +57158,7 @@ var Protocol = class {
           ...error2["data"] !== void 0 && { data: error2["data"] }
         }
       };
-      if (relatedTaskId && this._taskMessageQueue) {
+      if (relatedTaskId && this._taskMessageQueue && relatedTaskFound) {
         await this._enqueueTaskMessage(relatedTaskId, {
           type: "error",
           message: errorResponse,
@@ -56541,7 +57638,7 @@ var Protocol = class {
       throw new Error("Cannot enqueue task message: taskStore and taskMessageQueue are not configured");
     }
     const maxQueueSize = this._options?.maxTaskQueueSize;
-    await this._taskMessageQueue.enqueue(taskId, message2, sessionId, maxQueueSize);
+    await this._taskMessageQueue.enqueue(taskId, message2, sessionId ?? this._transport?.sessionId, maxQueueSize);
   }
   /**
    * Clears the message queue for a task and rejects any pending request resolvers.
@@ -56570,12 +57667,13 @@ var Protocol = class {
    * Uses polling to check for updates at the task's configured poll interval.
    * @param taskId The task ID to wait for
    * @param signal Abort signal to cancel the wait
+   * @param sessionId Session of the request that waits, passed to the task store
    * @returns Promise that resolves when an update occurs or rejects if aborted
    */
-  async _waitForTaskUpdate(taskId, signal) {
+  async _waitForTaskUpdate(taskId, signal, sessionId) {
     let interval = this._options?.defaultTaskPollInterval ?? 1e3;
     try {
-      const task = await this._taskStore?.getTask(taskId);
+      const task = await this._taskStore?.getTask(taskId, sessionId);
       if (task?.pollInterval) {
         interval = task.pollInterval;
       }
@@ -57454,6 +58552,42 @@ var ExperimentalMcpServerTasks = class {
 };
 
 // .path-mcp/node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.js
+function toolInputElementCount(value, max) {
+  let count = 0;
+  const stack = [value];
+  while (stack.length > 0) {
+    const node = stack.pop();
+    if (node === null || typeof node !== "object")
+      continue;
+    if (Array.isArray(node)) {
+      for (const child of node) {
+        if (++count > max)
+          return count;
+        if (child !== null && typeof child === "object")
+          stack.push(child);
+      }
+    } else {
+      for (const key in node) {
+        if (!Object.prototype.hasOwnProperty.call(node, key))
+          continue;
+        if (++count > max)
+          return count;
+        const child = node[key];
+        if (child !== null && typeof child === "object")
+          stack.push(child);
+      }
+    }
+  }
+  return count;
+}
+function resolveMaxToolInputElements(value) {
+  if (value === void 0 || value === Infinity)
+    return void 0;
+  if (typeof value !== "number" || Number.isNaN(value) || value < 1) {
+    throw new RangeError(`maxToolInputElements must be a number of at least 1, or Infinity, got ${String(value)}`);
+  }
+  return value;
+}
 var McpServer = class {
   constructor(serverInfo, options) {
     this._registeredResources = {};
@@ -57465,6 +58599,7 @@ var McpServer = class {
     this._resourceHandlersInitialized = false;
     this._promptHandlersInitialized = false;
     this.server = new Server(serverInfo, options);
+    this._maxToolInputElements = resolveMaxToolInputElements(options?.maxToolInputElements);
   }
   /**
    * Access experimental features.
@@ -57595,12 +58730,15 @@ var McpServer = class {
    * Validates tool input arguments against the tool's input schema.
    */
   async validateToolInput(tool, args, toolName) {
+    if (this._maxToolInputElements !== void 0 && toolInputElementCount(args, this._maxToolInputElements) > this._maxToolInputElements) {
+      throw new McpError(ErrorCode.InvalidParams, `Invalid arguments for tool ${toolName}: arguments contain more than the maximum of ${this._maxToolInputElements} elements`);
+    }
     if (!tool.inputSchema) {
       return void 0;
     }
     const inputObj = normalizeObjectSchema(tool.inputSchema);
     const schemaToParse = inputObj ?? tool.inputSchema;
-    const parseResult = await safeParseAsync3(schemaToParse, args);
+    const parseResult = await safeParseAsync3(schemaToParse, args ?? {});
     if (!parseResult.success) {
       const error2 = "error" in parseResult ? parseResult.error : "Unknown error";
       const errorMessage = getParseErrorMessage(error2);
@@ -57838,7 +58976,7 @@ var McpServer = class {
       }
       if (prompt.argsSchema) {
         const argsObj = normalizeObjectSchema(prompt.argsSchema);
-        const parseResult = await safeParseAsync3(argsObj, request.params.arguments);
+        const parseResult = await safeParseAsync3(argsObj, request.params.arguments ?? {});
         if (!parseResult.success) {
           const error2 = "error" in parseResult ? parseResult.error : "Unknown error";
           const errorMessage = getParseErrorMessage(error2);
@@ -58323,7 +59461,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.3";
+var VERSION = "1.0.4";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;
@@ -58333,7 +59471,7 @@ function fetchAccounts(config2) {
       ACCOUNT_CHECK_TIMEOUT_MS
     );
   });
-  return Promise.race([new HttpClient(config2).get("/v1/accounts"), timeout]).finally(
+  return Promise.race([listActiveAccounts(new HttpClient(config2)), timeout]).finally(
     () => clearTimeout(timer)
   );
 }

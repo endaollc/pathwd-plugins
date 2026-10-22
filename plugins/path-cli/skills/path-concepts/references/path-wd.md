@@ -294,6 +294,7 @@ Both run from the Appointment.
 
 - **Loading** puts scheduled items on the delivery truck. You can scan packages one by one (each is marked Loaded and automatically checked out of its bin), scan a pallet bin to load everything on it, or, for non-OM items, enter quantities. Loading does not change what is scheduled. That was decided when scheduling.
 - **Delivery** records what reached the jobsite. You can scan packages off the truck (each is marked Delivered), scan a pallet bin to deliver everything on it, or, for non-OM items, enter a Delivered Qty on the Appointment Items. Delivery runs the Appointment's completion step (for example "Delivery Completed") on the linked Jobs.
+- **Accounts that only load, or only deliver.** The account settings **OmLoading** and **OmDelivery** say whether the account runs each process. Without a setting, the Admin Item of the same name ("OM Loading", "OM Delivery") decides by its Enabled box. With neither, the process is on. When Delivery is off, Loading also marks everything delivered and checks pallet items out of their pallet. When Loading is off, Delivery lists every scheduled item, checks each one out of its bin, and marks it loaded as well. Undoing a scan undoes both sides.
 
 ### Scan sessions
 

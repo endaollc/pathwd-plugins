@@ -66,10 +66,11 @@ Lists what the user can launch from that point (`--from record|dashboard|folder|
 #### Step 1: Find the Pathway
 
 ```
---account <ID> list-pathways
+--account <ID> pathway-run available --record-id <id> --json
+--account <ID> pathway-run available --from dashboard --json
 ```
 
-Match the user's description to a pathway name. If ambiguous, list the candidates and ask.
+The first is a particular record's Pathways tab, the second the dashboard (requests not tied to one record). Read each pathway's `info` — the designer's description of what it is for — and match the user's request to it, not just to the name. If two could fit, say what each is for and ask. (Skip the call if this session already loaded that list; repeated info comes back left out.)
 
 #### Step 2: Find the Record
 

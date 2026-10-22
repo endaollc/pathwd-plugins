@@ -37,7 +37,7 @@ Use the `path-session` skill to sign in and pick an account first. Use the `path
 **Optional (don't ask unless it matters):**
 - **Who else can see it** — the user owns it either way. Share only if they name people or roles (default share level: view only).
 - **Include archived records** — default no.
-- **Sort order, number formats** — sensible defaults (money with a currency symbol and 2 decimals).
+- **Sort order, number formats** — sensible defaults; number and date columns take their field's formatting.
 
 ## Your Workflow
 
@@ -100,7 +100,7 @@ Map each of the user's words to a real field: "salesperson" might be a field on 
 | `occurrence=first\|most_recent` | Milestone / step columns: the first or latest time (default first) |
 | `from-occurrence=…`, `to-occurrence=…` | The same for a TIMEBETWEEN's milestone / step ends (default most_recent) |
 | `group-expression=<expression>` | CALC only: what its group rows show, with `TOTAL()`, `AVERAGE()`, `MINIMUM()`, `MAXIMUM()`, e.g. `group-expression=TOTAL([Sell Price]) - TOTAL([Cost])` |
-| `currency[=<symbol>]`, `decimals=<n>`, `commas`, `percent` | Number formatting |
+| `currency[=<symbol>]`, `decimals=<n>`, `commas`, `percent` | Number formatting. Without these (or `format=`) a number or date field's column takes the field's own formatting — only set them to differ from it |
 | `format=<date format>` | Date format, e.g. `M/d/yyyy` |
 | `duration=days+hours` | Which parts a time span shows |
 | `width=<n>` | Column width |
@@ -155,7 +155,11 @@ The user owns the report (owner + view + edit + delete) automatically. To share:
 
 Levels: `view` (default), `view,edit`, `view,edit,delete`. For "everyone", look up the all-users role with `list-roles`.
 
-### Step 7: Confirm, dry-run, create
+### Step 7: Preview it with the user, then create
+
+**Show the user the real rows before saving anything.** Run the same `create-report` command with `--preview` in place of `--name` and the sharing options: it builds exactly the report it would save (same columns, filter, grouping and totals), runs it on the server and prints its rows — nothing is saved. A grouped report shows each group's total row followed by its records; `--groups-only` shows just the group totals, `--page` / `--per-page` / `--all` page through the rows.
+
+Walk the user through what it shows: the groups, the totals, a few records. Adjust the columns, grouping or filter and preview again until they have what they need — changing columns is free now, but not after saving (see Step 8). Only then save it.
 
 Summarize in plain language before creating:
 
@@ -166,7 +170,7 @@ Summarize in plain language before creating:
 > **Who sees it:** you (owner)
 > OK?"
 
-Run the command with `--dry-run` first: it resolves every column, validates the filter and prints the exact body, creating nothing. Fix any error it names, then run it again without `--dry-run`. It prints the new report's id, columns, filter, owner, shares and a web link.
+Then run the command with `--name` and the sharing options (`--dry-run` prints the exact body, creating nothing, if you want to check it). It prints the new report's id, columns, filter, owner, shares and a web link.
 
 ### Step 8: Run it and check
 
@@ -184,7 +188,7 @@ Check the rows make sense: the right records (spot-check one with `get-record`),
 | Name, info, include archived | `update-report --report-id <id> --data '{"name":"…","include_archived":true}'`, `--info "<text>"` |
 | A column's info | `update-report --report-id <id> --data '{"column_info":{"<column name>":"…"}}'` |
 | A Custom Field | `create-custom-field <id> …`, `update-custom-field <id> <name> …`, `delete-custom-field <id> <name>` |
-| Wrong columns, grouping or totals | The CLI can't change a saved report's columns. Tell the user and either let them adjust it in the web app (Reports → the report → Edit), or, with their OK, create a corrected one under a new name and ask them to delete the old one in the web app. Using `--dry-run` until the columns are right avoids this. |
+| Wrong columns, grouping or totals | The CLI can't change a saved report's columns. Tell the user and either let them adjust it in the web app (Reports → the report → Edit), or, with their OK, create a corrected one under a new name and ask them to delete the old one in the web app. Previewing (`--preview`) until the columns are right avoids this. |
 
 ### Step 9: Report back
 
@@ -198,7 +202,8 @@ Check the rows make sense: the right records (spot-check one with `get-record`),
 | `list-reports` | Existing reports (avoid duplicates; names are unique per business object) |
 | `parse-filter --bo-name <n> --text '<formula>' --report` | Check a formula on its own |
 | `list-roles`, `list-users` | Who to share with |
-| `create-report` | Create the report (`--dry-run` to preview) |
+| `create-report --preview` | Run the report as built and show its rows, saving nothing (try it with the user first) |
+| `create-report` | Create the report (`--dry-run` prints the body) |
 | `run-report --report-id <id>` | Check its rows |
 | `get-report <id>` | Columns, Custom Fields, filter and info |
 | `set-filter report <id>`, `update-report`, `create-custom-field` / `update-custom-field` / `delete-custom-field` | Fix it |
@@ -210,7 +215,7 @@ Check the rows make sense: the right records (spot-check one with `get-record`),
 
 1. **Use the path_cli tool** — every operation goes through `path_cli`.
 2. **Resolve everything by name** — the user gives names; look them up. Never guess ids.
-3. **Dry-run first, confirm in plain language, then create.**
+3. **Preview first** (`--preview`), let the user see the rows and adjust, confirm in plain language, then create.
 4. **Every calculated column gets info that says how it's calculated**, and every report gets a short info saying what it's for.
 5. **Plain language with the user** — say "grouped by salesperson", "the total sell per group", "who can see it", not "report_column_type" or "column_key".
 6. **Selection values** — when the filter compares a selection field, use the exact option text from `list-fields --json` / `get-field`; ask if the user's wording doesn't match.

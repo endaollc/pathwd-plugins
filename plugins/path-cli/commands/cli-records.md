@@ -53,6 +53,10 @@ Use the `path-session` skill to establish auth and select an account before runn
 
 ## Your Workflow
 
+### First: is there a pathway for this?
+
+Before changing a record, load the pathways the user could start for it, with their info: `pathway-run available --record-id <id> --json` for an existing record, `pathway-run available --from dashboard --json` for a new one (or any request not tied to a record; once per session). If a pathway's `info` says it does what the user asked — win a job, schedule a delivery, send to accounting — offer to run it (`the `cli-pathways` command`) instead of editing fields directly: the pathway is the business's process and does the related work too. Edit directly when no pathway fits or the user asks for a plain field change.
+
 ### Creating a Record
 
 #### Step 1: Look Up the Business Object and Fields
@@ -151,6 +155,9 @@ Before creating, present a plain language summary:
 ```
 # Global search
 --account <ID> search --query "Smith" --bo-name Jobs
+
+# Include archived records (left out by default)
+--account <ID> search --query "Smith" --bo-name Jobs --include-archived
 
 # List records in a folder
 --account <ID> list-records --folder-name "Active Jobs" --bo-name Jobs

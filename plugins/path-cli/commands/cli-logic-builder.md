@@ -31,6 +31,7 @@ Figure out from the request what kind of criteria this is and where it's rooted:
 | Which records a folder shows | `folder` (existing) or `create-folder --logic` (new) | the folder's BO |
 | When a folder sticker lights up | `folder-sticker` (needs `--sticker <folder sticker id>`) | the folder's BO |
 | Which records a report includes | `report` (existing) or `create-report --logic` (new) | the report's BO |
+| Just the matching records, now — nothing saved (an advanced search) | `find-records --logic` — use the `cli-find-records` command | the records' BO |
 
 Anything else (a BO sticker, task, milestone, Fork, pathway or visibility rule): that's Designer work (PATH's Designer, or the PATH Designer plugin if it's installed). To explain one, read it with `get-filter <target> <id>` and describe it.
 

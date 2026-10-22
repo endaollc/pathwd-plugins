@@ -311,6 +311,15 @@ Options:
                               flags override it
   --dry-run                   Build and validate the body and print it, but
                               create nothing
+  --preview                   Run the report as built and print its rows, but
+                              save nothing (no --name needed): try a report
+                              before creating it, then create it with the same
+                              options
+  --groups-only               With --preview on a grouped report: only the
+                              group total rows
+  --page <n>                  With --preview: page to show (default: "1")
+  --per-page <n>              With --preview: rows per page (default: "50")
+  --all                       With --preview: every row in one page
 ```
 
 ### `delete-calendar-event`
@@ -423,6 +432,62 @@ Unread Feed counts per business object (the menu badges) or per record
 
 Options:
   --by <bo|record>  Group by business object or record (default: "bo")
+```
+
+### `find-records`
+
+```
+Usage: find-records [options]
+
+Advanced search: the records of one business object that match a Logic Builder
+formula (e.g. 'ISLASTWEEK([Created Date]) AND HASSTEP("Quote Sent")'), run on
+the fly without saving a folder or report. Only what the record viewer shows
+you can be searched: hidden fields, fields in hidden field groups and hidden
+relationships are unknown to the formula, and a rule on a field whose
+visibility depends on the record only matches records that show it. Archived
+records are left out unless --include-archived. --catalog lists what you can
+search on (fields with their options, relationships, milestones, steps) with
+each one's designer info. --group-by groups the matches instead of listing them
+(as a grouped report does, run on the fly): one row per group with its record
+count and any --sum / --avg / --min / --max totals; only fields and
+relationships every record shows you can be grouped or totaled. JSON is {
+business_object, formula, total, page, per_page, columns, items: [{ id, record,
+milestones, values }] }, or with --group-by { business_object, formula, total,
+groups, columns, items: [{ <column>: text }] }. Formula syntax: the
+path-logic-formula-syntax skill
+
+Options:
+  --bo-id <id>        Business object ID to search
+  --bo-name <name>    Business object name (resolved to ID)
+  --logic <formula>   The search as a Logic Builder formula
+  --catalog           List what you can search on in this business object, with
+                      designer info, instead of searching
+  --include-archived  Include archived records (left out by default)
+  --columns <names>   Comma-separated field / relationship names to show
+                      (default: the ones the formula uses)
+  --sort <field>      Sort by a field of the business object; add " desc" for
+                      descending (e.g. "Created Date desc")
+  --count             Print only how many records match
+  --page <n>          Page to show (default: "1")
+  --per-page <n>      Records per page (max 100) (default: "25")
+  --all               Every matching record (pages through them)
+  --group-by <names>  Group the matching records instead of listing them:
+                      comma-separated fields (at most 3; [Relationship.Field]
+                      for a linked record's field; "<date field> by
+                      day|week|month|quarter|year"; milestones for the current
+                      milestones). Each group comes with its record count
+  --sum <names>       With --group-by: total these number / currency fields in
+                      each group
+  --avg <names>       With --group-by: average these number / currency fields
+                      in each group
+  --min <names>       With --group-by: the smallest value of these fields in
+                      each group
+  --max <names>       With --group-by: the largest value of these fields in
+                      each group
+  --top <n>           With --group-by: only the first n groups (after sorting).
+                      Groups sort by --sort "<column> [desc]" (Count, a total
+                      like "Qty (total)", a group field); default the first
+                      total, else Count, largest first
 ```
 
 ### `get-account`
@@ -648,7 +713,7 @@ Options:
 ```
 Usage: list-accounts [options]
 
-List available accounts
+List your accounts (not the ones you've been deactivated in)
 
 Options:
 ```
@@ -788,9 +853,9 @@ Text output lists folder info and sticker info under the table
 Options:
   --bo-id <id>      Filter by business object ID
   --bo-name <name>  Filter by business object name
-  --page <n>        Page number (default: "1")
-  --per-page <n>    Items per page (default: "50")
-  --all             Fetch all pages
+  --page <n>        Fetch only this single page (default: all folders)
+  --per-page <n>    Items per page (single-page mode) (default: "50")
+  --all             Fetch all folders (this is now the default)
 ```
 
 ### `list-notifications`
@@ -838,8 +903,9 @@ List emails on a record
 
 Options:
   --record-id <id>  Record ID
-  --page <n>        Page number (default: "1")
-  --per-page <n>    Items per page (default: "15")
+  --page <n>        Fetch only this single page (default: all emails)
+  --per-page <n>    Items per page (single-page mode) (default: "15")
+  --all             Fetch all emails (this is now the default)
 ```
 
 ### `list-record-files`
@@ -866,9 +932,9 @@ List messages on a record
 
 Options:
   --record-id <id>  Record ID
-  --page <n>        Page number (default: "1")
-  --per-page <n>    Items per page (default: "15")
-  --all             Fetch all messages
+  --page <n>        Fetch only this single page (default: all messages)
+  --per-page <n>    Items per page (single-page mode) (default: "15")
+  --all             Fetch all messages (this is now the default)
 ```
 
 ### `list-record-tasks`
@@ -953,9 +1019,9 @@ List relationships for a business object (--json adds each one's info)
 Options:
   --bo-id <id>      Business object ID
   --bo-name <name>  Business object name
-  --page <n>        Page number (default: "1")
-  --per-page <n>    Items per page (default: "50")
-  --all             Fetch all pages
+  --page <n>        Fetch only this single page (default: all relationships)
+  --per-page <n>    Items per page (single-page mode) (default: "50")
+  --all             Fetch all relationships (this is now the default)
 ```
 
 ### `list-reports`
@@ -967,9 +1033,9 @@ List reports. Each report carries its own info (what the report is for, how to
 read it; once per session like all info); text output lists it under the table
 
 Options:
-  --page <n>      Page number (default: "1")
-  --per-page <n>  Items per page (default: "50")
-  --all           Fetch all pages
+  --page <n>      Fetch only this single page (default: all reports)
+  --per-page <n>  Items per page (single-page mode) (default: "50")
+  --all           Fetch all reports (this is now the default)
 ```
 
 ### `list-roles`
@@ -980,9 +1046,9 @@ Usage: list-roles [options]
 List roles
 
 Options:
-  --page <n>      Page number (default: "1")
-  --per-page <n>  Items per page (default: "50")
-  --all           Fetch all pages
+  --page <n>      Fetch only this single page (default: all roles)
+  --per-page <n>  Items per page (single-page mode) (default: "50")
+  --all           Fetch all roles (this is now the default)
 ```
 
 ### `list-tag-groups`
@@ -1013,9 +1079,9 @@ Usage: list-users [options]
 List users
 
 Options:
-  --page <n>      Page number (default: "1")
-  --per-page <n>  Items per page (default: "50")
-  --all           Fetch all pages
+  --page <n>      Fetch only this single page (default: all users)
+  --per-page <n>  Items per page (single-page mode) (default: "50")
+  --all           Fetch all users (this is now the default)
 ```
 
 ### `list-workflow-milestones`
@@ -1148,8 +1214,13 @@ Commands:
                                  created
   available [options]            Which pathways a user could start from a
                                  launch point (a record's Pathways tab, the
-                                 dashboard, a folder or a task), with the
-                                 reason for each one left out
+                                 dashboard, a folder or a task), each with its
+                                 designer info (what it is for: read it to
+                                 decide whether a pathway does what the user
+                                 asked), and with --all the reason for each one
+                                 left out. Like all info, a pathway's is shown
+                                 once per session (later calls leave it out;
+                                 --with-info repeats it)
   show [options]                 Show a run: the screen it is waiting on, or
                                  how it ended
   submit [options]               Answer the paused screen (only what that
@@ -1255,7 +1326,10 @@ Options:
 Usage: pathway-run available [options]
 
 Which pathways a user could start from a launch point (a record's Pathways tab,
-the dashboard, a folder or a task), with the reason for each one left out
+the dashboard, a folder or a task), each with its designer info (what it is
+for: read it to decide whether a pathway does what the user asked), and with
+--all the reason for each one left out. Like all info, a pathway's is shown
+once per session (later calls leave it out; --with-info repeats it)
 
 Options:
   --record-id <id>           Record viewer of this record
@@ -1407,6 +1481,7 @@ Options:
   --report-name <name>  Report name (resolved to ID)
   --page <n>            Page number (default: "1")
   --per-page <n>        Rows per page (default: "50")
+  --all                 Every row in one call (--page / --per-page are ignored)
   --user-filter <json>  Runtime filters for the report's user-filterable
                         columns, e.g.
                         '[{"entity_id":12,"logic":"equal","values":["John"]}]'
@@ -1434,14 +1509,17 @@ Options:
 ```
 Usage: search [options]
 
-Search records globally
+Search records globally, like the web's search (archived records left out
+unless --include-archived)
 
 Options:
-  --query <text>    Search query
-  --bo-id <id>      Filter by business object ID
-  --bo-name <name>  Filter by business object name (resolved to ID)
-  --page <n>        Page number (default: "1")
-  --per-page <n>    Items per page (default: "15")
+  --query <text>      Search query
+  --bo-id <id>        Filter by business object ID
+  --bo-name <name>    Filter by business object name (resolved to ID)
+  --include-archived  Include archived records (the web search's Include
+                      Archived toggle; off by default)
+  --page <n>          Page number (default: "1")
+  --per-page <n>      Items per page (default: "15")
 ```
 
 ### `send-message`
@@ -1627,8 +1705,8 @@ Usage: update-folder [options]
 Change a folder's info or settings, saved the way the folder form saves it
 (everything else as stored). Needs Edit on the folder. --data keys:
 folder_name, include_archived, columns, sorts, default_sort_field,
-default_sort_direction, map_enabled, map_relationship_id, info (criteria:
-set-filter folder; sticker criteria: set-filter folder-sticker)
+default_sort_direction, map_enabled, map_relationship_id, info, sticker_info
+(criteria: set-filter folder; sticker criteria: set-filter folder-sticker)
 
 Options:
   --folder-id <id>      Folder ID
@@ -1641,7 +1719,10 @@ Options:
   --info-file <path>    Read the info from a text or markdown file (instead of
                         --info)
   --data <json>         JSON object of folder keys to change, e.g.
-                        '{"folder_name":"Active Jobs","info":"…"}'
+                        '{"folder_name":"Active
+                        Jobs","info":"…","sticker_info":{"Late":"Past its due
+                        date"}}' — sticker_info sets each named sticker's own
+                        info (by sticker id or name; null clears it)
   --dry-run             Print the save body without saving
 ```
 

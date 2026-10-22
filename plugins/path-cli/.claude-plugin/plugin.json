@@ -2,7 +2,7 @@
   "name": "path-cli",
   "displayName": "PATH WD",
   "description": "PATH user app: records, folders, reports, tasks, calendars, messages, files and pathway runs, always with your own web-app access. Designer work (data model, pathways, settings) is done in PATH's Designer.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": {
     "name": "PathWD",
     "url": "https://pathwd.app"
