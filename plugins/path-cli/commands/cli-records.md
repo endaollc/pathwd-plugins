@@ -53,9 +53,18 @@ Use the `path-session` skill to establish auth and select an account before runn
 
 ## Your Workflow
 
-### First: is there a pathway for this?
+### First: is there a pathway or task for this?
 
-Before changing a record, load the pathways the user could start for it, with their context: `pathway-run available --record-id <id> --json` for an existing record, the dashboard pathways in the session context for a new one (or any request not tied to a record; `session-context` shows them again). If a pathway's `context` says it does what the user asked — win a job, schedule a delivery, send to accounting — offer to run it (`the `cli-pathways` command`) instead of editing fields directly: the pathway is the business's process and does the related work too. Edit directly when no pathway fits or the user asks for a plain field change.
+When the user wants something done on a particular record — create a quote for a job, schedule a delivery, send an invoice to accounting, close out a service call — open the record first (`get-record --record-id <id>`). Whatever kind of record it is, it comes with what can be done on it right now, each with its designer context:
+
+- `available_pathways`: the pathways its Pathways tab lets the user start (the same list as `pathway-run available --record-id <id>`);
+- `open_tasks`: the tasks already on it, each with its own `context` and, in `pathway`, the pathway completing the task runs, with that pathway's context. `can_complete: false` means only the assignee can finish it.
+
+Read each one's context (what it is for) and match it to the request, not just its name: a "Create Quote" pathway, or a "Prepare Quote" task whose pathway builds the quote, both fit "create a quote for this job". When one fits, offer it instead of doing the work by hand (creating records, editing fields): the pathway or task is the business's own process and does the related work too (links, follow-up tasks, emails, milestones). Run a pathway with the `cli-pathways` command. Run a task's pathway by completing the task, which also closes it: `pathway-run start --pathway-id <pathway id> --record-id <id> --task-id <task id>`. If two could fit, say what each is for and ask. Context already shown this session comes back left out (`context_elided`); `--with-context` repeats it.
+
+For a new record, or a request not tied to a record, check the dashboard pathways in the session context (`session-context` shows them again).
+
+Work directly only when nothing fits or the user asks for a plain field change, and say so in one line ("No pathway or task on this job creates quotes, so I'll build it directly").
 
 ### Creating a Record
 
@@ -136,6 +145,8 @@ Before creating, present a plain language summary:
 --account <ID> search --query "<text>"
 ```
 
+Not found on the first search? See "When a record can't be found" below before asking.
+
 #### Step 2: Look Up Fields
 
 ```
@@ -168,6 +179,18 @@ Before creating, present a plain language summary:
 # Get a specific record
 --account <ID> get-record --record-id <id> --json
 ```
+
+#### When a record can't be found
+
+When the user means one particular record ("the Smith job", "the invoice for Katz Plumbing", "Job 26-5543") and the first search finds nothing that matches, don't give up and don't ask yet. Try other spellings and forms first, several searches in a row:
+
+- **Spelling variants and typos:** doubled or dropped letters, swapped letters, sound-alikes (Smith / Smyth / Schmidt, Katz / Kats, McDonald / MacDonald / Mc Donald). Names often arrive by voice dictation, so try what the words sound like.
+- **Parts of the name:** the surname alone, the first word of a company name, without suffixes (LLC, Inc, Co, & Sons), "and" ↔ "&", with and without punctuation, spaces or hyphens (O'Brien / OBrien, 26-5543 / 265543).
+- **Abbreviations and full forms:** St / Street, Bros / Brothers, Intl / International; numbers as digits and as words.
+- **Through a related record:** search the customer, contact or address the user named, then find the record on it with `list-related-records`.
+- **Another type:** search without `--bo-name` when the type might be wrong (a "job" that is really a Project or Service), and `--include-archived` last (say so if the match is archived).
+
+Stop as soon as one search gives a clear match. If several are close, list them (name or number and one detail each) and ask which. Only when the variants come up empty, tell the user what you searched for and ask for another detail (number, address, customer).
 
 ### Related Records (the record viewer's relationship cards and tabs)
 
@@ -321,6 +344,6 @@ For anything the CLI doesn't cover directly, use the raw API escape hatch:
 5. **Check field types** — before setting a value, verify the field type so you format the value correctly (string vs number vs date).
 6. **Selection field values** — when setting a selection field, check the available options from field metadata (`list-fields --json`) and confirm the exact value with the user if their wording doesn't match.
 7. **Required fields** — check which fields are required (`is_required: true`) and ensure they're included in the create payload. If the user hasn't provided a required field value, ask for it.
-8. **If anything is ambiguous**, ask. Better to clarify than to create the wrong record.
+8. **If anything is ambiguous**, ask. Better to clarify than to create the wrong record. But a record that a search didn't find isn't ambiguous yet: try other spellings first ("When a record can't be found").
 9. **Confirm before archiving** — name each record that will be archived and wait for a clear yes. Never archive records found by a broad search without showing the user the list first.
 10. **Archiving isn't deleting** — say so when the user asks to "delete" a record: archiving is how records are removed from view, and it can be undone with `unarchive-record`.

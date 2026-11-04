@@ -17782,6 +17782,22 @@ var TimeZoneLike = class {
 };
 var FieldsLookupServiceLike = class {
 };
+var PathwayMisconfigurationReporterLike = class {
+};
+function formatPathwayMisconfiguration(m, extra = {}) {
+  const fields = {
+    kind: m.kind,
+    account: m.account_id,
+    pathway: m.pathway_id,
+    step: m.step_id,
+    step_type: m.step_type,
+    ...m.details,
+    ...extra
+  };
+  const pairs = Object.entries(fields).filter(([, v]) => v !== null && v !== void 0 && v !== "").map(([k, v]) => `${k}=${v}`).join(" ");
+  const name = m.pathway_name ? ` pathway_name=${JSON.stringify(m.pathway_name)}` : "";
+  return `[PathwayMisconfig] ${pairs}${name} message=${JSON.stringify(m.message)}`;
+}
 
 // libs/pathway-executor/src/interactions.ts
 function busy(descriptor) {
@@ -18035,6 +18051,38 @@ var StepContext = class {
       throw new Error(`Record not found for step ${stepId}`);
     }
     return record2;
+  }
+  /**
+   * Report that this step ran in an order the pathway's design didn't allow
+   * for (see {@link PathwayMisconfiguration}). Logs a `[PathwayMisconfig]`
+   * warning, and hands it to the registered
+   * {@link PathwayMisconfigurationReporterLike} if there is one. Never
+   * throws: reporting must not change how the run goes.
+   */
+  reportMisconfiguration(kind, message2, details = {}) {
+    try {
+      const misconfiguration = {
+        kind,
+        pathway_id: this.state.pathway.id,
+        pathway_name: this.state.pathway.name ?? null,
+        step_id: this.step.id,
+        step_type: this.step.step_type,
+        account_id: this.accountId ?? null,
+        message: message2,
+        details
+      };
+      console.warn(formatPathwayMisconfiguration(misconfiguration));
+      let reporter = null;
+      try {
+        reporter = this.#injector?.get(
+          PathwayMisconfigurationReporterLike
+        ) ?? null;
+      } catch {
+        reporter = null;
+      }
+      reporter?.report(misconfiguration);
+    } catch {
+    }
   }
   /** Non-throwing variant of {@link getStepRecord}. */
   tryGetStepRecord(stepId) {
@@ -20252,7 +20300,16 @@ async function* getCurrentUserImplementation(_ctx) {
 // libs/pathway-executor/src/step-implementations/save-record.implementation.ts
 async function* saveRecordImplementation(ctx) {
   const recordStepConfig = ctx.getConfig("RecordStep" /* RecordStep */);
-  const record2 = ctx.getStepRecord(recordStepConfig.config.record_step_id);
+  const recordStepId = recordStepConfig.config.record_step_id;
+  const record2 = ctx.tryGetStepRecord(recordStepId);
+  if (!record2) {
+    ctx.reportMisconfiguration(
+      "save_record_without_record",
+      `Save Record ran before its Record Step ${recordStepId} produced a record on this run (a Fork or Not Found branch skipped that step), so there was nothing to save and it was skipped. Route the skipping branch past this Save Record.`,
+      { record_step_id: recordStepId ?? null }
+    );
+    return;
+  }
   const updated = yield* execute(
     "SaveRecord",
     { id: record2.id, business_object_id: record2.business_object_id },
@@ -33031,9 +33088,88 @@ function renderRecordListInfo(context3) {
   );
 }
 
+// .path-cli/src/utils/record-work.ts
+function pathwayEntry(pathway2) {
+  const info = infoText(pathway2.info);
+  return { id: pathway2.id, name: pathway2.name, ...info ? { info } : {} };
+}
+async function loadRecordWork(metadata, record2) {
+  const [user, pathways, rawTasks, workflowTasks, users] = await Promise.all([
+    metadata.currentUser(),
+    metadata.pathways().catch(() => []),
+    metadata.client.get(`/v1/records/${encodeURIComponent(record2.id)}/tasks`).catch(() => []),
+    metadata.client.get(`/v1/business-objects/${record2.business_object_id}/workflows/tasks`).then((raw) => unwrapPaginated(raw)).catch(() => []),
+    metadata.userDirectory().catch(() => [])
+  ]);
+  const available_pathways = [];
+  for (const pathway2 of pathways) {
+    const verdict = await checkLaunch({ pathway: pathway2, point: "record", user, metadata, record: record2 });
+    if (verdict.allowed) available_pathways.push(pathwayEntry(pathway2));
+  }
+  const taskInfo = new Map(workflowTasks.map((t) => [t.id, infoText(t.info)]));
+  const pathwayById = new Map(pathways.map((p) => [p.id, p]));
+  const userById = new Map(users.map((u) => [u.id, u]));
+  const open_tasks = [];
+  for (const task of unwrapPaginated(rawTasks)) {
+    const info = task.workflow_task_id != null ? taskInfo.get(task.workflow_task_id) : null;
+    const pathway2 = task.pathway_id != null ? pathwayById.get(task.pathway_id) : void 0;
+    const assignee = task.assigned_to?.user_id != null ? userById.get(task.assigned_to.user_id) : void 0;
+    const assigneeOnly = !!task.task_settings?.only_assignee_finish;
+    const isAdmin = !!user.effective_permissions?.is_admin;
+    open_tasks.push({
+      id: task.id,
+      name: task.task_name,
+      status: task.task_status,
+      due_on: task.due_on ?? null,
+      assigned_to: task.assigned_to?.user_id != null ? userDisplayName(assignee ?? { id: task.assigned_to.user_id }) : null,
+      ...info ? { info } : {},
+      ...pathway2 ? { pathway: pathwayEntry(pathway2) } : task.pathway_id != null ? { pathway: { id: task.pathway_id, name: `Pathway ${task.pathway_id}` } } : {},
+      can_complete: !assigneeOnly || task.assigned_to?.user_id === user.id || task.created_by === user.id || isAdmin
+    });
+  }
+  return { available_pathways, open_tasks };
+}
+function dueText(due, timeZone) {
+  if (!due) return null;
+  const date3 = new Date(due);
+  if (Number.isNaN(date3.getTime())) return due;
+  return date3.toLocaleString("en-US", { timeZone, dateStyle: "medium", timeStyle: "short" });
+}
+function recordWorkLines(work, recordId, timeZone) {
+  const lines = ["", `Pathways you can start on this record (${work.available_pathways.length}):`];
+  if (!work.available_pathways.length) lines.push("  (none)");
+  for (const pathway2 of work.available_pathways) {
+    lines.push(`  ${pathway2.id}  ${pathway2.name}`);
+    lines.push(...infoLines(pathway2.info, { indent: "      ", cap: INFO_TEXT_CAP }));
+  }
+  lines.push("", `Open tasks on this record (${work.open_tasks.length}):`);
+  if (!work.open_tasks.length) lines.push("  (none)");
+  for (const task of work.open_tasks) {
+    const due = dueText(task.due_on, timeZone);
+    const facts = [
+      due ? `due ${due}` : null,
+      task.assigned_to ? `assigned to ${task.assigned_to}` : "unassigned",
+      task.can_complete ? null : "only the assignee can finish it"
+    ].filter(Boolean);
+    lines.push(`  ${task.id}  ${task.name}  \u2014 ${facts.join(", ")}`);
+    lines.push(...infoLines(task.info, { indent: "      ", cap: INFO_TEXT_CAP }));
+    if (task.pathway) {
+      lines.push(`      completing it runs pathway ${task.pathway.id} "${task.pathway.name}"`);
+      lines.push(...infoLines(task.pathway.info, { indent: "        ", label: "pathway context", cap: INFO_TEXT_CAP }));
+    }
+  }
+  if (work.available_pathways.length || work.open_tasks.some((t) => t.pathway)) {
+    lines.push(
+      "",
+      `Run one: pathway-run start --pathway-id <id> --record-id ${recordId}` + (work.open_tasks.some((t) => t.pathway) ? ` (a task's pathway, by completing the task: add --task-id <task id>)` : "")
+    );
+  }
+  return lines;
+}
+
 // .path-cli/src/commands/get-record.ts
 var getRecordCommand = new Command("get-record").description(
-  "Get a single record by ID, as the record viewer shows it to you. Also gives the designer context of what it shows: business_object {id, name, context}, field_context {<field name>: context} and relationship_context {<relationship name>: context} (only entries that have context; a relationship field without its own shows the related field's). In the record view, related_ids gives each related record's id (open it with get-record). Text output ends with a compact context block. Lists of related records (inverse relationship tabs, linked records): list-related-records"
+  "Get a single record by ID, as the record viewer shows it to you. Also gives the designer context of what it shows: business_object {id, name, context}, field_context {<field name>: context} and relationship_context {<relationship name>: context} (only entries that have context; a relationship field without its own shows the related field's). And what can be done on it now: available_pathways [{id, name, context}] (its Pathways tab for you, as pathway-run available --record-id) and open_tasks [{id, name, status, due_on, assigned_to, context, pathway {id, name, context}, can_complete}] (the tasks already on it; pathway is what completing the task runs). Before doing what the user asked on this record, check whether one of them does it. In the record view, related_ids gives each related record's id (open it with get-record). Text output ends with a compact context block. Lists of related records (inverse relationship tabs, linked records): list-related-records"
 ).requiredOption("--record-id <id>", "Record ID").option(
   "--raw",
   "The stored record (fields keyed by id, UTC dates) instead of the record viewer's names and display values (real-world mode) / name enrichment"
@@ -33059,14 +33195,21 @@ var getRecordCommand = new Command("get-record").description(
         const note2 = hiddenNote({ fields: shown2.hiddenFields, relationships: shown2.hiddenRelationships });
         if (note2) console.error(note2);
         const metadata = (await recordVisibility(client, config2.accountId)).metadata;
-        const context4 = await recordInfo(
-          metadata,
-          fetched.business_object_id,
-          shown2.sources.fields.map(({ name, field }) => ({ name, field })),
-          shown2.sources.relationships.map(({ name, relationship }) => ({ name, relationship }))
-        );
+        const [context4, work2] = await Promise.all([
+          recordInfo(
+            metadata,
+            fetched.business_object_id,
+            shown2.sources.fields.map(({ name, field }) => ({ name, field })),
+            shown2.sources.relationships.map(({ name, relationship }) => ({ name, relationship }))
+          ),
+          loadRecordWork(metadata, fetched)
+        ]);
         console.log(
-          parentOpts.json ? JSON.stringify({ ...shown2.display, ...context4 }, null, 2) : [renderRecordDisplay(shown2.display), ...renderRecordInfo(context4, fetched.id)].join("\n")
+          parentOpts.json ? JSON.stringify({ ...shown2.display, ...context4, ...work2 }, null, 2) : [
+            renderRecordDisplay(shown2.display),
+            ...renderRecordInfo(context4, fetched.id),
+            ...recordWorkLines(work2, fetched.id, await metadata.userTimeZone())
+          ].join("\n")
         );
         return;
       }
@@ -33083,6 +33226,8 @@ var getRecordCommand = new Command("get-record").description(
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim());
     let context3 = null;
+    let work = null;
+    let timeZone = "UTC";
     if (!parentOpts.quiet && !fields && data?.business_object_id) {
       const metadata = (await recordVisibility(client, config2.accountId))?.metadata ?? new RunMetadata(client, config2.accountId);
       const [boFields, rels2] = await Promise.all([
@@ -33091,15 +33236,19 @@ var getRecordCommand = new Command("get-record").description(
       ]);
       const fieldIds = new Set(Object.keys(data.fields ?? {}).map(Number));
       const relIds2 = new Set(Object.keys(data.relationships ?? {}).map(Number));
-      context3 = await recordInfo(
-        metadata,
-        data.business_object_id,
-        boFields.filter((f) => fieldIds.has(f.id)).map((field) => ({ name: field.name, field })),
-        rels2.filter((r) => relIds2.has(r.id)).map((relationship) => ({ name: relationship.name ?? `Relationship ${relationship.id}`, relationship })),
-        rels2
-      );
+      [context3, work, timeZone] = await Promise.all([
+        recordInfo(
+          metadata,
+          data.business_object_id,
+          boFields.filter((f) => fieldIds.has(f.id)).map((field) => ({ name: field.name, field })),
+          rels2.filter((r) => relIds2.has(r.id)).map((relationship) => ({ name: relationship.name ?? `Relationship ${relationship.id}`, relationship })),
+          rels2
+        ),
+        loadRecordWork(metadata, fetched),
+        metadata.userTimeZone()
+      ]);
     }
-    const output = context3 ? { ...display, ...context3 } : display;
+    const output = context3 ? { ...display, ...context3, ...work ?? {} } : display;
     console.log(
       formatOutput(format === "json" ? output : display, {
         format,
@@ -33108,7 +33257,7 @@ var getRecordCommand = new Command("get-record").description(
       })
     );
     if (context3 && format !== "json") {
-      const lines = renderRecordInfo(context3, data.id);
+      const lines = [...renderRecordInfo(context3, data.id), ...work ? recordWorkLines(work, data.id, timeZone) : []];
       if (lines.length) console.log(lines.join("\n"));
     }
   } catch (err) {
@@ -54229,7 +54378,7 @@ var getAccountCommand = new Command("get-account").description(
 // .path-cli/src/index.ts
 var ACCOUNT_CHECK_EXEMPT = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache"]);
 function createProgram() {
-  const program2 = new Command("path").version("1.0.5").description(
+  const program2 = new Command("path").version("1.0.6").description(
     "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, notes, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
@@ -62783,7 +62932,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.5";
+var VERSION = "1.0.6";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;

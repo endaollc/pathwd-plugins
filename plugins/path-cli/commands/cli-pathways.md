@@ -72,6 +72,8 @@ Lists what the user can launch from that point (`--from record|dashboard|folder|
 
 The first is a particular record's Pathways tab, the second the dashboard (requests not tied to one record). The session context already gives the dashboard list, with each pathway's context, at the start of every session; run the second only if you no longer have it. Read each pathway's `context` — the designer's description of what it is for — and match the user's request to it, not just to the name. If two could fit, say what each is for and ask. (Skip the call if this session already loaded that list; repeated context comes back left out.)
 
+Opening the record (`get-record`) gives the same list as `available_pathways`, and its `open_tasks`: the tasks already on the record, each with its context and the pathway completing it runs (`pathway`). A task's pathway counts too: if it does what the user asked, run it by completing the task (`pathway-run start --pathway-id <pathway id> --record-id <id> --task-id <task id>`), which also closes the task.
+
 #### Step 2: Find the Record
 
 ```
@@ -81,6 +83,8 @@ The first is a particular record's Pathways tab, the second the dashboard (reque
 # By search
 --account <ID> search --query "<text>"
 ```
+
+If the record isn't found on the first search, try other spellings and forms before asking the user (see "When a record can't be found" in the `cli-records` command).
 
 #### Step 3: Confirm With the User
 

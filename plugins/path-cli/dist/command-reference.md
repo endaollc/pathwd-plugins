@@ -793,10 +793,15 @@ Get a single record by ID, as the record viewer shows it to you. Also gives the
 designer context of what it shows: business_object {id, name, context},
 field_context {<field name>: context} and relationship_context {<relationship
 name>: context} (only entries that have context; a relationship field without
-its own shows the related field's). In the record view, related_ids gives each
-related record's id (open it with get-record). Text output ends with a compact
-context block. Lists of related records (inverse relationship tabs, linked
-records): list-related-records
+its own shows the related field's). And what can be done on it now:
+available_pathways [{id, name, context}] (its Pathways tab for you, as
+pathway-run available --record-id) and open_tasks [{id, name, status, due_on,
+assigned_to, context, pathway {id, name, context}, can_complete}] (the tasks
+already on it; pathway is what completing the task runs). Before doing what the
+user asked on this record, check whether one of them does it. In the record
+view, related_ids gives each related record's id (open it with get-record).
+Text output ends with a compact context block. Lists of related records
+(inverse relationship tabs, linked records): list-related-records
 
 Options:
   --record-id <id>  Record ID

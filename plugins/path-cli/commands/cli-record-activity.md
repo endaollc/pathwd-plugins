@@ -82,6 +82,8 @@ If the user gave a record ID, fetch it directly. Otherwise, search for it.
 --account <ID> search --query "<text>"
 ```
 
+If the record isn't found on the first search, try other spellings and forms before asking the user (see "When a record can't be found" in the `cli-records` command). `get-record` also lists the record's open tasks (`open_tasks`, each with its context and the pathway completing it runs) and the pathways it can start (`available_pathways`). When the user asks for something one of them does, offer that first (see "First: is there a pathway or task for this?" in the `cli-records` command).
+
 ### Step 2: Perform the Action
 
 #### Posting a Message
