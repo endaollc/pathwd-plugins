@@ -13,12 +13,12 @@ If no PATH session is active, run the `path-session` skill first.
 
 | Command | Purpose |
 |---|---|
-| `parse-filter --bo-name <bo> --text '<formula>'` | Validate without saving. Prints the normalized formula and rule count; `--json` (global flag, before the command) prints the `GroupFilter`. `--report` unlocks entry dates + `?`; `--allow-blank` + `--allow-entry-dates` match a folder; `--allow-entry-dates` unlocks entry dates alone. `--bo <id>` = `--bo-id`. |
-| `get-filter <target> <id> [--bo <id>] [--pathway <id>] [--sticker <id>]` | Print a stored filter as a formula (`(no filter)` when unset). Reads any target. `--json` prints the stored pipeline. |
-| `set-filter <target> <id> --text '<formula>'` | **Folder, folder-sticker and report targets only** (with Edit on them); any other target is refused as Designer work. Parse against the target's root BO with the target's feature set, call `POST /v1/builder/validate`, then save the object with only its filter replaced (the rest of the pipeline — `version`, `business_object_ids`, `sorting`, `quick_search` … — is kept). `--clear` saves the filter as null. `--dry-run` parses + validates and prints the pipeline without saving. |
+| `parse-filter --bo-name <bo> --text '<formula>'` | Validate without saving. Prints the normalized formula and rule count; `--json` (global flag, before the command) prints the `GroupFilter`. `--report` unlocks entry dates + `?`; `--report-id <id>` also roots on that report's BO and allows its `COLUMN(...)`/`CUSTOMFIELD(...)`; `--allow-blank` + `--allow-entry-dates` match a folder; `--allow-entry-dates` unlocks entry dates alone. `--bo <id>` = `--bo-id`. |
+| `get-filter <target> <id> [--bo <id>] [--pathway <id>] [--sticker <id>]` | Print a stored filter as a formula (`(no filter)` when unset). Reads any target. `--json` prints the stored pipeline. Folder / report: each ticked user filter follows as `user filter "Label": <rule>`. |
+| `set-filter <target> <id> --text '<formula>'` | **Folder, folder-sticker and report targets only** (with Edit on them); any other target is refused as Designer work. Parse against the target's root BO with the target's feature set, call `POST /v1/builder/validate`, then save the object with only its filter replaced (the rest of the pipeline — `version`, `business_object_ids`, `sorting`, `quick_search` … — is kept). `--clear` saves the filter as null. `--dry-run` parses + validates and prints the pipeline without saving. Folder / report: `--user-filter '<row>'` / `--untick-user-filter '<row>'` tick or untick rules as user filters, with or without `--text` (see **User filters**). |
 | `create-folder --bo-name <bo> --folder-name <n> --logic '<formula>' ...` | Create a **new** folder whose `filter_condition` is the formula (parsed with folder features: `?` + entry dates). `--dry-run` prints the request bodies without creating anything; `--logic-raw <json>` is the raw escape hatch. See the `cli-folders-skill` command for the rest of folder creation. |
 | `create-report --bo-name <bo> --name <n> --columns '<columns>' --logic '<formula>' ...` | Create a **new** report whose filter is the formula (report features: `?` + entry dates, and `COLUMN("…")` / `CUSTOMFIELD("…")` for the report's own calculated columns and `--custom-field`s). Validated like the Logic Builder; `--dry-run` prints the body. See the `cli-reports-skill` command for the rest of report creation. |
-| `find-records --bo-name <bo> --logic '<formula>'` (PATH CLI) | Run the formula **now** and list the matching records — an advanced search; nothing is saved. Only what the user sees in the record viewer can be used (hidden fields and relationships are unknown names; a field shown on some records matches only those), entry dates allowed, no `?`. `--catalog` lists what the user can search on with each item's designer info. See the `cli-find-records` command. |
+| `find-records --bo-name <bo> --logic '<formula>'` (PATH CLI) | Run the formula **now** and list the matching records — an advanced search; nothing is saved. Only what the user sees in the record viewer can be used (hidden fields and relationships are unknown names; a field shown on some records matches only those), entry dates allowed, no `?`, no `COLUMN`/`CUSTOMFIELD`; relationships are followed forward only (from the record that holds the link); archived records are left out unless `--include-archived`. `--catalog` lists what the user can search on with each item's designer context. See the `cli-find-records` command. |
 
 Invocation: `[--account <id>] [--json] <command> ...`. Always single-quote the formula in the command string.
 
@@ -34,7 +34,7 @@ Invocation: `[--account <id>] [--json] <command> ...`. Always single-quote the f
 | `table-filter` | pathway step id (Edit Record Table) | `--pathway` | the step's record BO | — (ANDed onto the table's rows at run time) |
 | `pathway` | pathway id | | the starting BO | — |
 | `sticker` | BO sticker id | | the sticker's BO | — |
-| `folder` | folder id | | the folder's BO | `?` |
+| `folder` | folder id | | the folder's BO | entry dates + `?` |
 | `folder-sticker` | folder id | `--sticker <folder sticker id>` | the folder's BO | — |
 | `report` | report id | | the report's BO | entry dates + `?` |
 | `field-visibility` | field id | | the field's BO | — |
@@ -45,7 +45,30 @@ Invocation: `[--account <id>] [--json] <command> ...`. Always single-quote the f
 | `setting` | logic account setting id (read-only here) | | none — settings only | settings only |
 | `bo-show-in-menu` | business object id (`list-business-objects`) | | none — settings only | settings only |
 
-Side effects `set-filter` mirrors from the web forms (printed as `NOTE:` lines): folder and report user-filter selections whose rule is gone are dropped. Folder stickers save only on custom folders. Pathway saves re-send the pathway's groups (the API renumbers their order) and leave permissions alone.
+Side effects `set-filter` mirrors from the web forms (printed as `NOTE:` lines): folder and report user-filter ticks move to the rewritten rule that compares the same thing, and a tick whose rule is gone is dropped. Folder stickers save only on custom folders. Pathway saves re-send the pathway's groups (the API renumbers their order) and leave permissions alone.
+
+### User filters (folders and reports)
+
+A folder's or report's rule can be ticked as a **user filter** (the Logic Builder's "User Filter" checkbox): viewers then see it in the filter bar and can change its value. The formula text doesn't carry the ticks. `get-filter` prints each ticked rule after the formula as `user filter "Label": <rule>` (`user filter: <rule>` when it has no label). When you rewrite the formula, `set-filter` moves each tick to the new rule that compares the same field, milestone, step or column.
+
+Tick or untick rules with `set-filter folder|report <id>`:
+
+- `--user-filter '<row>'` ticks a rule. `--untick-user-filter '<row>'` unticks one. Both can be repeated.
+- `<row>` is either the field the rule compares (`[Department]`, `[Job Outside Salesperson.Person Name]`), when only one rule compares that field, or the whole rule (`ISNOTANYOF([Department], "Trade", "Retail")`). Spacing doesn't matter.
+- Put `"Label": ` in front to give the filter the name viewers see. Without a label, the rule keeps the label it has. `"": ` removes the label. A `user filter …` line copied from `get-filter` works as it is.
+- Without `--text`, the stored rules are kept and only the ticks change. With `--text`, the ticks apply to the new formula. Can't be used with `--clear`.
+- These rules can be ticked: a field compared with values (including `?`), a `CURRENTUSER()` rule on a **text** field (viewers see a text filter that starts with their own name), a `MILESTONEFIRSTENTERED` / `MILESTONELASTENTERED` / `STEPFIRSTOCCURRED` / `STEPLASTOCCURRED` date rule, and a report's `COLUMN(...)` / `CUSTOMFIELD(...)` rule. A rule that compares two fields, or a field with a setting, is refused. So are `INMILESTONE` / `HASSTEP` rules and `CURRENTUSER()` on a pick list, number or date field.
+- If any row matches no rule (or a field matches more than one), is refused, or is both ticked and unticked, nothing is saved. The error names each of these rows and lists the rules in the criteria.
+- The folder or report shows its user filter bar (`show_user_filter`) whenever at least one rule is ticked.
+
+```
+# tick an existing Current User rule, labelled "Salesperson"
+set-filter report 2497 --user-filter '"Salesperson": [Job Outside Salesperson.Person Name]'
+# replace split per-value user filters with one ISNOTANYOF user filter
+set-filter report 6932 --text 'ISNOTANYOF([Department], "Trade", "Retail")' --user-filter '"Department": ISNOTANYOF([Department], "Trade", "Retail")'
+# untick it again
+set-filter report 6932 --untick-user-filter '[Department]'
+```
 
 ## Workflow
 
@@ -65,32 +88,41 @@ Side effects `set-filter` mirrors from the web forms (printed as `NOTE:` lines):
 
 **Rules** are joined by `AND` or `OR` — one connective per level; mixing needs parentheses: `A AND (B OR C)`. Each `( … )` is a builder group. No `NOT`: use the negative forms.
 
-**Comparisons**: `[Field] = value`, `!=` (`<>` accepted), `> >= < <=`. Right side: a literal, another field (`[Total] > [Customer.Credit Limit]`), `SETTING("name")`, or `CURRENTUSER()` (compared by full name).
+**Comparisons**: `[Field] = value`, `!=` (`<>` accepted), `> >= < <=`. Right side: a literal, another field (`[Total] > [Customer.Credit Limit]`), `SETTING("name")`, or `CURRENTUSER()` (compared by full name, e.g. `[Salesperson.Person Name] = CURRENTUSER()`). Several fields on the right of one rule must all be on the same record: `ISANYOF([Owner], [Customer.Rep], [Customer.Manager])` works; `ISANYOF([Owner], [Rep], [Customer.Manager])` doesn't.
 
 **Names**
 - `[Field]`; `[Relationship.Field]` uses the *relationship's* name; `[A.B.Field]` multi-hop. Only native fields of the reached object. `#123` stands in for any name by id (`[#123]`, `"#17410"`).
 - Milestone/step names are quoted; prefix a relationship path to test a related record: `INMILESTONE("Customer.Active")`.
-- Selection options by their text (`[Status] = "Won"`); `BLANK` = the *(Blank)* option (selection fields only; otherwise `ISEMPTY`).
+- Selection options by their text (`[Status] = "Won"`); `BLANK` = the *(Blank)* option (selection fields only; otherwise `ISEMPTY`). `CURRENTUSER()` can be one of the options in a selection field's `ISANYOF` / `ISNOTANYOF` list: `ISANYOF([Assigned To], CURRENTUSER(), "Unassigned")`.
 
-**Values**: `"text"` (double inner quotes), numbers, `TRUE`/`FALSE`, `DATE("2026-01-15")` / `DATE("2026-01-15 14:30")` / `DATE(2026,1,15)`, spans `DAYS WEEKS MONTHS YEARS` (relative-date rules) and `DAYS WEEKS HOURS MINUTES SECONDS TIMESPAN(d,h,m,s)` (time span fields), `CURRENTUSER()`, `?` (folders/reports: user fills it in; stands alone).
+**Values**: `"text"` (double inner quotes), numbers, `TRUE`/`FALSE`, `DATE("2026-01-15")` / `DATE("2026-01-15 14:30")` / `DATE(2026,1,15)` / `DATE(2026,1,15,14,30)` (3–6 numbers: year, month, day, then hour, minute, second), spans `DAYS WEEKS MONTHS YEARS` (relative-date rules) and `DAYS WEEKS HOURS MINUTES SECONDS TIMESPAN(d,h,m,s)` (time span fields), `CURRENTUSER()`, `?` (folders/reports: user fills it in; stands alone).
 
-**Operators per field kind** (the parser only accepts what the builder offers):
+**Operators per field kind** (the parser only accepts what the builder offers). The field's type (`type` in the `find-records --catalog`, `field_type` in `list-fields`) decides its kind:
+- number: `number`, `currency`, `percent`, `auto_number`, `calculation`, `aggregate_number`, `aggregate_count`, `id`
+- time span: `time_span`, `aggregate_time_span`, `time_span_expression`
+- date: `date_time`, `appointment` (an appointment compares on its start date and time)
+- yes/no: `boolean`
+- selection: `selection` — *preset* when it has its own option list, otherwise *record-driven* (its options come from records, such as users)
+- text: every other type (text, email, phone number, address, tag, …)
+
 - number / currency: `= != > >= < <=`, `ISANYOF`, `ISNOTANYOF`, `ISEMPTY`, `ISNOTEMPTY`
 - time span: `= != > >= < <=`, `ISEMPTY`, `ISNOTEMPTY`
 - text / record-driven selection: `= !=`, `ISANYOF`, `ISNOTANYOF`, `CONTAINS`, `NOTCONTAINS`, `ISEMPTY`, `ISNOTEMPTY`
-- preset selection / dropdown setting: `= !=`, `ISANYOF`, `ISNOTANYOF` (use `= BLANK` for "not set")
+- preset selection: `= !=`, `ISANYOF`, `ISNOTANYOF` (`= BLANK` = no option chosen, `!= BLANK` = one is)
+- dropdown setting: `= !=`, `ISANYOF`, `ISNOTANYOF`; values are the setting's own options (no `BLANK`)
 - yes/no: `= !=`
-- date: `= != > >= < <=`, `ISANYTIME`, `ISEMPTY`, `BETWEENDATES`, `INTHELAST`, `INTHENEXT`, `MORETHANAGO`, `MORETHANFROMNOW`, `BETWEENRANGE`, periods
+- date: `= != > >= < <=`, `ISANYTIME`, `ISEMPTY`, `BETWEENDATES`, `INTHELAST`, `INTHENEXT`, `MORETHANAGO`, `MORETHANFROMNOW`, `BETWEENRANGE`, periods. There is no `ISNOTEMPTY` for dates: "has a date" is `ISANYTIME([d])`
 - compared with a field / setting / current user: only `= != > >= < <=`, `ISANYOF`, `ISNOTANYOF`, `CONTAINS`, `NOTCONTAINS`
 
 **Functions**
-- Lists/text: `ISEMPTY(f)`, `ISNOTEMPTY(f)`, `ISANYOF(f, v, ...)`, `ISNOTANYOF(f, v, ...)`, `CONTAINS(f, "t")`, `NOTCONTAINS(f, "t")`
+- Lists/text: `ISEMPTY(f)`, `ISNOTEMPTY(f)` (not dates: `ISANYTIME(d)`), `ISANYOF(f, v, ...)`, `ISNOTANYOF(f, v, ...)`, `CONTAINS(f, "t")`, `NOTCONTAINS(f, "t")`
 - Dates: `ISANYTIME(d)`, `BETWEENDATES(d, start, end)`, `INTHELAST(d, DAYS(30))`, `INTHENEXT(d, WEEKS(2))`, `MORETHANAGO(d, MONTHS(6))`, `MORETHANFROMNOW(d, DAYS(7))`, `BETWEENRANGE(d, DAYS(-7), DAYS(7))` (negative = past)
 - Periods (one date): `ISTODAY ISYESTERDAY ISTOMORROW ISTHISWEEK ISLASTWEEK ISNEXTWEEK ISTHISMONTH ISLASTMONTH ISNEXTMONTH ISTHISQUARTER ISLASTQUARTER ISNEXTQUARTER ISTHISYEAR ISLASTYEAR ISNEXTYEAR ISWEEKTODATE ISMONTHTODATE ISQUARTERTODATE ISYEARTODATE`
 - Settings/user: `SETTING("name")` (boolean, text, number, dropdown, date_time, time_span settings), `CURRENTUSER()`
 - Milestones: `INMILESTONE("m", ...)` ≡ `INANYMILESTONE`, `NOTINMILESTONE` ≡ `NOTINANYMILESTONE`, `INALLMILESTONES`, `NOMILESTONES(["Relationship"])`
 - Steps: `HASSTEP("s", ...)` ≡ `HASANYSTEP`, `HASALLSTEPS`, `NOTHASSTEP` ≡ `NOTHASANYSTEP`, `NOTHASALLSTEPS` (missing at least one), `NOSTEPS(["Relationship"])`
-- Report-only entry dates (a date left side): `MILESTONEFIRSTENTERED("m")`, `MILESTONELASTENTERED("m")`, `STEPFIRSTOCCURRED("s")`, `STEPLASTOCCURRED("s")` — e.g. `INTHELAST(MILESTONEFIRSTENTERED("Won"), DAYS(30))`
+- Entry dates (folders, reports and `find-records`; a date left side): `MILESTONEFIRSTENTERED("m")`, `MILESTONELASTENTERED("m")`, `STEPFIRSTOCCURRED("s")`, `STEPLASTOCCURRED("s")` — e.g. `INTHELAST(MILESTONEFIRSTENTERED("Won"), DAYS(30))`. They compare with dates only (`DATE(...)`, spans, periods), not with fields, settings or `CURRENTUSER()`
+- Report-only computed values (a left side compared with values only): `COLUMN("name")` = one of the report's Time Between / Custom Calculation columns, `CUSTOMFIELD("name")` = a filter-only Custom Field (`create-custom-field`). Each compares like a field of its result type — time spans with `DAYS()`/`HOURS()`… (`COLUMN("Days Open") > DAYS(3)`), numbers, dates (`INTHELAST(CUSTOMFIELD("Last Contact"), DAYS(30))`), booleans, text. Evaluated per detail record before grouping (groups with no matching records disappear). Needs the report's columns: `parse-filter --report-id <id>`, `get-filter`/`set-filter report <id>`.
 
 `get-filter` prints `UNSUPPORTED("...")` for a stored rule the language cannot express; `set-filter` rejects that text, so leave such filters to PATH's Designer (or rewrite the rule).
 
@@ -112,7 +144,9 @@ set-filter report 2496 --text 'INTHELAST(MILESTONEFIRSTENTERED("Won"), DAYS(30))
 | `"X" is not an option of this field` | Use an option text from `get-field`, or `BLANK` |
 | `<OP> can't be used with [X] (a … field)` | Operator not offered for that kind — see the table above |
 | `? (fill in later) is only available in folder and report filters` | Put a value, or use the folder/report target |
-| `Milestone and step dates are only available in folder and report filters` | Folder/report targets only (`--allow-entry-dates` or `--report` for parse-filter) |
+| `Milestone and step dates are only available in folder and report filters` | Folder and report targets and `find-records` only (`--allow-entry-dates` or `--report` for parse-filter) |
+| `Milestone and step dates can only be compared with dates` | Compare an entry date with `DATE(...)`, a span or a period, not a field |
+| `Every field compared in one rule must be on the same record` | Split it into one rule per record, joined with `OR` |
 | `The <target> target needs --bo <id>` | Tasks need `--bo`; steps need `--pathway`; folder stickers need `--sticker` |
 | `ERROR [422]: ...` from set-filter | The API's `builder/validate` rejected the pipeline; nothing was saved |
 

@@ -12,12 +12,28 @@ Put these before the command name.
 | `--fields <list>` | Comma-separated field selection |
 | `--quiet` | Output IDs only |
 | `--account <id>` | Account ID (overrides PATH_ACCOUNT_ID env var / saved default) |
-| `--no-cache` | Bypass resolver cache for this invocation |
+| `--no-cache` | Fetch design metadata live for this command (it refreshes the session cache) |
 | `--as-user <id|email|name>` | Act as another member of the account, as the web's Impersonate does (account Admins only; not yourself or a deactivated user) |
 | `--implicit-json` | JSON because the caller left the format to the default |
-| `--with-info` | Repeat designer info (and the account block) that was already shown earlier this session — e.g. after your context was compacted |
+| `--with-context` | Repeat context (and the session context or account block) that was already shown earlier this session — e.g. after your context was compacted |
 
 ## Commands
+
+### `add-record-note`
+
+```
+Usage: add-record-note [options]
+
+Add a note to a record's Notes field, as the field's Add Note button does
+(posted as you, now). Needs Edit on the business object and the field visible
+to you in the record viewer
+
+Options:
+  --record-id <id>    Record ID
+  --field <id|name>   The Notes field (optional when the record has only one)
+  --note <text>       The note text
+  --note-file <path>  Read the note text from a file (instead of --note)
+```
 
 ### `api`
 
@@ -122,7 +138,8 @@ Options:
 ```
 Usage: clear-cache [options]
 
-Clear the resolver cache (all accounts, or one with --account)
+Clear the cached design metadata (all accounts, or one with --account); the
+next commands fetch it again
 
 Options:
   --account <id>  Clear cache for a specific account only
@@ -138,6 +155,20 @@ Mark a task as complete on a record
 Options:
   --record-id <id>  Record ID
   --task-id <id>    Task ID
+```
+
+### `create-calendar`
+
+```
+Usage: create-calendar [options]
+
+Create a calendar (Admins and Calendar Admins, as the web's Add Calendar form).
+You become its owner; everyone can view it until you change --all-users
+(update-calendar) or share it (share-calendar)
+
+Options:
+  --name <name>  Calendar name (unique in the account)
+  --color <hex>  Color, a hex like #1A5E20 (default #1A5E20, the web's preset)
 ```
 
 ### `create-calendar-event`
@@ -172,6 +203,19 @@ Options:
                         override its keys
 ```
 
+### `create-calendar-group`
+
+```
+Usage: create-calendar-group [options]
+
+Create a calendar group (Admins and Calendar Admins, as the web's Add Group
+form). You become its owner
+
+Options:
+  --name <name>       Group name (unique in the account)
+  --calendars <list>  Comma-separated calendars (ids or names), at least one
+```
+
 ### `create-custom-field`
 
 ```
@@ -179,8 +223,9 @@ Usage: create-custom-field [options] <report-id>
 
 Add a filter-only Custom Field to a report: a calculation (--expression,
 expression syntax) or a Time Between (--from/--to: today | field:<date field> |
-milestone:<name> | step:<name>). Compare it in the report filter with
-CUSTOMFIELD("name"); time spans compare in DAYS()/HOURS()...
+milestone:<name> | step:<name>, or the same on a related record through to-one
+relationships, e.g. milestone:Order Related PO.Received). Compare it in the
+report filter with CUSTOMFIELD("name"); time spans compare in DAYS()/HOURS()...
 
 Arguments:
   report-id                              Report ID
@@ -188,12 +233,12 @@ Arguments:
 Options:
   --name <name>                          Custom Field name (unique among the report custom columns/fields)
   --expression <formula>                 Calculation, e.g. "[Total] - [Paid]"
-  --from <source>                        Time Between start
-  --to <source>                          Time Between end
+  --from <source>                        Time Between start, e.g. milestone:Won or milestone:<Relationship>.<name> on a related record
+  --to <source>                          Time Between end (same forms as --from)
   --from-occurrence <first|most_recent>  For milestone/step sources: first | most_recent (default most_recent)
   --to-occurrence <first|most_recent>    For milestone/step sources: first | most_recent (default most_recent)
-  --info <text>                          The Custom Field's info: what it measures and why the filter compares it (at most 50,000 characters)
-  --info-file <path>                     Read the info from a text or markdown file (instead of --info)
+  --context <text>                       The Custom Field's context: what it measures and why the filter compares it (at most 50,000 characters)
+  --context-file <path>                  Read the context from a text or markdown file (instead of --context)
   --dry-run                              Print the column without saving
 ```
 
@@ -202,7 +247,7 @@ Options:
 ```
 Usage: create-folder [options]
 
-Create a folder with permissions (and its info: --info / --info-file)
+Create a folder with permissions (and its context: --context / --context-file)
 
 Options:
   --bo-id <id>                     Business object ID
@@ -220,12 +265,12 @@ Options:
   --map-relationship <name-or-id>  Relationship (name or ID) from this folder's
                                    BO to the account's Address BO; sets
                                    map_enabled and map_relationship_id
-  --info <text>                    The folder's info: what it is for, who uses
-                                   it, what its records have in common — shown
-                                   with the folder to people and AI agents (at
-                                   most 50,000 characters)
-  --info-file <path>               Read the folder's info from a text or
-                                   markdown file (instead of --info)
+  --context <text>                 The folder's context: what it is for, who
+                                   uses it, what its records have in common —
+                                   shown with the folder to people and AI
+                                   agents (at most 50,000 characters)
+  --context-file <path>            Read the folder's context from a text or
+                                   markdown file (instead of --context)
   --dry-run                        Parse/build the request bodies and print
                                    them, but create nothing
 ```
@@ -252,7 +297,7 @@ Usage: create-report [options]
 Create a report the way the web report builder does: columns (fields,
 Relationship.Field, milestone/step dates, Milestones, Count,
 CALC(<expression>), TIMEBETWEEN(<from>, <to>)), Group / Calculation columns, a
-Logic Builder filter, Custom Fields, info. You become its owner; --users /
+Logic Builder filter, Custom Fields, context. You become its owner; --users /
 --roles share it. Needs Create Reports on the business object.
 
 Options:
@@ -265,8 +310,11 @@ Options:
                               step:<name>, milestones, count,
                               CALC(<expression>), TIMEBETWEEN(<from>, <to>)
                               with from/to = today | field:<date field> |
-                              milestone:<name> | step:<name>. Options:
-                              name=<title>, info=<text>,
+                              milestone:<name> | step:<name>, or the same on a
+                              related record through to-one relationships
+                              (first related record), e.g. milestone:Order
+                              Related PO.Received. Options: name=<title>,
+                              context=<text>,
                               group[=day|week|month|quarter|year|<range>|<1d,
                               12h…>], total|average|minimum|maximum,
                               sort=asc|desc, width=<n>,
@@ -291,12 +339,12 @@ Options:
                               column>") and CUSTOMFIELD("<custom field>")
                               compare this report's own
   --include-archived          Include archived records
-  --info <text>               The report's info: what it is for, who uses it,
-                              how to read it — shown with it to people and AI
-                              agents (at most 50,000 characters)
-  --info-file <path>          Read the report's info from a text or markdown
-                              file (instead of --info)
-  --column-info <json>        Info on columns by name, e.g. '{"Margin":"Sell
+  --context <text>            The report's context: what it is for, who uses
+                              it, how to read it — shown with it to people and
+                              AI agents (at most 50,000 characters)
+  --context-file <path>       Read the report's context from a text or markdown
+                              file (instead of --context)
+  --column-context <json>     Context on columns by name, e.g. '{"Margin":"Sell
                               minus cost, per job"}' (computed columns: say how
                               they are calculated)
   --roles <names>             Share with these roles (comma-separated)
@@ -322,6 +370,27 @@ Options:
   --all                       With --preview: every row in one page
 ```
 
+### `delete-calendar`
+
+```
+Usage: delete-calendar [options] <calendar>
+
+Delete a calendar and its events (record appointments are cleared), or move the
+events to another calendar first — the calendar's owner or an Admin / Calendar
+Admin. Asks for confirmation (--confirm <code>)
+
+Arguments:
+  calendar                     Calendar id or name
+
+Options:
+  --move-events-to <calendar>  Keep the events: move every one to this calendar
+                               (one you can edit); record appointments follow
+  --external-events <choice>   A calendar merged with Google / Office 365:
+                               delete the events PATH created there too, or
+                               leave them (default leave)
+  --confirm <code>             The confirmation code the first run printed
+```
+
 ### `delete-calendar-event`
 
 ```
@@ -333,6 +402,21 @@ Arguments:
   id          Calendar event id
 
 Options:
+```
+
+### `delete-calendar-group`
+
+```
+Usage: delete-calendar-group [options] <group>
+
+Delete a calendar group (its calendars and events stay) — the group's owner or
+an Admin / Calendar Admin. Asks for confirmation (--confirm <code>)
+
+Arguments:
+  group             Calendar group id or name
+
+Options:
+  --confirm <code>  The confirmation code the first run printed
 ```
 
 ### `delete-custom-field`
@@ -374,6 +458,20 @@ Options:
   --file-id <id>    File ID
 ```
 
+### `delete-record-note`
+
+```
+Usage: delete-record-note [options]
+
+Delete a note from a record's Notes field, as the Delete button of its Edit
+Note form does. Only the note's author can (list-record-notes shows which are
+yours)
+
+Options:
+  --record-id <id>  Record ID
+  --note-id <id>    Note id (from list-record-notes)
+```
+
 ### `download-record-file`
 
 ```
@@ -409,7 +507,7 @@ Options:
                          starting_record.id is set from --record-id
   --mode <mode>          real-world (default) | super-user (also when the
                          pathway's visibility criteria don't match the record;
-                         Admin or Designer only, this run only)
+                         Designer only, this run only)
 ```
 
 ### `feed-records`
@@ -447,9 +545,9 @@ relationships are unknown to the formula, and a rule on a field whose
 visibility depends on the record only matches records that show it. Archived
 records are left out unless --include-archived. --catalog lists what you can
 search on (fields with their options, relationships, milestones, steps) with
-each one's designer info. --group-by groups the matches instead of listing them
-(as a grouped report does, run on the fly): one row per group with its record
-count and any --sum / --avg / --min / --max totals; only fields and
+each one's designer context. --group-by groups the matches instead of listing
+them (as a grouped report does, run on the fly): one row per group with its
+record count and any --sum / --avg / --min / --max totals; only fields and
 relationships every record shows you can be grouped or totaled. JSON is {
 business_object, formula, total, page, per_page, columns, items: [{ id, record,
 milestones, values }] }, or with --group-by { business_object, formula, total,
@@ -461,7 +559,7 @@ Options:
   --bo-name <name>    Business object name (resolved to ID)
   --logic <formula>   The search as a Logic Builder formula
   --catalog           List what you can search on in this business object, with
-                      designer info, instead of searching
+                      designer context, instead of searching
   --include-archived  Include archived records (left out by default)
   --columns <names>   Comma-separated field / relationship names to show
                       (default: the ones the formula uses)
@@ -496,8 +594,8 @@ Options:
 Usage: get-account [options]
 
 Show the active account (or --account-id): its name, time zone, country and
-info, the designers' description of the business. Read the info at the start of
-a session; it says what the account's records and pathways are for.
+context, the designers' description of the business. Read the context at the
+start of a session; it says what the account's records and pathways are for.
 
 Options:
   --account-id <id>  Account ID (default: the saved / --account account)
@@ -508,12 +606,26 @@ Options:
 ```
 Usage: get-business-object [options]
 
-Get a single business object, with its info (the designer's description of what
-it is for)
+Get a single business object, with its context (the designer's description of
+what it is for)
 
 Options:
   --bo-id <id>      Business object ID
   --bo-name <name>  Business object name
+```
+
+### `get-calendar`
+
+```
+Usage: get-calendar [options] <calendar>
+
+Show a calendar: color, owner, what All Users get, and (for its owner or an
+Admin / Calendar Admin) who it is shared with
+
+Arguments:
+  calendar    Calendar id or name
+
+Options:
 ```
 
 ### `get-calendar-event`
@@ -525,6 +637,20 @@ Get one calendar event by id
 
 Arguments:
   id          Calendar event id
+
+Options:
+```
+
+### `get-calendar-group`
+
+```
+Usage: get-calendar-group [options] <group>
+
+Show a calendar group: its calendars, owner, what All Users get, and (for its
+owner or an Admin / Calendar Admin) who it is shared with
+
+Arguments:
+  group       Calendar group id or name
 
 Options:
 ```
@@ -545,7 +671,7 @@ Options:
 ```
 Usage: get-field [options]
 
-Get a single field on a business object, with its info (the designer's
+Get a single field on a business object, with its context (the designer's
 description of what the field holds and when to fill it)
 
 Options:
@@ -664,13 +790,13 @@ Options:
 Usage: get-record [options]
 
 Get a single record by ID, as the record viewer shows it to you. Also gives the
-designer info of what it shows: business_object {id, name, info}, field_info
-{<field name>: info} and relationship_info {<relationship name>: info} (only
-entries that have info; a relationship field without its own shows the related
-field's). In the record view, related_ids gives each related record's id (open
-it with get-record). Text output ends with a compact info block. Lists of
-related records (inverse relationship tabs, linked records):
-list-related-records
+designer context of what it shows: business_object {id, name, context},
+field_context {<field name>: context} and relationship_context {<relationship
+name>: context} (only entries that have context; a relationship field without
+its own shows the related field's). In the record view, related_ids gives each
+related record's id (open it with get-record). Text output ends with a compact
+context block. Lists of related records (inverse relationship tabs, linked
+records): list-related-records
 
 Options:
   --record-id <id>  Record ID
@@ -685,9 +811,9 @@ Options:
 Usage: get-report [options] <report-id>
 
 Show a report's columns (with column_key / usage), its filter-only Custom
-Fields, its filter as formula text, and the report's and each column's own info
-(what it is for; JSON keys info and columns[].info, once per session like all
-info)
+Fields, its filter as formula text, and the report's and each column's own
+context (what it is for; JSON keys context and columns[].context, once per
+session like all context)
 
 Arguments:
   report-id   Report ID
@@ -735,8 +861,8 @@ Options:
 ```
 Usage: list-business-objects [options]
 
-List business objects (--json adds each one's info: what the designer says it
-is for)
+List business objects (--json adds each one's context: what the designer says
+it is for)
 
 Options:
 ```
@@ -764,6 +890,16 @@ Options:
   --search <text>       Search events by text instead of listing a window
   --page <n>            Page number (search only) (default: "1")
   --per-page <n>        Items per page (search only) (default: "25")
+```
+
+### `list-calendar-groups`
+
+```
+Usage: list-calendar-groups [options]
+
+List the calendar groups you can see, with their calendars and owner
+
+Options:
 ```
 
 ### `list-calendars`
@@ -799,7 +935,7 @@ Options:
 ```
 Usage: list-field-groups [options]
 
-List field groups for a business object (--json adds each one's info)
+List field groups for a business object (--json adds each one's context)
 
 Options:
   --bo-id <id>      Business object ID
@@ -812,8 +948,8 @@ Options:
 ```
 Usage: list-fields [options]
 
-List fields for a business object (--json adds each field's info: what it holds
-and when to fill it)
+List fields for a business object (--json adds each field's context: what it
+holds and when to fill it)
 
 Options:
   --bo-id <id>      Business object ID
@@ -844,11 +980,12 @@ Options:
 ```
 Usage: list-folders [options]
 
-List folders. Each folder carries its own info (what the folder is for, who
-uses it; once per session like all info). Each folder_stickers[] entry carries
-its info; a copy of a business object sticker with no info of its own also gets
-bo_sticker_info (the business object sticker's info, which the copy shows).
-Text output lists folder info and sticker info under the table
+List folders. Each folder carries its own context (what the folder is for, who
+uses it; once per session like all context). Each folder_stickers[] entry
+carries its context; a copy of a business object sticker with no context of its
+own also gets bo_sticker_context (the business object sticker's context, which
+the copy shows). Text output lists folder context and sticker context under the
+table
 
 Options:
   --bo-id <id>      Filter by business object ID
@@ -876,7 +1013,8 @@ Options:
 ```
 Usage: list-pathways [options]
 
-List pathways (--json adds each pathway's info: what the designer built it for)
+List pathways (--json adds each pathway's context: what the designer built it
+for)
 
 Options:
 ```
@@ -937,6 +1075,21 @@ Options:
   --all             Fetch all messages (this is now the default)
 ```
 
+### `list-record-notes`
+
+```
+Usage: list-record-notes [options]
+
+List a record's Notes fields and every note in them, newest first, as the
+record viewer shows them: author, when (your clock), note id, and whether each
+is yours (only the author can edit or delete a note). Only Notes fields the
+record viewer shows you
+
+Options:
+  --record-id <id>   Record ID
+  --field <id|name>  Only this Notes field
+```
+
 ### `list-record-tasks`
 
 ```
@@ -954,16 +1107,17 @@ Options:
 Usage: list-records [options]
 
 List records in a folder (--folder-id / --folder-name), or your recent records.
-JSON is { folder: {id, name, info}, business_object: {id, name, info},
-field_info: [{field_id, name, info}], items } for a folder — folder.info is the
-folder's own info (what it is for, who uses it), field_info lists the folder's
-columns that have designer info (a relationship field without its own shows the
-related field's) — and { business_objects: [{id, name, info, field_info}],
-items } for recent records (one entry per business object present). items is
-the record list as before. Text output prints the table, then a "Folder info:",
-a "Business object info:" and a "Field info:" block (only what has info). Like
-all info, each is shown once per session; later calls leave it out (pass
---with-info to repeat)
+JSON is { folder: {id, name, context}, business_object: {id, name, context},
+field_context: [{field_id, name, context}], items } for a folder —
+folder.context is the folder's own context (what it is for, who uses it),
+field_context lists the folder's columns that have designer context (a
+relationship field without its own shows the related field's) — and {
+business_objects: [{id, name, context, field_context}], items } for recent
+records (one entry per business object present). items is the record list as
+before. Text output prints the table, then a "Folder context:", a "Business
+object context:" and a "Field context:" block (only what has context). Like all
+context, each is shown once per session; later calls leave it out (pass
+--with-context to repeat)
 
 Options:
   --folder-id <id>      Folder ID to list records from
@@ -985,18 +1139,19 @@ A record's related records as the record viewer shows them to you. Without
 relationships (the records this one links to: relationship cards, Contacts,
 People, Addresses) and inverse relationship tabs (records that link to this
 one), each with direction, relationship id, name, the related business object
-{id, name, info}, the relationship's info and a count. With --relationship-id /
---relationship-name: that list's records with the record viewer's columns — an
-inverse tab's Table Columns (fields, linked-record lookups, nested tables,
-pathway buttons, milestones), a direct relationship's identifier, milestones
-and linked fields (an address's Street / City / State / Zip). JSON: { record,
-direction, relationship {id, name, info}, business_object {id, name, info},
-columns [{kind, name, field_id?, relationship_id?, pathway_id?, info}], items
-[{id, identifier, values, linked_ids?}] } — a column's info is the info of the
-field / relationship / pathway it is based on (once per session, like all
-info). Open any listed record with get-record --record-id <id>. Relationships
-the record viewer doesn't show you (hidden, visibility rules, business objects
-you can't view) are refused
+{id, name, context}, the relationship's context and a count. With
+--relationship-id / --relationship-name: that list's records with the record
+viewer's columns — an inverse tab's Table Columns (fields, linked-record
+lookups, nested tables, pathway buttons, milestones), a direct relationship's
+identifier, milestones and linked fields (an address's Street / City / State /
+Zip). JSON: { record, direction, relationship {id, name, context},
+business_object {id, name, context}, columns [{kind, name, field_id?,
+relationship_id?, pathway_id?, context}], items [{id, identifier, values,
+linked_ids?}] } — a column's context is the context of the field / relationship
+/ pathway it is based on (once per session, like all context). Open any listed
+record with get-record --record-id <id>. Relationships the record viewer
+doesn't show you (hidden, visibility rules, business objects you can't view)
+are refused
 
 Options:
   --record-id <id>            The record whose related records to list
@@ -1014,7 +1169,7 @@ Options:
 ```
 Usage: list-relationships [options]
 
-List relationships for a business object (--json adds each one's info)
+List relationships for a business object (--json adds each one's context)
 
 Options:
   --bo-id <id>      Business object ID
@@ -1029,8 +1184,9 @@ Options:
 ```
 Usage: list-reports [options]
 
-List reports. Each report carries its own info (what the report is for, how to
-read it; once per session like all info); text output lists it under the table
+List reports. Each report carries its own context (what the report is for, how
+to read it; once per session like all context); text output lists it under the
+table
 
 Options:
   --page <n>      Fetch only this single page (default: all reports)
@@ -1089,7 +1245,7 @@ Options:
 ```
 Usage: list-workflow-milestones [options]
 
-List workflow milestones for a business object (--json adds each one's info)
+List workflow milestones for a business object (--json adds each one's context)
 
 Options:
   --bo-id <id>      Business object ID
@@ -1102,7 +1258,7 @@ Options:
 ```
 Usage: list-workflow-steps [options]
 
-List workflow steps for a business object (--json adds each one's info)
+List workflow steps for a business object (--json adds each one's context)
 
 Options:
   --bo-id <id>      Business object ID
@@ -1114,7 +1270,7 @@ Options:
 ```
 Usage: list-workflow-tasks [options]
 
-List workflow tasks for a business object (--json adds each one's info)
+List workflow tasks for a business object (--json adds each one's context)
 
 Options:
   --bo-id <id>      Business object ID
@@ -1215,12 +1371,12 @@ Commands:
   available [options]            Which pathways a user could start from a
                                  launch point (a record's Pathways tab, the
                                  dashboard, a folder or a task), each with its
-                                 designer info (what it is for: read it to
+                                 designer context (what it is for: read it to
                                  decide whether a pathway does what the user
                                  asked), and with --all the reason for each one
-                                 left out. Like all info, a pathway's is shown
-                                 once per session (later calls leave it out;
-                                 --with-info repeats it)
+                                 left out. Like all context, a pathway's is
+                                 shown once per session (later calls leave it
+                                 out; --with-context repeats it)
   show [options]                 Show a run: the screen it is waiting on, or
                                  how it ended
   submit [options]               Answer the paused screen (only what that
@@ -1262,7 +1418,7 @@ Options:
   --mode <mode>              real-world (default: only launches the user could
                              make in the web app) | super-user (also when the
                              pathway's visibility criteria don't match the
-                             record; Admin or Designer only, this run only)
+                             record; Designer only, this run only)
   --as-user <id|email|name>  Run as another account member (admin impersonation
                              session)
   --tag <tag>                Pre-run tag choice for created records: "<tag
@@ -1326,10 +1482,10 @@ Options:
 Usage: pathway-run available [options]
 
 Which pathways a user could start from a launch point (a record's Pathways tab,
-the dashboard, a folder or a task), each with its designer info (what it is
+the dashboard, a folder or a task), each with its designer context (what it is
 for: read it to decide whether a pathway does what the user asked), and with
---all the reason for each one left out. Like all info, a pathway's is shown
-once per session (later calls leave it out; --with-info repeats it)
+--all the reason for each one left out. Like all context, a pathway's is shown
+once per session (later calls leave it out; --with-context repeats it)
 
 Options:
   --record-id <id>           Record viewer of this record
@@ -1461,20 +1617,21 @@ Options:
 Usage: run-report [options]
 
 Run a report and print its rows (the web app's report view; in real-world mode
-only reports the acting user can open). Also gives the report's own info
-(report {id, name, info}: what it is for, how to read it), its root business
-object {id, name, info} and each column's info — the column's own info when the
-report has one on it, otherwise the info of the field the column shows (for a
-column through relationships, the end field's, with the relationships on the
-path and their info); count, milestone, step and calculated columns have only
-their own, a Time Between / Time Span column on one field falls back to that
-field's. Filter-only Custom Fields (compared by the filter, not shown) come
-with their own info. --json keeps the server's { rows, meta } and adds report,
-business_object, columns [{name, column_type, field_id?, relationship_path?,
-info}] and custom_fields [{name, column_type, info}]; text output prints a
-"Report info:", a "Business object info:", a "Column info:" and a "Custom Field
-info" block under the rows (only what has info). Like all info, each is shown
-once per session; later runs leave it out (pass --with-info to repeat)
+only reports the acting user can open). Also gives the report's own context
+(report {id, name, context}: what it is for, how to read it), its root business
+object {id, name, context} and each column's context — the column's own context
+when the report has one on it, otherwise the context of the field the column
+shows (for a column through relationships, the end field's, with the
+relationships on the path and their context); count, milestone, step and
+calculated columns have only their own, a Time Between / Time Span column on
+one field falls back to that field's. Filter-only Custom Fields (compared by
+the filter, not shown) come with their own context. --json keeps the server's {
+rows, meta } and adds report, business_object, columns [{name, column_type,
+field_id?, relationship_path?, context}] and custom_fields [{name, column_type,
+context}]; text output prints a "Report context:", a "Business object
+context:", a "Column context:" and a "Custom Field context" block under the
+rows (only what has context). Like all context, each is shown once per session;
+later runs leave it out (pass --with-context to repeat)
 
 Options:
   --report-id <id>      Report ID
@@ -1532,6 +1689,8 @@ Post a message on a record
 Options:
   --record-id <id>  Record ID
   --message <text>  Message text
+  --to <users>      Comma-separated users to @mention and notify, as the web's
+                    message box does: ids, emails or full names
 ```
 
 ### `send-record-email`
@@ -1544,6 +1703,20 @@ Send an email from a record
 Options:
   --record-id <id>  Record ID
   --data <json>     JSON body (to, subject, body, ...)
+```
+
+### `session-context`
+
+```
+Usage: session-context [options]
+
+Show the session context in full: the account and its context, the pathways you
+can start from the dashboard with their context, and your process context
+(guidance for your roles on the business objects you can view or edit). It is
+given automatically at sign-in, on use-account and before the first command of
+every session; run this to reload it, e.g. after your context was compacted
+
+Options:
 ```
 
 ### `set-appointment`
@@ -1588,18 +1761,68 @@ changed. The PATH CLI changes folder, folder-sticker and report filters (with
 Edit on them); the other targets are Designer work for the PATH Designer CLI.
 
 Arguments:
-  target            Where the filter lives (see Targets below)
-  id                Id of the object holding the filter
+  target                      Where the filter lives (see Targets below)
+  id                          Id of the object holding the filter
 
 Options:
-  --text <formula>  Formula text, e.g. '[Status] = "Won" AND HASSTEP("Send
-                    Quote")'
-  --clear           Remove the filter (saved as null, as the builder does when
-                    emptied)
-  --bo <id>         Business object ID (task targets)
-  --pathway <id>    Pathway ID (fork, table-filter)
-  --sticker <id>    Folder sticker ID (folder-sticker)
-  --dry-run         Parse and validate, print the pipeline, but do not save
+  --text <formula>            Formula text, e.g. '[Status] = "Won" AND
+                              HASSTEP("Send Quote")'
+  --clear                     Remove the filter (saved as null, as the builder
+                              does when emptied)
+  --bo <id>                   Business object ID (task targets)
+  --pathway <id>              Pathway ID (fork, table-filter)
+  --sticker <id>              Folder sticker ID (folder-sticker)
+  --user-filter <row>         folder / report: tick the row's User Filter
+                              checkbox (repeatable). <row> = [Field] /
+                              [Relationship.Field] when one rule compares it,
+                              or the whole rule, e.g. 'ISNOTANYOF([Job Type],
+                              "A", "B")'; prefix '"Label": ' to name it for
+                              viewers (a get-filter "user filter" line is taken
+                              as is). Without --text the stored rules are kept
+  --untick-user-filter <row>  folder / report: untick the row's User Filter
+                              checkbox (repeatable; <row> as for --user-filter)
+  --dry-run                   Parse and validate, print the pipeline, but do
+                              not save
+```
+
+### `share-calendar`
+
+```
+Usage: share-calendar [options] <calendar>
+
+Share a calendar with users and/or roles (view or edit its events), make one
+user its owner, or remove their access — the calendar's owner or an Admin /
+Calendar Admin, as the web's Permissions tab
+
+Arguments:
+  calendar          Calendar id or name
+
+Options:
+  --users <list>    Comma-separated users: ids, emails or full names
+  --roles <list>    Comma-separated roles: ids or names ("All Users" sets what
+                    everyone gets)
+  --access <level>  view, edit (implies view), owner (one user; the previous
+                    owner keeps view/edit), or remove (drop their row)
+```
+
+### `share-calendar-group`
+
+```
+Usage: share-calendar-group [options] <group>
+
+Share a calendar group with users and/or roles (view, or edit its name and
+calendars), make one user its owner, or remove their access — the group's owner
+or an Admin / Calendar Admin. Doesn't change access to the calendars inside it
+
+Arguments:
+  group             Calendar group id or name
+
+Options:
+  --users <list>    Comma-separated users: ids, emails or full names
+  --roles <list>    Comma-separated roles: ids or names ("All Users" sets what
+                    everyone gets)
+  --access <level>  view, edit (implies view), owner (one user; the previous
+                    owner keeps view/edit), or remove
 ```
 
 ### `unarchive-record`
@@ -1635,6 +1858,25 @@ Unlink a record from its target on a given relationship
 Options:
   --record-id <id>        Source record ID
   --relationship-id <id>  Relationship ID to clear
+```
+
+### `update-calendar`
+
+```
+Usage: update-calendar [options] <calendar>
+
+Rename or recolor a calendar, or set what All Users get (view, edit or none) —
+the calendar's owner or an Admin / Calendar Admin
+
+Arguments:
+  calendar             Calendar id or name
+
+Options:
+  --name <name>        New name
+  --color <hex>        New color, a hex like #1A5E20
+  --all-users <level>  What every member gets without another grant: view (the
+                       default for a new calendar), edit, or none (only people
+                       and roles it is shared with)
 ```
 
 ### `update-calendar-event`
@@ -1673,14 +1915,35 @@ Options:
                         keys
 ```
 
+### `update-calendar-group`
+
+```
+Usage: update-calendar-group [options] <group>
+
+Rename a calendar group or change its calendars (Edit on the group), or set
+what All Users get (the group's owner or an Admin / Calendar Admin)
+
+Arguments:
+  group                      Calendar group id or name
+
+Options:
+  --name <name>              New name
+  --calendars <list>         Replace its calendars (comma-separated ids or
+                             names)
+  --add-calendars <list>     Add calendars
+  --remove-calendars <list>  Remove calendars
+  --all-users <level>        What every member gets on the group without
+                             another grant: view, edit or none
+```
+
 ### `update-custom-field`
 
 ```
 Usage: update-custom-field [options] <report-id> <field>
 
 Change a report Custom Field's name, definition (--expression, or --from/--to)
-or info (--info / --info-file). Filter rules keep working: they reference the
-field's key, not its name.
+or context (--context / --context-file). Filter rules keep working: they
+reference the field's key, not its name.
 
 Arguments:
   report-id                              Report ID
@@ -1693,8 +1956,8 @@ Options:
   --to <source>                          New Time Between end
   --from-occurrence <first|most_recent>  For milestone/step sources: first | most_recent (default most_recent)
   --to-occurrence <first|most_recent>    For milestone/step sources: first | most_recent (default most_recent)
-  --info <text>                          New info for the Custom Field ("" clears it)
-  --info-file <path>                     Read the new info from a text or markdown file (instead of --info)
+  --context <text>                       New context for the Custom Field ("" clears it)
+  --context-file <path>                  Read the new context from a text or markdown file (instead of --context)
 ```
 
 ### `update-folder`
@@ -1702,28 +1965,29 @@ Options:
 ```
 Usage: update-folder [options]
 
-Change a folder's info or settings, saved the way the folder form saves it
+Change a folder's context or settings, saved the way the folder form saves it
 (everything else as stored). Needs Edit on the folder. --data keys:
 folder_name, include_archived, columns, sorts, default_sort_field,
 default_sort_direction, map_enabled, map_relationship_id, info, sticker_info
 (criteria: set-filter folder; sticker criteria: set-filter folder-sticker)
 
 Options:
-  --folder-id <id>      Folder ID
-  --folder-name <name>  Folder name (requires --bo-id or --bo-name)
-  --bo-id <id>          Business object ID (for --folder-name)
-  --bo-name <name>      Business object name (for --folder-name)
-  --info <text>         Info: what it is for, who uses it, how to read it —
-                        shown with it to people and AI agents ("" clears it; at
-                        most 50,000 characters)
-  --info-file <path>    Read the info from a text or markdown file (instead of
-                        --info)
-  --data <json>         JSON object of folder keys to change, e.g.
-                        '{"folder_name":"Active
-                        Jobs","info":"…","sticker_info":{"Late":"Past its due
-                        date"}}' — sticker_info sets each named sticker's own
-                        info (by sticker id or name; null clears it)
-  --dry-run             Print the save body without saving
+  --folder-id <id>       Folder ID
+  --folder-name <name>   Folder name (requires --bo-id or --bo-name)
+  --bo-id <id>           Business object ID (for --folder-name)
+  --bo-name <name>       Business object name (for --folder-name)
+  --context <text>       Context: what it is for, who uses it, how to read it —
+                         shown with it to people and AI agents ("" clears it;
+                         at most 50,000 characters)
+  --context-file <path>  Read the context from a text or markdown file (instead
+                         of --context)
+  --data <json>          JSON object of folder keys to change, e.g.
+                         '{"folder_name":"Active
+                         Jobs","context":"…","sticker_context":{"Late":"Past
+                         its due date"}}' — sticker_context sets each named
+                         sticker's own context (by sticker id or name; null
+                         clears it)
+  --dry-run              Print the save body without saving
 ```
 
 ### `update-message`
@@ -1796,31 +2060,47 @@ Options:
   --data <json>     JSON body with fields to update
 ```
 
+### `update-record-note`
+
+```
+Usage: update-record-note [options]
+
+Change the text of a note in a record's Notes field, as its Edit Note form
+does. Only the note's author can (list-record-notes shows which are yours)
+
+Options:
+  --record-id <id>    Record ID
+  --note-id <id>      Note id (from list-record-notes)
+  --note <text>       The new note text
+  --note-file <path>  Read the new note text from a file (instead of --note)
+```
+
 ### `update-report`
 
 ```
 Usage: update-report [options]
 
-Change a report's info or settings, saved the way the report form saves it
+Change a report's context or settings, saved the way the report form saves it
 (columns, filter, scheduling as stored). Needs Edit on the report. --data keys:
 name, include_archived, info, column_info (filter: set-filter report; Custom
 Fields: create-custom-field / update-custom-field)
 
 Options:
-  --report-id <id>      Report ID
-  --report-name <name>  Report name (resolved to ID)
-  --info <text>         Info: what it is for, who uses it, how to read it —
-                        shown with it to people and AI agents ("" clears it; at
-                        most 50,000 characters)
-  --info-file <path>    Read the info from a text or markdown file (instead of
-                        --info)
-  --data <json>         JSON object of report keys to change, e.g.
-                        '{"name":"Open
-                        Quotes","info":"…","column_info":{"Total":"Quoted price
-                        incl. tax"}}' — column_info sets each named column's
-                        own info (by column id, column_key or name; null clears
-                        it, and the column shows its field's info again)
-  --dry-run             Print the save body without saving
+  --report-id <id>       Report ID
+  --report-name <name>   Report name (resolved to ID)
+  --context <text>       Context: what it is for, who uses it, how to read it —
+                         shown with it to people and AI agents ("" clears it;
+                         at most 50,000 characters)
+  --context-file <path>  Read the context from a text or markdown file (instead
+                         of --context)
+  --data <json>          JSON object of report keys to change, e.g.
+                         '{"name":"Open
+                         Quotes","context":"…","column_context":{"Total":"Quoted
+                         price incl. tax"}}' — column_context sets each named
+                         column's own context (by column id, column_key or
+                         name; null clears it, and the column shows its field's
+                         context again)
+  --dry-run              Print the save body without saving
 ```
 
 ### `upload-record-file`
@@ -1844,7 +2124,8 @@ Options:
 Usage: use-account [options] [account-id]
 
 Set the default account for subsequent commands (persists to ~/.path-cli/.env),
-and show the account's info (what the business does, written by its designers)
+and show its session context: the account and its context (what the business
+does), the pathways you can start from the dashboard, and your process context
 
 Arguments:
   account-id  Account ID to use (omit to print the current default)

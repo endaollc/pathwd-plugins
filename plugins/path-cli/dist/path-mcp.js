@@ -4064,10 +4064,10 @@ var require_util = __commonJS({
     var codegen_1 = require_codegen();
     var code_1 = require_code();
     function toHash(arr) {
-      const hash = {};
+      const hash2 = {};
       for (const item2 of arr)
-        hash[item2] = true;
-      return hash;
+        hash2[item2] = true;
+      return hash2;
     }
     exports.toHash = toHash;
     function alwaysValidSchema(it, schema) {
@@ -5814,8 +5814,8 @@ var require_validate = __commonJS({
           return data;
       }
       let expr = data;
-      const segments = jsonPointer.split("/");
-      for (const segment of segments) {
+      const segments2 = jsonPointer.split("/");
+      for (const segment of segments2) {
         if (segment) {
           data = (0, codegen_1._)`${data}${(0, codegen_1.getProperty)((0, util_1.unescapeJsonPointer)(segment))}`;
           expr = (0, codegen_1._)`${expr} && ${data}`;
@@ -5981,22 +5981,22 @@ var require_compile = __commonJS({
       }
     }
     exports.compileSchema = compileSchema;
-    function resolveRef2(root, baseId, ref) {
+    function resolveRef2(root2, baseId, ref) {
       var _a;
       ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, ref);
-      const schOrFunc = root.refs[ref];
+      const schOrFunc = root2.refs[ref];
       if (schOrFunc)
         return schOrFunc;
-      let _sch = resolve12.call(this, root, ref);
+      let _sch = resolve14.call(this, root2, ref);
       if (_sch === void 0) {
-        const schema = (_a = root.localRefs) === null || _a === void 0 ? void 0 : _a[ref];
+        const schema = (_a = root2.localRefs) === null || _a === void 0 ? void 0 : _a[ref];
         const { schemaId } = this.opts;
         if (schema)
-          _sch = new SchemaEnv({ schema, schemaId, root, baseId });
+          _sch = new SchemaEnv({ schema, schemaId, root: root2, baseId });
       }
       if (_sch === void 0)
         return;
-      return root.refs[ref] = inlineOrCompile.call(this, _sch);
+      return root2.refs[ref] = inlineOrCompile.call(this, _sch);
     }
     exports.resolveRef = resolveRef2;
     function inlineOrCompile(sch) {
@@ -6014,23 +6014,23 @@ var require_compile = __commonJS({
     function sameSchemaEnv(s1, s2) {
       return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
     }
-    function resolve12(root, ref) {
+    function resolve14(root2, ref) {
       let sch;
       while (typeof (sch = this.refs[ref]) == "string")
         ref = sch;
-      return sch || this.schemas[ref] || resolveSchema.call(this, root, ref);
+      return sch || this.schemas[ref] || resolveSchema.call(this, root2, ref);
     }
-    function resolveSchema(root, ref) {
+    function resolveSchema(root2, ref) {
       const p = this.opts.uriResolver.parse(ref);
       const refPath = (0, resolve_1._getFullPath)(this.opts.uriResolver, p);
-      let baseId = (0, resolve_1.getFullPath)(this.opts.uriResolver, root.baseId, void 0);
-      if (Object.keys(root.schema).length > 0 && refPath === baseId) {
-        return getJsonPointer.call(this, p, root);
+      let baseId = (0, resolve_1.getFullPath)(this.opts.uriResolver, root2.baseId, void 0);
+      if (Object.keys(root2.schema).length > 0 && refPath === baseId) {
+        return getJsonPointer.call(this, p, root2);
       }
       const id = (0, resolve_1.normalizeId)(refPath);
       const schOrRef = this.refs[id] || this.schemas[id];
       if (typeof schOrRef == "string") {
-        const sch = resolveSchema.call(this, root, schOrRef);
+        const sch = resolveSchema.call(this, root2, schOrRef);
         if (typeof (sch === null || sch === void 0 ? void 0 : sch.schema) !== "object")
           return;
         return getJsonPointer.call(this, p, sch);
@@ -6045,7 +6045,7 @@ var require_compile = __commonJS({
         const schId = schema[schemaId];
         if (schId)
           baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
-        return new SchemaEnv({ schema, schemaId, root, baseId });
+        return new SchemaEnv({ schema, schemaId, root: root2, baseId });
       }
       return getJsonPointer.call(this, p, schOrRef);
     }
@@ -6057,7 +6057,7 @@ var require_compile = __commonJS({
       "dependencies",
       "definitions"
     ]);
-    function getJsonPointer(parsedRef, { baseId, schema, root }) {
+    function getJsonPointer(parsedRef, { baseId, schema, root: root2 }) {
       var _a;
       if (((_a = parsedRef.fragment) === null || _a === void 0 ? void 0 : _a[0]) !== "/")
         return;
@@ -6076,10 +6076,10 @@ var require_compile = __commonJS({
       let env;
       if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
         const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
-        env = resolveSchema.call(this, root, $ref);
+        env = resolveSchema.call(this, root2, $ref);
       }
       const { schemaId } = this.opts;
-      env = env || new SchemaEnv({ schema, schemaId, root, baseId });
+      env = env || new SchemaEnv({ schema, schemaId, root: root2, baseId });
       if (env.schema !== env.root.schema)
         return env;
       return void 0;
@@ -6844,7 +6844,7 @@ var require_fast_uri = __commonJS({
       }
       return uri;
     }
-    function resolve12(baseURI, relativeURI, options) {
+    function resolve14(baseURI, relativeURI, options) {
       const schemelessOptions = options ? Object.assign({ scheme: "null" }, options) : { scheme: "null" };
       const {
         parsed: baseParsed,
@@ -7213,7 +7213,7 @@ var require_fast_uri = __commonJS({
     var fastUri = {
       SCHEMES,
       normalize,
-      resolve: resolve12,
+      resolve: resolve14,
       resolveComponent,
       equal,
       serialize,
@@ -7518,8 +7518,8 @@ var require_core = __commonJS({
           keyRef = sch;
         if (sch === void 0) {
           const { schemaId } = this.opts;
-          const root = new compile_1.SchemaEnv({ schema: {}, schemaId });
-          sch = compile_1.resolveSchema.call(this, root, keyRef);
+          const root2 = new compile_1.SchemaEnv({ schema: {}, schemaId });
+          sch = compile_1.resolveSchema.call(this, root2, keyRef);
           if (!sch)
             return;
           this.refs[keyRef] = sch;
@@ -7634,9 +7634,9 @@ var require_core = __commonJS({
         const rules = this.RULES.all;
         metaSchema = JSON.parse(JSON.stringify(metaSchema));
         for (const jsonPointer of keywordsJsonPointers) {
-          const segments = jsonPointer.split("/").slice(1);
+          const segments2 = jsonPointer.split("/").slice(1);
           let keywords = metaSchema;
-          for (const seg of segments)
+          for (const seg of segments2)
             keywords = keywords[seg];
           for (const key in rules) {
             const rule = rules[key];
@@ -7880,20 +7880,20 @@ var require_ref = __commonJS({
       code(cxt) {
         const { gen, schema: $ref, it } = cxt;
         const { baseId, schemaEnv: env, validateName, opts, self } = it;
-        const { root } = env;
-        if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
+        const { root: root2 } = env;
+        if (($ref === "#" || $ref === "#/") && baseId === root2.baseId)
           return callRootRef();
-        const schOrEnv = compile_1.resolveRef.call(self, root, baseId, $ref);
+        const schOrEnv = compile_1.resolveRef.call(self, root2, baseId, $ref);
         if (schOrEnv === void 0)
           throw new ref_error_1.default(it.opts.uriResolver, baseId, $ref);
         if (schOrEnv instanceof compile_1.SchemaEnv)
           return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-          if (env === root)
+          if (env === root2)
             return callRef(cxt, validateName, env, env.$async);
-          const rootName = gen.scopeValue("root", { ref: root });
-          return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root, root.$async);
+          const rootName = gen.scopeValue("root", { ref: root2 });
+          return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root2, root2.$async);
         }
         function callValidate(sch) {
           const v = getValidate(cxt, sch);
@@ -9564,8 +9564,8 @@ var require_discriminator = __commonJS({
     var ref_error_1 = require_ref_error();
     var util_1 = require_util();
     var error2 = {
-      message: ({ params: { discrError, tagName } }) => discrError === types_1.DiscrError.Tag ? `tag "${tagName}" must be string` : `value of tag "${tagName}" must be in oneOf`,
-      params: ({ params: { discrError, tag, tagName } }) => (0, codegen_1._)`{error: ${discrError}, tag: ${tagName}, tagValue: ${tag}}`
+      message: ({ params: { discrError, tagName: tagName2 } }) => discrError === types_1.DiscrError.Tag ? `tag "${tagName2}" must be string` : `value of tag "${tagName2}" must be in oneOf`,
+      params: ({ params: { discrError, tag, tagName: tagName2 } }) => (0, codegen_1._)`{error: ${discrError}, tag: ${tagName2}, tagValue: ${tag}}`
     };
     var def = {
       keyword: "discriminator",
@@ -9578,16 +9578,16 @@ var require_discriminator = __commonJS({
         if (!it.opts.discriminator) {
           throw new Error("discriminator: requires discriminator option");
         }
-        const tagName = schema.propertyName;
-        if (typeof tagName != "string")
+        const tagName2 = schema.propertyName;
+        if (typeof tagName2 != "string")
           throw new Error("discriminator: requires propertyName");
         if (schema.mapping)
           throw new Error("discriminator: mapping is not supported");
         if (!oneOf)
           throw new Error("discriminator: requires oneOf keyword");
         const valid = gen.let("valid", false);
-        const tag = gen.const("tag", (0, codegen_1._)`${data}${(0, codegen_1.getProperty)(tagName)}`);
-        gen.if((0, codegen_1._)`typeof ${tag} == "string"`, () => validateMapping(), () => cxt.error(false, { discrError: types_1.DiscrError.Tag, tag, tagName }));
+        const tag = gen.const("tag", (0, codegen_1._)`${data}${(0, codegen_1.getProperty)(tagName2)}`);
+        gen.if((0, codegen_1._)`typeof ${tag} == "string"`, () => validateMapping(), () => cxt.error(false, { discrError: types_1.DiscrError.Tag, tag, tagName: tagName2 }));
         cxt.ok(valid);
         function validateMapping() {
           const mapping = getMapping();
@@ -9597,7 +9597,7 @@ var require_discriminator = __commonJS({
             gen.assign(valid, applyTagSchema(mapping[tagValue]));
           }
           gen.else();
-          cxt.error(false, { discrError: types_1.DiscrError.Mapping, tag, tagName });
+          cxt.error(false, { discrError: types_1.DiscrError.Mapping, tag, tagName: tagName2 });
           gen.endIf();
         }
         function applyTagSchema(schemaProp) {
@@ -9621,18 +9621,18 @@ var require_discriminator = __commonJS({
               if (sch === void 0)
                 throw new ref_error_1.default(it.opts.uriResolver, it.baseId, ref);
             }
-            const propSch = (_a = sch === null || sch === void 0 ? void 0 : sch.properties) === null || _a === void 0 ? void 0 : _a[tagName];
+            const propSch = (_a = sch === null || sch === void 0 ? void 0 : sch.properties) === null || _a === void 0 ? void 0 : _a[tagName2];
             if (typeof propSch != "object") {
-              throw new Error(`discriminator: oneOf subschemas (or referenced schemas) must have "properties/${tagName}"`);
+              throw new Error(`discriminator: oneOf subschemas (or referenced schemas) must have "properties/${tagName2}"`);
             }
             tagRequired = tagRequired && (topRequired || hasRequired(sch));
             addMappings(propSch, i);
           }
           if (!tagRequired)
-            throw new Error(`discriminator: "${tagName}" must be required`);
+            throw new Error(`discriminator: "${tagName2}" must be required`);
           return oneOfMapping;
           function hasRequired({ required: required2 }) {
-            return Array.isArray(required2) && required2.includes(tagName);
+            return Array.isArray(required2) && required2.includes(tagName2);
           }
           function addMappings(sch, i) {
             if (sch.const) {
@@ -9642,12 +9642,12 @@ var require_discriminator = __commonJS({
                 addMapping(tagValue, i);
               }
             } else {
-              throw new Error(`discriminator: "properties/${tagName}" must have "const" or "enum"`);
+              throw new Error(`discriminator: "properties/${tagName2}" must have "const" or "enum"`);
             }
           }
           function addMapping(tagValue, i) {
             if (typeof tagValue != "string" || tagValue in oneOfMapping) {
-              throw new Error(`discriminator: "${tagName}" values must be unique strings`);
+              throw new Error(`discriminator: "${tagName2}" values must be unique strings`);
             }
             oneOfMapping[tagValue] = i;
           }
@@ -10203,8 +10203,8 @@ var require_dist = __commonJS({
 });
 
 // .path-mcp/src/stdio.ts
-import { homedir as homedir5 } from "node:os";
-import { dirname as dirname7, resolve as resolve11 } from "node:path";
+import { homedir as homedir6 } from "node:os";
+import { dirname as dirname7, resolve as resolve13 } from "node:path";
 
 // .path-mcp/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
 import process2 from "node:process";
@@ -13736,8 +13736,8 @@ var JSONSchemaGenerator = class {
       // uri: _params?.uri ?? ((id) => `${id}`),
       external: _params?.external ?? void 0
     };
-    const root = this.seen.get(schema);
-    if (!root)
+    const root2 = this.seen.get(schema);
+    if (!root2)
       throw new Error("Unprocessed schema. This is a bug in Zod.");
     const makeURI = (entry) => {
       const defsSegment = this.target === "draft-2020-12" ? "$defs" : "definitions";
@@ -13751,7 +13751,7 @@ var JSONSchemaGenerator = class {
         entry[1].defId = id;
         return { defId: id, ref: `${uriGenerator("__shared")}#/${defsSegment}/${id}` };
       }
-      if (entry[1] === root) {
+      if (entry[1] === root2) {
         return { ref: "#" };
       }
       const uriPrefix = `#`;
@@ -13857,7 +13857,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
         throw new Error("Schema is missing an `id` property");
       result.$id = params.external.uri(id);
     }
-    Object.assign(result, root.def);
+    Object.assign(result, root2.def);
     const defs = params.external?.defs ?? {};
     for (const entry of this.seen.entries()) {
       const seen = entry[1];
@@ -16334,12 +16334,12 @@ var StdioServerTransport = class {
     this.onclose?.();
   }
   send(message2) {
-    return new Promise((resolve12) => {
+    return new Promise((resolve14) => {
       const json = serializeMessage(message2);
       if (this._stdout.write(json)) {
-        resolve12();
+        resolve14();
       } else {
-        this._stdout.once("drain", resolve12);
+        this._stdout.once("drain", resolve14);
       }
     });
   }
@@ -16625,6 +16625,640 @@ async function closeOpenTabs(timeoutMs = 2e3) {
   clearTimeout(timer);
 }
 
+// .path-cli/src/metadata-cache.ts
+import { createHash as createHash2 } from "node:crypto";
+import { existsSync as existsSync3, mkdirSync as mkdirSync4, readFileSync as readFileSync4, readdirSync, renameSync as renameSync2, rmSync as rmSync2, writeFileSync as writeFileSync4 } from "node:fs";
+import { homedir as homedir3 } from "node:os";
+import { resolve as resolve3 } from "node:path";
+
+// .path-cli/src/cache.ts
+import { readFileSync as readFileSync2, writeFileSync as writeFileSync2, existsSync as existsSync2, mkdirSync as mkdirSync2, rmSync } from "fs";
+import { resolve as resolve2 } from "path";
+import { homedir as homedir2 } from "os";
+var DEFAULT_TTL_MS = 10 * 60 * 1e3;
+var _cacheEnabled = true;
+var _accountId = "";
+var _sessionMetadata = false;
+function getCacheDir(accountId) {
+  return resolve2(homedir2(), ".path-cli", "cache", accountId);
+}
+function getCacheFilePath(accountId, key) {
+  return resolve2(getCacheDir(accountId), `${key}.json`);
+}
+function configureCacheGlobally(opts) {
+  _cacheEnabled = opts.enabled;
+}
+function setCacheAccountId(id) {
+  _accountId = id;
+}
+function cacheEnabled() {
+  return _cacheEnabled;
+}
+function useSessionMetadataCache(on = true) {
+  _sessionMetadata = on;
+}
+function sessionMetadataCacheOn() {
+  return _sessionMetadata;
+}
+function cacheGet(accountId, key, ttlMs = DEFAULT_TTL_MS) {
+  if (!_cacheEnabled) return null;
+  const filePath = getCacheFilePath(accountId, key);
+  if (!existsSync2(filePath)) return null;
+  try {
+    const raw = readFileSync2(filePath, "utf-8");
+    const entry = JSON.parse(raw);
+    if (Date.now() - entry.cachedAt > ttlMs) return null;
+    return entry.data;
+  } catch {
+    return null;
+  }
+}
+function cacheSet(accountId, key, data, endpoint) {
+  try {
+    const dir = getCacheDir(accountId);
+    if (!existsSync2(dir)) mkdirSync2(dir, { recursive: true });
+    const entry = { data, endpoint, cachedAt: Date.now() };
+    writeFileSync2(getCacheFilePath(accountId, key), JSON.stringify(entry));
+  } catch {
+  }
+}
+async function cachedFetch(fetcher2, cacheKey, endpoint) {
+  const accountId = _accountId;
+  if (!accountId || !_cacheEnabled || _sessionMetadata) return fetcher2();
+  const cached2 = cacheGet(accountId, cacheKey);
+  if (cached2 !== null) return cached2;
+  const data = await fetcher2();
+  cacheSet(accountId, cacheKey, data, endpoint);
+  return data;
+}
+function cacheClearAccount(accountId) {
+  const dir = getCacheDir(accountId);
+  if (existsSync2(dir)) rmSync(dir, { recursive: true, force: true });
+}
+function cacheClearAll() {
+  const dir = resolve2(homedir2(), ".path-cli", "cache");
+  if (existsSync2(dir)) rmSync(dir, { recursive: true, force: true });
+}
+
+// .path-cli/src/info-session.ts
+import { createHash } from "node:crypto";
+import { mkdirSync as mkdirSync3, readFileSync as readFileSync3, renameSync, writeFileSync as writeFileSync3 } from "node:fs";
+import { dirname as dirname2 } from "node:path";
+var INFO_SESSION_IDLE_MS = 2 * 60 * 6e4;
+var MIN_ELIDE_CHARS = 40;
+var MAX_HASHES = 5e3;
+var FORGET_AFTER_MS2 = 7 * 24 * 60 * 6e4;
+var EXPLICIT_INFO_COMMANDS = /* @__PURE__ */ new Set(["get-context", "set-context", "get-account", "session-context"]);
+var MemoryStore = class {
+  #sessions = /* @__PURE__ */ new Map();
+  get(anchor) {
+    return this.#sessions.get(anchor);
+  }
+  set(anchor, state) {
+    this.#sessions.set(anchor, state);
+  }
+};
+var FileStore = class {
+  constructor(path) {
+    this.path = path;
+  }
+  #read() {
+    try {
+      const parsed = JSON.parse(readFileSync3(this.path, "utf-8"));
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+  get(anchor) {
+    const state = this.#read()[anchor];
+    return state && Array.isArray(state.hashes) && typeof state.lastUsedAt === "number" ? state : void 0;
+  }
+  set(anchor, state) {
+    const all4 = this.#read();
+    all4[anchor] = state;
+    for (const [key, s] of Object.entries(all4)) {
+      if (!s || typeof s.lastUsedAt !== "number" || state.lastUsedAt - s.lastUsedAt > FORGET_AFTER_MS2) delete all4[key];
+    }
+    try {
+      mkdirSync3(dirname2(this.path), { recursive: true });
+      const tmp = `${this.path}.${process.pid}.tmp`;
+      writeFileSync3(tmp, `${JSON.stringify(all4)}
+`, { mode: 384 });
+      renameSync(tmp, this.path);
+    } catch {
+    }
+  }
+};
+var store2 = new MemoryStore();
+var anchorOverride = null;
+function useFileInfoStore(path) {
+  store2 = new FileStore(path);
+}
+function setInfoSessionAnchor(anchor) {
+  anchorOverride = anchor;
+}
+function infoSessionAnchor(env = process.env) {
+  const claude = env.CLAUDE_CODE_SESSION_ID?.trim();
+  if (claude) return `claude-code:${claude}`;
+  if (anchorOverride) return anchorOverride;
+  const tab = env.TERM_SESSION_ID?.trim();
+  return tab ? `terminal:${tab}` : `shell:${process.ppid}`;
+}
+function infoHash(text) {
+  return createHash("sha256").update(text).digest("hex").slice(0, 20);
+}
+function clean(value) {
+  if (typeof value !== "string") return null;
+  const text = value.trim();
+  return text ? text : null;
+}
+var InfoGate = class {
+  withInfo;
+  anchor;
+  #state;
+  #seenAtStart;
+  #new = /* @__PURE__ */ new Set();
+  /** Labels of what was elided, in order. */
+  elided = [];
+  #reported = 0;
+  jsonPrinted = false;
+  /** The session's account block, waiting to go into the first JSON object (JSON output). */
+  pendingAccount = null;
+  /** The session context, waiting to go into the first JSON object (JSON output). */
+  pendingSession = null;
+  /** The raw `api` command: its JSON is the API's own, so keys are not renamed. */
+  rawOutput = false;
+  constructor(opts = {}) {
+    this.withInfo = !!opts.withInfo;
+    this.anchor = opts.anchor ?? infoSessionAnchor();
+    const now = opts.now ?? Date.now();
+    const previous = store2.get(this.anchor);
+    this.#state = previous && now - previous.lastUsedAt <= INFO_SESSION_IDLE_MS ? { ...previous, lastUsedAt: now } : { lastUsedAt: now, hashes: [] };
+    this.#seenAtStart = new Set(this.#state.hashes);
+  }
+  /**
+   * Whether `value` is shown on this command (true), or was shown earlier and
+   * is elided (false, `label` noted). Records the text as shown either way.
+   */
+  shows(value, label = "info") {
+    const text = clean(value);
+    if (!text) return true;
+    const hash2 = infoHash(text);
+    this.#new.add(hash2);
+    if (this.withInfo || text.length < MIN_ELIDE_CHARS) return true;
+    const seen = this.#seenAtStart.has(hash2);
+    if (seen) this.elided.push(label);
+    return !seen;
+  }
+  /** Info this command just wrote: counts as shown from now on, and is never reported as elided. */
+  written(value) {
+    const text = clean(value);
+    if (text) this.#new.add(infoHash(text));
+  }
+  /** The account block: due when this account's block wasn't shown this session (or changed). */
+  accountDue(summary) {
+    const key = `${summary.id}:${infoHash(JSON.stringify(summary))}`;
+    return this.withInfo || !(this.#state.accounts ?? []).includes(key);
+  }
+  accountShown(summary) {
+    const key = `${summary.id}:${infoHash(JSON.stringify(summary))}`;
+    const accounts = (this.#state.accounts ?? []).filter((k) => !k.startsWith(`${summary.id}:`));
+    this.#state.accounts = [...accounts, key];
+    const info = clean(summary.info);
+    if (info) this.#new.add(infoHash(info));
+  }
+  /** The session context: due when it wasn't shown for this account this session. */
+  sessionContextDue(accountId) {
+    return this.withInfo || !(this.#state.sessionContexts ?? []).includes(accountId);
+  }
+  /** A new sign-in (possibly another user): every account's session context is due again. */
+  forgetSessionContexts() {
+    this.#state.sessionContexts = [];
+  }
+  sessionContextShown(accountId) {
+    const shown = (this.#state.sessionContexts ?? []).filter((id) => id !== accountId);
+    this.#state.sessionContexts = [...shown, accountId];
+  }
+  cachedAccount(accountId) {
+    return this.#state.accountCache?.[accountId];
+  }
+  cacheAccount(summary) {
+    this.#state.accountCache = { ...this.#state.accountCache ?? {}, [summary.id]: summary };
+  }
+  /** Labels elided since the last summary (for one output). */
+  takeElided() {
+    const out = this.elided.slice(this.#reported);
+    this.#reported = this.elided.length;
+    return out;
+  }
+  /** Saves what this command showed into the session. */
+  commit(now = Date.now()) {
+    const hashes = [...this.#state.hashes.filter((h) => !this.#new.has(h)), ...this.#new].slice(-MAX_HASHES);
+    store2.set(this.anchor, { ...this.#state, hashes, lastUsedAt: now });
+  }
+};
+var current = null;
+function currentInfoGate() {
+  const scope = currentCommandScope();
+  return scope ? scope.info ?? null : current;
+}
+function setCurrentInfoGate(gate) {
+  const scope = currentCommandScope();
+  if (scope) scope.info = gate ?? void 0;
+  else current = gate;
+}
+var ELIDED_TEXT = "(shown earlier this session)";
+function elidedSummaryLine(labels) {
+  if (!labels.length) return null;
+  const names2 = [...new Set(labels)];
+  const shown = names2.slice(0, 6).join(", ");
+  const more = names2.length > 6 ? ` and ${names2.length - 6} more` : "";
+  return `Context for ${shown}${more} was shown earlier this session (pass --with-context to repeat).`;
+}
+var INFO_KEY = /^(info|.+_info)$/;
+function labelOf(obj, key) {
+  const name = obj.name ?? obj.field_name ?? obj.folder_name ?? obj.title ?? obj.step_title ?? obj.pathway_name ?? obj.plural_name;
+  const base = typeof name === "string" || typeof name === "number" ? String(name) : obj.id != null ? `#${String(obj.id)}` : "";
+  const what = key === "info" ? "" : key.replace(/_info$/, "").replace(/_/g, " ");
+  return [what, base].filter(Boolean).join(" ") || key;
+}
+function isStringMap(value) {
+  return !!value && typeof value === "object" && !Array.isArray(value) && Object.values(value).every((v) => v === null || typeof v === "string");
+}
+function elideJsonValue(value, gate) {
+  if (Array.isArray(value)) {
+    for (const item2 of value) elideJsonValue(item2, gate);
+    return;
+  }
+  if (!value || typeof value !== "object") return;
+  const obj = value;
+  for (const key of Object.keys(obj)) {
+    const v = obj[key];
+    if (key !== "info_shown_earlier" && INFO_KEY.test(key)) {
+      if (typeof v === "string") {
+        if (!gate.shows(v, labelOf(obj, key))) {
+          delete obj[key];
+          obj[`${key}_elided`] = true;
+        }
+        continue;
+      }
+      if (key !== "info" && isStringMap(v)) {
+        const gone = [];
+        for (const [name, text] of Object.entries(v)) {
+          if (typeof text === "string" && !gate.shows(text, name)) {
+            delete v[name];
+            gone.push(name);
+          }
+        }
+        if (gone.length) obj[`${key}_elided`] = gone;
+        continue;
+      }
+    }
+    elideJsonValue(v, gate);
+  }
+}
+function accountJson(summary) {
+  return {
+    id: summary.id,
+    name: summary.name,
+    time_zone: summary.time_zone,
+    country: summary.country,
+    info: summary.info,
+    ...summary.parent_account_id ? { parent_account_id: summary.parent_account_id } : {}
+  };
+}
+function accountBlockLines(summary) {
+  const head = [
+    `Account: ${summary.name ?? "(unnamed)"} (${summary.id})`,
+    summary.time_zone ? `time zone ${summary.time_zone}` : null,
+    summary.country ? `country ${summary.country}` : null,
+    summary.parent_account_id ? `child of account ${summary.parent_account_id} (design inherited)` : null
+  ].filter(Boolean).join(" \xB7 ");
+  const info = clean(summary.info);
+  if (!info) return [head];
+  const lines = info.split(/\r?\n/);
+  return [head, ...lines.length === 1 ? [`  Account context: ${lines[0]}`] : ["  Account context:", ...lines.map((l) => l.trim() ? `    ${l}` : "")]];
+}
+function filterOutputArgs(args, gate = currentInfoGate()) {
+  if (!gate || args.length !== 1 || typeof args[0] !== "string") return args;
+  const raw = args[0];
+  const trimmed = raw.trim();
+  const first = trimmed[0];
+  const last = trimmed[trimmed.length - 1];
+  if (!(first === "{" && last === "}" || first === "[" && last === "]")) return args;
+  if (!gate.pendingAccount && !gate.pendingSession && !/"(?:[a-z_]+_)?info"\s*:/.test(raw)) {
+    gate.jsonPrinted = true;
+    return args;
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(trimmed);
+  } catch {
+    return args;
+  }
+  if (!parsed || typeof parsed !== "object") return args;
+  gate.jsonPrinted = true;
+  const session = gate.pendingSession;
+  if (session && Array.isArray(parsed)) {
+    for (const line of session.lines()) console.error(line);
+    gate.sessionContextShown(session.accountId);
+    gate.pendingSession = null;
+  } else if (session && !("session_context" in parsed)) {
+    parsed = { session_context: session.json(), ...parsed };
+    gate.sessionContextShown(session.accountId);
+    gate.pendingSession = null;
+  }
+  elideJsonValue(parsed, gate);
+  const elided = gate.takeElided();
+  let account = gate.pendingAccount;
+  if (!Array.isArray(parsed)) {
+    const obj = parsed;
+    if (account && !("account" in obj)) {
+      parsed = { account: accountJson(account), ...obj };
+      gate.accountShown(account);
+      gate.pendingAccount = null;
+      account = null;
+    }
+    if (elided.length) {
+      parsed.info_shown_earlier = {
+        count: elided.length,
+        items: [...new Set(elided)].slice(0, 30),
+        note: 'Removed because it was shown earlier this session (the "<key>_elided" flags mark where); pass --with-context to repeat.'
+      };
+    }
+  } else {
+    if (account) {
+      for (const line2 of accountBlockLines(account)) console.error(line2);
+      gate.accountShown(account);
+      gate.pendingAccount = null;
+    }
+    const line = elidedSummaryLine(elided);
+    if (line) console.error(line);
+  }
+  if (!gate.rawOutput) parsed = renameInfoKeys(parsed);
+  const indented = /^\s*[[{]\s*\n/.test(raw);
+  return [indented ? JSON.stringify(parsed, null, 2) : JSON.stringify(parsed)];
+}
+function contextKeyOf(key) {
+  if (key === "info_shown_earlier") return "context_shown_earlier";
+  const elided = key.endsWith("_elided");
+  const base = elided ? key.slice(0, -"_elided".length) : key;
+  if (!INFO_KEY.test(base)) return key;
+  const renamed = base === "info" ? "context" : `${base.slice(0, -"_info".length)}_context`;
+  return elided ? `${renamed}_elided` : renamed;
+}
+function renameInfoKeys(value) {
+  if (Array.isArray(value)) return value.map(renameInfoKeys);
+  if (!value || typeof value !== "object") return value;
+  const obj = value;
+  const out = {};
+  for (const [key, v] of Object.entries(obj)) {
+    const renamed = contextKeyOf(key);
+    out[renamed !== key && renamed in obj ? key : renamed] = renameInfoKeys(v);
+  }
+  return out;
+}
+function commandPathOf(command) {
+  const names2 = [];
+  let c = command;
+  while (c && c.parent) {
+    names2.unshift(c.name());
+    c = c.parent;
+  }
+  return names2.join(" ");
+}
+var NO_ACCOUNT_BLOCK = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache", "get-account", "session-context"]);
+async function beginInfoCommand(opts) {
+  const explicit = EXPLICIT_INFO_COMMANDS.has(opts.commandPath);
+  const gate = new InfoGate({ withInfo: opts.withInfo || explicit });
+  gate.rawOutput = opts.commandPath.split(" ")[0] === "api";
+  setCurrentInfoGate(gate);
+  const accountId = opts.accountId ? String(opts.accountId) : null;
+  const blockable = !!accountId && !opts.quiet && !NO_ACCOUNT_BLOCK.has(opts.commandPath.split(" ")[0]);
+  if (blockable && accountId && opts.loadSessionContext) {
+    if (!gate.sessionContextDue(accountId)) return gate;
+    try {
+      const block = await opts.loadSessionContext(accountId);
+      if (opts.json) {
+        gate.pendingSession = block;
+      } else {
+        const print4 = opts.print ?? ((line) => console.log(line));
+        for (const line of block.lines()) print4(line);
+        print4("");
+        gate.sessionContextShown(accountId);
+      }
+      return gate;
+    } catch (err) {
+      const warn = opts.warn ?? ((line) => console.error(line));
+      warn(
+        `Couldn't load the session context (${err instanceof Error ? err.message : String(err)}); run "path session-context" to load it.`
+      );
+    }
+  }
+  if (blockable && accountId && opts.loadAccount) {
+    try {
+      let summary = gate.cachedAccount(accountId);
+      if (!summary) {
+        summary = await opts.loadAccount(accountId);
+        gate.cacheAccount(summary);
+      }
+      if (gate.accountDue(summary)) {
+        if (opts.json) {
+          gate.pendingAccount = summary;
+        } else {
+          const print4 = opts.print ?? ((line) => console.log(line));
+          for (const line of accountBlockLines(summary)) print4(line);
+          print4("");
+          gate.accountShown(summary);
+        }
+      }
+    } catch {
+    }
+  }
+  return gate;
+}
+function endInfoCommand(print4 = (line) => console.log(line)) {
+  const gate = currentInfoGate();
+  if (!gate) return;
+  if (gate.pendingSession && !gate.jsonPrinted) {
+    for (const line of gate.pendingSession.lines()) print4(line);
+    gate.sessionContextShown(gate.pendingSession.accountId);
+    gate.pendingSession = null;
+  }
+  if (gate.pendingAccount && !gate.jsonPrinted) {
+    for (const line of accountBlockLines(gate.pendingAccount)) print4(line);
+    gate.accountShown(gate.pendingAccount);
+    gate.pendingAccount = null;
+  }
+  if (!gate.jsonPrinted) {
+    const line = elidedSummaryLine(gate.takeElided());
+    if (line) print4(line);
+  }
+  gate.commit();
+  setCurrentInfoGate(null);
+}
+function accountSummaryOf(account, accountId) {
+  const str2 = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
+  return {
+    id: String(account.id ?? accountId),
+    name: str2(account.name),
+    time_zone: str2(account.time_zone),
+    country: str2(account.country),
+    info: clean(account.info),
+    ...account.parent_account_id ? { parent_account_id: String(account.parent_account_id) } : {}
+  };
+}
+
+// .path-cli/src/metadata-cache.ts
+var FORGET_AFTER_MS3 = 7 * 24 * 60 * 6e4;
+var TOUCH_EVERY_MS = 6e4;
+var CACHED_PATHS = [
+  /^\/v1\/business-objects$/,
+  /^\/v1\/business-objects\/\d+$/,
+  /^\/v1\/business-objects\/\d+\/(fields|field-groups|relationships|file-types|stickers|notifications)$/,
+  /^\/v1\/business-objects\/\d+\/fields\/\d+$/,
+  /^\/v1\/business-objects\/\d+\/workflows\/(milestones|steps|tasks)$/,
+  /^\/v1\/init\/(fields|field_groups|relationships|milestones)$/,
+  // The account itself (name, time zone, info); its settings stay live.
+  /^\/v1\/accounts\/\d+$/,
+  /^\/v1\/pathways$/,
+  /^\/v1\/pathways\/(short|groups)$/,
+  /^\/v1\/pathways\/\d+$/,
+  /^\/v1\/pathways\/\d+\/steps$/,
+  /^\/v1\/folders$/,
+  /^\/v1\/reports$/,
+  /^\/v1\/reports\/\d+$/,
+  /^\/v1\/users$/,
+  /^\/v1\/users\/(current|directory)$/,
+  /^\/v1\/roles$/,
+  /^\/v1\/tag-groups$/,
+  /^\/v1\/stickers$/,
+  /^\/v1\/calendars$/,
+  /^\/v1\/calendar-groups$/,
+  /^\/v1\/calendar-events\/appointment-fields$/
+];
+var DESIGN_PATH = /^\/v1\/(business-objects|init|pathways|folders|reports|users|roles|tag-groups|permissions|stickers|calendars|calendar-groups|accounts)(\/|$)/;
+var NOT_DESIGN_WRITES = [
+  /^\/v1\/business-objects\/\d+\/reports\/run$/,
+  /^\/v1\/business-objects\/\d+\/exports(\/|$)/,
+  /^\/v1\/folders\/filter-records$/,
+  /^\/v1\/pathways\/-?\d+\/execute(-headless)?$/
+];
+var root = resolve3(homedir3(), ".path-cli", "cache");
+var refreshing = 0;
+function pathOnly(path) {
+  return path.split("?")[0];
+}
+function isCachedMetadataPath(path) {
+  const p = pathOnly(path);
+  return CACHED_PATHS.some((re) => re.test(p));
+}
+function isDesignWrite(path) {
+  const p = pathOnly(path);
+  return DESIGN_PATH.test(p) && !NOT_DESIGN_WRITES.some((re) => re.test(p));
+}
+function hash(text) {
+  return createHash2("sha256").update(text).digest("hex").slice(0, 24);
+}
+function metadataCacheEntry(host, accountId, path, query) {
+  if (!sessionMetadataCacheOn() || !accountId || !isCachedMetadataPath(path)) return null;
+  const params = Object.entries(query ?? {}).map(([key, value]) => [key, Array.isArray(value) ? value : [value]]).sort(([a], [b]) => a.localeCompare(b));
+  const acting = commandEnv("PATH_ACTING_USER_ID") ?? "self";
+  const dir = resolve3(root, accountId, "session", hash(infoSessionAnchor()));
+  return { dir, file: resolve3(dir, `${hash(JSON.stringify([host, acting, path, params]))}.json`) };
+}
+function readSession(dir) {
+  try {
+    const state = JSON.parse(readFileSync4(resolve3(dir, "session.json"), "utf-8"));
+    return typeof state.lastUsedAt === "number" ? state : void 0;
+  } catch {
+    return void 0;
+  }
+}
+function writeJson(file, value) {
+  const tmp = `${file}.${process.pid}.tmp`;
+  writeFileSync4(tmp, JSON.stringify(value), { mode: 384 });
+  renameSync2(tmp, file);
+}
+function live(state, now) {
+  return !!state && now - state.lastUsedAt <= INFO_SESSION_IDLE_MS;
+}
+function readCachedMetadata(entry, now = Date.now()) {
+  if (refreshing > 0 || !cacheEnabled()) return void 0;
+  const session = readSession(entry.dir);
+  if (!live(session, now)) return void 0;
+  let data;
+  try {
+    data = JSON.parse(readFileSync4(entry.file, "utf-8")).data;
+  } catch {
+    return void 0;
+  }
+  if (now - session.lastUsedAt > TOUCH_EVERY_MS) {
+    try {
+      writeJson(resolve3(entry.dir, "session.json"), { ...session, lastUsedAt: now });
+    } catch {
+    }
+  }
+  return data;
+}
+function writeCachedMetadata(entry, data, now = Date.now()) {
+  try {
+    const session = readSession(entry.dir);
+    if (!live(session, now)) {
+      rmSync2(entry.dir, { recursive: true, force: true });
+      forgetIdleSessions(resolve3(entry.dir, ".."), now);
+      mkdirSync4(entry.dir, { recursive: true });
+      writeJson(resolve3(entry.dir, "session.json"), { startedAt: now, lastUsedAt: now });
+    }
+    writeJson(entry.file, { cachedAt: now, data });
+  } catch {
+  }
+}
+function forgetIdleSessions(sessionsDir, now) {
+  if (!existsSync3(sessionsDir)) return;
+  for (const name of readdirSync(sessionsDir)) {
+    const dir = resolve3(sessionsDir, name);
+    const state = readSession(dir);
+    if (!state || now - state.lastUsedAt > FORGET_AFTER_MS3) rmSync2(dir, { recursive: true, force: true });
+  }
+}
+function clearAccountMetadata(accountId) {
+  if (!accountId) return;
+  try {
+    rmSync2(resolve3(root, accountId, "session"), { recursive: true, force: true });
+  } catch {
+  }
+}
+function clearAllMetadata() {
+  if (!existsSync3(root)) return;
+  for (const account of readdirSync(root)) clearAccountMetadata(account);
+}
+async function freshOnMiss(lookup, missed = () => false) {
+  if (!canRefresh()) return lookup();
+  let result;
+  try {
+    result = await lookup();
+  } catch {
+    return withFreshMetadata(lookup);
+  }
+  return missed(result) ? withFreshMetadata(lookup) : result;
+}
+function canRefresh() {
+  return sessionMetadataCacheOn() && refreshing === 0;
+}
+function refreshingMetadata() {
+  return refreshing > 0;
+}
+async function withFreshMetadata(run) {
+  refreshing++;
+  try {
+    return await run();
+  } finally {
+    refreshing--;
+  }
+}
+
 // .path-cli/src/http-client.ts
 var NETWORK_REASONS = {
   ENOTFOUND: "the address doesn't exist (DNS lookup failed)",
@@ -16685,6 +17319,10 @@ function hostOf(baseUrl) {
 var HttpClient = class {
   constructor(config2) {
     this.config = config2;
+  }
+  /** The account every request is made for (the `account-id` header). */
+  get accountId() {
+    return this.config.accountId;
   }
   headers(extra) {
     const h = {
@@ -16759,6 +17397,11 @@ var HttpClient = class {
     return `${base}/api${p}`;
   }
   async get(path, query) {
+    const cached2 = metadataCacheEntry(hostOf(this.config.baseUrl), this.config.accountId, path, query);
+    if (cached2) {
+      const data2 = readCachedMetadata(cached2);
+      if (data2 !== void 0) return data2;
+    }
     let url = this.url(path);
     if (query) {
       const params = new URLSearchParams();
@@ -16770,7 +17413,13 @@ var HttpClient = class {
       url += `?${params}`;
     }
     const res = await fetchOrExplain(url, { method: "GET", headers: await this.requestHeaders("GET", path) });
-    return this.handleResponse(res);
+    const data = await this.handleResponse(res);
+    if (cached2) writeCachedMetadata(cached2, data);
+    return data;
+  }
+  /** A write that may change design drops the account's cached metadata, whatever its outcome. */
+  designWritten(path) {
+    if (isDesignWrite(path)) clearAccountMetadata(this.config.accountId);
   }
   async post(path, body, extraHeaders) {
     const res = await fetchOrExplain(this.url(path), {
@@ -16778,6 +17427,7 @@ var HttpClient = class {
       headers: await this.requestHeaders("POST", path, extraHeaders),
       body: body ? JSON.stringify(body) : void 0
     });
+    this.designWritten(path);
     return this.handleResponse(res);
   }
   async put(path, body) {
@@ -16786,6 +17436,7 @@ var HttpClient = class {
       headers: await this.requestHeaders("PUT", path),
       body: body ? JSON.stringify(body) : void 0
     });
+    this.designWritten(path);
     return this.handleResponse(res);
   }
   async patch(path, body) {
@@ -16794,6 +17445,7 @@ var HttpClient = class {
       headers: await this.requestHeaders("PATCH", path),
       body: body ? JSON.stringify(body) : void 0
     });
+    this.designWritten(path);
     return this.handleResponse(res);
   }
   async delete(path) {
@@ -16801,6 +17453,7 @@ var HttpClient = class {
       method: "DELETE",
       headers: await this.requestHeaders("DELETE", path)
     });
+    this.designWritten(path);
     return this.handleResponse(res);
   }
   /**
@@ -16811,6 +17464,7 @@ var HttpClient = class {
     const headers = await this.requestHeaders(method, path);
     delete headers["Content-Type"];
     const res = await fetchOrExplain(this.url(path), { method, headers, body: form });
+    this.designWritten(path);
     return this.handleResponse(res);
   }
   // For auth endpoint which uses /api/v1/oauth/token (no extra /api prefix needed potentially)
@@ -16873,335 +17527,12 @@ var ApiError = class extends Error {
   }
 };
 
-// .path-cli/src/info-session.ts
-import { createHash } from "node:crypto";
-import { mkdirSync as mkdirSync2, readFileSync as readFileSync2, renameSync, writeFileSync as writeFileSync2 } from "node:fs";
-import { dirname as dirname2 } from "node:path";
-var INFO_SESSION_IDLE_MS = 2 * 60 * 6e4;
-var MIN_ELIDE_CHARS = 40;
-var MAX_HASHES = 5e3;
-var FORGET_AFTER_MS2 = 7 * 24 * 60 * 6e4;
-var EXPLICIT_INFO_COMMANDS = /* @__PURE__ */ new Set(["get-info", "set-info", "get-account"]);
-var MemoryStore = class {
-  #sessions = /* @__PURE__ */ new Map();
-  get(anchor) {
-    return this.#sessions.get(anchor);
-  }
-  set(anchor, state) {
-    this.#sessions.set(anchor, state);
-  }
-};
-var FileStore = class {
-  constructor(path) {
-    this.path = path;
-  }
-  #read() {
-    try {
-      const parsed = JSON.parse(readFileSync2(this.path, "utf-8"));
-      return parsed && typeof parsed === "object" ? parsed : {};
-    } catch {
-      return {};
-    }
-  }
-  get(anchor) {
-    const state = this.#read()[anchor];
-    return state && Array.isArray(state.hashes) && typeof state.lastUsedAt === "number" ? state : void 0;
-  }
-  set(anchor, state) {
-    const all4 = this.#read();
-    all4[anchor] = state;
-    for (const [key, s] of Object.entries(all4)) {
-      if (!s || typeof s.lastUsedAt !== "number" || state.lastUsedAt - s.lastUsedAt > FORGET_AFTER_MS2) delete all4[key];
-    }
-    try {
-      mkdirSync2(dirname2(this.path), { recursive: true });
-      const tmp = `${this.path}.${process.pid}.tmp`;
-      writeFileSync2(tmp, `${JSON.stringify(all4)}
-`, { mode: 384 });
-      renameSync(tmp, this.path);
-    } catch {
-    }
-  }
-};
-var store2 = new MemoryStore();
-var anchorOverride = null;
-function useFileInfoStore(path) {
-  store2 = new FileStore(path);
-}
-function setInfoSessionAnchor(anchor) {
-  anchorOverride = anchor;
-}
-function infoSessionAnchor(env = process.env) {
-  const claude = env.CLAUDE_CODE_SESSION_ID?.trim();
-  if (claude) return `claude-code:${claude}`;
-  if (anchorOverride) return anchorOverride;
-  const tab = env.TERM_SESSION_ID?.trim();
-  return tab ? `terminal:${tab}` : `shell:${process.ppid}`;
-}
-function infoHash(text) {
-  return createHash("sha256").update(text).digest("hex").slice(0, 20);
-}
-function clean(value) {
-  if (typeof value !== "string") return null;
-  const text = value.trim();
-  return text ? text : null;
-}
-var InfoGate = class {
-  withInfo;
-  anchor;
-  #state;
-  #seenAtStart;
-  #new = /* @__PURE__ */ new Set();
-  /** Labels of what was elided, in order. */
-  elided = [];
-  #reported = 0;
-  jsonPrinted = false;
-  /** The session's account block, waiting to go into the first JSON object (JSON output). */
-  pendingAccount = null;
-  constructor(opts = {}) {
-    this.withInfo = !!opts.withInfo;
-    this.anchor = opts.anchor ?? infoSessionAnchor();
-    const now = opts.now ?? Date.now();
-    const previous = store2.get(this.anchor);
-    this.#state = previous && now - previous.lastUsedAt <= INFO_SESSION_IDLE_MS ? { ...previous, lastUsedAt: now } : { lastUsedAt: now, hashes: [] };
-    this.#seenAtStart = new Set(this.#state.hashes);
-  }
-  /**
-   * Whether `value` is shown on this command (true), or was shown earlier and
-   * is elided (false, `label` noted). Records the text as shown either way.
-   */
-  shows(value, label = "info") {
-    const text = clean(value);
-    if (!text) return true;
-    const hash = infoHash(text);
-    this.#new.add(hash);
-    if (this.withInfo || text.length < MIN_ELIDE_CHARS) return true;
-    const seen = this.#seenAtStart.has(hash);
-    if (seen) this.elided.push(label);
-    return !seen;
-  }
-  /** Info this command just wrote: counts as shown from now on, and is never reported as elided. */
-  written(value) {
-    const text = clean(value);
-    if (text) this.#new.add(infoHash(text));
-  }
-  /** The account block: due when this account's block wasn't shown this session (or changed). */
-  accountDue(summary) {
-    const key = `${summary.id}:${infoHash(JSON.stringify(summary))}`;
-    return this.withInfo || !(this.#state.accounts ?? []).includes(key);
-  }
-  accountShown(summary) {
-    const key = `${summary.id}:${infoHash(JSON.stringify(summary))}`;
-    const accounts = (this.#state.accounts ?? []).filter((k) => !k.startsWith(`${summary.id}:`));
-    this.#state.accounts = [...accounts, key];
-    const info = clean(summary.info);
-    if (info) this.#new.add(infoHash(info));
-  }
-  cachedAccount(accountId) {
-    return this.#state.accountCache?.[accountId];
-  }
-  cacheAccount(summary) {
-    this.#state.accountCache = { ...this.#state.accountCache ?? {}, [summary.id]: summary };
-  }
-  /** Labels elided since the last summary (for one output). */
-  takeElided() {
-    const out = this.elided.slice(this.#reported);
-    this.#reported = this.elided.length;
-    return out;
-  }
-  /** Saves what this command showed into the session. */
-  commit(now = Date.now()) {
-    const hashes = [...this.#state.hashes.filter((h) => !this.#new.has(h)), ...this.#new].slice(-MAX_HASHES);
-    store2.set(this.anchor, { ...this.#state, hashes, lastUsedAt: now });
-  }
-};
-var current = null;
-function currentInfoGate() {
-  const scope = currentCommandScope();
-  return scope ? scope.info ?? null : current;
-}
-function setCurrentInfoGate(gate) {
-  const scope = currentCommandScope();
-  if (scope) scope.info = gate ?? void 0;
-  else current = gate;
-}
-var ELIDED_TEXT = "(shown earlier this session)";
-function elidedSummaryLine(labels) {
-  if (!labels.length) return null;
-  const names2 = [...new Set(labels)];
-  const shown = names2.slice(0, 6).join(", ");
-  const more = names2.length > 6 ? ` and ${names2.length - 6} more` : "";
-  return `Info for ${shown}${more} was shown earlier this session (pass --with-info to repeat).`;
-}
-var INFO_KEY = /^(info|.+_info)$/;
-function labelOf(obj, key) {
-  const name = obj.name ?? obj.field_name ?? obj.folder_name ?? obj.title ?? obj.step_title ?? obj.pathway_name ?? obj.plural_name;
-  const base = typeof name === "string" || typeof name === "number" ? String(name) : obj.id != null ? `#${String(obj.id)}` : "";
-  const what = key === "info" ? "" : key.replace(/_info$/, "").replace(/_/g, " ");
-  return [what, base].filter(Boolean).join(" ") || key;
-}
-function isStringMap(value) {
-  return !!value && typeof value === "object" && !Array.isArray(value) && Object.values(value).every((v) => v === null || typeof v === "string");
-}
-function elideJsonValue(value, gate) {
-  if (Array.isArray(value)) {
-    for (const item2 of value) elideJsonValue(item2, gate);
-    return;
-  }
-  if (!value || typeof value !== "object") return;
-  const obj = value;
-  for (const key of Object.keys(obj)) {
-    const v = obj[key];
-    if (key !== "info_shown_earlier" && INFO_KEY.test(key)) {
-      if (typeof v === "string") {
-        if (!gate.shows(v, labelOf(obj, key))) {
-          delete obj[key];
-          obj[`${key}_elided`] = true;
-        }
-        continue;
-      }
-      if (key !== "info" && isStringMap(v)) {
-        const gone = [];
-        for (const [name, text] of Object.entries(v)) {
-          if (typeof text === "string" && !gate.shows(text, name)) {
-            delete v[name];
-            gone.push(name);
-          }
-        }
-        if (gone.length) obj[`${key}_elided`] = gone;
-        continue;
-      }
-    }
-    elideJsonValue(v, gate);
-  }
-}
-function accountJson(summary) {
-  return { id: summary.id, name: summary.name, time_zone: summary.time_zone, country: summary.country, info: summary.info };
-}
-function accountBlockLines(summary) {
-  const head = [
-    `Account: ${summary.name ?? "(unnamed)"} (${summary.id})`,
-    summary.time_zone ? `time zone ${summary.time_zone}` : null,
-    summary.country ? `country ${summary.country}` : null
-  ].filter(Boolean).join(" \xB7 ");
-  const info = clean(summary.info);
-  if (!info) return [head];
-  const lines = info.split(/\r?\n/);
-  return [head, ...lines.length === 1 ? [`  Account info: ${lines[0]}`] : ["  Account info:", ...lines.map((l) => l.trim() ? `    ${l}` : "")]];
-}
-function filterOutputArgs(args, gate = currentInfoGate()) {
-  if (!gate || args.length !== 1 || typeof args[0] !== "string") return args;
-  const raw = args[0];
-  const trimmed = raw.trim();
-  const first = trimmed[0];
-  const last = trimmed[trimmed.length - 1];
-  if (!(first === "{" && last === "}" || first === "[" && last === "]")) return args;
-  if (!gate.pendingAccount && !/"(?:[a-z_]+_)?info"\s*:/.test(raw)) {
-    gate.jsonPrinted = true;
-    return args;
-  }
-  let parsed;
-  try {
-    parsed = JSON.parse(trimmed);
-  } catch {
-    return args;
-  }
-  if (!parsed || typeof parsed !== "object") return args;
-  gate.jsonPrinted = true;
-  elideJsonValue(parsed, gate);
-  const elided = gate.takeElided();
-  let account = gate.pendingAccount;
-  if (!Array.isArray(parsed)) {
-    const obj = parsed;
-    if (account && !("account" in obj)) {
-      parsed = { account: accountJson(account), ...obj };
-      gate.accountShown(account);
-      gate.pendingAccount = null;
-      account = null;
-    }
-    if (elided.length) {
-      parsed.info_shown_earlier = {
-        count: elided.length,
-        items: [...new Set(elided)].slice(0, 30),
-        note: 'Removed because it was shown earlier this session (the "<key>_elided" flags mark where); pass --with-info to repeat.'
-      };
-    }
-  } else {
-    const line = elidedSummaryLine(elided);
-    if (line) console.error(line);
-  }
-  const indented = /^\s*[[{]\s*\n/.test(raw);
-  return [indented ? JSON.stringify(parsed, null, 2) : JSON.stringify(parsed)];
-}
-function commandPathOf(command) {
-  const names2 = [];
-  let c = command;
-  while (c && c.parent) {
-    names2.unshift(c.name());
-    c = c.parent;
-  }
-  return names2.join(" ");
-}
-var NO_ACCOUNT_BLOCK = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache", "get-account"]);
-async function beginInfoCommand(opts) {
-  const explicit = EXPLICIT_INFO_COMMANDS.has(opts.commandPath);
-  const gate = new InfoGate({ withInfo: opts.withInfo || explicit });
-  setCurrentInfoGate(gate);
-  const accountId = opts.accountId ? String(opts.accountId) : null;
-  if (accountId && opts.loadAccount && !opts.quiet && !NO_ACCOUNT_BLOCK.has(opts.commandPath.split(" ")[0])) {
-    try {
-      let summary = gate.cachedAccount(accountId);
-      if (!summary) {
-        summary = await opts.loadAccount(accountId);
-        gate.cacheAccount(summary);
-      }
-      if (gate.accountDue(summary)) {
-        if (opts.json) {
-          gate.pendingAccount = summary;
-        } else {
-          const print3 = opts.print ?? ((line) => console.log(line));
-          for (const line of accountBlockLines(summary)) print3(line);
-          print3("");
-          gate.accountShown(summary);
-        }
-      }
-    } catch {
-    }
-  }
-  return gate;
-}
-function endInfoCommand(print3 = (line) => console.log(line)) {
-  const gate = currentInfoGate();
-  if (!gate) return;
-  if (gate.pendingAccount && !gate.jsonPrinted) {
-    for (const line of accountBlockLines(gate.pendingAccount)) print3(line);
-    gate.accountShown(gate.pendingAccount);
-    gate.pendingAccount = null;
-  }
-  if (!gate.jsonPrinted) {
-    const line = elidedSummaryLine(gate.takeElided());
-    if (line) print3(line);
-  }
-  gate.commit();
-  setCurrentInfoGate(null);
-}
-function accountSummaryOf(account, accountId) {
-  const str2 = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
-  return {
-    id: String(account.id ?? accountId),
-    name: str2(account.name),
-    time_zone: str2(account.time_zone),
-    country: str2(account.country),
-    info: clean(account.info)
-  };
-}
-
 // .path-cli/src/info-hooks.ts
-function installInfoHooks(program2) {
+function installInfoHooks(program2, hookOptions = {}) {
   program2.addOption(
     new Option(
-      "--with-info",
-      "Repeat designer info (and the account block) that was already shown earlier this session \u2014 e.g. after your context was compacted"
+      "--with-context",
+      "Repeat context (and the session context or account block) that was already shown earlier this session \u2014 e.g. after your context was compacted"
     )
   );
   program2.hook("preAction", async (thisCommand, actionCommand) => {
@@ -17209,289 +17540,54 @@ function installInfoHooks(program2) {
     const config2 = loadConfig({ accountId: opts.account, baseUrl: opts.baseUrl });
     await beginInfoCommand({
       commandPath: commandPathOf(actionCommand),
-      withInfo: !!opts.withInfo,
+      withInfo: !!opts.withContext,
       json: !!opts.json,
       quiet: !!opts.quiet,
       accountId: config2.accessToken ? config2.accountId : null,
       loadAccount: async (accountId) => accountSummaryOf(
         await new HttpClient(config2).get(`/v1/accounts/${encodeURIComponent(accountId)}`),
         accountId
-      )
+      ),
+      // Under --as-user the signed-in admin keeps their own session context.
+      loadSessionContext: hookOptions.sessionContext && !opts.asUser ? hookOptions.sessionContext(opts) : void 0
     });
   });
   program2.hook("postAction", () => endInfoCommand());
 }
 
-// packages/permissions.ts
-var P = class {
-  constructor(flags) {
-    this.flags = flags;
-    for (let i = 0; i < this.flags.length; i++) {
-      this[this.flags[i]] = 1 << i;
-    }
-  }
-  default = 0;
-  get none() {
-    return 0;
-  }
-  cast(defaultValue) {
-    this.default = defaultValue(
-      this
-    );
-    return this;
-  }
-  check(permission, flag) {
-    return (this[flag] & permission) !== 0;
-  }
-  both(a, b) {
-    return a | b;
-  }
-  toObject(permission) {
-    const obj = {};
-    for (const flag of this.flags) {
-      obj[flag] = this.check(permission, flag);
-    }
-    return obj;
-  }
-  fromObject(obj) {
-    let permission = 0;
-    for (const flag of this.flags) {
-      if (obj[flag]) {
-        permission |= this[flag];
-      }
-    }
-    return permission;
-  }
+// .path-cli/src/legacy-flags.ts
+var LEGACY = {
+  "--info": "--context",
+  "--info-file": "--context-file",
+  "--column-info": "--column-context",
+  "--with-info": "--with-context"
 };
-var BOPermissions = new P([
-  "view",
-  "edit",
-  "archive",
-  "create_folders",
-  "create_reports"
-]).cast((instance) => instance.view);
-var FolderPermissions = new P([
-  "view",
-  "edit",
-  "deletion"
-]).cast((instance) => instance.none);
-var ReportPermissions = new P([
-  "owner",
-  "edit",
-  "deletion",
-  "view"
-]).cast((instance) => instance.none);
-var CalendarPermissions = new P([
-  "view",
-  "edit",
-  "owner"
-]).cast((instance) => instance.view);
-var PathwayGroupVisibilities = new P([
-  "dashboard",
-  "card_view"
-]).cast((instance) => instance.dashboard);
-
-// .path-cli/src/access/permissions.ts
-var loaded = /* @__PURE__ */ new WeakMap();
-var UserAccess = class _UserAccess {
-  constructor(user) {
-    this.user = user;
-  }
-  /**
-   * The acting user's permissions, fetched once per client — a command makes
-   * one client, so every gate in it shares one `/users/current` call, and the
-   * MCP server's next command (a new client) starts fresh.
-   */
-  static load(client) {
-    let pending2 = loaded.get(client);
-    if (!pending2) {
-      pending2 = client.get("/v1/users/current").then((u) => new _UserAccess(u));
-      loaded.set(client, pending2);
-      pending2.catch(() => loaded.delete(client));
+function rewriteLegacyFlags(argv) {
+  const out = [];
+  let passthrough = false;
+  for (const token of argv) {
+    if (passthrough || !token.startsWith("--")) {
+      out.push(token);
+      continue;
     }
-    return pending2;
+    if (token === "--") {
+      passthrough = true;
+      out.push(token);
+      continue;
+    }
+    const eq = token.indexOf("=");
+    const flag = eq === -1 ? token : token.slice(0, eq);
+    const renamed = LEGACY[flag];
+    out.push(renamed ? `${renamed}${eq === -1 ? "" : token.slice(eq)}` : token);
   }
-  get label() {
-    const u = this.user;
-    const first = u.first_name ?? u.profile?.first_name;
-    const last = u.last_name ?? u.profile?.last_name;
-    return [first, last].filter(Boolean).join(" ") || u.email || `user ${u.id}`;
-  }
-  /** Admin per the user's enabled roles (effective permissions). */
-  get isAdmin() {
-    return !!this.user.effective_permissions?.is_admin;
-  }
-  /** current-user.service canOpenDesigner: the Designer (or Admin) role permission. */
-  get canOpenDesigner() {
-    const p = this.user.effective_permissions;
-    return !!p && !!(p.is_admin || p.designer_admin);
-  }
-  /** current-user.service canManageUsers: the User Admin (or Admin) role permission. */
-  get canManageUsers() {
-    const p = this.user.effective_permissions;
-    return !!p && !!(p.is_admin || p.user_admin);
-  }
-  /** The acting user's enabled role ids (field / relationship visibility lists). */
-  get roleIds() {
-    return (this.user.roles ?? []).map((r) => r.role_id);
-  }
-  /** record-viewer canArchiveRecord: BO `archive`, or the Delete Records role permission. */
-  canArchiveRecord(boId3) {
-    return this.canBusinessObject(boId3, "archive") || !!this.user.effective_permissions?.delete_records;
-  }
-  /** file-list-item-actions canDeleteFile: Admin or the Delete Files role permission. */
-  get canDeleteFiles() {
-    const p = this.user.effective_permissions;
-    return !!(p?.is_admin || p?.delete_files);
-  }
-  /** A missing business object entry defaults to view. */
-  canBusinessObject(boId3, key) {
-    if (this.isAdmin) return true;
-    if (boId3 == null) return true;
-    const map = this.user.effective_permissions?.business_object_permissions ?? {};
-    const raw = map[String(boId3)];
-    return BOPermissions.check(raw ?? BOPermissions.default, key);
-  }
-  /** A missing folder entry is no access (folder_admin sees all). */
-  canFolder(folderId, key) {
-    const p = this.user.effective_permissions;
-    if (this.isAdmin || p?.folder_admin) return true;
-    const raw = p?.folder_permissions?.[String(folderId)];
-    return FolderPermissions.check(raw ?? FolderPermissions.default, key);
-  }
-  /** Owner grants every key; no report permission map at all = open (legacy). */
-  canReport(reportId, key) {
-    const p = this.user.effective_permissions;
-    if (this.isAdmin || p?.report_admin) return true;
-    if (!p?.report_permissions) return true;
-    const raw = p.report_permissions[String(reportId)] ?? ReportPermissions.default;
-    return ReportPermissions.check(raw, "owner") || ReportPermissions.check(raw, key);
-  }
-  /**
-   * An explicit grant row decides; without one the calendar's "All Users"
-   * default applies — view, plus edit when `defaultEdit` (the calendar's
-   * default_edit). Admins and calendar admins pass everything.
-   */
-  canCalendar(calendarId, key, defaultEdit = false) {
-    if (calendarId == null) return false;
-    const p = this.user.effective_permissions;
-    if (this.isAdmin || p?.calendar_admin) return true;
-    const raw = p?.calendar_permissions?.[String(calendarId)];
-    if (raw !== void 0) return CalendarPermissions.check(raw, key);
-    const fallback = defaultEdit ? CalendarPermissions.both(CalendarPermissions.default, CalendarPermissions.edit) : CalendarPermissions.default;
-    return CalendarPermissions.check(fallback, key);
-  }
-  /** task.component isDisabled: only-assignee tasks finish by assignee, creator or admin. */
-  canCompleteTask(task) {
-    if (task.task_status !== "pending") return `the task is ${task.task_status}`;
-    if (!task.task_settings?.only_assignee_finish) return null;
-    if (task.assigned_to?.user_id === this.user.id || task.created_by === this.user.id || this.isAdmin) return null;
-    return "only the assignee (or the creator or an admin) can finish this task";
-  }
-  /** record-task-permissions canCancelRecordTask. */
-  canCancelTask(task) {
-    if (task.task_status !== "pending") return `the task is ${task.task_status}`;
-    const s = task.task_settings ?? {};
-    if (s.allow_cancellation && !s.only_assignee_finish) return null;
-    if (this.isAdmin || task.created_by === this.user.id) return null;
-    if (task.assigned_to?.user_id === this.user.id && s.only_assignee_finish) return null;
-    return "this task can't be cancelled by this user";
-  }
-  /** record-task-permissions canEditRecordTask: full edit by creator/admin, else assignment if allowed. */
-  canAssignTask(task) {
-    if (this.isAdmin || task.created_by === this.user.id) return null;
-    if (task.task_settings?.allow_assignment_change) return null;
-    return "this task's assignee can't be changed by this user";
-  }
-};
-var AccessDeniedError = class extends Error {
-  constructor(who, what, why) {
-    super(`${who} can't ${what} \u2014 ${why}, as in the web app.`);
-  }
-};
-
-// .path-cli/src/acting-user.ts
-function parseMode(value) {
-  if (value === void 0 || value === "real-world") return "real-world";
-  if (value === "super-user") return "super-user";
-  if (value === "unrestricted") {
-    throw new Error(
-      "There is no unrestricted mode any more: the CLI always applies the web app's rules. To run a pathway on a record its criteria hide it on, use --mode super-user (Admin or Designer only)."
-    );
-  }
-  throw new Error("--mode must be real-world or super-user");
+  return out;
 }
-function currentMode() {
-  const mode = commandEnv("PATH_ACTIVE_MODE");
-  return mode === "designer" || mode === "super-user" ? mode : "real-world";
-}
-function isRealWorld() {
-  return currentMode() !== "designer";
-}
-function actingUserId() {
-  const id = commandEnv("PATH_ACTING_USER_ID");
-  return id ? Number(id) : null;
-}
-function displayName(u) {
-  return [u.first_name, u.last_name].filter(Boolean).join(" ") || u.email || `User ${u.id}`;
-}
-async function signedInAccess(config2) {
-  const token = commandEnv("PATH_SIGNED_IN_TOKEN") || config2.accessToken;
-  return UserAccess.load(new HttpClient({ ...config2, accessToken: token }));
-}
-async function assertSuperUserAllowed(config2) {
-  const access = await signedInAccess(config2);
-  if (access.canOpenDesigner) return;
-  throw new Error(
-    `${access.label} can't use super-user mode: it needs a role with full Admin or Designer permission (the people who can change a pathway's criteria).`
-  );
-}
-async function impersonate(config2, userKey) {
-  const me = await signedInAccess(config2);
-  if (!me.isAdmin) {
-    throw new Error(
-      `${me.label} can't use --as-user: acting as another user is the web's Impersonate, which only account Admins have.`
-    );
-  }
-  const admin = new HttpClient(config2);
-  const raw = await admin.get("/v1/users/directory", { all: "true" });
-  const users = (Array.isArray(raw) ? raw : raw.items ?? []).map(
-    (u) => ({ ...u, id: u.user_id ?? u.id })
-  );
-  const key = String(userKey).trim().toLowerCase();
-  const user = users.find((u) => String(u.id) === key) ?? users.find((u) => u.email?.toLowerCase() === key) ?? users.find((u) => displayName(u).toLowerCase() === key);
-  if (!user) throw new Error(`No user "${userKey}" in account ${config2.accountId}`);
-  if (user.id === me.user.id) throw new Error("--as-user can't be yourself: you're already signed in as that user.");
-  if (user.deactivated_on || user.user_account?.deactivated_on) {
-    throw new Error(`${displayName(user)} is deactivated; the web doesn't impersonate deactivated users.`);
-  }
-  if (!config2.clientSecret) {
-    throw new Error("--as-user isn't available in this version of the PATH CLI. Sign in as that user instead.");
-  }
-  const token = await admin.post(`/v1/users/${user.id}/impersonate`, {
-    client_id: config2.clientId,
-    client_secret: config2.clientSecret
-  });
-  if (!token?.access_token) {
-    throw new Error(`Couldn't start a session as ${displayName(user)} (only an account admin can impersonate)`);
-  }
-  return { token: token.access_token, userId: user.id, name: displayName(user) };
-}
-async function applyActingUser(opts, load4) {
-  if (opts.mode !== void 0) {
-    const mode = parseMode(opts.mode);
-    if (mode === "super-user") await assertSuperUserAllowed(load4({ accountId: opts.account, baseUrl: opts.baseUrl }));
-    setCommandEnv("PATH_ACTIVE_MODE", mode);
-  }
-  if (!opts.asUser || commandEnv("PATH_ACTING_USER_ID")) return;
-  const config2 = load4({ accountId: opts.account, baseUrl: opts.baseUrl });
-  if (!config2.accountId) throw new Error("--as-user needs an account (--account <id>)");
-  const session = await impersonate(config2, opts.asUser);
-  setCommandEnv("PATH_SIGNED_IN_TOKEN", config2.accessToken);
-  setCommandEnv("PATH_ACCESS_TOKEN", session.token);
-  setCommandEnv("PATH_REFRESH_TOKEN", "");
-  setCommandEnv("PATH_ACTING_USER_ID", String(session.userId));
-  setCommandEnv("PATH_ACTING_USER_NAME", session.name);
+function acceptLegacyFlags(program2) {
+  const parse3 = program2.parse.bind(program2);
+  const parseAsync3 = program2.parseAsync.bind(program2);
+  program2.parse = ((argv, options) => parse3(argv ? rewriteLegacyFlags(argv) : rewriteLegacyFlags(process.argv), options));
+  program2.parseAsync = ((argv, options) => parseAsync3(argv ? rewriteLegacyFlags(argv) : rewriteLegacyFlags(process.argv), options));
+  return program2;
 }
 
 // .path-cli/src/utils/unwrap-paginated.ts
@@ -17511,1588 +17607,6 @@ function unwrapPaginated(data) {
     return items;
   }
   return data;
-}
-
-// .path-cli/src/utils/get-folder.ts
-async function getFolder(client, folderId) {
-  const raw = await client.get("/v1/folders", { all: "true" });
-  const folder2 = unwrapPaginated(raw).find((f) => f.id === Number(folderId));
-  if (!folder2) throw new Error(`Folder ${folderId} not found`);
-  return folder2;
-}
-
-// .path-cli/src/access/gates.ts
-var boCache = /* @__PURE__ */ new WeakMap();
-function businessObjects(client) {
-  let pending2 = boCache.get(client);
-  if (!pending2) {
-    pending2 = client.get("/v1/business-objects", { all: "true" }).then((raw) => new Map(unwrapPaginated(raw).map((bo) => [bo.id, bo])));
-    boCache.set(client, pending2);
-    pending2.catch(() => boCache.delete(client));
-  }
-  return pending2;
-}
-async function realWorldAccess(client) {
-  return isRealWorld() ? UserAccess.load(client) : null;
-}
-async function boLabel(client, boId3) {
-  if (boId3 == null) return "this business object";
-  const bo = (await businessObjects(client).catch(() => /* @__PURE__ */ new Map())).get(boId3);
-  return bo?.plural_name || bo?.singular_name ? `${bo.plural_name || bo.singular_name} (business object ${boId3})` : `business object ${boId3}`;
-}
-var BO_KEY_WHY = {
-  view: "they don't have View permission on",
-  edit: "they don't have Edit permission on",
-  archive: "they don't have Archive permission on",
-  create_folders: "they don't have Create Folders permission on",
-  create_reports: "they don't have Create Reports permission on"
-};
-async function assertBusinessObject(client, boId3, key, what) {
-  const access = await realWorldAccess(client);
-  if (!access || access.canBusinessObject(boId3, key)) return;
-  throw new AccessDeniedError(access.label, what, `${BO_KEY_WHY[key]} ${await boLabel(client, boId3)}`);
-}
-async function assertArchiveRecord(client, boId3, what) {
-  const access = await realWorldAccess(client);
-  if (!access || access.canArchiveRecord(boId3)) return;
-  throw new AccessDeniedError(access.label, what, `they don't have Archive permission on ${await boLabel(client, boId3)}`);
-}
-async function assertDesigner(client, what) {
-  const access = await realWorldAccess(client);
-  if (!access || access.canOpenDesigner) return;
-  throw new AccessDeniedError(access.label, what, "that is Designer work and none of their roles has the Designer (or Admin) permission");
-}
-async function assertBusinessObjectReadable(client, boId3, what) {
-  const access = await realWorldAccess(client);
-  if (!access || access.canOpenDesigner) return;
-  await assertBusinessObject(client, boId3, "view", what);
-}
-async function filterReadableBusinessObjects(client, bos) {
-  const access = await realWorldAccess(client);
-  if (!access || access.canOpenDesigner) return bos;
-  return bos.filter((bo) => access.canBusinessObject(bo.id, "view"));
-}
-async function searchableBusinessObjectIds(client) {
-  const access = await realWorldAccess(client);
-  if (!access) return null;
-  const bos = await businessObjects(client);
-  return [...bos.values()].filter((bo) => access.canBusinessObject(bo.id, "view") && bo.show_in_menu !== false).map((bo) => bo.id);
-}
-async function recordBusinessObjectId(client, recordId) {
-  const record2 = await client.get(`/v1/records/${encodeURIComponent(recordId)}`);
-  return record2.business_object_id;
-}
-async function assertRecordViewable(client, recordId, what) {
-  if (!isRealWorld()) return;
-  await assertBusinessObject(client, await recordBusinessObjectId(client, recordId), "view", what);
-}
-async function assertCreateFolder(client, boId3) {
-  await assertBusinessObject(client, boId3, "create_folders", `create a folder on ${await boLabel(client, boId3)}`);
-}
-async function assertCreateReport(client, boId3) {
-  await assertBusinessObject(client, boId3, "create_reports", `create a report on ${await boLabel(client, boId3)}`);
-}
-async function assertFolderEdit(client, folderId, what) {
-  const access = await realWorldAccess(client);
-  if (!access) return;
-  const folder2 = await getFolder(client, folderId);
-  if (!access.canBusinessObject(folder2.business_object_id, "view")) {
-    throw new AccessDeniedError(access.label, what, `they can't view ${await boLabel(client, folder2.business_object_id)}`);
-  }
-  if (!access.canFolder(folderId, "edit")) {
-    throw new AccessDeniedError(access.label, what, `they don't have Edit permission on folder ${folderId}`);
-  }
-}
-async function assertReportEdit(client, report2, what) {
-  const access = await realWorldAccess(client);
-  if (!access) return;
-  if (!access.canBusinessObject(report2.business_object_id, "view")) {
-    throw new AccessDeniedError(access.label, what, `they can't view ${await boLabel(client, report2.business_object_id)}`);
-  }
-  if (!access.canReport(report2.id, "edit")) {
-    throw new AccessDeniedError(access.label, what, `they don't have Edit permission on report "${report2.name ?? report2.id}"`);
-  }
-}
-async function assertOwnMessage(client, recordId, messageId, what) {
-  const access = await realWorldAccess(client);
-  if (!access) return;
-  await assertRecordViewable(client, recordId, what);
-  const raw = await client.get(`/v1/records/${encodeURIComponent(recordId)}/messages`, { all: "true" });
-  const message2 = unwrapPaginated(raw).find(
-    (m) => String(m.id) === String(messageId)
-  );
-  if (!message2) throw new AccessDeniedError(access.label, what, `message ${messageId} isn't on record ${recordId}`);
-  if (Number(message2.messaged_by) !== access.user.id) {
-    throw new AccessDeniedError(access.label, what, "only the message's author can change it");
-  }
-}
-async function assertDeleteFiles(client, what) {
-  const access = await realWorldAccess(client);
-  if (!access || access.canDeleteFiles) return;
-  throw new AccessDeniedError(access.label, what, "none of their roles has the Delete Files permission");
-}
-async function filterVisibleFolders(client, folders) {
-  if (!isRealWorld()) return folders;
-  const [access, bos] = await Promise.all([UserAccess.load(client), businessObjects(client)]);
-  return folders.filter(
-    (f) => access.canBusinessObject(f.business_object_id, "view") && bos.get(f.business_object_id)?.show_in_menu !== false && access.canFolder(f.id, "view")
-  );
-}
-async function checkFolderAccess(client, folderId) {
-  if (!isRealWorld()) return null;
-  const access = await UserAccess.load(client);
-  const folder2 = await getFolder(client, folderId);
-  if (!access.canBusinessObject(folder2.business_object_id, "view")) {
-    throw new AccessDeniedError(access.label, `open folder ${folderId}`, "they can't view its business object");
-  }
-  if (!access.canFolder(folderId, "view")) {
-    return `folder ${folderId} isn't in ${access.label}'s menu (no folder view permission); the web app only reaches it by direct link`;
-  }
-  return null;
-}
-async function filterVisibleReports(client, reports) {
-  if (!isRealWorld()) return reports;
-  const access = await UserAccess.load(client);
-  return reports.filter((r) => access.canBusinessObject(r.business_object_id, "view") && access.canReport(r.id, "view"));
-}
-async function assertReportAccess(client, report2) {
-  if (!isRealWorld()) return;
-  const access = await UserAccess.load(client);
-  if (!access.canBusinessObject(report2.business_object_id, "view")) {
-    throw new AccessDeniedError(access.label, `run report "${report2.name ?? report2.id}"`, "they can't view its business object");
-  }
-  if (!access.canReport(report2.id, "view")) {
-    throw new AccessDeniedError(access.label, `run report "${report2.name ?? report2.id}"`, "it hasn't been shared with them");
-  }
-}
-async function filterDashboardTasks(client, tasks) {
-  if (!isRealWorld()) return tasks;
-  const access = await UserAccess.load(client);
-  return tasks.filter((t) => access.canBusinessObject(t.business_object_id, "view"));
-}
-async function checkTaskAction(client, recordId, taskId, action) {
-  const access = await UserAccess.load(client);
-  const raw = await client.get(`/v1/records/${encodeURIComponent(recordId)}/tasks`);
-  const task = unwrapPaginated(raw).find((t) => t.id === taskId);
-  if (!isRealWorld()) return { task, userId: access.user.id };
-  await assertRecordViewable(client, recordId, `${action} a task on record ${recordId}`);
-  if (!task) throw new AccessDeniedError(access.label, `${action} task ${taskId}`, `it isn't a pending task on record ${recordId}`);
-  const what = `${action} task "${task.task_name ?? task.id}"`;
-  if (action === "complete") {
-    const why = access.canCompleteTask(task);
-    if (why) throw new AccessDeniedError(access.label, what, why);
-    if (task.pathway_id != null) {
-      throw new AccessDeniedError(
-        access.label,
-        `${what} directly`,
-        `in the web app completing it runs its pathway \u2014 use: pathway-run start --record-id ${recordId} --task-id ${taskId}`
-      );
-    }
-  } else if (action === "cancel") {
-    const why = access.canCancelTask(task);
-    if (why) throw new AccessDeniedError(access.label, what, why);
-  } else {
-    const why = access.canAssignTask(task);
-    if (why) throw new AccessDeniedError(access.label, what, why);
-  }
-  return { task, userId: access.user.id };
-}
-
-// .path-cli/src/utils/info-text.ts
-import { readFileSync as readFileSync3 } from "node:fs";
-var MAX_INFO_LENGTH = 5e4;
-var INFO_TEXT_CAP = 1e3;
-function infoText(value) {
-  if (typeof value !== "string") return null;
-  const text = value.trim();
-  return text ? text : null;
-}
-function infoLines(value, opts = {}) {
-  let text = infoText(value);
-  if (!text) return [];
-  const indent = opts.indent ?? "  ";
-  const label = opts.label ?? "info";
-  const gate = currentInfoGate();
-  if (gate && !gate.shows(text, label)) return [`${indent}${label}: ${ELIDED_TEXT}`];
-  if (opts.cap !== void 0 && text.length > opts.cap) {
-    text = `${text.slice(0, opts.cap).trimEnd()} \u2026(see --json)`;
-  }
-  const lines = text.split(/\r?\n/);
-  if (lines.length === 1) return [`${indent}${label}: ${lines[0]}`];
-  return [`${indent}${label}:`, ...lines.map((line) => line.trim() ? `${indent}  ${line}` : "")];
-}
-function infoBlock(info, label = "info") {
-  if (info === null || info === void 0 || typeof info === "string" && !info.trim()) return `${label}: (none)`;
-  const gate = currentInfoGate();
-  if (typeof info === "string" && gate && !gate.shows(info, label)) return `${label}: ${ELIDED_TEXT}`;
-  const text = typeof info === "string" ? info.replace(/\s+$/, "") : JSON.stringify(info);
-  if (!text.includes("\n") && text.length <= 100) return `${label}: ${text}`;
-  return `${label}:
-${text.split("\n").map((line) => line ? `  ${line}` : "").join("\n")}`;
-}
-function infoFromOptions(opts) {
-  if (opts.info !== void 0 && opts.infoFile !== void 0) throw new Error("Pass --info or --info-file, not both");
-  const info = opts.infoFile !== void 0 ? readFileSync3(opts.infoFile, "utf-8") : opts.info;
-  return checkInfo(info, "--info");
-}
-function checkInfo(value, where = "info") {
-  if (value === void 0) return void 0;
-  if (value === null) return "";
-  if (typeof value !== "string") throw new Error(`${where} must be text (or null to clear it)`);
-  if (value.length > MAX_INFO_LENGTH) throw new Error(`The info is ${value.length} characters; PATH keeps at most ${MAX_INFO_LENGTH}`);
-  return value.trim() ? value : "";
-}
-
-// .path-cli/src/output/formatter.ts
-function formatOutput(data, opts) {
-  if (data === void 0 || data === null) {
-    return opts.format === "json" ? "null" : "";
-  }
-  if (opts.quiet) return formatQuiet(data);
-  if (opts.format === "json" || opts.fields === void 0 && Array.isArray(data)) {
-  }
-  const format = opts.format || (Array.isArray(data) ? "table" : "compact");
-  switch (format) {
-    case "json":
-      return JSON.stringify(data, null, 2);
-    case "table":
-      return formatTable(
-        data,
-        opts.fields,
-        opts.footer
-      );
-    case "compact":
-      if (typeof data !== "object") return String(data);
-      return formatCompact(data, opts.fields);
-    case "quiet":
-      return formatQuiet(data);
-  }
-}
-function formatCompact(data, fields) {
-  const infoLast = !fields && "info" in data;
-  const keys = (fields || Object.keys(data)).filter(
-    (k) => !(infoLast && k === "info")
-  );
-  const lines = keys.filter((k) => k in data).map((k) => {
-    const v = data[k];
-    if (k === "info") return infoBlock(v);
-    const display = typeof v === "object" && v !== null ? JSON.stringify(v) : String(v);
-    return `${k}: ${display}`;
-  });
-  if (infoLast) lines.push(infoBlock(data.info));
-  return lines.join("\n");
-}
-function formatTable(items, fields, footer) {
-  const meta = items[PAGINATION_META];
-  if (!items.length) return footer ?? formatCountFooter(0, meta);
-  const keys = fields || Object.keys(items[0]).filter((k) => k !== "info");
-  const headers = keys.map((k) => k.toUpperCase());
-  const cells = items.map(
-    (item2) => keys.map((k) => String(item2[k] ?? "").split("\n"))
-  );
-  const widths = keys.map((_, i) => {
-    const maxVal = Math.max(
-      0,
-      ...cells.flatMap((row) => row[i].map((line) => line.length))
-    );
-    return Math.max(headers[i].length, maxVal);
-  });
-  const headerLine = headers.map((h, i) => h.padEnd(widths[i])).join(" | ");
-  const separator = widths.map((w) => "-".repeat(w)).join("-|-");
-  const rows = cells.flatMap((row) => {
-    const height = Math.max(...row.map((lines) => lines.length));
-    return Array.from(
-      { length: height },
-      (_, line) => row.map((lines, i) => (lines[line] ?? "").padEnd(widths[i])).join(" | ")
-    );
-  });
-  return [
-    headerLine,
-    separator,
-    ...rows,
-    footer ?? formatCountFooter(items.length, meta)
-  ].join("\n");
-}
-function formatCountFooter(shown, meta) {
-  if (meta && typeof meta.total_items === "number" && meta.total_items > shown) {
-    return `[${shown} of ${meta.total_items} items \u2014 pass --all (or paginate) for the full set]`;
-  }
-  return `[${shown} items]`;
-}
-function formatQuiet(data) {
-  if (Array.isArray(data)) {
-    return data.map((item2) => item2.id ?? item2).join("\n");
-  }
-  if (typeof data === "object" && data !== null) {
-    return String(data.id ?? JSON.stringify(data));
-  }
-  return String(data);
-}
-
-// .path-cli/src/cache.ts
-import { readFileSync as readFileSync4, writeFileSync as writeFileSync3, existsSync as existsSync2, mkdirSync as mkdirSync3, rmSync } from "fs";
-import { resolve as resolve2 } from "path";
-import { homedir as homedir2 } from "os";
-var DEFAULT_TTL_MS = 10 * 60 * 1e3;
-var _cacheEnabled = true;
-var _accountId = "";
-function getCacheDir(accountId) {
-  return resolve2(homedir2(), ".path-cli", "cache", accountId);
-}
-function getCacheFilePath(accountId, key) {
-  return resolve2(getCacheDir(accountId), `${key}.json`);
-}
-function configureCacheGlobally(opts) {
-  _cacheEnabled = opts.enabled;
-}
-function setCacheAccountId(id) {
-  _accountId = id;
-}
-function cacheGet(accountId, key, ttlMs = DEFAULT_TTL_MS) {
-  if (!_cacheEnabled) return null;
-  const filePath = getCacheFilePath(accountId, key);
-  if (!existsSync2(filePath)) return null;
-  try {
-    const raw = readFileSync4(filePath, "utf-8");
-    const entry = JSON.parse(raw);
-    if (Date.now() - entry.cachedAt > ttlMs) return null;
-    return entry.data;
-  } catch {
-    return null;
-  }
-}
-function cacheSet(accountId, key, data, endpoint) {
-  try {
-    const dir = getCacheDir(accountId);
-    if (!existsSync2(dir)) mkdirSync3(dir, { recursive: true });
-    const entry = { data, endpoint, cachedAt: Date.now() };
-    writeFileSync3(getCacheFilePath(accountId, key), JSON.stringify(entry));
-  } catch {
-  }
-}
-async function cachedFetch(fetcher2, cacheKey, endpoint) {
-  const accountId = _accountId;
-  if (!accountId || !_cacheEnabled) return fetcher2();
-  const cached2 = cacheGet(accountId, cacheKey);
-  if (cached2 !== null) return cached2;
-  const data = await fetcher2();
-  cacheSet(accountId, cacheKey, data, endpoint);
-  return data;
-}
-function cacheClearAccount(accountId) {
-  const dir = getCacheDir(accountId);
-  if (existsSync2(dir)) rmSync(dir, { recursive: true, force: true });
-}
-function cacheClearAll() {
-  const dir = resolve2(homedir2(), ".path-cli", "cache");
-  if (existsSync2(dir)) rmSync(dir, { recursive: true, force: true });
-}
-
-// .path-cli/src/resolvers/resolve-bo.ts
-async function resolveBusinessObjectByName(client, name) {
-  const bos = await cachedFetch(
-    () => client.get("/v1/business-objects"),
-    "business-objects",
-    "/v1/business-objects"
-  );
-  const lower = name.toLowerCase();
-  const matches = bos.filter(
-    (bo) => bo.singular_name.toLowerCase() === lower || bo.plural_name.toLowerCase() === lower
-  );
-  if (matches.length === 0) {
-    const available = bos.map((bo) => `  ${bo.id}: ${bo.singular_name} / ${bo.plural_name}`).join("\n");
-    throw new Error(
-      `Business object "${name}" not found. Available:
-${available}`
-    );
-  }
-  if (matches.length > 1) {
-    const ambiguous = matches.map((bo) => `  ${bo.id}: ${bo.singular_name}`).join("\n");
-    throw new Error(
-      `Ambiguous business object name "${name}". Matches:
-${ambiguous}`
-    );
-  }
-  return matches[0];
-}
-
-// .path-cli/src/utils/error-handler.ts
-function handleError(err) {
-  if (err instanceof ApiError) {
-    console.error(`ERROR [${err.statusCode}]: ${err.message}`);
-  } else if (err instanceof Error) {
-    console.error(`ERROR: ${err.message}`);
-  } else {
-    console.error(`ERROR: ${String(err)}`);
-  }
-  process.exit(1);
-}
-
-// .path-cli/src/commands/feed.ts
-function setup(command) {
-  const parentOpts = command.parent?.opts() ?? {};
-  const config2 = loadConfig({
-    accountId: parentOpts.account,
-    baseUrl: parentOpts.baseUrl
-  });
-  if (!config2.accountId) {
-    throw new Error(
-      'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-    );
-  }
-  return { parentOpts, client: new HttpClient(config2) };
-}
-function print(command, data, defaultFields) {
-  const parentOpts = command.parent?.opts() ?? {};
-  const format = parentOpts.json ? "json" : void 0;
-  const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? (parentOpts.json ? void 0 : defaultFields);
-  console.log(formatOutput(data, { format, fields, quiet: parentOpts.quiet }));
-}
-async function actingUserId2(client) {
-  return (await UserAccess.load(client)).user.id;
-}
-async function viewableRows(client, rows) {
-  const access = await realWorldAccess(client);
-  return access ? rows.filter((r) => r.business_object_id == null || access.canBusinessObject(r.business_object_id, "view")) : rows;
-}
-var listFeedCommand = new Command("list-feed").description("List your dashboard Feed (newest first), like the web Feed page").option("--unread", "Only unread items").option("--pinned", "Only pinned items").option("--bo <id|name>", "Only items on this business object").option("--record-id <id>", "Only items on this record").option("--title <text>", "Title contains").option("--content <text>", "Content contains").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "25").action(async (opts) => {
-  try {
-    const { client } = setup(listFeedCommand);
-    const query = {
-      page: opts.page,
-      perPage: opts.perPage,
-      "mediums[]": ["feed"]
-    };
-    if (opts.unread) query.is_read = "false";
-    if (opts.pinned) query.is_pinned = "true";
-    if (opts.recordId) query["record_ids[]"] = [opts.recordId];
-    if (opts.title) query.title = opts.title;
-    if (opts.content) query.content = opts.content;
-    if (opts.bo) {
-      const id = /^\d+$/.test(opts.bo) ? Number(opts.bo) : (await resolveBusinessObjectByName(client, opts.bo)).id;
-      query["business_object_ids[]"] = [String(id)];
-    }
-    const items = unwrapPaginated(await client.get("/v1/notifications", query));
-    const rows = items.map((n) => ({
-      id: n.id,
-      notified_on: n.notified_on,
-      read: !!n.user_recipient?.is_read,
-      pinned: !!n.user_recipient?.is_pinned,
-      record_id: n.attributes?.record_id ?? n.record?.id ?? null,
-      title: n.title,
-      content: n.content
-    }));
-    const parentOpts = listFeedCommand.parent?.opts() ?? {};
-    print(listFeedCommand, parentOpts.json ? items : rows);
-  } catch (err) {
-    handleError(err);
-  }
-});
-var feedUnreadCountsCommand = new Command("feed-unread-counts").description("Unread Feed counts per business object (the menu badges) or per record").option("--by <bo|record>", "Group by business object or record", "bo").action(async (opts) => {
-  try {
-    const { client } = setup(feedUnreadCountsCommand);
-    if (opts.by !== "bo" && opts.by !== "record") throw new Error("--by must be bo or record");
-    const path = opts.by === "bo" ? "/v1/notifications/unread-by-bo" : "/v1/notifications/unread-by-record";
-    const raw = await client.get(path, { "mediums[]": ["feed"] });
-    const items = unwrapPaginated(raw);
-    print(feedUnreadCountsCommand, await viewableRows(client, items));
-  } catch (err) {
-    handleError(err);
-  }
-});
-var feedRecordsCommand = new Command("feed-records").description("The records your Feed and popups mention (the Feed page record list)").option("--bo <id>", "Only records of this business object").action(async (opts) => {
-  try {
-    const { client } = setup(feedRecordsCommand);
-    const query = { "mediums[]": ["feed", "popup"] };
-    if (opts.bo) query.business_object_id = String(opts.bo);
-    const raw = await client.get(
-      "/v1/notifications/record-identifiers",
-      query
-    );
-    print(feedRecordsCommand, await viewableRows(client, raw.records ?? []));
-  } catch (err) {
-    handleError(err);
-  }
-});
-var pinNotificationCommand = new Command("pin-notification").description("Pin (or with --unpin, unpin) one of your Feed items").argument("<notification-id>", "Notification id").option("--unpin", "Unpin instead").action(async (id, opts) => {
-  try {
-    const { client } = setup(pinNotificationCommand);
-    const result = await client.patch(`/v1/notifications/${id}/change-pinned-status`, {
-      user_id: await actingUserId2(client),
-      is_pinned: !opts.unpin
-    });
-    print(pinNotificationCommand, result, ["id", "title"]);
-  } catch (err) {
-    handleError(err);
-  }
-});
-var markNotificationReadCommand = new Command("mark-notification-read").description("Mark one of your Feed items (or with --popup, a popup) as read").argument("<notification-id>", "Notification id").option("--popup", "It is a popup notification").action(async (id, opts) => {
-  try {
-    const { client } = setup(markNotificationReadCommand);
-    const result = opts.popup ? await client.patch(`/v1/notifications/popup/${id}/mark-read`, {}) : await client.patch(`/v1/notifications/${id}/mark-read`, { user_id: await actingUserId2(client) });
-    print(markNotificationReadCommand, result, ["id", "title"]);
-  } catch (err) {
-    handleError(err);
-  }
-});
-var markAllNotificationsReadCommand = new Command("mark-all-notifications-read").description(`Mark every unread Feed item read (the Feed page "Mark all as read"), or one record's with --record-id`).option("--record-id <id>", "Only this record's items").option("--mediums <list>", "Comma-separated: feed, popup, email, sms, mobile (default feed)", "feed").action(async (opts) => {
-  try {
-    const { parentOpts, client } = setup(markAllNotificationsReadCommand);
-    const userId = await actingUserId2(client);
-    if (opts.recordId) {
-      await client.patch("/v1/notifications/mark-all-read-by-record", { user_id: userId, record_id: opts.recordId });
-    } else {
-      const mediums = String(opts.mediums).split(",").map((m) => m.trim()).filter(Boolean);
-      await client.patch("/v1/notifications/mark-all-read", { user_id: userId, mediums });
-    }
-    if (!parentOpts.quiet) {
-      console.log(opts.recordId ? `Marked record ${opts.recordId}'s Feed items read` : "Marked all Feed items read");
-    }
-  } catch (err) {
-    handleError(err);
-  }
-});
-var listPopupsCommand = new Command("list-popups").description("List your popup notifications (the in-app popups)").option("--unread", "Only unread popups").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "25").action(async (opts) => {
-  try {
-    const { client } = setup(listPopupsCommand);
-    const query = { page: opts.page, perPage: opts.perPage };
-    if (opts.unread) query.is_read = "false";
-    print(listPopupsCommand, unwrapPaginated(await client.get("/v1/notifications/popup", query)), ["id", "title", "content"]);
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/profile.ts
-function setup2(command) {
-  const parentOpts = command.parent?.opts() ?? {};
-  const config2 = loadConfig({
-    accountId: parentOpts.account,
-    baseUrl: parentOpts.baseUrl
-  });
-  if (!config2.accountId) {
-    throw new Error(
-      'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-    );
-  }
-  return { parentOpts, client: new HttpClient(config2) };
-}
-function print2(command, data) {
-  const parentOpts = command.parent?.opts() ?? {};
-  const fields = parentOpts.fields?.split(",").map((s) => s.trim());
-  console.log(
-    formatOutput(data, { format: parentOpts.json ? "json" : void 0, fields, quiet: parentOpts.quiet })
-  );
-}
-function uiSettingsOf(user) {
-  const raw = user.profile?.ui_settings;
-  if (!raw) return {};
-  if (typeof raw === "string") {
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return {};
-    }
-  }
-  return raw;
-}
-var getProfileCommand = new Command("get-profile").description("Show your profile settings: name, email, phone, time zone and muted report emails").action(async () => {
-  try {
-    const { client } = setup2(getProfileCommand);
-    const user = await client.get("/v1/users/current");
-    const ui = uiSettingsOf(user);
-    print2(getProfileCommand, {
-      id: user.id,
-      email: user.email,
-      first_name: user.profile?.first_name ?? user.first_name ?? null,
-      last_name: user.profile?.last_name ?? user.last_name ?? null,
-      phone_number: user.profile?.phone_number ?? null,
-      time_zone: ui.time_zone?.mode === "fixed" ? ui.time_zone.zone : ui.time_zone?.mode ?? "account",
-      muted_report_ids: ui.reports?.muted_report_ids ?? []
-    });
-  } catch (err) {
-    handleError(err);
-  }
-});
-var updateProfileCommand = new Command("update-profile").description("Change your name or time zone, the way the profile settings modal saves them").option("--first-name <name>", "First name (also written to your Person record)").option("--last-name <name>", "Last name (also written to your Person record)").option("--time-zone <zone>", "account (the account's zone), local (this device's), or an IANA zone such as America/Chicago").action(async (opts) => {
-  try {
-    const { parentOpts, client } = setup2(updateProfileCommand);
-    if (opts.firstName === void 0 && opts.lastName === void 0 && opts.timeZone === void 0) {
-      throw new Error("Nothing to change \u2014 give --first-name, --last-name or --time-zone");
-    }
-    const user = await client.get("/v1/users/current");
-    if (opts.firstName !== void 0 || opts.lastName !== void 0) {
-      const firstName = String(opts.firstName ?? user.profile?.first_name ?? user.first_name ?? "").trim();
-      const lastName = String(opts.lastName ?? user.profile?.last_name ?? user.last_name ?? "").trim();
-      if (!firstName || !lastName) throw new Error("First and last name are required");
-      const person = await client.get("/v1/users/current/person-record").catch(() => null);
-      if (person?.id) {
-        const fields = unwrapPaginated(
-          await client.get(`/v1/business-objects/${person.business_object_id}/fields`, { all: "true" })
-        );
-        const changes = [];
-        const first = fields.find((f) => f.standard_field_type === "FirstName");
-        const last = fields.find((f) => f.standard_field_type === "LastName");
-        if (opts.firstName !== void 0 && first) changes.push({ field_id: first.id, value: firstName });
-        if (opts.lastName !== void 0 && last) changes.push({ field_id: last.id, value: lastName });
-        if (changes.length) {
-          await client.post(
-            "/v1/pathways/-1/execute",
-            {
-              step_type: "edit_record",
-              input_content: { id: person.id, business_object_id: person.business_object_id, fields: changes }
-            },
-            recordContextHeaders(person.id)
-          );
-        }
-      }
-      await client.patch("/v1/users/current/name", { first_name: firstName, last_name: lastName });
-    }
-    if (opts.timeZone !== void 0) {
-      const zone = String(opts.timeZone).trim();
-      let timeZone;
-      if (zone === "account" || zone === "local") timeZone = { mode: zone, zone: null };
-      else {
-        try {
-          new Intl.DateTimeFormat("en-US", { timeZone: zone });
-        } catch {
-          throw new Error(`Unknown time zone "${zone}" \u2014 use account, local, or an IANA zone such as America/Chicago`);
-        }
-        timeZone = { mode: "fixed", zone };
-      }
-      await client.patch("/v1/users/current/preferences", { ui_settings: { ...uiSettingsOf(user), time_zone: timeZone } });
-    }
-    if (!parentOpts.quiet) console.log(`Updated the profile of ${(await UserAccess.load(client)).label}`);
-  } catch (err) {
-    handleError(err);
-  }
-});
-var MEDIUMS = ["feed", "email", "text", "mobile", "pop_up"];
-var getNotificationSettingsCommand = new Command("get-notification-settings").description(
-  "Your notification settings: account-wide rows (task, feed, \u2026), or with --resolved every notification that can reach you and which channels you may turn on"
-).option("--resolved", "Per-notification rows with each channel's required / allowed / not-allowed state").action(async (opts) => {
-  try {
-    const { client } = setup2(getNotificationSettingsCommand);
-    const raw = await client.get(opts.resolved ? "/v1/notifications/settings/resolved" : "/v1/notifications/settings");
-    const parentOpts = getNotificationSettingsCommand.parent?.opts() ?? {};
-    if (parentOpts.json) {
-      print2(getNotificationSettingsCommand, raw);
-      return;
-    }
-    const rows = opts.resolved ? unwrapPaginated(raw).map((r) => ({
-      key: `${r.entity_type}:${r.entity_id}`,
-      name: r.name,
-      ...Object.fromEntries(
-        MEDIUMS.map((m) => {
-          const s = r.mediums?.[m];
-          const on = s?.configurable ? !!s.user_value : s?.effective_state === "required";
-          return [m, `${on ? "on" : "off"}${s?.configurable ? "" : ` (${s?.effective_state ?? "n/a"})`}`];
-        })
-      )
-    })) : unwrapPaginated(raw).map((r) => ({
-      key: r.entity_id == null ? r.entity_type : `${r.entity_type}:${r.entity_id}`,
-      ...Object.fromEntries(
-        MEDIUMS.map((m) => [m, `${r.notification_config?.[m]?.value ? "on" : "off"}${r.notification_config?.[m]?.disable ? " (locked)" : ""}`])
-      )
-    }));
-    print2(getNotificationSettingsCommand, rows);
-  } catch (err) {
-    handleError(err);
-  }
-});
-function parseSet(text) {
-  const m = /^([a-z_]+)(?::(\d+))?\.([a-z_]+)=(on|off|true|false|yes|no)$/i.exec(text.trim());
-  if (!m || !MEDIUMS.includes(m[3].toLowerCase())) {
-    throw new Error(
-      `Can't read --set "${text}" \u2014 use <entity_type>[:<entity_id>].<${MEDIUMS.join("|")}>=on|off (keys from get-notification-settings)`
-    );
-  }
-  return {
-    entityType: m[1].toLowerCase(),
-    entityId: m[2] ? Number(m[2]) : null,
-    medium: m[3].toLowerCase(),
-    value: /^(on|true|yes)$/i.test(m[4])
-  };
-}
-var updateNotificationSettingsCommand = new Command("update-notification-settings").description("Turn your notification channels on or off, or change your notification phone number").option(
-  "--set <key.medium=on|off>",
-  "e.g. task.email=off or notification:42.text=on (repeatable; keys from get-notification-settings [--resolved])",
-  (value, previous = []) => [...previous, value]
-).option("--phone <number>", 'The phone number text notifications go to ("" to remove)').option("--data <json>", "Raw request body: { settings: [...], phone_number? } (as the web sends it)").action(async (opts) => {
-  try {
-    const { parentOpts, client } = setup2(updateNotificationSettingsCommand);
-    const body = opts.data ? JSON.parse(opts.data) : { settings: [] };
-    body.settings ??= [];
-    const sets = (opts.set ?? []).map(parseSet);
-    if (sets.length) {
-      const [saved, resolved] = await Promise.all([
-        client.get("/v1/notifications/settings").then((r) => unwrapPaginated(r)),
-        client.get("/v1/notifications/settings/resolved").then((r) => unwrapPaginated(r))
-      ]);
-      const rows = /* @__PURE__ */ new Map();
-      for (const set of sets) {
-        const key = `${set.entityType}:${set.entityId ?? ""}`;
-        let row = rows.get(key);
-        if (!row) {
-          const current2 = saved.find((s) => s.entity_type === set.entityType && (s.entity_id ?? null) === set.entityId);
-          const res = resolved.find((r) => r.entity_type === set.entityType && r.entity_id === set.entityId);
-          if (!current2 && !res) {
-            throw new Error(`No notification setting "${set.entityType}${set.entityId != null ? `:${set.entityId}` : ""}" \u2014 see get-notification-settings [--resolved]`);
-          }
-          const config2 = Object.fromEntries(
-            MEDIUMS.map((m) => [
-              m,
-              current2 ? { value: !!current2.notification_config?.[m]?.value, disable: !!current2.notification_config?.[m]?.disable } : {
-                value: res.mediums?.[m]?.configurable ? !!res.mediums[m].user_value : res.mediums?.[m]?.effective_state === "required",
-                disable: false
-              }
-            ])
-          );
-          row = { entity_type: set.entityType, entity_id: set.entityId, notification_config: config2 };
-          rows.set(key, row);
-        }
-        if (row.notification_config[set.medium].disable) {
-          throw new Error(`${set.medium} on ${set.entityType} is locked by your account's settings`);
-        }
-        row.notification_config[set.medium].value = set.value;
-      }
-      body.settings.push(...rows.values());
-    }
-    if (opts.phone !== void 0) body.phone_number = String(opts.phone);
-    if (!body.settings.length && body.phone_number === void 0) {
-      throw new Error("Nothing to change \u2014 give --set, --phone or --data");
-    }
-    const result = await client.patch("/v1/notifications/settings", body);
-    if (parentOpts.json) print2(updateNotificationSettingsCommand, result);
-    else if (!parentOpts.quiet) console.log(`Updated the notification settings of ${(await UserAccess.load(client)).label}`);
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// utils/history-events.ts
-var HistoryAction = /* @__PURE__ */ ((HistoryAction2) => {
-  HistoryAction2["Created"] = "created";
-  HistoryAction2["Updated"] = "updated";
-  HistoryAction2["Deleted"] = "deleted";
-  HistoryAction2["Viewed"] = "viewed";
-  HistoryAction2["Linked"] = "linked";
-  HistoryAction2["Unlinked"] = "unlinked";
-  HistoryAction2["Archived"] = "archived";
-  HistoryAction2["Unarchived"] = "unarchived";
-  HistoryAction2["MilestoneReached"] = "milestone_reached";
-  HistoryAction2["MilestoneExited"] = "milestone_exited";
-  HistoryAction2["Step"] = "step";
-  HistoryAction2["WorkflowStepDeactivated"] = "workflow_step_deactivated";
-  HistoryAction2["WorkflowStepReactivated"] = "workflow_step_reactivated";
-  HistoryAction2["WorkflowStepDeleted"] = "workflow_step_deleted";
-  HistoryAction2["FileUploaded"] = "file_uploaded";
-  HistoryAction2["FileRemoved"] = "file_removed";
-  HistoryAction2["FileArchived"] = "file_archived";
-  HistoryAction2["FileUnarchived"] = "file_unarchived";
-  HistoryAction2["FileDownloaded"] = "file_downloaded";
-  HistoryAction2["TaskCreated"] = "task_created";
-  HistoryAction2["TaskCompleted"] = "task_completed";
-  HistoryAction2["TaskCancelled"] = "task_cancelled";
-  HistoryAction2["TaskAssigned"] = "task_assigned";
-  HistoryAction2["DocumentGenerated"] = "document_generated";
-  HistoryAction2["NotificationSent"] = "notification_sent";
-  HistoryAction2["EmailSent"] = "email_sent";
-  HistoryAction2["TextSent"] = "text_sent";
-  HistoryAction2["MessageSent"] = "message_sent";
-  HistoryAction2["MessageRemoved"] = "message_removed";
-  HistoryAction2["NoteAdded"] = "note_added";
-  HistoryAction2["NoteUpdated"] = "note_updated";
-  HistoryAction2["NoteRemoved"] = "note_removed";
-  HistoryAction2["IntegrationInbound"] = "integration_inbound";
-  HistoryAction2["IntegrationOutbound"] = "integration_outbound";
-  HistoryAction2["Logistics"] = "logistics";
-  HistoryAction2["CustomCodeRan"] = "custom_code_ran";
-  HistoryAction2["BusinessObjectCreated"] = "business_object_created";
-  HistoryAction2["BusinessObjectUpdated"] = "business_object_updated";
-  HistoryAction2["FieldCreated"] = "field_created";
-  HistoryAction2["FieldUpdated"] = "field_updated";
-  HistoryAction2["FieldDeleted"] = "field_deleted";
-  HistoryAction2["FieldGroupCreated"] = "field_group_created";
-  HistoryAction2["FieldGroupUpdated"] = "field_group_updated";
-  HistoryAction2["FieldGroupDeleted"] = "field_group_deleted";
-  HistoryAction2["SelectionOptionsChanged"] = "selection_options_changed";
-  HistoryAction2["RelationshipCreated"] = "relationship_created";
-  HistoryAction2["RelationshipUpdated"] = "relationship_updated";
-  HistoryAction2["RelationshipDeleted"] = "relationship_deleted";
-  HistoryAction2["CustomLogicUpdated"] = "custom_logic_updated";
-  HistoryAction2["StickerCreated"] = "sticker_created";
-  HistoryAction2["StickerUpdated"] = "sticker_updated";
-  HistoryAction2["StickerDeleted"] = "sticker_deleted";
-  HistoryAction2["FolderCreated"] = "folder_created";
-  HistoryAction2["FolderUpdated"] = "folder_updated";
-  HistoryAction2["FolderDeleted"] = "folder_deleted";
-  HistoryAction2["MilestoneDefinitionCreated"] = "milestone_definition_created";
-  HistoryAction2["MilestoneDefinitionUpdated"] = "milestone_definition_updated";
-  HistoryAction2["MilestoneCriteriaUpdated"] = "milestone_criteria_updated";
-  HistoryAction2["MilestoneDefinitionArchived"] = "milestone_definition_archived";
-  HistoryAction2["MilestoneDefinitionRestored"] = "milestone_definition_restored";
-  HistoryAction2["WorkflowStepDefinitionCreated"] = "workflow_step_definition_created";
-  HistoryAction2["WorkflowStepDefinitionUpdated"] = "workflow_step_definition_updated";
-  HistoryAction2["WorkflowStepDefinitionArchived"] = "workflow_step_definition_archived";
-  HistoryAction2["WorkflowStepDefinitionRestored"] = "workflow_step_definition_restored";
-  HistoryAction2["TaskTemplateCreated"] = "task_template_created";
-  HistoryAction2["TaskTemplateUpdated"] = "task_template_updated";
-  HistoryAction2["TaskTemplateDeleted"] = "task_template_deleted";
-  HistoryAction2["PathwayCreated"] = "pathway_created";
-  HistoryAction2["PathwayUpdated"] = "pathway_updated";
-  HistoryAction2["PathwayArchived"] = "pathway_archived";
-  HistoryAction2["PathwayDeleted"] = "pathway_deleted";
-  HistoryAction2["PathwayStepAdded"] = "pathway_step_added";
-  HistoryAction2["PathwayStepUpdated"] = "pathway_step_updated";
-  HistoryAction2["PathwayStepRemoved"] = "pathway_step_removed";
-  HistoryAction2["PathwayStepReordered"] = "pathway_step_reordered";
-  HistoryAction2["PathwayGroupCreated"] = "pathway_group_created";
-  HistoryAction2["PathwayGroupUpdated"] = "pathway_group_updated";
-  HistoryAction2["PathwayGroupDeleted"] = "pathway_group_deleted";
-  HistoryAction2["UserCreated"] = "user_created";
-  HistoryAction2["UserUpdated"] = "user_updated";
-  HistoryAction2["UserDeactivated"] = "user_deactivated";
-  HistoryAction2["UserReactivated"] = "user_reactivated";
-  HistoryAction2["UserRoleAssigned"] = "user_role_assigned";
-  HistoryAction2["UserRoleUnassigned"] = "user_role_unassigned";
-  HistoryAction2["PasswordResetTriggered"] = "password_reset_triggered";
-  HistoryAction2["UserImpersonationStarted"] = "user_impersonation_started";
-  HistoryAction2["RoleCreated"] = "role_created";
-  HistoryAction2["RoleUpdated"] = "role_updated";
-  HistoryAction2["RolePermissionsUpdated"] = "role_permissions_updated";
-  HistoryAction2["RoleMembersUpdated"] = "role_members_updated";
-  HistoryAction2["TagCreated"] = "tag_created";
-  HistoryAction2["TagUpdated"] = "tag_updated";
-  HistoryAction2["TagDeleted"] = "tag_deleted";
-  HistoryAction2["TagGroupCreated"] = "tag_group_created";
-  HistoryAction2["TagGroupUpdated"] = "tag_group_updated";
-  HistoryAction2["TagGroupDeleted"] = "tag_group_deleted";
-  HistoryAction2["ActionCreated"] = "action_created";
-  HistoryAction2["ActionUpdated"] = "action_updated";
-  HistoryAction2["ActionEnabled"] = "action_enabled";
-  HistoryAction2["ActionDisabled"] = "action_disabled";
-  HistoryAction2["ActionScheduleUpdated"] = "action_schedule_updated";
-  HistoryAction2["NotificationTemplateCreated"] = "notification_template_created";
-  HistoryAction2["NotificationTemplateUpdated"] = "notification_template_updated";
-  HistoryAction2["NotificationTemplateDeleted"] = "notification_template_deleted";
-  HistoryAction2["IntegrationCreated"] = "integration_created";
-  HistoryAction2["IntegrationUpdated"] = "integration_updated";
-  HistoryAction2["IntegrationDeleted"] = "integration_deleted";
-  HistoryAction2["IntegrationEnabled"] = "integration_enabled";
-  HistoryAction2["IntegrationDisabled"] = "integration_disabled";
-  HistoryAction2["IntegrationCredentialsUpdated"] = "integration_credentials_updated";
-  HistoryAction2["IntegrationReplayed"] = "integration_replayed";
-  HistoryAction2["DocumentTemplateCreated"] = "document_template_created";
-  HistoryAction2["DocumentTemplateUpdated"] = "document_template_updated";
-  HistoryAction2["DocumentTemplateDeleted"] = "document_template_deleted";
-  HistoryAction2["FileTypeCreated"] = "file_type_created";
-  HistoryAction2["FileTypeUpdated"] = "file_type_updated";
-  HistoryAction2["FileTypeDeleted"] = "file_type_deleted";
-  HistoryAction2["ImportCreated"] = "import_created";
-  HistoryAction2["ImportUpdated"] = "import_updated";
-  HistoryAction2["ImportDeleted"] = "import_deleted";
-  HistoryAction2["ImportExecuted"] = "import_executed";
-  HistoryAction2["ExportCreated"] = "export_created";
-  HistoryAction2["ExportUpdated"] = "export_updated";
-  HistoryAction2["ExportDeleted"] = "export_deleted";
-  HistoryAction2["ExportExecuted"] = "export_executed";
-  HistoryAction2["AccountSettingCreated"] = "account_setting_created";
-  HistoryAction2["AccountSettingUpdated"] = "account_setting_updated";
-  HistoryAction2["DesignerNoteAdded"] = "designer_note_added";
-  HistoryAction2["DesignerNoteUpdated"] = "designer_note_updated";
-  HistoryAction2["DesignerNoteRemoved"] = "designer_note_removed";
-  return HistoryAction2;
-})(HistoryAction || {});
-var HISTORY_CATEGORY = {
-  ["created" /* Created */]: "saved_changes",
-  ["updated" /* Updated */]: "saved_changes",
-  ["deleted" /* Deleted */]: "saved_changes",
-  ["viewed" /* Viewed */]: "saved_changes",
-  ["linked" /* Linked */]: "saved_changes",
-  ["unlinked" /* Unlinked */]: "saved_changes",
-  ["archived" /* Archived */]: "saved_changes",
-  ["unarchived" /* Unarchived */]: "saved_changes",
-  ["milestone_reached" /* MilestoneReached */]: "milestones",
-  ["milestone_exited" /* MilestoneExited */]: "milestones_exited",
-  ["step" /* Step */]: "steps",
-  ["workflow_step_deactivated" /* WorkflowStepDeactivated */]: "steps",
-  ["workflow_step_reactivated" /* WorkflowStepReactivated */]: "steps",
-  ["workflow_step_deleted" /* WorkflowStepDeleted */]: "steps",
-  ["file_uploaded" /* FileUploaded */]: "files",
-  ["file_removed" /* FileRemoved */]: "files",
-  ["file_archived" /* FileArchived */]: "files",
-  ["file_unarchived" /* FileUnarchived */]: "files",
-  ["file_downloaded" /* FileDownloaded */]: "files",
-  ["task_created" /* TaskCreated */]: "tasks",
-  ["task_completed" /* TaskCompleted */]: "tasks",
-  ["task_cancelled" /* TaskCancelled */]: "tasks",
-  ["task_assigned" /* TaskAssigned */]: "tasks",
-  ["document_generated" /* DocumentGenerated */]: "documents",
-  ["notification_sent" /* NotificationSent */]: "notifications",
-  ["email_sent" /* EmailSent */]: "emails_texts",
-  ["text_sent" /* TextSent */]: "emails_texts",
-  ["message_sent" /* MessageSent */]: "messages",
-  ["message_removed" /* MessageRemoved */]: "messages",
-  ["note_added" /* NoteAdded */]: "saved_changes",
-  ["note_updated" /* NoteUpdated */]: "saved_changes",
-  ["note_removed" /* NoteRemoved */]: "saved_changes",
-  ["integration_inbound" /* IntegrationInbound */]: "integrations",
-  ["integration_outbound" /* IntegrationOutbound */]: "integrations",
-  ["logistics" /* Logistics */]: "logistics",
-  ["custom_code_ran" /* CustomCodeRan */]: "custom_code",
-  ["business_object_created" /* BusinessObjectCreated */]: "designer_business_objects",
-  ["business_object_updated" /* BusinessObjectUpdated */]: "designer_business_objects",
-  ["field_created" /* FieldCreated */]: "designer_business_objects",
-  ["field_updated" /* FieldUpdated */]: "designer_business_objects",
-  ["field_deleted" /* FieldDeleted */]: "designer_business_objects",
-  ["field_group_created" /* FieldGroupCreated */]: "designer_business_objects",
-  ["field_group_updated" /* FieldGroupUpdated */]: "designer_business_objects",
-  ["field_group_deleted" /* FieldGroupDeleted */]: "designer_business_objects",
-  ["selection_options_changed" /* SelectionOptionsChanged */]: "designer_business_objects",
-  ["relationship_created" /* RelationshipCreated */]: "designer_business_objects",
-  ["relationship_updated" /* RelationshipUpdated */]: "designer_business_objects",
-  ["relationship_deleted" /* RelationshipDeleted */]: "designer_business_objects",
-  ["custom_logic_updated" /* CustomLogicUpdated */]: "designer_business_objects",
-  ["sticker_created" /* StickerCreated */]: "designer_business_objects",
-  ["sticker_updated" /* StickerUpdated */]: "designer_business_objects",
-  ["sticker_deleted" /* StickerDeleted */]: "designer_business_objects",
-  ["folder_created" /* FolderCreated */]: "designer_business_objects",
-  ["folder_updated" /* FolderUpdated */]: "designer_business_objects",
-  ["folder_deleted" /* FolderDeleted */]: "designer_business_objects",
-  ["milestone_definition_created" /* MilestoneDefinitionCreated */]: "designer_workflow",
-  ["milestone_definition_updated" /* MilestoneDefinitionUpdated */]: "designer_workflow",
-  ["milestone_criteria_updated" /* MilestoneCriteriaUpdated */]: "designer_workflow",
-  ["milestone_definition_archived" /* MilestoneDefinitionArchived */]: "designer_workflow",
-  ["milestone_definition_restored" /* MilestoneDefinitionRestored */]: "designer_workflow",
-  ["workflow_step_definition_archived" /* WorkflowStepDefinitionArchived */]: "designer_workflow",
-  ["workflow_step_definition_restored" /* WorkflowStepDefinitionRestored */]: "designer_workflow",
-  ["workflow_step_definition_created" /* WorkflowStepDefinitionCreated */]: "designer_workflow",
-  ["workflow_step_definition_updated" /* WorkflowStepDefinitionUpdated */]: "designer_workflow",
-  ["task_template_created" /* TaskTemplateCreated */]: "designer_workflow",
-  ["task_template_updated" /* TaskTemplateUpdated */]: "designer_workflow",
-  ["task_template_deleted" /* TaskTemplateDeleted */]: "designer_workflow",
-  ["pathway_created" /* PathwayCreated */]: "designer_pathways",
-  ["pathway_updated" /* PathwayUpdated */]: "designer_pathways",
-  ["pathway_archived" /* PathwayArchived */]: "designer_pathways",
-  ["pathway_deleted" /* PathwayDeleted */]: "designer_pathways",
-  ["pathway_step_added" /* PathwayStepAdded */]: "designer_pathways",
-  ["pathway_step_updated" /* PathwayStepUpdated */]: "designer_pathways",
-  ["pathway_step_removed" /* PathwayStepRemoved */]: "designer_pathways",
-  ["pathway_step_reordered" /* PathwayStepReordered */]: "designer_pathways",
-  ["pathway_group_created" /* PathwayGroupCreated */]: "designer_pathways",
-  ["pathway_group_updated" /* PathwayGroupUpdated */]: "designer_pathways",
-  ["pathway_group_deleted" /* PathwayGroupDeleted */]: "designer_pathways",
-  ["user_created" /* UserCreated */]: "designer_users_roles",
-  ["user_updated" /* UserUpdated */]: "designer_users_roles",
-  ["user_deactivated" /* UserDeactivated */]: "designer_users_roles",
-  ["user_reactivated" /* UserReactivated */]: "designer_users_roles",
-  ["user_role_assigned" /* UserRoleAssigned */]: "designer_users_roles",
-  ["user_role_unassigned" /* UserRoleUnassigned */]: "designer_users_roles",
-  ["password_reset_triggered" /* PasswordResetTriggered */]: "designer_users_roles",
-  ["user_impersonation_started" /* UserImpersonationStarted */]: "designer_users_roles",
-  ["role_created" /* RoleCreated */]: "designer_users_roles",
-  ["role_updated" /* RoleUpdated */]: "designer_users_roles",
-  ["role_permissions_updated" /* RolePermissionsUpdated */]: "designer_users_roles",
-  ["role_members_updated" /* RoleMembersUpdated */]: "designer_users_roles",
-  ["tag_created" /* TagCreated */]: "designer_users_roles",
-  ["tag_updated" /* TagUpdated */]: "designer_users_roles",
-  ["tag_deleted" /* TagDeleted */]: "designer_users_roles",
-  ["tag_group_created" /* TagGroupCreated */]: "designer_users_roles",
-  ["tag_group_updated" /* TagGroupUpdated */]: "designer_users_roles",
-  ["tag_group_deleted" /* TagGroupDeleted */]: "designer_users_roles",
-  ["action_created" /* ActionCreated */]: "designer_actions",
-  ["action_updated" /* ActionUpdated */]: "designer_actions",
-  ["action_enabled" /* ActionEnabled */]: "designer_actions",
-  ["action_disabled" /* ActionDisabled */]: "designer_actions",
-  ["action_schedule_updated" /* ActionScheduleUpdated */]: "designer_actions",
-  ["notification_template_created" /* NotificationTemplateCreated */]: "designer_actions",
-  ["notification_template_updated" /* NotificationTemplateUpdated */]: "designer_actions",
-  ["notification_template_deleted" /* NotificationTemplateDeleted */]: "designer_actions",
-  ["integration_created" /* IntegrationCreated */]: "designer_integrations",
-  ["integration_updated" /* IntegrationUpdated */]: "designer_integrations",
-  ["integration_deleted" /* IntegrationDeleted */]: "designer_integrations",
-  ["integration_enabled" /* IntegrationEnabled */]: "designer_integrations",
-  ["integration_disabled" /* IntegrationDisabled */]: "designer_integrations",
-  ["integration_credentials_updated" /* IntegrationCredentialsUpdated */]: "designer_integrations",
-  ["integration_replayed" /* IntegrationReplayed */]: "designer_integrations",
-  ["document_template_created" /* DocumentTemplateCreated */]: "designer_files_templates",
-  ["document_template_updated" /* DocumentTemplateUpdated */]: "designer_files_templates",
-  ["document_template_deleted" /* DocumentTemplateDeleted */]: "designer_files_templates",
-  ["file_type_created" /* FileTypeCreated */]: "designer_files_templates",
-  ["file_type_updated" /* FileTypeUpdated */]: "designer_files_templates",
-  ["file_type_deleted" /* FileTypeDeleted */]: "designer_files_templates",
-  ["import_created" /* ImportCreated */]: "designer_files_templates",
-  ["import_updated" /* ImportUpdated */]: "designer_files_templates",
-  ["import_deleted" /* ImportDeleted */]: "designer_files_templates",
-  ["import_executed" /* ImportExecuted */]: "designer_files_templates",
-  ["export_created" /* ExportCreated */]: "designer_files_templates",
-  ["export_updated" /* ExportUpdated */]: "designer_files_templates",
-  ["export_deleted" /* ExportDeleted */]: "designer_files_templates",
-  ["export_executed" /* ExportExecuted */]: "designer_files_templates",
-  ["account_setting_created" /* AccountSettingCreated */]: "designer_settings",
-  ["account_setting_updated" /* AccountSettingUpdated */]: "designer_settings",
-  ["designer_note_added" /* DesignerNoteAdded */]: "designer_notes",
-  ["designer_note_updated" /* DesignerNoteUpdated */]: "designer_notes",
-  ["designer_note_removed" /* DesignerNoteRemoved */]: "designer_notes"
-};
-var HISTORY_ACTION_LABELS = {
-  ["created" /* Created */]: "Created",
-  ["updated" /* Updated */]: "Saved Changes",
-  ["deleted" /* Deleted */]: "Deleted",
-  ["viewed" /* Viewed */]: "Viewed",
-  ["linked" /* Linked */]: "Linked",
-  ["unlinked" /* Unlinked */]: "Unlinked",
-  ["archived" /* Archived */]: "Archived",
-  ["unarchived" /* Unarchived */]: "Unarchived",
-  ["milestone_reached" /* MilestoneReached */]: "Milestone Reached",
-  ["milestone_exited" /* MilestoneExited */]: "Milestone Exited",
-  ["step" /* Step */]: "Workflow Step Run",
-  ["workflow_step_deactivated" /* WorkflowStepDeactivated */]: "Step Deactivated",
-  ["workflow_step_reactivated" /* WorkflowStepReactivated */]: "Step Reactivated",
-  ["workflow_step_deleted" /* WorkflowStepDeleted */]: "Step Deleted",
-  ["file_uploaded" /* FileUploaded */]: "File Uploaded",
-  ["file_removed" /* FileRemoved */]: "File Removed",
-  ["file_archived" /* FileArchived */]: "File Archived",
-  ["file_unarchived" /* FileUnarchived */]: "File Unarchived",
-  ["file_downloaded" /* FileDownloaded */]: "File Downloaded",
-  ["task_created" /* TaskCreated */]: "Task Created",
-  ["task_completed" /* TaskCompleted */]: "Task Completed",
-  ["task_cancelled" /* TaskCancelled */]: "Task Cancelled",
-  ["task_assigned" /* TaskAssigned */]: "Task Assigned",
-  ["document_generated" /* DocumentGenerated */]: "Document Generated",
-  ["notification_sent" /* NotificationSent */]: "Notification",
-  ["email_sent" /* EmailSent */]: "Email Sent",
-  ["text_sent" /* TextSent */]: "Text Sent",
-  ["message_sent" /* MessageSent */]: "Message Sent",
-  ["message_removed" /* MessageRemoved */]: "Message Removed",
-  ["note_added" /* NoteAdded */]: "Note Added",
-  ["note_updated" /* NoteUpdated */]: "Note Updated",
-  ["note_removed" /* NoteRemoved */]: "Note Removed",
-  ["integration_inbound" /* IntegrationInbound */]: "Inbound Integration",
-  ["integration_outbound" /* IntegrationOutbound */]: "Outbound Integration",
-  ["logistics" /* Logistics */]: "Logistics",
-  ["custom_code_ran" /* CustomCodeRan */]: "Custom Code Ran",
-  ["business_object_created" /* BusinessObjectCreated */]: "Business Object Created",
-  ["business_object_updated" /* BusinessObjectUpdated */]: "Business Object Updated",
-  ["field_created" /* FieldCreated */]: "Field Created",
-  ["field_updated" /* FieldUpdated */]: "Field Updated",
-  ["field_deleted" /* FieldDeleted */]: "Field Deleted",
-  ["field_group_created" /* FieldGroupCreated */]: "Field Group Created",
-  ["field_group_updated" /* FieldGroupUpdated */]: "Field Group Updated",
-  ["field_group_deleted" /* FieldGroupDeleted */]: "Field Group Deleted",
-  ["selection_options_changed" /* SelectionOptionsChanged */]: "Selection Options Changed",
-  ["relationship_created" /* RelationshipCreated */]: "Relationship Created",
-  ["relationship_updated" /* RelationshipUpdated */]: "Relationship Updated",
-  ["relationship_deleted" /* RelationshipDeleted */]: "Relationship Deleted",
-  ["custom_logic_updated" /* CustomLogicUpdated */]: "Custom Logic Updated",
-  ["sticker_created" /* StickerCreated */]: "Sticker Created",
-  ["sticker_updated" /* StickerUpdated */]: "Sticker Updated",
-  ["sticker_deleted" /* StickerDeleted */]: "Sticker Deleted",
-  ["folder_created" /* FolderCreated */]: "Folder Created",
-  ["folder_updated" /* FolderUpdated */]: "Folder Updated",
-  ["folder_deleted" /* FolderDeleted */]: "Folder Deleted",
-  ["milestone_definition_created" /* MilestoneDefinitionCreated */]: "Milestone Created",
-  ["milestone_definition_updated" /* MilestoneDefinitionUpdated */]: "Milestone Updated",
-  ["milestone_criteria_updated" /* MilestoneCriteriaUpdated */]: "Milestone Criteria Updated",
-  ["milestone_definition_archived" /* MilestoneDefinitionArchived */]: "Milestone Archived",
-  ["milestone_definition_restored" /* MilestoneDefinitionRestored */]: "Milestone Restored",
-  ["workflow_step_definition_archived" /* WorkflowStepDefinitionArchived */]: "Workflow Step Archived",
-  ["workflow_step_definition_restored" /* WorkflowStepDefinitionRestored */]: "Workflow Step Restored",
-  ["workflow_step_definition_created" /* WorkflowStepDefinitionCreated */]: "Workflow Step Created",
-  ["workflow_step_definition_updated" /* WorkflowStepDefinitionUpdated */]: "Workflow Step Updated",
-  ["task_template_created" /* TaskTemplateCreated */]: "Task Template Created",
-  ["task_template_updated" /* TaskTemplateUpdated */]: "Task Template Updated",
-  ["task_template_deleted" /* TaskTemplateDeleted */]: "Task Template Deleted",
-  ["pathway_created" /* PathwayCreated */]: "Pathway Created",
-  ["pathway_updated" /* PathwayUpdated */]: "Pathway Updated",
-  ["pathway_archived" /* PathwayArchived */]: "Pathway Archived",
-  ["pathway_deleted" /* PathwayDeleted */]: "Pathway Deleted",
-  ["pathway_step_added" /* PathwayStepAdded */]: "Pathway Step Added",
-  ["pathway_step_updated" /* PathwayStepUpdated */]: "Pathway Step Updated",
-  ["pathway_step_removed" /* PathwayStepRemoved */]: "Pathway Step Removed",
-  ["pathway_step_reordered" /* PathwayStepReordered */]: "Pathway Steps Reordered",
-  ["pathway_group_created" /* PathwayGroupCreated */]: "Pathway Group Created",
-  ["pathway_group_updated" /* PathwayGroupUpdated */]: "Pathway Group Updated",
-  ["pathway_group_deleted" /* PathwayGroupDeleted */]: "Pathway Group Deleted",
-  ["user_created" /* UserCreated */]: "User Created",
-  ["user_updated" /* UserUpdated */]: "User Updated",
-  ["user_deactivated" /* UserDeactivated */]: "User Deactivated",
-  ["user_reactivated" /* UserReactivated */]: "User Reactivated",
-  ["user_role_assigned" /* UserRoleAssigned */]: "Role Assigned",
-  ["user_role_unassigned" /* UserRoleUnassigned */]: "Role Unassigned",
-  ["password_reset_triggered" /* PasswordResetTriggered */]: "Password Reset",
-  ["user_impersonation_started" /* UserImpersonationStarted */]: "Logged In As User",
-  ["role_created" /* RoleCreated */]: "Role Created",
-  ["role_updated" /* RoleUpdated */]: "Role Updated",
-  ["role_permissions_updated" /* RolePermissionsUpdated */]: "Role Permissions Updated",
-  ["role_members_updated" /* RoleMembersUpdated */]: "Role Members Updated",
-  ["tag_created" /* TagCreated */]: "Tag Created",
-  ["tag_updated" /* TagUpdated */]: "Tag Updated",
-  ["tag_deleted" /* TagDeleted */]: "Tag Deleted",
-  ["tag_group_created" /* TagGroupCreated */]: "Tag Group Created",
-  ["tag_group_updated" /* TagGroupUpdated */]: "Tag Group Updated",
-  ["tag_group_deleted" /* TagGroupDeleted */]: "Tag Group Deleted",
-  ["action_created" /* ActionCreated */]: "Action Created",
-  ["action_updated" /* ActionUpdated */]: "Action Updated",
-  ["action_enabled" /* ActionEnabled */]: "Action Enabled",
-  ["action_disabled" /* ActionDisabled */]: "Action Disabled",
-  ["action_schedule_updated" /* ActionScheduleUpdated */]: "Action Schedule Updated",
-  ["notification_template_created" /* NotificationTemplateCreated */]: "Notification Template Created",
-  ["notification_template_updated" /* NotificationTemplateUpdated */]: "Notification Template Updated",
-  ["notification_template_deleted" /* NotificationTemplateDeleted */]: "Notification Template Deleted",
-  ["integration_created" /* IntegrationCreated */]: "Integration Created",
-  ["integration_updated" /* IntegrationUpdated */]: "Integration Updated",
-  ["integration_deleted" /* IntegrationDeleted */]: "Integration Deleted",
-  ["integration_enabled" /* IntegrationEnabled */]: "Integration Enabled",
-  ["integration_disabled" /* IntegrationDisabled */]: "Integration Disabled",
-  ["integration_credentials_updated" /* IntegrationCredentialsUpdated */]: "Integration Credentials Updated",
-  ["integration_replayed" /* IntegrationReplayed */]: "Integration Replayed",
-  ["document_template_created" /* DocumentTemplateCreated */]: "Document Template Created",
-  ["document_template_updated" /* DocumentTemplateUpdated */]: "Document Template Updated",
-  ["document_template_deleted" /* DocumentTemplateDeleted */]: "Document Template Deleted",
-  ["file_type_created" /* FileTypeCreated */]: "File Type Created",
-  ["file_type_updated" /* FileTypeUpdated */]: "File Type Updated",
-  ["file_type_deleted" /* FileTypeDeleted */]: "File Type Deleted",
-  ["import_created" /* ImportCreated */]: "Import Created",
-  ["import_updated" /* ImportUpdated */]: "Import Updated",
-  ["import_deleted" /* ImportDeleted */]: "Import Deleted",
-  ["import_executed" /* ImportExecuted */]: "Import Run",
-  ["export_created" /* ExportCreated */]: "Export Created",
-  ["export_updated" /* ExportUpdated */]: "Export Updated",
-  ["export_deleted" /* ExportDeleted */]: "Export Deleted",
-  ["export_executed" /* ExportExecuted */]: "Export Run",
-  ["account_setting_created" /* AccountSettingCreated */]: "Account Setting Created",
-  ["account_setting_updated" /* AccountSettingUpdated */]: "Account Setting Updated",
-  ["designer_note_added" /* DesignerNoteAdded */]: "Note Added",
-  ["designer_note_updated" /* DesignerNoteUpdated */]: "Note Updated",
-  ["designer_note_removed" /* DesignerNoteRemoved */]: "Note Removed"
-};
-var HISTORY_ACTIONS = Object.values(HistoryAction);
-var HISTORY_ACTION_SET = new Set(HISTORY_ACTIONS);
-
-// .path-cli/src/access/history-gates.ts
-async function loadAsActingUser(client, recordId) {
-  try {
-    return await client.get(`/v1/records/${encodeURIComponent(recordId)}`);
-  } catch (err) {
-    if (err instanceof ApiError && [403, 404, 422].includes(err.statusCode)) return null;
-    throw err;
-  }
-}
-async function assertRecordHistoryVisible(client, recordId, what) {
-  const access = await realWorldAccess(client);
-  if (!access) return;
-  const record2 = await loadAsActingUser(client, recordId);
-  if (!record2) throw new AccessDeniedError(access.label, what, `record ${recordId} isn't visible to them`);
-  await assertBusinessObject(client, record2.business_object_id, "view", what);
-}
-async function viewableRecords(client, access, recordIds) {
-  const viewable = /* @__PURE__ */ new Set();
-  const queue = [...recordIds];
-  const worker = async () => {
-    for (let id = queue.shift(); id !== void 0; id = queue.shift()) {
-      const record2 = await loadAsActingUser(client, id);
-      if (record2 && access.canBusinessObject(record2.business_object_id, "view")) viewable.add(id);
-    }
-  };
-  await Promise.all(Array.from({ length: Math.min(6, queue.length) }, worker));
-  return viewable;
-}
-async function filterHistorySessions(client, sessions) {
-  const access = await realWorldAccess(client);
-  if (!access) return { sessions, hiddenSessions: 0, hiddenEvents: 0 };
-  const ids = [...new Set(sessions.map((s) => s.recordId).filter((id) => !!id))];
-  const viewable = await viewableRecords(client, access, ids);
-  let hiddenSessions = 0;
-  let hiddenEvents = 0;
-  const kept = sessions.filter((s) => {
-    if (!s.recordId || viewable.has(s.recordId)) return true;
-    hiddenSessions++;
-    hiddenEvents += s.events.length;
-    return false;
-  });
-  return { sessions: kept, hiddenSessions, hiddenEvents };
-}
-function hiddenHistoryNote(hiddenSessions, hiddenEvents) {
-  if (!hiddenSessions) return null;
-  return `Real-world mode: hid ${hiddenSessions} session${hiddenSessions === 1 ? "" : "s"} (${hiddenEvents} event${hiddenEvents === 1 ? "" : "s"}) on records the acting user can't view.`;
-}
-var RECORD_ID2 = /^[0-9a-f]{24}$/i;
-async function assertSessionHistoryAccess(client, session, what) {
-  const access = await realWorldAccess(client);
-  if (!access || access.canOpenDesigner || access.canManageUsers) return;
-  const eventRecords = (session.events ?? []).map((e) => e.entityId).filter((id) => !!id && RECORD_ID2.test(id));
-  const records = [...new Set(session.recordId ? [session.recordId] : eventRecords)];
-  if (!records.length) {
-    throw new AccessDeniedError(access.label, what, "the session is on no record, and none of their roles has the Designer, User Admin (or Admin) permission");
-  }
-  for (const recordId of records) await assertRecordHistoryVisible(client, recordId, what);
-}
-function eventArea(event) {
-  const category = event.category ?? HISTORY_CATEGORY[event.action] ?? "";
-  if (category.startsWith("designer_") || category === "integrations" || String(event.action ?? "").startsWith("integration_")) {
-    return "designer";
-  }
-  return event.recordId ? "record" : "other";
-}
-async function assertEventMetadataAccess(client, event, what) {
-  const area = eventArea(event);
-  if (area === "designer") await assertDesigner(client, what);
-  else if (area === "record") await assertRecordHistoryVisible(client, event.recordId, what);
-}
-
-// .path-cli/src/output/history-flat.ts
-var PLUMBING_KEYS = /* @__PURE__ */ new Set([
-  "source",
-  "operation",
-  "relationship_id",
-  "message_id",
-  "file_id",
-  "note_id",
-  "email_id",
-  "notification_id",
-  "workflow_task_id",
-  "task_id",
-  "milestone_id",
-  "step_id",
-  "field_id",
-  "pathway_step_id",
-  "criteria"
-]);
-var TEXT_KEYS = /* @__PURE__ */ new Set([
-  "content",
-  "body",
-  "note_preview",
-  "note",
-  "previous_note"
-]);
-var TEXT_PREVIEW = 40;
-function flattenHistory(sessions, opts) {
-  const previousZone = displayZone;
-  displayZone = opts.timeZone;
-  try {
-    return flatten(sessions, opts);
-  } finally {
-    displayZone = previousZone;
-  }
-}
-function flatten(sessions, opts) {
-  const direction = opts.oldestFirst ? 1 : -1;
-  const rows = [];
-  const ordered = sessions.filter((session) => opts.includeViews || session.events.length > 0).sort((a, b) => a.startedAt.localeCompare(b.startedAt) * direction);
-  const showSource = ordered.some((session) => sessionSourceLabel(session) !== "");
-  ordered.forEach((session, index) => {
-    const sessionLabel = `#${index + 1}`;
-    const type = sessionTypeLabel(session, opts.pathwayNames);
-    const user = userName(session.userId, opts.userNames);
-    const source = showSource ? { source: sessionSourceLabel(session) } : {};
-    const events = [...session.events].sort(
-      (a, b) => a.timestamp.localeCompare(b.timestamp) * direction
-    );
-    if (events.length === 0) {
-      rows.push({
-        time: formatTime(session.startedAt),
-        session: sessionLabel,
-        type,
-        user,
-        ...source,
-        ...opts.includeRecord ? { record: session.recordId ?? "" } : {},
-        ...opts.includeEntity ? { entity: "" } : {},
-        action: "Viewed",
-        subject: "",
-        changes: "",
-        metadata: "",
-        ...opts.includeIds ? { event: "" } : {}
-      });
-      return;
-    }
-    for (const event of events) {
-      const subject = eventSubject(event);
-      rows.push({
-        time: formatTime(event.timestamp),
-        session: sessionLabel,
-        type,
-        user,
-        ...source,
-        ...opts.includeRecord ? { record: event.entityId ?? session.recordId ?? "" } : {},
-        ...opts.includeEntity ? { entity: [event.entityType?.replace(/_/g, " "), event.entityId].filter(Boolean).join(" ") } : {},
-        action: actionLabel(event.action),
-        subject: subject.text,
-        changes: cell(changeEntries(event.changes), opts),
-        metadata: cell(
-          metadataEntries(event.metadata, {
-            onlyKeys: opts.metadataKeys,
-            // The subject already shows this key's value.
-            dropKeys: subject.key ? [subject.key] : [],
-            userNames: opts.userNames
-          }),
-          opts
-        ),
-        ...opts.includeIds ? { event: event.eventId } : {}
-      });
-    }
-  });
-  return rows;
-}
-function cell(entries, opts) {
-  return opts.multiline ? entries.join("\n") : clipEntries(entries, opts.maxWidth);
-}
-function actionLabel(action) {
-  return HISTORY_ACTION_LABELS[action] ?? humanize(action);
-}
-var AGENT_LABELS = {
-  claude_code: "Claude Code",
-  claude_cowork: "Claude Cowork",
-  claude_desktop: "Claude Desktop",
-  unknown: "Unknown agent"
-};
-var CLIENT_LABELS = {
-  path_cli: "PATH CLI",
-  path_designer_cli: "Designer CLI",
-  unknown: "Unknown client"
-};
-function sessionSource(session) {
-  return {
-    isAgent: session.isAgent === true,
-    agent: session.agentDescription || null,
-    client: session.client || null
-  };
-}
-function sessionSourceLabel(session) {
-  const { isAgent, agent, client } = sessionSource(session);
-  const parts = [];
-  if (isAgent) parts.push(AGENT_LABELS[agent ?? "unknown"] ?? AGENT_LABELS.unknown);
-  const clientLabel = client ? CLIENT_LABELS[client] : void 0;
-  if (clientLabel) parts.push(clientLabel);
-  return parts.join(" \xB7 ");
-}
-function sessionTypeLabel(session, pathwayNames) {
-  const base = (() => {
-    switch (session.sessionType) {
-      case "record_viewer":
-        return "card view";
-      case "pathway_execution": {
-        if (session.pathwayId == null) return "pathway";
-        const name = pathwayNames?.get(session.pathwayId);
-        return name ? `pathway: ${name}` : `pathway ${session.pathwayId}`;
-      }
-      case "scheduled_action":
-        return "scheduled action";
-      case "inbound_integration":
-        return "inbound integration";
-      case "email_received":
-        return "email received";
-      default:
-        return session.sessionType.replace(/_/g, " ");
-    }
-  })();
-  return session.description ? `${base}: ${session.description}` : base;
-}
-function eventSubject(event) {
-  const meta = event.metadata ?? {};
-  const fromKey = (key, fallback) => meta[key] ? { text: meta[key], key } : { text: fallback, key: null };
-  const firstOf = (keys, fallback) => {
-    const key = keys.find((candidate) => meta[candidate]);
-    return key ? { text: meta[key], key } : { text: fallback, key: null };
-  };
-  if (HISTORY_CATEGORY[event.action]?.startsWith("designer_")) {
-    const name = meta["entity_name"] ?? "";
-    const bo = meta["business_object"];
-    return {
-      text: bo && bo !== name ? `${name} \u2014 ${bo}` : name,
-      key: meta["entity_name"] ? "entity_name" : null
-    };
-  }
-  switch (event.action) {
-    case "file_uploaded":
-    case "file_removed":
-    case "file_downloaded":
-    case "file_archived":
-    case "file_unarchived":
-      return fromKey("file_name", "File");
-    case "email_sent":
-      return fromKey("subject", "Email");
-    case "text_sent":
-      return firstOf(["title", "phone_number"], "Text");
-    case "linked":
-    case "unlinked":
-      return fromKey("relationship_name", "");
-    case "message_sent":
-    case "message_removed":
-      return { text: "Message", key: null };
-    case "note_added":
-    case "note_updated":
-    case "note_removed":
-      return meta["note_preview"] ? {
-        text: preview(stripTags(meta["note_preview"])),
-        key: "note_preview"
-      } : { text: "Note", key: null };
-    case "milestone_reached":
-    case "milestone_exited":
-      return fromKey("milestone_name", "Milestone");
-    case "step":
-    case "workflow_step_deactivated":
-    case "workflow_step_reactivated":
-    case "workflow_step_deleted":
-      return fromKey("step_name", "Step");
-    case "task_created":
-    case "task_completed":
-    case "task_cancelled":
-    case "task_assigned":
-      return fromKey("task_name", "Task");
-    case "document_generated":
-      return firstOf(["file_name", "document_name"], "Document");
-    case "notification_sent":
-      return fromKey("title", "Notification");
-    case "integration_inbound":
-    case "integration_outbound":
-      return fromKey("integration_name", "Integration");
-    case "logistics":
-      return fromKey("pathway_step_name", "Logistics");
-    default:
-      return { text: "", key: null };
-  }
-}
-function changeEntries(changes) {
-  return changes.filter((change) => !(isEmpty(change.oldValue) && isEmpty(change.newValue))).map(
-    (change) => `${change.fieldName ?? `Field #${change.fieldId}`}: ${formatValue(
-      change.oldValue,
-      change.fieldType
-    )} \u2192 ${formatValue(change.newValue, change.fieldType)}`
-  );
-}
-function isEmpty(value) {
-  return value == null || value === "";
-}
-function metadataEntries(metadata, { onlyKeys, dropKeys = [], userNames } = {}) {
-  if (!metadata) return [];
-  const keys = onlyKeys ? onlyKeys.filter((key) => key in metadata) : Object.keys(metadata).filter((key) => !PLUMBING_KEYS.has(key) && !dropKeys.includes(key)).sort((a, b) => Number(b === "custom_code_method") - Number(a === "custom_code_method"));
-  return keys.map(
-    (key) => `${key}=${metadataValue(key, metadata[key], userNames)}`
-  );
-}
-function clipEntries(entries, max) {
-  if (entries.length === 0) return "";
-  const full = entries.join("; ");
-  if (max <= 0 || full.length <= max) return full;
-  const moreSuffix = (n) => ` (+${n} more)`;
-  let text = "";
-  let shown = 0;
-  for (const entry of entries) {
-    const candidate = text ? `${text}; ${entry}` : entry;
-    const remaining = entries.length - shown - 1;
-    const suffix = remaining > 0 ? moreSuffix(remaining) : "";
-    if (candidate.length + suffix.length > max) break;
-    text = candidate;
-    shown += 1;
-  }
-  if (shown === 0) {
-    const suffix = entries.length > 1 ? moreSuffix(entries.length - 1) : "";
-    return `${clip(entries[0], max - suffix.length)}${suffix}`;
-  }
-  return `${text}${moreSuffix(entries.length - shown)}`;
-}
-function metadataValue(key, raw, userNames) {
-  if (raw == null) return "";
-  const value = String(raw);
-  if (key.endsWith("_user_id")) {
-    return quote(userName(Number(value), userNames));
-  }
-  if (key === "recipients") {
-    const parsed = parseJson(value);
-    return Array.isArray(parsed) ? `${parsed.length}` : quote(value);
-  }
-  if (key === "payload") {
-    return `${value.length} chars`;
-  }
-  if (TEXT_KEYS.has(key)) {
-    return quote(preview(stripTags(value)));
-  }
-  return quote(value);
-}
-function userName(userId, userNames) {
-  if (userId == null || Number.isNaN(userId)) return "system";
-  return userNames?.get(userId) ?? String(userId);
-}
-function quote(value) {
-  return value.includes(";") ? `"${value.replace(/"/g, '\\"')}"` : value;
-}
-function formatValue(value, fieldType) {
-  if (value == null || value === "") return "(empty)";
-  if (typeof value === "boolean" || value === "true" || value === "false") {
-    return value === true || value === "true" ? "Yes" : "No";
-  }
-  if (fieldType === "date_time" || fieldType === "date") {
-    const date3 = new Date(String(value));
-    if (!Number.isNaN(date3.getTime())) {
-      return fieldType === "date" ? formatDate(date3) : formatDateTime(date3);
-    }
-  }
-  return typeof value === "object" ? JSON.stringify(value) : String(value);
-}
-function formatTime(iso) {
-  const date3 = new Date(iso);
-  return Number.isNaN(date3.getTime()) ? iso : formatDateTime(date3, true);
-}
-function formatTimeIn(iso, timeZone) {
-  const previousZone = displayZone;
-  displayZone = timeZone;
-  try {
-    return formatTime(iso);
-  } finally {
-    displayZone = previousZone;
-  }
-}
-var displayZone;
-function wall(date3) {
-  if (!displayZone) {
-    return { year: date3.getFullYear(), month: date3.getMonth() + 1, day: date3.getDate(), hour: date3.getHours(), minute: date3.getMinutes() };
-  }
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en-US", {
-      timeZone: displayZone,
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      hourCycle: "h23"
-    }).formatToParts(date3).map((p) => [p.type, p.value])
-  );
-  return { year: Number(parts.year), month: Number(parts.month), day: Number(parts.day), hour: Number(parts.hour), minute: Number(parts.minute) };
-}
-function formatDate(date3) {
-  const w = wall(date3);
-  return `${w.month}/${w.day}/${w.year}`;
-}
-function formatDateTime(date3, shortYear = false) {
-  const w = wall(date3);
-  const year = shortYear ? String(w.year).slice(-2) : String(w.year);
-  const hours = w.hour % 12 === 0 ? 12 : w.hour % 12;
-  const minutes = String(w.minute).padStart(2, "0");
-  const meridian = w.hour < 12 ? "am" : "pm";
-  return `${w.month}/${w.day}/${year} ${hours}:${minutes}${meridian}`;
-}
-function clip(text, max) {
-  if (max <= 0 || text.length <= max) return text;
-  return `${text.slice(0, Math.max(0, max - 1))}\u2026`;
-}
-function preview(text) {
-  return text.length > TEXT_PREVIEW ? `${text.slice(0, TEXT_PREVIEW - 1)}\u2026` : text;
-}
-function stripTags(value) {
-  return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-}
-function parseJson(raw) {
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-function humanize(value) {
-  return value.split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
 }
 
 // .path-cli/src/pathway-runner/metadata.ts
@@ -19184,6 +17698,10 @@ var RunMetadata = class {
       this.client.get(`/v1/pathways/${pathwayId}/steps`)
     ]);
     const pathway2 = pathways.find((p) => p.id === pathwayId);
+    if (!pathway2 && canRefresh()) {
+      this.#pathways = void 0;
+      return withFreshMetadata(() => this.pathway(pathwayId));
+    }
     if (!pathway2) {
       throw new Error(`Pathway with id ${pathwayId} not found`);
     }
@@ -19226,1059 +17744,18 @@ function userDisplayName(user) {
   return name || user.email || `User ${user.id}`;
 }
 
-// .path-cli/src/resolvers/resolve-pathway-names.ts
-async function loadPathwayNames(client) {
+// utils/account-time-zone.ts
+var DEFAULT_ACCOUNT_TIME_ZONE = "UTC";
+function isValidTimeZone(timeZone) {
   try {
-    const pathways = await cachedFetch(
-      () => client.get("/v1/pathways"),
-      "pathways",
-      "/v1/pathways"
-    );
-    return new Map(pathways.map((pathway2) => [pathway2.id, pathway2.name]));
+    new Intl.DateTimeFormat("en-US", { timeZone });
+    return true;
   } catch {
-    return /* @__PURE__ */ new Map();
+    return false;
   }
 }
-
-// .path-cli/src/resolvers/resolve-user-names.ts
-async function loadUserNames(client) {
-  try {
-    const response = await cachedFetch(
-      () => client.get("/v1/users", { all: "true" }),
-      "users",
-      "/v1/users"
-    );
-    return new Map(
-      response.items.map((user) => [
-        user.id,
-        `${user.profile.first_name} ${user.profile.last_name}`.trim() || user.email
-      ])
-    );
-  } catch {
-    return /* @__PURE__ */ new Map();
-  }
-}
-
-// .path-cli/src/commands/get-history-session.ts
-function context(command) {
-  const parentOpts = command.parent?.opts() ?? {};
-  const config2 = loadConfig({ accountId: parentOpts.account, baseUrl: parentOpts.baseUrl });
-  if (!config2.accountId) {
-    throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
-  }
-  return { parentOpts, config: config2, accountId: config2.accountId, client: new HttpClient(config2) };
-}
-async function displayNames(client, accountId) {
-  const [userNames, pathwayNames, timeZone] = await Promise.all([
-    loadUserNames(client),
-    loadPathwayNames(client),
-    new RunMetadata(client, accountId).userTimeZone().catch(() => void 0)
-  ]);
-  return { userNames, pathwayNames, timeZone };
-}
-async function fetchSession(client, activitySessionId) {
-  const response = await client.get(
-    `/v1/tracking/history/sessions/${encodeURIComponent(activitySessionId)}`,
-    { include_metadata: "true" }
-  );
-  return response.data?.[0] ?? null;
-}
-var getHistorySessionCommand = new Command("get-history-session").description(
-  "Every event one activity session recorded \u2014 e.g. everything an inbound integration request did: the record it created, fields set, pathway steps, outbound calls \u2014 as the flat event table, oldest first (read-only)"
-).argument("<activity-session-id>", "Activity session id (sessionId in --json history; the session line of an integration delivery)").option("--newest-first", "Newest event first (default: in the order they happened)").option("--full", "Every field change and metadata entry in full, one per line").option("--metadata-keys <list>", "Comma-separated metadata keys to show in the METADATA column (default: all but plumbing)").option("--max-width <n>", "Max characters for the CHANGES and METADATA cells (0 = unlimited)", "60").action(async (activitySessionId, opts) => {
-  try {
-    const { client, parentOpts, accountId } = context(getHistorySessionCommand);
-    let session;
-    try {
-      session = await fetchSession(client, activitySessionId);
-    } catch (err) {
-      if (err instanceof ApiError && err.statusCode === 404) {
-        throw new Error(
-          /Cannot GET/i.test(err.message) ? "This server doesn't have the session history route (GET /v1/tracking/history/sessions/:id) yet" : `Session ${activitySessionId} not found`
-        );
-      }
-      throw err;
-    }
-    if (!session) throw new Error(`Session ${activitySessionId} not found`);
-    await assertSessionHistoryAccess(client, session, `read history session ${activitySessionId}`);
-    if (parentOpts.json) {
-      console.log(JSON.stringify(session, null, 2));
-      return;
-    }
-    const names2 = await displayNames(client, accountId);
-    const rows = flattenHistory([session], {
-      ...names2,
-      includeViews: true,
-      includeIds: true,
-      includeRecord: true,
-      oldestFirst: !opts.newestFirst,
-      multiline: !!opts.full,
-      maxWidth: parseInt(String(opts.maxWidth ?? "60"), 10) || 0,
-      metadataKeys: opts.metadataKeys ? String(opts.metadataKeys).split(",").map((k) => k.trim()).filter(Boolean) : void 0
-    }).map(({ session: _number2, type: _type, user: _user, source: _source, ...row }) => row);
-    const when = (iso) => iso ? formatTimeIn(iso, names2.timeZone) : "\u2026";
-    const source = sessionSourceLabel(session);
-    console.log(
-      [
-        `Session ${session.activitySessionId}: ${sessionTypeLabel(session, names2.pathwayNames)}`,
-        `user: ${userName(session.userId, names2.userNames)}${session.userId != null ? ` (${session.userId})` : ""}${source ? ` \xB7 ${source}` : ""} \xB7 ${session.platform ?? ""} \xB7 ${when(session.startedAt)} \u2013 ${when(session.endedAt)}${session.recordId ? ` \xB7 record ${session.recordId}` : ""}`,
-        ""
-      ].join("\n")
-    );
-    console.log(
-      formatOutput(rows, {
-        fields: parentOpts.fields?.split(",").map((s) => s.trim()),
-        quiet: parentOpts.quiet,
-        footer: `[${session.events.length} events]`
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/oauth-login.ts
-import { createServer } from "node:http";
-import { randomBytes, createHash as createHash2 } from "node:crypto";
-import { spawn } from "node:child_process";
-function buildPkce() {
-  const verifier = randomBytes(32).toString("base64url");
-  const challenge = createHash2("sha256").update(verifier).digest("base64url");
-  const state = randomBytes(16).toString("base64url");
-  return { verifier, challenge, state };
-}
-function buildAuthorizeUrl(config2, challenge, state, redirectUri) {
-  const base = config2.webBaseUrl.replace(/\/$/, "");
-  return `${base}/oauth/authorize?response_type=code&client_id=${encodeURIComponent(config2.clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodeURIComponent(state)}&code_challenge=${encodeURIComponent(challenge)}&code_challenge_method=S256&scope=user`;
-}
-async function startLoopbackLogin(config2) {
-  const { verifier, challenge, state } = buildPkce();
-  const { port, codePromise, close } = await startCallbackServer(state);
-  const redirectUri = `http://127.0.0.1:${port}/callback`;
-  const authorizeUrl = buildAuthorizeUrl(config2, challenge, state, redirectUri);
-  return {
-    authorization: { authorizeUrl, clientId: config2.clientId, redirectUri, verifier, state },
-    waitForCode: (timeoutMs = 3e5) => withTimeout(codePromise, timeoutMs, "Login timed out."),
-    close
-  };
-}
-async function exchangeAndStoreToken(config2, params) {
-  const client = new HttpClient(config2);
-  const token = await client.postRaw("/oauth/token", {
-    grant_type: "authorization_code",
-    code: params.code,
-    code_verifier: params.verifier,
-    client_id: params.clientId,
-    // Send only the loopback port, never the full redirect_uri: a
-    // http://127.0.0.1 URL in the body is blocked by the WAF's SSRF rule
-    // (EC2MetaDataSSRF_BODY), which is why browser login failed off-VPN.
-    // The gateway rebuilds the canonical http://127.0.0.1:<port>/callback.
-    redirect_port: Number(new URL(params.redirectUri).port),
-    // Required by the gateway's token DTO — omitting it 422s ("scope should not be empty").
-    scope: "user"
-  });
-  updateEnvValue("PATH_ACCESS_TOKEN", token.access_token);
-  updateEnvValue("PATH_REFRESH_TOKEN", token.refresh_token);
-  return token;
-}
-function startCallbackServer(expectedState) {
-  return new Promise((resolveServer) => {
-    let resolveCode;
-    let rejectCode;
-    const codePromise = new Promise((res, rej) => {
-      resolveCode = res;
-      rejectCode = rej;
-    });
-    const server = createServer((req, res) => {
-      res.setHeader("Connection", "close");
-      const url = new URL(req.url ?? "/", "http://127.0.0.1");
-      if (url.pathname !== "/callback") {
-        res.statusCode = 404;
-        res.end("Not found");
-        return;
-      }
-      const code = url.searchParams.get("code");
-      const state = url.searchParams.get("state");
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      if (!code || state !== expectedState) {
-        res.statusCode = 400;
-        res.end(resultPage("Login failed. You can close this tab."));
-        rejectCode(new Error("Login failed: state mismatch or missing code."));
-        return;
-      }
-      res.statusCode = 200;
-      res.end(resultPage("Signed in. You can close this tab and return to Claude."));
-      resolveCode(code);
-    });
-    server.listen(0, "127.0.0.1", () => {
-      const port = server.address().port;
-      resolveServer({
-        port,
-        codePromise,
-        close: () => {
-          server.closeAllConnections?.();
-          server.close();
-        }
-      });
-    });
-  });
-}
-function withTimeout(promise, ms, message2) {
-  let timer;
-  const timeout = new Promise((_, reject) => {
-    timer = setTimeout(() => reject(new Error(message2)), ms);
-  });
-  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
-}
-function openBrowser(url) {
-  const launch = (command, args) => {
-    const child = spawn(command, args, { stdio: "ignore", detached: true });
-    child.on("error", () => {
-    });
-    child.unref();
-  };
-  try {
-    const platform = process.platform;
-    if (platform === "darwin") {
-      launch("open", [url]);
-    } else if (platform === "win32") {
-      launch("cmd", ["/c", "start", "", url]);
-    } else {
-      launch("xdg-open", [url]);
-    }
-  } catch {
-  }
-}
-function resultPage(message2) {
-  return `<!DOCTYPE html><html><head><meta charset="utf-8" />
-<title>PATH</title>
-<style>body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#f4f5f7;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
-.box{background:#fff;padding:32px 40px;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.08);font-size:15px;color:#374151}</style>
-</head><body><div class="box">${message2}</div></body></html>`;
-}
-
-// .path-cli/src/utils/active-accounts.ts
-function isActiveAccount(account) {
-  return !account.user_account?.deactivated_on;
-}
-async function listActiveAccounts(client) {
-  return (await client.get("/v1/accounts")).filter(isActiveAccount);
-}
-function inactiveAccountReason(accounts, accountId) {
-  const account = accounts.find((a) => String(a.id) === String(accountId));
-  if (!account) {
-    return `Account ${accountId} isn't one of your accounts. Run "path list-accounts" to see the accounts you can use.`;
-  }
-  if (!isActiveAccount(account)) {
-    return `You're deactivated in account ${account.id} (${account.name}), so you can't use it. Run "path list-accounts" to see the accounts you can use.`;
-  }
-  return null;
-}
-var ACTIVE_CHECK_TTL_MS = 6e4;
-var passed = /* @__PURE__ */ new Map();
-async function assertActiveAccount(client, accountId, cacheKey) {
-  const key = cacheKey ? `${cacheKey}|${accountId}` : null;
-  if (key && (passed.get(key) ?? 0) > Date.now()) return;
-  const reason = inactiveAccountReason(await client.get("/v1/accounts"), accountId);
-  if (reason) throw new Error(reason);
-  if (key) passed.set(key, Date.now() + ACTIVE_CHECK_TTL_MS);
-}
-
-// .path-cli/src/commands/auth.ts
-var authCommand = new Command("auth").description("Authenticate and store token (browser sign-in by default)").option(
-  "--email <email>",
-  "User email (opt into the legacy password flow)"
-).option(
-  "--password <password>",
-  "User password (opt into the legacy password flow)"
-).option(
-  "--browser",
-  "Sign in via the browser (this is the default; the flag is optional)"
-).option(
-  "--no-open",
-  "Print the sign-in URL instead of auto-launching a browser (headless)"
-).action(async (opts) => {
-  try {
-    const parentOpts = authCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({ baseUrl: parentOpts.baseUrl });
-    const usePasswordFlow = !opts.browser && (opts.email || opts.password);
-    if (!usePasswordFlow) {
-      const noOpen = opts.open === false || process.env.PATH_CLI_NO_BROWSER === "1";
-      await browserLogin(config2.baseUrl, noOpen);
-      return;
-    }
-    if (!opts.email || !opts.password) {
-      throw new Error(
-        "Provide both --email and --password, or omit them to sign in via the browser."
-      );
-    }
-    if (!config2.clientId || !config2.clientSecret) {
-      throw new Error(
-        "Password sign-in isn't available in this version of the PATH CLI. Sign in through the browser instead (run auth login without --email and --password)."
-      );
-    }
-    const client = new HttpClient(config2);
-    const response = await client.postRaw("/oauth/token", {
-      client_id: config2.clientId,
-      client_secret: config2.clientSecret,
-      email: opts.email,
-      password: opts.password,
-      grant_type: "implicit",
-      scope: "user"
-    });
-    updateEnvValue("PATH_ACCESS_TOKEN", response.access_token);
-    updateEnvValue("PATH_REFRESH_TOKEN", response.refresh_token);
-    let expiryInfo = "";
-    if (response.expires_in) {
-      const num = Number(response.expires_in);
-      if (!isNaN(num) && num > 0) {
-        const expiresDate = new Date(Date.now() + num * 1e3);
-        expiryInfo = ` (token expires: ${expiresDate.toISOString().split("T")[0]})`;
-      } else {
-        expiryInfo = ` (expires: ${response.expires_in})`;
-      }
-    }
-    console.log(`Authenticated as ${opts.email}${expiryInfo}`);
-    await printAccounts(parentOpts.baseUrl);
-  } catch (err) {
-    handleError(err);
-  }
-});
-async function browserLogin(baseUrl, noOpen = false) {
-  const config2 = loadConfig({ baseUrl });
-  const login = await startLoopbackLogin(config2);
-  const { authorizeUrl, verifier, redirectUri, clientId } = login.authorization;
-  try {
-    if (noOpen) {
-      console.log(`To sign in to PATH, open this URL in your browser:
-  ${authorizeUrl}
-`);
-    } else {
-      console.log("Opening your browser to sign in to PATH...");
-      console.log(`If it does not open, visit:
-  ${authorizeUrl}
-`);
-      openBrowser(authorizeUrl);
-    }
-    const code = await login.waitForCode();
-    await exchangeAndStoreToken(config2, { code, verifier, redirectUri, clientId });
-    console.log("Authenticated via browser.");
-    await printAccounts(baseUrl);
-  } finally {
-    login.close();
-  }
-}
-async function printAccounts(baseUrl) {
-  try {
-    const authClient = new HttpClient(loadConfig({ baseUrl }));
-    const accounts = await listActiveAccounts(authClient);
-    if (accounts.length > 0) {
-      console.log("\nAvailable accounts:");
-      for (const acct of accounts) {
-        console.log(`  ${acct.id}: ${acct.name}`);
-      }
-      console.log(
-        "\nUse --account <id> per-command, or run `use-account <id>` to persist a default."
-      );
-    }
-  } catch {
-  }
-}
-
-// .path-cli/src/commands/logout.ts
-var logoutCommand = new Command("logout").description("Clear stored auth tokens").action(async () => {
-  try {
-    updateEnvValue("PATH_ACCESS_TOKEN", "");
-    updateEnvValue("PATH_REFRESH_TOKEN", "");
-    updateEnvValue("PATH_ACCOUNT_ID", "");
-    console.log("Logged out. Tokens and default account cleared.");
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/list-accounts.ts
-var listAccountsCommand = new Command("list-accounts").description("List your accounts (not the ones you've been deactivated in)").action(async () => {
-  try {
-    const parentOpts = listAccountsCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      baseUrl: parentOpts.baseUrl
-    });
-    const client = new HttpClient(config2);
-    const accounts = await listActiveAccounts(client);
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name"];
-    console.log(
-      formatOutput(accounts, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/list-business-objects.ts
-var listBusinessObjectsCommand = new Command("list-business-objects").description("List business objects (--json adds each one's info: what the designer says it is for)").action(async () => {
-  try {
-    const parentOpts = listBusinessObjectsCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId) {
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    }
-    const client = new HttpClient(config2);
-    const raw = await client.get("/v1/business-objects");
-    const all4 = unwrapPaginated(raw);
-    const visible = await filterReadableBusinessObjects(client, all4);
-    const data = visible === all4 ? raw : Array.isArray(raw) ? visible : { ...raw, items: visible };
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "singular_name", "plural_name"];
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/get-business-object.ts
-var getBusinessObjectCommand = new Command("get-business-object").description("Get a single business object, with its info (the designer's description of what it is for)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
-  try {
-    const parentOpts = getBusinessObjectCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId)
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    const client = new HttpClient(config2);
-    let boId3;
-    if (opts.boId) {
-      boId3 = opts.boId;
-    } else if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      boId3 = String(bo.id);
-    } else {
-      throw new Error("Provide either --bo-id or --bo-name");
-    }
-    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
-    const data = await client.get(`/v1/business-objects/${boId3}`);
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim());
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/list-fields.ts
-var listFieldsCommand = new Command("list-fields").description("List fields for a business object (--json adds each field's info: what it holds and when to fill it)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--page <n>", "Fetch only this single page (default: all fields)").option("--per-page <n>", "Items per page (single-page mode)", "100").option("--all", "Fetch all fields (this is now the default)").action(async (opts) => {
-  try {
-    const parentOpts = listFieldsCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId)
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    const client = new HttpClient(config2);
-    let boId3;
-    if (opts.boId) {
-      boId3 = opts.boId;
-    } else if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      boId3 = String(bo.id);
-    } else {
-      throw new Error("Provide either --bo-id or --bo-name");
-    }
-    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
-    let data;
-    const singlePage = opts.page !== void 0 && !opts.all;
-    if (!singlePage) {
-      const raw = await client.get(
-        "/v1/init/fields"
-      );
-      const items = unwrapPaginated(raw);
-      data = items.filter((f) => f.business_object_id === Number(boId3));
-    } else {
-      const query = {
-        page: opts.page,
-        perPage: opts.perPage
-      };
-      const raw = await client.get(
-        `/v1/business-objects/${boId3}/fields`,
-        query
-      );
-      data = unwrapPaginated(raw);
-    }
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? [
-      "id",
-      "name",
-      "field_type",
-      "is_required"
-    ];
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/get-field.ts
-var getFieldCommand = new Command("get-field").description("Get a single field on a business object, with its info (the designer's description of what the field holds and when to fill it)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--field-id <id>", "Field ID").option("--field-name <name>", "Field name (case-insensitive)").action(async (opts) => {
-  try {
-    const parentOpts = getFieldCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId)
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    const client = new HttpClient(config2);
-    let boId3;
-    if (opts.boId) {
-      boId3 = parseInt(opts.boId, 10);
-    } else if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      boId3 = bo.id;
-    }
-    let fieldId;
-    if (opts.fieldId) {
-      fieldId = parseInt(opts.fieldId, 10);
-    } else if (opts.fieldName) {
-      if (!boId3) {
-        throw new Error(
-          "--field-name requires --bo-id or --bo-name to scope the lookup."
-        );
-      }
-      const raw = await client.get(
-        "/v1/init/fields"
-      );
-      const all4 = unwrapPaginated(raw);
-      const target = opts.fieldName.toLowerCase();
-      const match = all4.find(
-        (f) => f.business_object_id === boId3 && f.name.toLowerCase() === target
-      );
-      if (!match) {
-        throw new Error(
-          `No field named "${opts.fieldName}" on BO ${boId3}.`
-        );
-      }
-      fieldId = match.id;
-    } else {
-      throw new Error("Provide --field-id or --field-name");
-    }
-    const path = boId3 ? `/v1/business-objects/${boId3}/fields/${fieldId}` : `/v1/business-objects/0/fields/${fieldId}`;
-    const data = await client.get(path);
-    await assertBusinessObjectReadable(client, data.business_object_id ?? boId3, `read field ${fieldId}`);
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim());
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/list-field-groups.ts
-var listFieldGroupsCommand = new Command("list-field-groups").description("List field groups for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--all", "Fetch the full set via /init/field_groups").action(async (opts) => {
-  try {
-    const parentOpts = listFieldGroupsCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId)
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    const client = new HttpClient(config2);
-    let boId3;
-    if (opts.boId) {
-      boId3 = opts.boId;
-    } else if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      boId3 = String(bo.id);
-    } else {
-      throw new Error("Provide either --bo-id or --bo-name");
-    }
-    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
-    let data;
-    if (opts.all) {
-      const raw = await client.get("/v1/init/field_groups");
-      const items = unwrapPaginated(raw);
-      data = items.filter((g) => g.business_object_id === Number(boId3));
-    } else {
-      const raw = await client.get(
-        `/v1/business-objects/${boId3}/field-groups`
-      );
-      data = unwrapPaginated(raw);
-    }
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name"];
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/list-relationships.ts
-var listRelationshipsCommand = new Command("list-relationships").description("List relationships for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--page <n>", "Fetch only this single page (default: all relationships)").option("--per-page <n>", "Items per page (single-page mode)", "50").option("--all", "Fetch all relationships (this is now the default)").action(async (opts) => {
-  try {
-    const parentOpts = listRelationshipsCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId)
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    const client = new HttpClient(config2);
-    let boId3;
-    if (opts.boId) {
-      boId3 = opts.boId;
-    } else if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      boId3 = String(bo.id);
-    } else {
-      throw new Error("Provide either --bo-id or --bo-name");
-    }
-    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
-    let data;
-    const singlePage = opts.page !== void 0 && !opts.all;
-    if (!singlePage) {
-      const raw = await client.get("/v1/init/relationships");
-      const items = unwrapPaginated(raw);
-      data = items.filter((r) => r.business_object_id === Number(boId3));
-    } else {
-      const query = {
-        page: opts.page,
-        perPage: opts.perPage
-      };
-      const raw = await client.get(
-        `/v1/business-objects/${boId3}/relationships`,
-        query
-      );
-      data = unwrapPaginated(raw);
-    }
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? [
-      "id",
-      "name",
-      "to_business_object_id"
-    ];
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/list-workflow-milestones.ts
-var listWorkflowMilestonesCommand = new Command(
-  "list-workflow-milestones"
-).description("List workflow milestones for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--all", "Fetch the full set via /init/milestones").action(async (opts) => {
-  try {
-    const parentOpts = listWorkflowMilestonesCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId)
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    const client = new HttpClient(config2);
-    let boId3;
-    if (opts.boId) {
-      boId3 = opts.boId;
-    } else if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      boId3 = String(bo.id);
-    } else {
-      throw new Error("Provide either --bo-id or --bo-name");
-    }
-    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
-    let data;
-    if (opts.all) {
-      const raw = await client.get("/v1/init/milestones");
-      const items = unwrapPaginated(raw);
-      data = items.filter((m) => m.business_object_id === Number(boId3));
-    } else {
-      const raw = await client.get(
-        `/v1/business-objects/${boId3}/workflows/milestones`
-      );
-      data = unwrapPaginated(raw);
-    }
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name"];
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/list-workflow-steps.ts
-var listWorkflowStepsCommand = new Command("list-workflow-steps").description("List workflow steps for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
-  try {
-    const parentOpts = listWorkflowStepsCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId)
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    const client = new HttpClient(config2);
-    let boId3;
-    if (opts.boId) {
-      boId3 = opts.boId;
-    } else if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      boId3 = String(bo.id);
-    } else {
-      throw new Error("Provide either --bo-id or --bo-name");
-    }
-    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
-    const raw = await client.get(
-      `/v1/business-objects/${boId3}/workflows/steps`
-    );
-    const data = unwrapPaginated(raw);
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name", "milestone_id"];
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/commands/list-workflow-tasks.ts
-var listWorkflowTasksCommand = new Command("list-workflow-tasks").description("List workflow tasks for a business object (--json adds each one's info)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
-  try {
-    const parentOpts = listWorkflowTasksCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId)
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    const client = new HttpClient(config2);
-    let boId3;
-    if (opts.boId) {
-      boId3 = opts.boId;
-    } else if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      boId3 = String(bo.id);
-    } else {
-      throw new Error("Provide either --bo-id or --bo-name");
-    }
-    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
-    const raw = await client.get(
-      `/v1/business-objects/${boId3}/workflows/tasks`
-    );
-    const data = unwrapPaginated(raw);
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name", "step_id"];
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/utils/folder-sticker-info.ts
-async function withFolderStickerInfo(client, folders, loadStickers = async () => unwrapPaginated(await client.get("/v1/stickers"))) {
-  const needs = folders.some((f) => (f.folder_stickers ?? []).some((s) => !infoText(s.info) && s.sticker_id != null));
-  if (!needs) return folders;
-  const byId = /* @__PURE__ */ new Map();
-  try {
-    for (const sticker2 of await loadStickers()) byId.set(Number(sticker2.id), infoText(sticker2.info));
-  } catch {
-    return folders;
-  }
-  const out = folders.map((folder2) => {
-    if (!folder2.folder_stickers?.length) return folder2;
-    return {
-      ...folder2,
-      folder_stickers: folder2.folder_stickers.map((s) => {
-        if (infoText(s.info) || s.sticker_id == null) return s;
-        const info = byId.get(Number(s.sticker_id));
-        return info ? { ...s, bo_sticker_info: info } : s;
-      })
-    };
-  });
-  const meta = folders[PAGINATION_META];
-  if (meta) Object.defineProperty(out, PAGINATION_META, { value: meta, enumerable: false });
-  return out;
-}
-function folderStickerInfoLines(folders) {
-  const lines = [];
-  for (const folder2 of folders) {
-    for (const s of folder2.folder_stickers ?? []) {
-      const own = infoText(s.info);
-      const label = `folder ${folder2.id} "${folder2.folder_name ?? ""}" sticker "${s.name ?? s.id}"${own ? "" : " (from its business object sticker)"}`;
-      lines.push(...infoLines(own ?? s.bo_sticker_info, { indent: "  ", label, cap: INFO_TEXT_CAP }));
-    }
-  }
-  return lines.length ? ["", "Sticker info:", ...lines] : [];
-}
-
-// .path-cli/src/utils/designer-info-context.ts
-function businessObjectName(bo, id) {
-  return bo?.plural_name || bo?.name || bo?.singular_name || `Business object ${bo?.id ?? id}`;
-}
-async function businessObjectInfo(metadata, boId3) {
-  const bo = await metadata.businessObject(boId3).catch(() => void 0);
-  return { id: boId3, name: businessObjectName(bo, boId3), info: infoText(bo?.info) };
-}
-async function fieldInfo(metadata, field, relationships2) {
-  if (!field) return null;
-  const own = infoText(field.info);
-  if (own || field.relationship_id == null || field.reference_field_id == null) return own;
-  const relationship = relationships2.find((r) => r.id === field.relationship_id);
-  if (!relationship) return null;
-  const referenced = await metadata.field(relationship.to_business_object_id, field.reference_field_id).catch(() => void 0);
-  return infoText(referenced?.info);
-}
-function infoByName(entries) {
-  const out = {};
-  for (const { name, info } of entries) {
-    const text = infoText(info);
-    if (!text) continue;
-    let key = name;
-    for (let n = 2; key in out; n++) key = `${name} (${n})`;
-    out[key] = text;
-  }
-  return out;
-}
-function ownInfoLines(title, own) {
-  const lines = own ? infoLines(own.info, { indent: "  ", label: own.name, cap: INFO_TEXT_CAP }) : [];
-  return lines.length ? [`${title}:`, ...lines] : [];
-}
-function listInfoLines(title, items) {
-  const lines = items.flatMap((item2) => infoLines(item2.info, { indent: "  ", label: `${item2.name} (${item2.id})`, cap: INFO_TEXT_CAP }));
-  return lines.length ? ["", `${title}:`, ...lines] : [];
-}
-function infoContextLines(businessObject, sections = []) {
-  const lines = [];
-  const boLines = businessObject ? infoLines(businessObject.info, { indent: "  ", label: businessObject.name, cap: INFO_TEXT_CAP }) : [];
-  if (boLines.length) lines.push("Business object info:", ...boLines);
-  for (const section of sections) {
-    const entryLines = section.entries.flatMap((e) => infoLines(e.info, { indent: "  ", label: e.name, cap: INFO_TEXT_CAP }));
-    if (entryLines.length) lines.push(`${section.title}:`, ...entryLines);
-  }
-  return lines;
-}
-
-// .path-cli/src/commands/list-folders.ts
-var listFoldersCommand = new Command("list-folders").description("List folders. Each folder carries its own info (what the folder is for, who uses it; once per session like all info). Each folder_stickers[] entry carries its info; a copy of a business object sticker with no info of its own also gets bo_sticker_info (the business object sticker's info, which the copy shows). Text output lists folder info and sticker info under the table").option("--bo-id <id>", "Filter by business object ID").option("--bo-name <name>", "Filter by business object name").option("--page <n>", "Fetch only this single page (default: all folders)").option("--per-page <n>", "Items per page (single-page mode)", "50").option("--all", "Fetch all folders (this is now the default)").action(async (opts) => {
-  try {
-    const parentOpts = listFoldersCommand.parent?.opts() ?? {};
-    const config2 = loadConfig({
-      accountId: parentOpts.account,
-      baseUrl: parentOpts.baseUrl
-    });
-    if (!config2.accountId) {
-      throw new Error(
-        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
-      );
-    }
-    const client = new HttpClient(config2);
-    const query = opts.page !== void 0 && !opts.all ? { page: opts.page, perPage: opts.perPage } : { all: "true" };
-    if (opts.boName) {
-      const bo = await resolveBusinessObjectByName(client, opts.boName);
-      query["business_object_ids[]"] = String(bo.id);
-    } else if (opts.boId) {
-      query["business_object_ids[]"] = opts.boId;
-    }
-    const raw = await client.get("/v1/folders", query);
-    const data = await withFolderStickerInfo(
-      client,
-      await filterVisibleFolders(
-        client,
-        unwrapPaginated(raw)
-      )
-    );
-    const format = parentOpts.json ? "json" : void 0;
-    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? [
-      "id",
-      "folder_name",
-      "business_object_id"
-    ];
-    console.log(
-      formatOutput(data, {
-        format,
-        fields,
-        quiet: parentOpts.quiet
-      })
-    );
-    if (!format && !parentOpts.quiet) {
-      const folderInfo = data.map((f) => ({ id: f.id, name: f.folder_name ?? `Folder ${f.id}`, info: infoText(f.info) }));
-      for (const line of listInfoLines("Folder info", folderInfo)) console.log(line);
-      for (const line of folderStickerInfoLines(data)) console.log(line);
-    }
-  } catch (err) {
-    handleError(err);
-  }
-});
-
-// .path-cli/src/utils/fetch-all-pages.ts
-async function fetchAllPages(client, path, query = {}, perPage = 30) {
-  const all4 = [];
-  const seenIds = /* @__PURE__ */ new Set();
-  let page = 1;
-  let totalPages;
-  let lastMeta;
-  for (; ; ) {
-    const raw = await client.get(path, {
-      ...query,
-      page: String(page),
-      perPage: String(perPage)
-    });
-    const meta = readMeta(raw);
-    if (meta) lastMeta = meta;
-    const items = unwrapPaginated(raw);
-    const pageItems = Array.isArray(items) ? items : [];
-    for (const item2 of pageItems) {
-      const id = idOf(item2);
-      if (id !== void 0) {
-        if (seenIds.has(id)) continue;
-        seenIds.add(id);
-      }
-      all4.push(item2);
-    }
-    if (meta && typeof meta.total_pages === "number") {
-      totalPages = meta.total_pages;
-      if (page >= totalPages || totalPages === 0) break;
-    } else {
-      if (pageItems.length < perPage) break;
-    }
-    page += 1;
-  }
-  attachMeta(all4, lastMeta, totalPages);
-  return all4;
-}
-function idOf(item2) {
-  if (typeof item2 === "object" && item2 !== null && "id" in item2) {
-    return item2.id;
-  }
-  return void 0;
-}
-function readMeta(raw) {
-  if (typeof raw === "object" && raw !== null && "meta" in raw) {
-    const meta = raw.meta;
-    if (meta && typeof meta === "object") return meta;
-  }
-  return void 0;
-}
-function attachMeta(all4, lastMeta, totalPages) {
-  if (!lastMeta) return;
-  const meta = {
-    ...lastMeta,
-    page: 1,
-    total_pages: totalPages ?? lastMeta.total_pages,
-    item_count: all4.length,
-    total_items: all4.length
-  };
-  Object.defineProperty(all4, PAGINATION_META, {
-    value: meta,
-    enumerable: false,
-    configurable: true
-  });
-}
-
-// .path-cli/src/resolvers/resolve-folder.ts
-async function listBusinessObjectFolders(client, boId3) {
-  const raw = await cachedFetch(
-    () => client.get("/v1/folders", { all: "true", "business_object_ids[]": String(boId3) }),
-    `bo-folders--${boId3}`,
-    `/v1/folders?business_object_ids[]=${boId3}`
-  );
-  return unwrapPaginated(raw).filter((f) => f.business_object_id === void 0 || f.business_object_id === boId3);
-}
-async function resolveFolderByName(client, name, boId3) {
-  const folders = await listBusinessObjectFolders(client, boId3);
-  const lower = name.toLowerCase();
-  const matches = folders.filter((f) => f.folder_name.toLowerCase() === lower);
-  if (matches.length === 0) {
-    const available = folders.map((f) => `  ${f.id}: ${f.folder_name}`).join("\n");
-    throw new Error(
-      `Folder "${name}" not found on BO ${boId3}. Available:
-${available}`
-    );
-  }
-  if (matches.length > 1) {
-    const ambiguous = matches.map((f) => `  ${f.id}: ${f.folder_name}`).join("\n");
-    throw new Error(`Ambiguous folder name "${name}". Matches:
-${ambiguous}`);
-  }
-  return matches[0];
+function effectiveTimeZone(timeZone) {
+  return timeZone && isValidTimeZone(timeZone) ? timeZone : DEFAULT_ACCOUNT_TIME_ZONE;
 }
 
 // libs/pathway-executor/src/interfaces/pathway-types.ts
@@ -20286,6 +17763,9 @@ var FinishPathway = -2;
 var StartingRecord = -1;
 var LoopIterationRecord = -3;
 var FORMAT_OPTIONS = ["PDF", "DocX", "XLSx", "CSV"];
+
+// libs/pathway-executor/src/interfaces/quote-builder.ts
+var MANUFACTURER_QUOTE_PARSE_TIMEOUT_MS = 2 * 6e4;
 
 // libs/pathway-executor/src/interfaces/service-contracts.ts
 var SettingMergeResolverLike = class {
@@ -20371,9 +17851,10 @@ function RecordTemplateMerging(template, recordContent, fields = null, formatVal
 
 // libs/pathway-executor/src/step-implementations/step-context.ts
 var StepContext = class {
-  constructor(step, state, injector = null) {
+  constructor(step, state, injector = null, accountId) {
     this.step = step;
     this.state = state;
+    this.accountId = accountId;
     this.#injector = injector;
   }
   #injector;
@@ -20423,7 +17904,7 @@ var StepContext = class {
         SettingMergeResolverLike
       );
       if (settingResolver) {
-        content = settingResolver.resolve(content, settingIds);
+        content = settingResolver.resolve(content, settingIds, this.accountId);
       }
     }
     const fieldIds = template.field_ids ?? [];
@@ -20495,7 +17976,11 @@ var StepContext = class {
         const settingMergeResolver = this.#injector.get(
           SettingMergeResolverLike
         );
-        content = settingMergeResolver.resolve(content, title.setting_ids);
+        content = settingMergeResolver.resolve(
+          content,
+          title.setting_ids,
+          this.accountId
+        );
       }
       if (title.field_ids.length) {
         const titleRecordStepId = this.#titleRecordStepId();
@@ -20697,10 +18182,13 @@ function buildMutationEvent(key, input, output) {
       };
     }
     // ── Wrappers carrying an optional record ──────────────────────
-    case "ExecuteAction":
-    case "CustomCode": {
+    case "ExecuteAction": {
       const o = output;
       return o.record ? { updated: [recordToFieldDiff(o.record)] } : null;
+    }
+    case "CustomCode": {
+      const o = output;
+      return o.record?.record_id ? { invalidated: [o.record.record_id] } : null;
     }
     case "CreateDocumentFromTemplate": {
       const o = output;
@@ -20709,6 +18197,30 @@ function buildMutationEvent(key, input, output) {
     case "EditDocumentFromTemplate.Create": {
       const o = output;
       return { updated: [recordToFieldDiff(o.record)] };
+    }
+    // ── Quote Builder: the quote plus its items and links ──────────
+    case "QuoteBuilder.Initialize":
+    case "QuoteBuilder.Link":
+    case "QuoteBuilder.Unlink":
+    case "QuoteBuilder.SaveFields":
+    case "QuoteBuilder.SaveItems":
+    case "QuoteBuilder.Refresh":
+    case "QuoteBuilder.ParseManufacturerQuote":
+    case "QuoteBuilder.RemoveManufacturerQuote": {
+      const o = output;
+      return {
+        updated: [
+          recordToFieldDiff(o.record),
+          ...o.items.map(recordToFieldDiff)
+        ],
+        // Links changed and items came and went: the linked records'
+        // counters and the quote's item list are refetched on next read.
+        invalidated: [o.record.id, ...o.related.map((record2) => record2.id)]
+      };
+    }
+    case "QuoteBuilder.Finalize": {
+      const o = output;
+      return o.status === "done" ? { updated: [recordToFieldDiff(o.record)], invalidated: [o.record.id] } : null;
     }
     // ── Multi-record updates ──────────────────────────────────────
     case "EditRecordTable.UpdateRecords": {
@@ -20777,6 +18289,9 @@ function buildMutationEvent(key, input, output) {
     case "ScanAndProcess.LinkRecord":
     case "ScanAndProcess.ApplyScanAction":
     case "ScanAndProcess.RunCustomCode":
+    // The draft is the quote's own working copy; the PDF is a temporary file.
+    case "QuoteBuilder.SaveDraft":
+    case "QuoteBuilder.BuildFinalPdf":
       return null;
     default: {
       const _exhaustive = key;
@@ -20851,7 +18366,18 @@ var apiRequestStepType = {
   "ScanAndProcess.CreateAndLinkRecord": "scan_and_process" /* StopReceiving */,
   "ScanAndProcess.LinkRecord": "scan_and_process" /* StopReceiving */,
   "ScanAndProcess.ApplyScanAction": "scan_and_process" /* StopReceiving */,
-  "ScanAndProcess.RunCustomCode": "scan_and_process" /* StopReceiving */
+  "ScanAndProcess.RunCustomCode": "scan_and_process" /* StopReceiving */,
+  "QuoteBuilder.Initialize": "quote_builder" /* QuoteBuilder */,
+  "QuoteBuilder.Link": "quote_builder" /* QuoteBuilder */,
+  "QuoteBuilder.Unlink": "quote_builder" /* QuoteBuilder */,
+  "QuoteBuilder.SaveFields": "quote_builder" /* QuoteBuilder */,
+  "QuoteBuilder.SaveItems": "quote_builder" /* QuoteBuilder */,
+  "QuoteBuilder.SaveDraft": "quote_builder" /* QuoteBuilder */,
+  "QuoteBuilder.BuildFinalPdf": "quote_builder" /* QuoteBuilder */,
+  "QuoteBuilder.Finalize": "quote_builder" /* QuoteBuilder */,
+  "QuoteBuilder.Refresh": "quote_builder" /* QuoteBuilder */,
+  "QuoteBuilder.ParseManufacturerQuote": "quote_builder" /* QuoteBuilder */,
+  "QuoteBuilder.RemoveManufacturerQuote": "quote_builder" /* QuoteBuilder */
 };
 async function* execute(key, input, busyDescriptor) {
   if (busyDescriptor) yield busy(busyDescriptor);
@@ -21010,8 +18536,15 @@ async function* resolveSearchQuery(ctx, lookupConfig) {
       SettingMergeResolverLike
     );
     if (settingMergeResolver) {
-      await settingMergeResolver.ensureSettingsLoaded?.(settingIds);
-      content = settingMergeResolver.resolve(content, settingIds);
+      await settingMergeResolver.ensureSettingsLoaded?.(
+        settingIds,
+        ctx.accountId
+      );
+      content = settingMergeResolver.resolve(
+        content,
+        settingIds,
+        ctx.accountId
+      );
     }
   }
   if (!searchConfig.from_step) {
@@ -21549,16 +19082,18 @@ async function* forkImplementation(ctx) {
     throw new Error("Condition Setting config not found");
   }
   const recordStepConfig = ctx.getConfig("RecordStep" /* RecordStep */);
-  const mainRecord = ctx.getStepRecord(recordStepConfig.config.record_step_id);
+  const mainRecord = ctx.tryGetStepRecord(
+    recordStepConfig.config.record_step_id
+  );
   const pipeline = conditionSettings.config.filter_builder;
-  const isValid2 = yield* evaluateRemote(mainRecord, pipeline);
+  const isValid2 = mainRecord ? yield* evaluateRemote(mainRecord, pipeline) : false;
   const nextStep2 = isValid2 ? conditionSettings.config.true_step : conditionSettings.config.false_step;
   if (nextStep2 === null) {
     throw new Error(
       `Fork ${isValid2 ? "true" : "false"} step is not configured`
     );
   }
-  return { records: [mainRecord], nextStep: nextStep2 };
+  return { records: mainRecord ? [mainRecord] : [], nextStep: nextStep2 };
 }
 async function* evaluateRemote(record2, pipeline) {
   const result = yield* execute(
@@ -22641,6 +20176,9 @@ var editRecordTableImplementation = multiTurnImplementation((ctx) => {
         record_action: recordAction?.config ?? null,
         source: sourceConfig.config,
         parent_record: parentRecord,
+        ...sourceConfig.config.source_type === "step_records" /* StepRecords */ ? {
+          source_record_ids: ctx.tryGetStepRecords(sourceConfig.config.record_step_id).map((record2) => record2.id)
+        } : {},
         // PL-1351: the create request is issued from the component (no ctx), so
         // carry the designer overrides + run-scoped tag choices through the
         // interaction. The handler skips these for inverse-relationship links,
@@ -22969,17 +20507,20 @@ async function* buildInteractionData(ctx) {
   const to = await resolveEmailAddresses(
     injector,
     emailConfig.config.to,
-    record2
+    record2,
+    ctx.accountId
   );
   const cc = await resolveEmailAddresses(
     injector,
     emailConfig.config.cc,
-    record2
+    record2,
+    ctx.accountId
   );
   const bcc = await resolveEmailAddresses(
     injector,
     emailConfig.config.bcc,
-    record2
+    record2,
+    ctx.accountId
   );
   for (const file of attachmentFiles) {
     if (!recordFiles.some((existing) => existing.file_id === file.file_id)) {
@@ -22997,11 +20538,13 @@ async function* buildInteractionData(ctx) {
   const settingMergeResolver = resolveSettingMergeResolver(injector);
   const resolveSubjectSetting = settingMergeResolver ? settingMergeResolver.resolve(
     emailConfig.config.subject.content,
-    emailConfig.config.subject.setting_ids
+    emailConfig.config.subject.setting_ids,
+    ctx.accountId
   ) : emailConfig.config.subject.content;
   const resolveBodySetting = settingMergeResolver ? settingMergeResolver.resolve(
     emailConfig.config.mail_body.content,
-    emailConfig.config.mail_body.setting_ids
+    emailConfig.config.mail_body.setting_ids,
+    ctx.accountId
   ) : emailConfig.config.mail_body.content;
   const fieldsLookup = resolveFieldsLookupService(injector);
   const fieldMetas = record2 && fieldsLookup ? fieldsLookup.getFieldMetas(record2.business_object_id) : null;
@@ -23107,14 +20650,18 @@ async function* fetchAttachmentsFromStep(ctx, stepId) {
     return resolved;
   }
 }
-async function resolveEmailAddresses(injector, recipients, record2) {
+async function resolveEmailAddresses(injector, recipients, record2, accountId) {
   const mailConfig = normalizeEmailRecipients(
     recipients,
     (userId) => resolveUserEmail(injector, userId)
   );
   if (!mailConfig?.content) return [];
   const settingMergeResolver = resolveSettingMergeResolver(injector);
-  const withSettings = settingMergeResolver ? settingMergeResolver.resolve(mailConfig.content, mailConfig.setting_ids) : mailConfig.content;
+  const withSettings = settingMergeResolver ? settingMergeResolver.resolve(
+    mailConfig.content,
+    mailConfig.setting_ids,
+    accountId
+  ) : mailConfig.content;
   const fieldsLookup = resolveFieldsLookupService(injector);
   const fieldMetas = record2 && fieldsLookup ? fieldsLookup.getFieldMetas(record2.business_object_id) : null;
   const resolved = record2 ? RecordTemplateMerging(
@@ -23219,21 +20766,21 @@ var customCodeImplementation = multiTurnImplementation((ctx) => {
   const recordStepId = recordStepConfig?.config.record_step_id ?? null;
   const recordListStepId = customCodeConfig.config.record_list_step_id || recordStepConfig?.config.record_list_step_id || null;
   const waitForCompletion = customCodeConfig.config.wait_for_process_to_complete !== false;
+  async function* fetchIntoCache(id, businessObjectId) {
+    const fresh = yield* execute(
+      "FetchRecord",
+      { id, business_object_id: businessObjectId },
+      { type: "fetching-record", businessObjectId }
+    );
+    ctx.refreshRecordInCache(fresh);
+    return { records: [fresh] };
+  }
   async function* refreshSourceRecord() {
     if (recordStepId === null) {
       return void 0;
     }
     const cached2 = ctx.getStepRecord(recordStepId);
-    const fresh = yield* execute(
-      "FetchRecord",
-      { id: cached2.id, business_object_id: cached2.business_object_id },
-      {
-        type: "fetching-record",
-        businessObjectId: cached2.business_object_id
-      }
-    );
-    ctx.refreshRecordInCache(fresh);
-    return { records: [fresh] };
+    return yield* fetchIntoCache(cached2.id, cached2.business_object_id);
   }
   function sourceRecordResult() {
     return recordStepId === null ? void 0 : { records: [ctx.getStepRecord(recordStepId)] };
@@ -23270,8 +20817,16 @@ var customCodeImplementation = multiTurnImplementation((ctx) => {
           buttonText: "Continue"
         });
       }
-      if (result.record) {
-        throw shortCircuit({ records: [result.record] });
+      if (result.records?.length) {
+        throw shortCircuit({ records: result.records });
+      }
+      if (result.record?.record_id && result.record.business_object_id) {
+        throw shortCircuit(
+          yield* fetchIntoCache(
+            result.record.record_id,
+            Number(result.record.business_object_id)
+          )
+        );
       }
       if (!waitForCompletion) {
         throw shortCircuit(sourceRecordResult());
@@ -23517,6 +21072,32 @@ var schedulingImplementation = multiTurnImplementation((ctx) => {
   );
 });
 
+// libs/pathway-executor/src/step-implementations/quote-builder.implementation.ts
+var quoteBuilderImplementation = multiTurnImplementation((ctx) => {
+  const config2 = ctx.getConfig("QuoteBuilderConfiguration" /* QuoteBuilderConfiguration */);
+  const recordStep = ctx.getConfig("RecordStep" /* RecordStep */);
+  const record2 = ctx.getStepRecord(recordStep.config.record_step_id);
+  const mode = config2.config.mode ?? "edit" /* Edit */;
+  const taxAddress = config2.config.tax_rate_source === "address_step" /* AddressStep */ ? ctx.tryGetStepRecord(config2.config.tax_address_step_id) : null;
+  return turns(
+    // oxlint-disable-next-line require-yield
+    async function* () {
+      return interact("quote-builder", {
+        title: ctx.resolveTitle(),
+        mode,
+        record: record2,
+        business_object_id: record2.business_object_id,
+        config: config2.config,
+        tax_address_record_id: taxAddress?.id ?? null
+      });
+    },
+    // oxlint-disable-next-line require-yield
+    async function* (reply) {
+      return { records: [reply.record] };
+    }
+  );
+});
+
 // libs/pathway-executor/src/step-implementations/implemantion-provider.ts
 var ImplementationProvider = /* @__PURE__ */ new Map([
   ["create_record" /* CreateRecord */, createRecordImplementation],
@@ -23573,7 +21154,8 @@ var ImplementationProvider = /* @__PURE__ */ new Map([
   ["signature" /* Signature */, signatureImplementation],
   ["create_barcode" /* CreateBarcode */, createBarcodeImplementation],
   ["scan_and_process" /* StopReceiving */, stopReceivingImplementation],
-  ["scheduling" /* Scheduling */, schedulingImplementation]
+  ["scheduling" /* Scheduling */, schedulingImplementation],
+  ["quote_builder" /* QuoteBuilder */, quoteBuilderImplementation]
 ]);
 function getImplementation(stepType) {
   const implementation = ImplementationProvider.get(stepType);
@@ -23656,7 +21238,12 @@ async function* driveWorkflow(state, environment2, resume) {
     while (step) {
       state.current_step_id = step.id;
       maybeLogHeadlessStep(state, step);
-      const ctx = new StepContext(step, state, services.injector);
+      const ctx = new StepContext(
+        step,
+        state,
+        services.injector,
+        services.apiExecutor.accountId
+      );
       if (pendingTurn) {
         ctx.turn = pendingTurn;
         pendingTurn = void 0;
@@ -24311,6 +21898,7 @@ __export(edit_record_table_exports, {
   normalizeCellValue: () => normalizeCellValue,
   recordsForNextStep: () => recordsForNextStep,
   sortRecordsByField: () => sortRecordsByField,
+  stepRecordsFilterCondition: () => stepRecordsFilterCondition,
   tableBehaviour: () => tableBehaviour,
   tableColumns: () => tableColumns,
   tableFilterCondition: () => tableFilterCondition,
@@ -24403,7 +21991,8 @@ function tableBehaviour(data) {
     multiSelect,
     draggableRows: sel?.draggable_rows ?? false,
     autoContinueOnSingleSelect: sel?.auto_continue_on_single_select ?? false,
-    createNew: act?.create_new ?? false,
+    // A row added here wouldn't be in the step's list.
+    createNew: data.source?.source_type === "step_records" /* StepRecords */ ? false : act?.create_new ?? false,
     save: act?.save ?? false,
     delete: act?.delete ?? false,
     autoSaveOnComplete: act?.auto_save_on_complete ?? false,
@@ -24429,10 +22018,29 @@ function tableFilterCondition(data) {
     return null;
   }
 }
+function stepRecordsFilterCondition(data) {
+  const own = tableFilterCondition(data);
+  const ownFilter = own ? JSON.parse(own).filters : null;
+  return JSON.stringify({
+    filters: {
+      type: "group",
+      condition: "and",
+      for_groups: true,
+      filter_types: [
+        {
+          type: "record_id",
+          logic: "in",
+          value: data.source_record_ids ?? []
+        },
+        ...ownFilter ? [ownFilter] : []
+      ]
+    }
+  });
+}
 function tablePageRequest(data, search, page) {
   const source = data.source;
   const filterCondition = tableFilterCondition(data);
-  if (data.filter_folder?.enable_search && search.trim() === "") {
+  if (data.filter_folder?.enable_search && search.trim() === "" && source.source_type !== "step_records" /* StepRecords */) {
     return { kind: "empty" };
   }
   if (source.source_type === "Relationship" /* Relationship */ && source.relationship_id && source.relationship_type && source.record_step_id) {
@@ -24449,6 +22057,21 @@ function tablePageRequest(data, search, page) {
         relationship_id: source.relationship_id,
         relationship_type: source.relationship_type,
         ...filterCondition ? { filter_condition: filterCondition } : {}
+      }
+    };
+  }
+  if (source.source_type === "step_records" /* StepRecords */) {
+    if (!data.source_record_ids?.length) return { kind: "empty" };
+    return {
+      kind: "filter",
+      key: "EditRecordTable.Filter",
+      input: {
+        business_object_id: data.business_object_id,
+        folder_id: null,
+        pagination: { page, offset: TABLE_PAGE_SIZE },
+        search,
+        stage: "filter",
+        filter_condition: stepRecordsFilterCondition(data)
       }
     };
   }
@@ -24928,7 +22551,7 @@ function mergeRequest(targetFileIds, options) {
   };
 }
 function mergeResult(response) {
-  return { merged_file_ids: response.record ? [response.record.id] : [] };
+  return { merged_file_ids: response.record ? [response.record.file_id] : [] };
 }
 
 // libs/pathway-executor/src/surfaces/create-tracking-labels.ts
@@ -25022,8 +22645,8 @@ function resolveWiring(settings2, productFields = [], poFields = []) {
   const bo = (name) => find3("business_object", name);
   const rel = (name) => find3("relationship_mapping", name)?.id;
   const field = (name) => find3("field", name)?.id;
-  const byName2 = (fields, name) => fields.find((f) => f.name.toLowerCase() === name.toLowerCase())?.id;
-  const product = (name) => byName2(productFields, name);
+  const byName = (fields, name) => fields.find((f) => f.name.toLowerCase() === name.toLowerCase())?.id;
+  const product = (name) => byName(productFields, name);
   const notTrackedSetting = field("ProductNotTrackedField");
   const oliBo = bo("OmOrderLineItemBO");
   const oliProductRel = find3(
@@ -25100,7 +22723,7 @@ function resolveWiring(settings2, productFields = [], poFields = []) {
       // ProductShortDescriptionField key still wins over the name fallback.
       description: field("ProductDescriptionField") ?? field("ProductShortDescriptionField") ?? product("Short Description"),
       // Vendor lives on the PO on some accounts, on the line on others.
-      vendor: field("PurchaseOrderVendorField") ?? byName2(poFields, "Vendor"),
+      vendor: field("PurchaseOrderVendorField") ?? byName(poFields, "Vendor"),
       productVendor: product("Vendor"),
       // Fee / accounting lines (Not Tracked = true) never get labels.
       notTracked: notTrackedSetting ?? product("Not Tracked")
@@ -28335,20 +25958,6 @@ function matchInRange(range) {
   return (candidate) => candidate >= range.startDate && candidate <= range.endDate;
 }
 
-// utils/account-time-zone.ts
-var DEFAULT_ACCOUNT_TIME_ZONE = "UTC";
-function isValidTimeZone(timeZone) {
-  try {
-    new Intl.DateTimeFormat("en-US", { timeZone });
-    return true;
-  } catch {
-    return false;
-  }
-}
-function effectiveTimeZone(timeZone) {
-  return timeZone && isValidTimeZone(timeZone) ? timeZone : DEFAULT_ACCOUNT_TIME_ZONE;
-}
-
 // utils/date-time-setting-display.ts
 function defaultFormatDateTime(isoDateTime, timeZone) {
   const date3 = new Date(isoDateTime);
@@ -29177,6 +26786,37 @@ function displayToFractional(value) {
   return parseFloat((value / 100).toPrecision(12));
 }
 
+// utils/filter-text-trim.ts
+var FILTER_TEXT_SPACE = "[\\t\\n\\x0b\\f\\r ]";
+var EDGE_SPACES = new RegExp(
+  `^${FILTER_TEXT_SPACE}+|${FILTER_TEXT_SPACE}+$`,
+  "g"
+);
+function trimFilterText(value) {
+  return value.replace(EDGE_SPACES, "");
+}
+var TRIMMED_TEXT_LOGICS = [
+  "equal" /* Equal */,
+  "not_equal" /* NotEqual */,
+  "in" /* In */,
+  "not_in" /* NotIn */
+];
+function trimmedTextValues(logic, value) {
+  if (!TRIMMED_TEXT_LOGICS.includes(logic)) return null;
+  const single = logic === "equal" /* Equal */ || logic === "not_equal" /* NotEqual */;
+  if (single && Array.isArray(value)) return null;
+  const values = Array.isArray(value) ? value : [value];
+  if (values.length === 0) return null;
+  const trimmed = [];
+  for (const v of values) {
+    if (typeof v !== "string") return null;
+    const t = trimFilterText(v);
+    if (t === "") return null;
+    trimmed.push(t);
+  }
+  return trimmed;
+}
+
 // libs/pathway-executor/src/record-filter/evaluator.ts
 var EvaluatorMissingContextError = class extends Error {
   constructor(message2) {
@@ -29291,7 +26931,9 @@ function evalField(filter, record2, ctx) {
     return evalSelectionBlank(filter, actual, valueMeta);
   }
   const expected = resolveExpected(filter, record2, ctx, valueMeta);
-  return compareWithType(filter.logic, actual, expected, valueMeta);
+  return compareWithType(filter.logic, actual, expected, valueMeta, {
+    trimText: !filter.for_field
+  });
 }
 function isBlankSentinelLeaf(filter, meta) {
   if (filter.for_field || filter.for_setting || filter.for_current_user) {
@@ -29329,20 +26971,20 @@ function followChain(record2, chain, ctx) {
   if (!chain || chain.length === 0) return record2;
   let current2 = record2;
   for (const relId of chain) {
-    const linkedId = current2.relationships[relId];
-    if (linkedId == null) return void 0;
+    const linkedId2 = current2.relationships[relId];
+    if (linkedId2 == null) return void 0;
     if (!ctx.relatedRecords) {
       throw new EvaluatorMissingContextError(
         `filter follows relationship chain (rel ${relId}) but ctx.relatedRecords was not supplied`
       );
     }
-    const linked = ctx.relatedRecords.get(linkedId);
-    if (!linked) {
+    const linked2 = ctx.relatedRecords.get(linkedId2);
+    if (!linked2) {
       throw new EvaluatorMissingContextError(
-        `related record ${linkedId} (rel ${relId}) not present in ctx.relatedRecords \u2014 caller must pre-fetch the full chain`
+        `related record ${linkedId2} (rel ${relId}) not present in ctx.relatedRecords \u2014 caller must pre-fetch the full chain`
       );
     }
-    current2 = linked;
+    current2 = linked2;
   }
   return current2;
 }
@@ -29360,8 +27002,8 @@ function readFieldValue(meta, record2, ctx) {
       `field ${meta.id} is_primary_object=false but missing relationship_id or reference_field_id`
     );
   }
-  const linkedId = record2.relationships[relId];
-  if (linkedId == null) {
+  const linkedId2 = record2.relationships[relId];
+  if (linkedId2 == null) {
     return { value: void 0, meta, unlinked: true };
   }
   if (!ctx.relatedRecords) {
@@ -29369,19 +27011,19 @@ function readFieldValue(meta, record2, ctx) {
       `filter references related record (rel ${relId}) but ctx.relatedRecords was not supplied`
     );
   }
-  const linked = ctx.relatedRecords.get(linkedId);
-  if (!linked) {
+  const linked2 = ctx.relatedRecords.get(linkedId2);
+  if (!linked2) {
     throw new EvaluatorMissingContextError(
-      `related record ${linkedId} (rel ${relId}) not present in ctx.relatedRecords \u2014 caller must pre-fetch`
+      `related record ${linkedId2} (rel ${relId}) not present in ctx.relatedRecords \u2014 caller must pre-fetch`
     );
   }
-  const linkedMeta = ctx.fields(linked.business_object_id, refId);
+  const linkedMeta = ctx.fields(linked2.business_object_id, refId);
   if (!linkedMeta) {
     throw new EvaluatorMissingContextError(
-      `linked field ${refId} on bo ${linked.business_object_id} has no metadata`
+      `linked field ${refId} on bo ${linked2.business_object_id} has no metadata`
     );
   }
-  return { value: linked.fields[refId], meta: linkedMeta };
+  return { value: linked2.fields[refId], meta: linkedMeta };
 }
 function resolveExpected(filter, record2, ctx, fieldMeta) {
   if (filter.for_current_user) {
@@ -29475,23 +27117,23 @@ function evalArchived(filter, record2, ctx) {
   return false;
 }
 function evalRelationship(filter, record2) {
-  const linkedId = record2.relationships[filter.relationship_id] ?? null;
-  if (filter.logic === "empty" /* Empty */) return linkedId == null;
+  const linkedId2 = record2.relationships[filter.relationship_id] ?? null;
+  if (filter.logic === "empty" /* Empty */) return linkedId2 == null;
   if (filter.logic === "is_not_empty" /* IsNotEmpty */ || filter.logic === "any_time" /* AnyTime */) {
-    return linkedId != null;
+    return linkedId2 != null;
   }
   if (filter.logic === "equal" /* Equal */ || filter.logic === "not_equal" /* NotEqual */) {
     const negated = filter.logic === "not_equal" /* NotEqual */;
-    if (linkedId == null) return negated;
+    if (linkedId2 == null) return negated;
     const expected = filter.value;
-    const matched = Array.isArray(expected) ? expected.includes(linkedId) : expected === linkedId;
+    const matched = Array.isArray(expected) ? expected.includes(linkedId2) : expected === linkedId2;
     return negated ? !matched : matched;
   }
   if (filter.logic === "in" /* In */ || filter.logic === "not_in" /* NotIn */) {
     const negated = filter.logic === "not_in" /* NotIn */;
-    if (linkedId == null) return negated;
+    if (linkedId2 == null) return negated;
     const values = Array.isArray(filter.value) ? filter.value : filter.value == null ? [] : [filter.value];
-    const matched = values.includes(linkedId);
+    const matched = values.includes(linkedId2);
     return negated ? !matched : matched;
   }
   return false;
@@ -29515,7 +27157,7 @@ function evalAccountSetting(filter, record2, ctx) {
   }
   return compareScalar(filter.logic, actual, expected);
 }
-function compareWithType(logic, actual, expected, meta) {
+function compareWithType(logic, actual, expected, meta, { trimText = true } = {}) {
   switch (fieldFilterKind(meta.field_type)) {
     case "boolean":
       return compareBoolean(logic, actual, expected);
@@ -29535,8 +27177,14 @@ function compareWithType(logic, actual, expected, meta) {
     case "appointment":
       return compareDate(logic, actual, expected);
     case "text":
+      return compareString(logic, actual, expected, trimText);
     case "selection":
-      return compareString(logic, actual, expected);
+      return compareString(
+        logic,
+        actual,
+        expected,
+        trimText && meta.select_type !== "preset" /* Preset */
+      );
   }
 }
 function compareBoolean(logic, actual, expected) {
@@ -29656,7 +27304,17 @@ function anchoredTextMatch(logic, actual, expected) {
   };
   return Array.isArray(actual) ? actual.some(matches) : matches(actual);
 }
-function compareString(logic, actual, expected) {
+function compareTrimmedText(logic, actual, expected) {
+  const values = trimmedTextValues(logic, expected);
+  if (!values) return null;
+  const hit = typeof actual === "string" && values.includes(trimFilterText(actual));
+  return logic === "not_equal" /* NotEqual */ || logic === "not_in" /* NotIn */ ? !hit : hit;
+}
+function compareString(logic, actual, expected, trimText = false) {
+  if (trimText) {
+    const trimmed = compareTrimmedText(logic, actual, expected);
+    if (trimmed !== null) return trimmed;
+  }
   switch (logic) {
     case "equal" /* Equal */:
       return actual === expected;
@@ -29840,12 +27498,12 @@ function explainPipeline(pipeline, record2, ctx) {
       root: unevaluatedGroupNode(pipeline.filters)
     };
   }
-  const root = explainGroup(pipeline.filters, record2, ctx);
+  const root2 = explainGroup(pipeline.filters, record2, ctx);
   return {
-    passed: emptyFilter ? true : root.passed,
+    passed: emptyFilter ? true : root2.passed,
     bo_gate_passed: true,
     empty_filter: emptyFilter,
-    root
+    root: root2
   };
 }
 function explainGroup(group2, record2, ctx) {
@@ -30356,6 +28014,3239 @@ function evaluateLogicBinding(filter, settings2, now = /* @__PURE__ */ new Date(
   }
 }
 
+// .path-cli/src/pathway-runner/pipeline-eval.ts
+var MAX_ROUNDS = 6;
+var CliPipelineEvaluator = class {
+  constructor(metadata) {
+    this.metadata = metadata;
+  }
+  #records = /* @__PURE__ */ new Map();
+  #personName;
+  #settings;
+  async evaluate(pipeline, record2) {
+    const parsed = parsePipeline(pipeline);
+    if (!parsed) return { decided: true, matches: true };
+    const timeZone = effectiveTimeZone((await this.metadata.account())?.time_zone);
+    let last = { decided: false, reason: "not evaluated" };
+    for (let round = 0; round < MAX_ROUNDS; round++) {
+      const missing = { records: /* @__PURE__ */ new Set(), bos: /* @__PURE__ */ new Set(), settings: false, person: false };
+      const result = record_filter_exports.evaluateOnClient(parsed, record2, {
+        fields: (boId3, fieldId) => {
+          const fields = this.metadata.loadedFields.get(boId3);
+          if (!fields) {
+            missing.bos.add(boId3);
+            return void 0;
+          }
+          return fields.find((f) => f.id === fieldId);
+        },
+        accountSettings: this.#settings ?? (missing.settings = true, void 0),
+        relatedRecords: {
+          get: (id) => {
+            const cached2 = this.#records.get(id);
+            if (cached2) return record_filter_exports.toRecordSnapshot(cached2);
+            if (cached2 === void 0) missing.records.add(id);
+            return void 0;
+          }
+        },
+        currentUserFullName: () => {
+          if (this.#personName === void 0) missing.person = true;
+          return this.#personName;
+        },
+        timeZone
+      });
+      if (result.decided) return { decided: true, matches: result.matches };
+      last = { decided: false, reason: result.reason };
+      if (!await this.#load(missing)) return last;
+    }
+    return last;
+  }
+  async #load(missing) {
+    const loads = [];
+    for (const id of missing.records) {
+      loads.push(
+        this.metadata.record(id).then((r) => this.#records.set(id, r)).catch(() => this.#records.set(id, null))
+      );
+    }
+    for (const boId3 of missing.bos) loads.push(this.metadata.fields(boId3).catch(() => this.metadata.loadedFields.set(boId3, [])));
+    if (missing.settings) {
+      loads.push(
+        this.metadata.dynamicSettings().then((all4) => {
+          this.#settings = new Map(all4.map((s) => [s.id, s.value]));
+        })
+      );
+    }
+    if (missing.person) {
+      loads.push(
+        this.metadata.client.get("/v1/users/current/person-record").then(async (person) => {
+          if (!person) {
+            this.#personName = null;
+            return;
+          }
+          const fields = await this.metadata.fields(person.business_object_id);
+          const nameField = fields.find((f) => f.standard_field_type === "PersonName");
+          const name = nameField ? person.fields?.[String(nameField.id)] : void 0;
+          this.#personName = typeof name === "string" ? name : null;
+        }).catch(() => {
+          this.#personName = null;
+        })
+      );
+    }
+    if (!loads.length) return false;
+    await Promise.all(loads);
+    return true;
+  }
+};
+function parsePipeline(filters) {
+  if (!filters) return null;
+  try {
+    const pipeline = typeof filters === "string" ? JSON.parse(filters) : filters;
+    return pipeline?.filters?.filter_types?.length ? pipeline : null;
+  } catch {
+    return null;
+  }
+}
+
+// .path-cli/src/pathway-runner/access.ts
+var SUPER_USER_CHECK = "visibility criteria";
+function launchOutcome(checks, mode) {
+  const failed = checks.filter((c) => !c.ok);
+  const overridable = (c) => mode === "super-user" && c.name === SUPER_USER_CHECK;
+  return { blocking: failed.filter((c) => !overridable(c)), overridden: failed.filter(overridable) };
+}
+function isRoleAdmin(user) {
+  return !!user.roles?.some((r) => r.role?.is_admin);
+}
+async function checkLaunch(params) {
+  const { pathway: pathway2, point, user, metadata } = params;
+  const checks = [];
+  const add = (name, ok, detail) => checks.push({ name, ok, detail });
+  add(
+    "runnable",
+    isRunnablePathway(pathway2),
+    pathway2.validation_errors ? "the pathway has validation errors" : pathway2.has_steps ? "no validation errors" : "the pathway has no steps"
+  );
+  if (point !== "task") {
+    if (isRoleAdmin(user)) {
+      add("role permission", true, "the user is an admin");
+    } else {
+      const roles = new Set((user.roles ?? []).map((r) => r.role_id));
+      const granted = (pathway2.role_entity_permissions ?? []).some((p) => roles.has(p.role_id));
+      add("role permission", granted, granted ? "one of the user's roles holds the pathway" : "none of the user's roles holds the pathway");
+    }
+  }
+  switch (point) {
+    case "record": {
+      const record2 = params.record;
+      add("record access", !!record2, record2 ? "the user can open the record" : "the user can't open the record (missing, archived or hidden by tags)");
+      add("shown on records", !!pathway2.show_in_record, pathway2.show_in_record ? "show_in_record is on" : "show_in_record is off");
+      if (record2) {
+        const sameBo = pathway2.starting_bo_id === record2.business_object_id;
+        add(
+          "starting business object",
+          sameBo,
+          sameBo ? `starts on ${await metadata.boName(record2.business_object_id)}` : pathway2.starting_bo_id == null ? "the pathway starts without a record" : `starts on ${await metadata.boName(pathway2.starting_bo_id)}, the record is a ${await metadata.boName(record2.business_object_id)}`
+        );
+        if (pathway2.visibility_criteria) {
+          const verdict = await new CliPipelineEvaluator(metadata).evaluate(pathway2.visibility_criteria, record2);
+          add(
+            "visibility criteria",
+            verdict.decided && verdict.matches,
+            verdict.decided ? verdict.matches ? "the record meets them" : "the record doesn't meet them" : `undecidable: ${verdict.reason}`
+          );
+        }
+      }
+      break;
+    }
+    case "dashboard":
+      add("shown on dashboard", !!pathway2.show_on_dashboard, pathway2.show_on_dashboard ? "show_on_dashboard is on" : "show_on_dashboard is off");
+      break;
+    case "folder": {
+      const folder2 = params.folder;
+      const ok = !!pathway2.show_in_folders && !!folder2 && pathway2.folder_bo_id === folder2.business_object_id;
+      add(
+        "shown in folder",
+        ok,
+        !pathway2.show_in_folders ? "show_in_folders is off" : !folder2 ? "folder not found" : pathway2.folder_bo_id === folder2.business_object_id ? `shown in ${await metadata.boName(folder2.business_object_id)} folders` : `shown in ${await metadata.boName(pathway2.folder_bo_id)} folders, this folder lists ${await metadata.boName(folder2.business_object_id)}`
+      );
+      break;
+    }
+    case "task": {
+      const task = params.task;
+      add("task", !!task, task ? `task "${task.task_name}" (${task.task_status})` : "task not found on the record");
+      if (task) {
+        add("task pending", task.task_status === "pending", `status is ${task.task_status}`);
+        add("task pathway", task.pathway_id === pathway2.id, task.pathway_id === pathway2.id ? "completing the task runs this pathway" : `the task runs pathway ${task.pathway_id ?? "(none)"}`);
+        const assigneeOnly = !!task.task_settings?.only_assignee_finish;
+        const effectiveAdmin = !!user.effective_permissions?.is_admin;
+        const may = !assigneeOnly || task.assigned_to?.user_id === user.id || task.created_by === user.id || effectiveAdmin;
+        add("may complete task", may, assigneeOnly ? may ? "assignee, creator or admin" : "only the assignee can finish it" : "anyone may complete it");
+      }
+      break;
+    }
+  }
+  return { allowed: checks.every((c) => c.ok), checks };
+}
+
+// .path-cli/src/utils/error-handler.ts
+function handleError(err) {
+  if (err instanceof ApiError) {
+    console.error(`ERROR [${err.statusCode}]: ${err.message}`);
+  } else if (err instanceof Error) {
+    console.error(`ERROR: ${err.message}`);
+  } else {
+    console.error(`ERROR: ${String(err)}`);
+  }
+  process.exit(1);
+}
+
+// .path-cli/src/utils/info-text.ts
+import { readFileSync as readFileSync5 } from "node:fs";
+var MAX_INFO_LENGTH = 5e4;
+var INFO_TEXT_CAP = 1e3;
+function infoText(value) {
+  if (typeof value !== "string") return null;
+  const text = value.trim();
+  return text ? text : null;
+}
+function infoLines(value, opts = {}) {
+  let text = infoText(value);
+  if (!text) return [];
+  const indent = opts.indent ?? "  ";
+  const label = opts.label ?? "context";
+  const gate = currentInfoGate();
+  if (gate && !gate.shows(text, label)) return [`${indent}${label}: ${ELIDED_TEXT}`];
+  if (opts.cap !== void 0 && text.length > opts.cap) {
+    text = `${text.slice(0, opts.cap).trimEnd()} \u2026(see --json)`;
+  }
+  const lines = text.split(/\r?\n/);
+  if (lines.length === 1) return [`${indent}${label}: ${lines[0]}`];
+  return [`${indent}${label}:`, ...lines.map((line) => line.trim() ? `${indent}  ${line}` : "")];
+}
+function infoBlock(info, label = "context") {
+  if (info === null || info === void 0 || typeof info === "string" && !info.trim()) return `${label}: (none)`;
+  const gate = currentInfoGate();
+  if (typeof info === "string" && gate && !gate.shows(info, label)) return `${label}: ${ELIDED_TEXT}`;
+  const text = typeof info === "string" ? info.replace(/\s+$/, "") : JSON.stringify(info);
+  if (!text.includes("\n") && text.length <= 100) return `${label}: ${text}`;
+  return `${label}:
+${text.split("\n").map((line) => line ? `  ${line}` : "").join("\n")}`;
+}
+function infoFromOptions(opts) {
+  if (opts.context !== void 0 && opts.contextFile !== void 0) throw new Error("Pass --context or --context-file, not both");
+  const info = opts.contextFile !== void 0 ? readFileSync5(opts.contextFile, "utf-8") : opts.context;
+  return checkInfo(info, "--context");
+}
+function checkInfo(value, where = "context") {
+  if (value === void 0) return void 0;
+  if (value === null) return "";
+  if (typeof value !== "string") throw new Error(`${where} must be text (or null to clear it)`);
+  if (value.length > MAX_INFO_LENGTH) throw new Error(`The context is ${value.length} characters; PATH keeps at most ${MAX_INFO_LENGTH}`);
+  return value.trim() ? value : "";
+}
+function contextKeysToInfo(value) {
+  if (Array.isArray(value)) return value.map(contextKeysToInfo);
+  if (!value || typeof value !== "object") return value;
+  const obj = value;
+  const out = {};
+  for (const [key, v] of Object.entries(obj)) {
+    const renamed = key === "context" ? "info" : key.endsWith("_context") ? `${key.slice(0, -"_context".length)}_info` : key;
+    out[renamed !== key && renamed in obj ? key : renamed] = contextKeysToInfo(v);
+  }
+  return out;
+}
+
+// .path-cli/src/session-context.ts
+var RELOAD_HINT = 'loaded once per session; "path session-context" reloads it';
+async function loadSessionContext(client, accountId) {
+  const metadata = new RunMetadata(client, accountId);
+  const [account, user, entries] = await Promise.all([
+    client.get(`/v1/accounts/${encodeURIComponent(accountId)}`),
+    metadata.currentUser(),
+    client.get("/v1/process-contexts/me")
+  ]);
+  return sessionContextFor(metadata, accountSummaryOf(account, accountId), user, Array.isArray(entries) ? entries : []);
+}
+async function sessionContextFor(metadata, account, user, entries) {
+  const pathways = await metadata.pathways();
+  const dashboard = [];
+  for (const pathway2 of pathways) {
+    const verdict = await checkLaunch({ pathway: pathway2, point: "dashboard", user, metadata });
+    if (verdict.allowed) dashboard.push({ id: pathway2.id, name: pathway2.name, info: infoText(pathway2.info) });
+  }
+  const processContext = [];
+  for (const entry of entries) {
+    processContext.push({
+      business_object_id: entry.business_object_id,
+      business_object: await metadata.boName(entry.business_object_id),
+      role: entry.role_name || "Unknown role",
+      title: entry.title,
+      info: entry.content
+    });
+  }
+  return { account, dashboard_pathways: dashboard, process_context: processContext };
+}
+function sessionContextJson(data) {
+  return {
+    note: `Session context, ${RELOAD_HINT}. Read it before working in this account.`,
+    account: accountJson(data.account),
+    dashboard_pathways: data.dashboard_pathways.map((p) => ({ id: p.id, name: p.name, ...p.info ? { info: p.info } : {} })),
+    process_context: data.process_context
+  };
+}
+function sessionContextLines(data) {
+  const lines = [`Session context (${RELOAD_HINT}):`, "", ...accountBlockLines(data.account)];
+  const gate = currentInfoGate();
+  if (data.account.info) gate?.written(data.account.info);
+  lines.push("", `Dashboard pathways (${data.dashboard_pathways.length}):`);
+  if (!data.dashboard_pathways.length) lines.push("  (none)");
+  for (const pathway2 of data.dashboard_pathways) {
+    lines.push(`  ${pathway2.id}  ${pathway2.name}`);
+    lines.push(...infoLines(pathway2.info, { indent: "    " }));
+  }
+  lines.push("", `Process context (${data.process_context.length}):`);
+  if (!data.process_context.length) lines.push("  (none)");
+  const byBo = /* @__PURE__ */ new Map();
+  for (const entry of data.process_context) {
+    const list3 = byBo.get(entry.business_object) ?? [];
+    list3.push(entry);
+    byBo.set(entry.business_object, list3);
+  }
+  for (const [bo, list3] of byBo) {
+    lines.push(`  ${bo}`);
+    for (const entry of list3) {
+      lines.push(`    ${entry.role} \xB7 ${entry.title}`);
+      lines.push(...infoLines(entry.info, { indent: "      ", label: "context" }));
+    }
+  }
+  return lines;
+}
+function sessionBlockOf(data) {
+  return {
+    accountId: data.account.id,
+    json: () => sessionContextJson(data),
+    lines: () => sessionContextLines(data)
+  };
+}
+function sessionContextLoader(opts) {
+  return async (accountId) => sessionBlockOf(await loadSessionContext(new HttpClient(loadConfig({ accountId, baseUrl: opts.baseUrl })), accountId));
+}
+async function printSessionContext(client, accountId, json) {
+  const data = await loadSessionContext(client, accountId);
+  if (json) {
+    console.log(JSON.stringify({ session_context: sessionContextJson(data) }, null, 2));
+  } else {
+    for (const line of sessionContextLines(data)) console.log(line);
+  }
+  currentInfoGate()?.sessionContextShown(accountId);
+}
+var sessionContextCommand = new Command("session-context").description(
+  "Show the session context in full: the account and its context, the pathways you can start from the dashboard with their context, and your process context (guidance for your roles on the business objects you can view or edit). It is given automatically at sign-in, on use-account and before the first command of every session; run this to reload it, e.g. after your context was compacted"
+).action(async (_opts, command) => {
+  const globals = command.optsWithGlobals();
+  try {
+    const config2 = loadConfig({ accountId: globals.account, baseUrl: globals.baseUrl });
+    if (!config2.accountId) throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
+    await printSessionContext(new HttpClient(config2), String(config2.accountId), !!globals.json);
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// packages/permissions.ts
+var P = class {
+  constructor(flags) {
+    this.flags = flags;
+    for (let i = 0; i < this.flags.length; i++) {
+      this[this.flags[i]] = 1 << i;
+    }
+  }
+  default = 0;
+  get none() {
+    return 0;
+  }
+  cast(defaultValue) {
+    this.default = defaultValue(
+      this
+    );
+    return this;
+  }
+  check(permission, flag) {
+    return (this[flag] & permission) !== 0;
+  }
+  both(a, b) {
+    return a | b;
+  }
+  toObject(permission) {
+    const obj = {};
+    for (const flag of this.flags) {
+      obj[flag] = this.check(permission, flag);
+    }
+    return obj;
+  }
+  fromObject(obj) {
+    let permission = 0;
+    for (const flag of this.flags) {
+      if (obj[flag]) {
+        permission |= this[flag];
+      }
+    }
+    return permission;
+  }
+};
+var BOPermissions = new P([
+  "view",
+  "edit",
+  "archive",
+  "create_folders",
+  "create_reports"
+]).cast((instance) => instance.view);
+var FolderPermissions = new P([
+  "view",
+  "edit",
+  "deletion"
+]).cast((instance) => instance.none);
+var ReportPermissions = new P([
+  "owner",
+  "edit",
+  "deletion",
+  "view"
+]).cast((instance) => instance.none);
+var CalendarPermissions = new P([
+  "view",
+  "edit",
+  "owner"
+]).cast((instance) => instance.view);
+var PathwayGroupVisibilities = new P([
+  "dashboard",
+  "card_view"
+]).cast((instance) => instance.dashboard);
+
+// .path-cli/src/access/permissions.ts
+var loaded = /* @__PURE__ */ new WeakMap();
+var UserAccess = class _UserAccess {
+  constructor(user) {
+    this.user = user;
+  }
+  /**
+   * The acting user's permissions, fetched once per client — a command makes
+   * one client, so every gate in it shares one `/users/current` call, and the
+   * MCP server's next command (a new client) starts fresh.
+   */
+  static load(client) {
+    let pending2 = loaded.get(client);
+    if (!pending2) {
+      pending2 = client.get("/v1/users/current").then((u) => new _UserAccess(u));
+      loaded.set(client, pending2);
+      pending2.catch(() => loaded.delete(client));
+    }
+    return pending2;
+  }
+  get label() {
+    const u = this.user;
+    const first = u.first_name ?? u.profile?.first_name;
+    const last = u.last_name ?? u.profile?.last_name;
+    return [first, last].filter(Boolean).join(" ") || u.email || `user ${u.id}`;
+  }
+  /** Admin per the user's enabled roles (effective permissions). */
+  get isAdmin() {
+    return !!this.user.effective_permissions?.is_admin;
+  }
+  /** current-user.service canOpenDesigner: the Designer role permission (Admin alone doesn't open the Designer). */
+  get canOpenDesigner() {
+    return !!this.user.effective_permissions?.designer_admin;
+  }
+  /** current-user.service canManageUsers: the User Admin (or Admin) role permission. */
+  get canManageUsers() {
+    const p = this.user.effective_permissions;
+    return !!p && !!(p.is_admin || p.user_admin);
+  }
+  /** The acting user's enabled role ids (field / relationship visibility lists). */
+  get roleIds() {
+    return (this.user.roles ?? []).map((r) => r.role_id);
+  }
+  /** record-viewer canArchiveRecord: BO `archive`, or the Delete Records role permission. */
+  canArchiveRecord(boId3) {
+    return this.canBusinessObject(boId3, "archive") || !!this.user.effective_permissions?.delete_records;
+  }
+  /** file-list-item-actions canDeleteFile: Admin or the Delete Files role permission. */
+  get canDeleteFiles() {
+    const p = this.user.effective_permissions;
+    return !!(p?.is_admin || p?.delete_files);
+  }
+  /** A missing business object entry defaults to view. */
+  canBusinessObject(boId3, key) {
+    if (this.isAdmin) return true;
+    if (boId3 == null) return true;
+    const map = this.user.effective_permissions?.business_object_permissions ?? {};
+    const raw = map[String(boId3)];
+    return BOPermissions.check(raw ?? BOPermissions.default, key);
+  }
+  /** A missing folder entry is no access (folder_admin sees all). */
+  canFolder(folderId, key) {
+    const p = this.user.effective_permissions;
+    if (this.isAdmin || p?.folder_admin) return true;
+    const raw = p?.folder_permissions?.[String(folderId)];
+    return FolderPermissions.check(raw ?? FolderPermissions.default, key);
+  }
+  /** Owner grants every key; no report permission map at all = open (legacy). */
+  canReport(reportId, key) {
+    const p = this.user.effective_permissions;
+    if (this.isAdmin || p?.report_admin) return true;
+    if (!p?.report_permissions) return true;
+    const raw = p.report_permissions[String(reportId)] ?? ReportPermissions.default;
+    return ReportPermissions.check(raw, "owner") || ReportPermissions.check(raw, key);
+  }
+  /**
+   * An explicit grant row decides; without one the calendar's "All Users"
+   * default applies — view, plus edit when `defaultEdit` (the calendar's
+   * default_edit). Admins and calendar admins pass everything.
+   */
+  canCalendar(calendarId, key, defaultEdit = false) {
+    if (calendarId == null) return false;
+    const p = this.user.effective_permissions;
+    if (this.isAdmin || p?.calendar_admin) return true;
+    const raw = p?.calendar_permissions?.[String(calendarId)];
+    if (raw !== void 0) return CalendarPermissions.check(raw, key);
+    const fallback = defaultEdit ? CalendarPermissions.both(CalendarPermissions.default, CalendarPermissions.edit) : CalendarPermissions.default;
+    return CalendarPermissions.check(fallback, key);
+  }
+  /** current-user.service isCalendarAdmin: Admin or the Calendar Admin role permission. */
+  get isCalendarAdmin() {
+    const p = this.user.effective_permissions;
+    return !!(p?.is_admin || p?.calendar_admin);
+  }
+  /**
+   * current-user.service canManageCalendar — owner-level management of a
+   * calendar or calendar group (rename, recolor, "All Users" default,
+   * sharing, delete): its single owner, or an Admin / Calendar Admin.
+   */
+  canManageCalendar(ownerUserId) {
+    return this.isCalendarAdmin || ownerUserId != null && ownerUserId === this.user.id;
+  }
+  /** current-user.service canCalendarGroup: canCalendar's rules over the group's own grants. */
+  canCalendarGroup(groupId, key, defaultEdit = false) {
+    if (groupId == null) return false;
+    if (this.isCalendarAdmin) return true;
+    const raw = this.user.effective_permissions?.calendar_group_permissions?.[String(groupId)];
+    if (raw !== void 0) return CalendarPermissions.check(raw, key);
+    const fallback = defaultEdit ? CalendarPermissions.both(CalendarPermissions.default, CalendarPermissions.edit) : CalendarPermissions.default;
+    return CalendarPermissions.check(fallback, key);
+  }
+  /** task.component isDisabled: only-assignee tasks finish by assignee, creator or admin. */
+  canCompleteTask(task) {
+    if (task.task_status !== "pending") return `the task is ${task.task_status}`;
+    if (!task.task_settings?.only_assignee_finish) return null;
+    if (task.assigned_to?.user_id === this.user.id || task.created_by === this.user.id || this.isAdmin) return null;
+    return "only the assignee (or the creator or an admin) can finish this task";
+  }
+  /** record-task-permissions canCancelRecordTask. */
+  canCancelTask(task) {
+    if (task.task_status !== "pending") return `the task is ${task.task_status}`;
+    const s = task.task_settings ?? {};
+    if (s.allow_cancellation && !s.only_assignee_finish) return null;
+    if (this.isAdmin || task.created_by === this.user.id) return null;
+    if (task.assigned_to?.user_id === this.user.id && s.only_assignee_finish) return null;
+    return "this task can't be cancelled by this user";
+  }
+  /** record-task-permissions canEditRecordTask: full edit by creator/admin, else assignment if allowed. */
+  canAssignTask(task) {
+    if (this.isAdmin || task.created_by === this.user.id) return null;
+    if (task.task_settings?.allow_assignment_change) return null;
+    return "this task's assignee can't be changed by this user";
+  }
+};
+var AccessDeniedError = class extends Error {
+  constructor(who, what, why) {
+    super(`${who} can't ${what} \u2014 ${why}, as in the web app.`);
+  }
+};
+
+// .path-cli/src/acting-user.ts
+function parseMode(value) {
+  if (value === void 0 || value === "real-world") return "real-world";
+  if (value === "super-user") return "super-user";
+  if (value === "unrestricted") {
+    throw new Error(
+      "There is no unrestricted mode any more: the CLI always applies the web app's rules. To run a pathway on a record its criteria hide it on, use --mode super-user (Designer only)."
+    );
+  }
+  throw new Error("--mode must be real-world or super-user");
+}
+function currentMode() {
+  const mode = commandEnv("PATH_ACTIVE_MODE");
+  return mode === "designer" || mode === "super-user" ? mode : "real-world";
+}
+function isRealWorld() {
+  return currentMode() !== "designer";
+}
+function actingUserId() {
+  const id = commandEnv("PATH_ACTING_USER_ID");
+  return id ? Number(id) : null;
+}
+function displayName(u) {
+  return [u.first_name, u.last_name].filter(Boolean).join(" ") || u.email || `User ${u.id}`;
+}
+async function signedInAccess(config2) {
+  const token = commandEnv("PATH_SIGNED_IN_TOKEN") || config2.accessToken;
+  return UserAccess.load(new HttpClient({ ...config2, accessToken: token }));
+}
+async function assertSuperUserAllowed(config2) {
+  const access = await signedInAccess(config2);
+  if (access.canOpenDesigner) return;
+  throw new Error(
+    `${access.label} can't use super-user mode: it needs a role with Designer permission (the people who can change a pathway's criteria).`
+  );
+}
+async function impersonate(config2, userKey) {
+  const me = await signedInAccess(config2);
+  if (!me.isAdmin) {
+    throw new Error(
+      `${me.label} can't use --as-user: acting as another user is the web's Impersonate, which only account Admins have.`
+    );
+  }
+  const admin = new HttpClient(config2);
+  const raw = await admin.get("/v1/users/directory", { all: "true" });
+  const users = (Array.isArray(raw) ? raw : raw.items ?? []).map(
+    (u) => ({ ...u, id: u.user_id ?? u.id })
+  );
+  const key = String(userKey).trim().toLowerCase();
+  const user = users.find((u) => String(u.id) === key) ?? users.find((u) => u.email?.toLowerCase() === key) ?? users.find((u) => displayName(u).toLowerCase() === key);
+  if (!user) throw new Error(`No user "${userKey}" in account ${config2.accountId}`);
+  if (user.id === me.user.id) throw new Error("--as-user can't be yourself: you're already signed in as that user.");
+  if (user.deactivated_on || user.user_account?.deactivated_on) {
+    throw new Error(`${displayName(user)} is deactivated; the web doesn't impersonate deactivated users.`);
+  }
+  if (!config2.clientSecret) {
+    throw new Error("--as-user isn't available in this version of the PATH CLI. Sign in as that user instead.");
+  }
+  const token = await admin.post(`/v1/users/${user.id}/impersonate`, {
+    client_id: config2.clientId,
+    client_secret: config2.clientSecret
+  });
+  if (!token?.access_token) {
+    throw new Error(`Couldn't start a session as ${displayName(user)} (only an account admin can impersonate)`);
+  }
+  return { token: token.access_token, userId: user.id, name: displayName(user) };
+}
+async function applyActingUser(opts, load4) {
+  if (opts.mode !== void 0) {
+    const mode = parseMode(opts.mode);
+    if (mode === "super-user") await assertSuperUserAllowed(load4({ accountId: opts.account, baseUrl: opts.baseUrl }));
+    setCommandEnv("PATH_ACTIVE_MODE", mode);
+  }
+  if (!opts.asUser || commandEnv("PATH_ACTING_USER_ID")) return;
+  const config2 = load4({ accountId: opts.account, baseUrl: opts.baseUrl });
+  if (!config2.accountId) throw new Error("--as-user needs an account (--account <id>)");
+  const session = await impersonate(config2, opts.asUser);
+  setCommandEnv("PATH_SIGNED_IN_TOKEN", config2.accessToken);
+  setCommandEnv("PATH_ACCESS_TOKEN", session.token);
+  setCommandEnv("PATH_REFRESH_TOKEN", "");
+  setCommandEnv("PATH_ACTING_USER_ID", String(session.userId));
+  setCommandEnv("PATH_ACTING_USER_NAME", session.name);
+}
+
+// .path-cli/src/utils/get-folder.ts
+function getFolder(client, folderId) {
+  return freshOnMiss(async () => {
+    const raw = await client.get("/v1/folders", { all: "true" });
+    const folder2 = unwrapPaginated(raw).find((f) => f.id === Number(folderId));
+    if (!folder2) throw new Error(`Folder ${folderId} not found`);
+    return folder2;
+  });
+}
+
+// .path-cli/src/access/gates.ts
+var boCache = /* @__PURE__ */ new WeakMap();
+function businessObjects(client) {
+  let pending2 = boCache.get(client);
+  if (!pending2) {
+    pending2 = client.get("/v1/business-objects", { all: "true" }).then((raw) => new Map(unwrapPaginated(raw).map((bo) => [bo.id, bo])));
+    boCache.set(client, pending2);
+    pending2.catch(() => boCache.delete(client));
+  }
+  return pending2;
+}
+async function realWorldAccess(client) {
+  return isRealWorld() ? UserAccess.load(client) : null;
+}
+async function boLabel(client, boId3) {
+  if (boId3 == null) return "this business object";
+  const bo = (await businessObjects(client).catch(() => /* @__PURE__ */ new Map())).get(boId3);
+  return bo?.plural_name || bo?.singular_name ? `${bo.plural_name || bo.singular_name} (business object ${boId3})` : `business object ${boId3}`;
+}
+var BO_KEY_WHY = {
+  view: "they don't have View permission on",
+  edit: "they don't have Edit permission on",
+  archive: "they don't have Archive permission on",
+  create_folders: "they don't have Create Folders permission on",
+  create_reports: "they don't have Create Reports permission on"
+};
+async function assertBusinessObject(client, boId3, key, what) {
+  const access = await realWorldAccess(client);
+  if (!access || access.canBusinessObject(boId3, key)) return;
+  throw new AccessDeniedError(access.label, what, `${BO_KEY_WHY[key]} ${await boLabel(client, boId3)}`);
+}
+async function assertArchiveRecord(client, boId3, what) {
+  const access = await realWorldAccess(client);
+  if (!access || access.canArchiveRecord(boId3)) return;
+  throw new AccessDeniedError(access.label, what, `they don't have Archive permission on ${await boLabel(client, boId3)}`);
+}
+async function assertDesigner(client, what) {
+  const access = await realWorldAccess(client);
+  if (!access || access.canOpenDesigner) return;
+  throw new AccessDeniedError(access.label, what, "that is Designer work and none of their roles has the Designer permission");
+}
+async function assertBusinessObjectReadable(client, boId3, what) {
+  const access = await realWorldAccess(client);
+  if (!access || access.canOpenDesigner) return;
+  await assertBusinessObject(client, boId3, "view", what);
+}
+async function filterReadableBusinessObjects(client, bos) {
+  const access = await realWorldAccess(client);
+  if (!access || access.canOpenDesigner) return bos;
+  return bos.filter((bo) => access.canBusinessObject(bo.id, "view"));
+}
+async function searchableBusinessObjectIds(client) {
+  const access = await realWorldAccess(client);
+  if (!access) return null;
+  const bos = await businessObjects(client);
+  return [...bos.values()].filter((bo) => access.canBusinessObject(bo.id, "view") && bo.show_in_menu !== false).map((bo) => bo.id);
+}
+async function recordBusinessObjectId(client, recordId) {
+  const record2 = await client.get(`/v1/records/${encodeURIComponent(recordId)}`);
+  return record2.business_object_id;
+}
+async function assertRecordViewable(client, recordId, what) {
+  if (!isRealWorld()) return;
+  await assertBusinessObject(client, await recordBusinessObjectId(client, recordId), "view", what);
+}
+async function assertCreateFolder(client, boId3) {
+  await assertBusinessObject(client, boId3, "create_folders", `create a folder on ${await boLabel(client, boId3)}`);
+}
+async function assertCreateReport(client, boId3) {
+  await assertBusinessObject(client, boId3, "create_reports", `create a report on ${await boLabel(client, boId3)}`);
+}
+function assertOwnRow(client, row, kind, label) {
+  const mine = client.accountId;
+  if (!mine || row.account_id == null || String(row.account_id) === String(mine)) return;
+  throw new Error(
+    `${kind === "folder" ? "Folder" : "Report"} ${label} is inherited from the parent account and can't be changed here. Duplicate it to this account (duplicate-${kind}) or edit it in the parent account.`
+  );
+}
+async function assertFolderEdit(client, folderId, what) {
+  const folder2 = await getFolder(client, folderId);
+  assertOwnRow(client, folder2, "folder", String(folderId));
+  const access = await realWorldAccess(client);
+  if (!access) return;
+  if (!access.canBusinessObject(folder2.business_object_id, "view")) {
+    throw new AccessDeniedError(access.label, what, `they can't view ${await boLabel(client, folder2.business_object_id)}`);
+  }
+  if (!access.canFolder(folderId, "edit")) {
+    throw new AccessDeniedError(access.label, what, `they don't have Edit permission on folder ${folderId}`);
+  }
+}
+async function assertReportEdit(client, report2, what) {
+  assertOwnRow(client, report2, "report", `"${report2.name ?? report2.id}"`);
+  const access = await realWorldAccess(client);
+  if (!access) return;
+  if (!access.canBusinessObject(report2.business_object_id, "view")) {
+    throw new AccessDeniedError(access.label, what, `they can't view ${await boLabel(client, report2.business_object_id)}`);
+  }
+  if (!access.canReport(report2.id, "edit")) {
+    throw new AccessDeniedError(access.label, what, `they don't have Edit permission on report "${report2.name ?? report2.id}"`);
+  }
+}
+async function assertOwnMessage(client, recordId, messageId, what) {
+  const access = await realWorldAccess(client);
+  if (!access) return;
+  await assertRecordViewable(client, recordId, what);
+  const raw = await client.get(`/v1/records/${encodeURIComponent(recordId)}/messages`, { all: "true" });
+  const message2 = unwrapPaginated(raw).find(
+    (m) => String(m.id) === String(messageId)
+  );
+  if (!message2) throw new AccessDeniedError(access.label, what, `message ${messageId} isn't on record ${recordId}`);
+  if (Number(message2.messaged_by) !== access.user.id) {
+    throw new AccessDeniedError(access.label, what, "only the message's author can change it");
+  }
+}
+async function assertDeleteFiles(client, what) {
+  const access = await realWorldAccess(client);
+  if (!access || access.canDeleteFiles) return;
+  throw new AccessDeniedError(access.label, what, "none of their roles has the Delete Files permission");
+}
+async function filterVisibleFolders(client, folders) {
+  if (!isRealWorld()) return folders;
+  const [access, bos] = await Promise.all([UserAccess.load(client), businessObjects(client)]);
+  return folders.filter(
+    (f) => access.canBusinessObject(f.business_object_id, "view") && bos.get(f.business_object_id)?.show_in_menu !== false && access.canFolder(f.id, "view")
+  );
+}
+async function checkFolderAccess(client, folderId) {
+  if (!isRealWorld()) return null;
+  const access = await UserAccess.load(client);
+  const folder2 = await getFolder(client, folderId);
+  if (!access.canBusinessObject(folder2.business_object_id, "view")) {
+    throw new AccessDeniedError(access.label, `open folder ${folderId}`, "they can't view its business object");
+  }
+  if (!access.canFolder(folderId, "view")) {
+    return `folder ${folderId} isn't in ${access.label}'s menu (no folder view permission); the web app only reaches it by direct link`;
+  }
+  return null;
+}
+async function filterVisibleReports(client, reports) {
+  if (!isRealWorld()) return reports;
+  const access = await UserAccess.load(client);
+  return reports.filter((r) => access.canBusinessObject(r.business_object_id, "view") && access.canReport(r.id, "view"));
+}
+async function assertReportAccess(client, report2) {
+  if (!isRealWorld()) return;
+  const access = await UserAccess.load(client);
+  if (!access.canBusinessObject(report2.business_object_id, "view")) {
+    throw new AccessDeniedError(access.label, `run report "${report2.name ?? report2.id}"`, "they can't view its business object");
+  }
+  if (!access.canReport(report2.id, "view")) {
+    throw new AccessDeniedError(access.label, `run report "${report2.name ?? report2.id}"`, "it hasn't been shared with them");
+  }
+}
+async function filterDashboardTasks(client, tasks) {
+  if (!isRealWorld()) return tasks;
+  const access = await UserAccess.load(client);
+  return tasks.filter((t) => access.canBusinessObject(t.business_object_id, "view"));
+}
+async function checkTaskAction(client, recordId, taskId, action) {
+  const access = await UserAccess.load(client);
+  const raw = await client.get(`/v1/records/${encodeURIComponent(recordId)}/tasks`);
+  const task = unwrapPaginated(raw).find((t) => t.id === taskId);
+  if (!isRealWorld()) return { task, userId: access.user.id };
+  await assertRecordViewable(client, recordId, `${action} a task on record ${recordId}`);
+  if (!task) throw new AccessDeniedError(access.label, `${action} task ${taskId}`, `it isn't a pending task on record ${recordId}`);
+  const what = `${action} task "${task.task_name ?? task.id}"`;
+  if (action === "complete") {
+    const why = access.canCompleteTask(task);
+    if (why) throw new AccessDeniedError(access.label, what, why);
+    if (task.pathway_id != null) {
+      throw new AccessDeniedError(
+        access.label,
+        `${what} directly`,
+        `in the web app completing it runs its pathway \u2014 use: pathway-run start --record-id ${recordId} --task-id ${taskId}`
+      );
+    }
+  } else if (action === "cancel") {
+    const why = access.canCancelTask(task);
+    if (why) throw new AccessDeniedError(access.label, what, why);
+  } else {
+    const why = access.canAssignTask(task);
+    if (why) throw new AccessDeniedError(access.label, what, why);
+  }
+  return { task, userId: access.user.id };
+}
+
+// .path-cli/src/output/formatter.ts
+function formatOutput(data, opts) {
+  if (data === void 0 || data === null) {
+    return opts.format === "json" ? "null" : "";
+  }
+  if (opts.quiet) return formatQuiet(data);
+  if (opts.format === "json" || opts.fields === void 0 && Array.isArray(data)) {
+  }
+  const format = opts.format || (Array.isArray(data) ? "table" : "compact");
+  switch (format) {
+    case "json":
+      return JSON.stringify(data, null, 2);
+    case "table":
+      return formatTable(
+        data,
+        opts.fields,
+        opts.footer
+      );
+    case "compact":
+      if (typeof data !== "object") return String(data);
+      return formatCompact(data, opts.fields);
+    case "quiet":
+      return formatQuiet(data);
+  }
+}
+function formatCompact(data, fields) {
+  const infoLast = !fields && "info" in data;
+  const keys = (fields || Object.keys(data)).filter(
+    (k) => !(infoLast && k === "info")
+  );
+  const lines = keys.filter((k) => k in data).map((k) => {
+    const v = data[k];
+    if (k === "info") return infoBlock(v);
+    const display = typeof v === "object" && v !== null ? JSON.stringify(v) : String(v);
+    return `${k}: ${display}`;
+  });
+  if (infoLast) lines.push(infoBlock(data.info));
+  return lines.join("\n");
+}
+function formatTable(items, fields, footer) {
+  const meta = items[PAGINATION_META];
+  if (!items.length) return footer ?? formatCountFooter(0, meta);
+  const keys = fields || Object.keys(items[0]).filter((k) => k !== "info");
+  const headers = keys.map((k) => k.toUpperCase());
+  const cells = items.map(
+    (item2) => keys.map((k) => String(item2[k] ?? "").split("\n"))
+  );
+  const widths = keys.map((_, i) => {
+    const maxVal = Math.max(
+      0,
+      ...cells.flatMap((row) => row[i].map((line) => line.length))
+    );
+    return Math.max(headers[i].length, maxVal);
+  });
+  const headerLine = headers.map((h, i) => h.padEnd(widths[i])).join(" | ");
+  const separator = widths.map((w) => "-".repeat(w)).join("-|-");
+  const rows = cells.flatMap((row) => {
+    const height = Math.max(...row.map((lines) => lines.length));
+    return Array.from(
+      { length: height },
+      (_, line) => row.map((lines, i) => (lines[line] ?? "").padEnd(widths[i])).join(" | ")
+    );
+  });
+  return [
+    headerLine,
+    separator,
+    ...rows,
+    footer ?? formatCountFooter(items.length, meta)
+  ].join("\n");
+}
+function formatCountFooter(shown, meta) {
+  if (meta && typeof meta.total_items === "number" && meta.total_items > shown) {
+    return `[${shown} of ${meta.total_items} items \u2014 pass --all (or paginate) for the full set]`;
+  }
+  return `[${shown} items]`;
+}
+function formatQuiet(data) {
+  if (Array.isArray(data)) {
+    return data.map((item2) => item2.id ?? item2).join("\n");
+  }
+  if (typeof data === "object" && data !== null) {
+    return String(data.id ?? JSON.stringify(data));
+  }
+  return String(data);
+}
+
+// .path-cli/src/resolvers/resolve-bo.ts
+function resolveBusinessObjectByName(client, name) {
+  return freshOnMiss(() => findBusinessObjectByName(client, name));
+}
+async function findBusinessObjectByName(client, name) {
+  const bos = await cachedFetch(
+    () => client.get("/v1/business-objects"),
+    "business-objects",
+    "/v1/business-objects"
+  );
+  const lower = name.toLowerCase();
+  const matches = bos.filter(
+    (bo) => bo.singular_name.toLowerCase() === lower || bo.plural_name.toLowerCase() === lower
+  );
+  if (matches.length === 0) {
+    const available = bos.map((bo) => `  ${bo.id}: ${bo.singular_name} / ${bo.plural_name}`).join("\n");
+    throw new Error(
+      `Business object "${name}" not found. Available:
+${available}`
+    );
+  }
+  if (matches.length > 1) {
+    const ambiguous = matches.map((bo) => `  ${bo.id}: ${bo.singular_name}`).join("\n");
+    throw new Error(
+      `Ambiguous business object name "${name}". Matches:
+${ambiguous}`
+    );
+  }
+  return matches[0];
+}
+
+// .path-cli/src/commands/feed.ts
+function setup(command) {
+  const parentOpts = command.parent?.opts() ?? {};
+  const config2 = loadConfig({
+    accountId: parentOpts.account,
+    baseUrl: parentOpts.baseUrl
+  });
+  if (!config2.accountId) {
+    throw new Error(
+      'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+    );
+  }
+  return { parentOpts, client: new HttpClient(config2) };
+}
+function print(command, data, defaultFields) {
+  const parentOpts = command.parent?.opts() ?? {};
+  const format = parentOpts.json ? "json" : void 0;
+  const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? (parentOpts.json ? void 0 : defaultFields);
+  console.log(formatOutput(data, { format, fields, quiet: parentOpts.quiet }));
+}
+async function actingUserId2(client) {
+  return (await UserAccess.load(client)).user.id;
+}
+async function viewableRows(client, rows) {
+  const access = await realWorldAccess(client);
+  return access ? rows.filter((r) => r.business_object_id == null || access.canBusinessObject(r.business_object_id, "view")) : rows;
+}
+var listFeedCommand = new Command("list-feed").description("List your dashboard Feed (newest first), like the web Feed page").option("--unread", "Only unread items").option("--pinned", "Only pinned items").option("--bo <id|name>", "Only items on this business object").option("--record-id <id>", "Only items on this record").option("--title <text>", "Title contains").option("--content <text>", "Content contains").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "25").action(async (opts) => {
+  try {
+    const { client } = setup(listFeedCommand);
+    const query = {
+      page: opts.page,
+      perPage: opts.perPage,
+      "mediums[]": ["feed"]
+    };
+    if (opts.unread) query.is_read = "false";
+    if (opts.pinned) query.is_pinned = "true";
+    if (opts.recordId) query["record_ids[]"] = [opts.recordId];
+    if (opts.title) query.title = opts.title;
+    if (opts.content) query.content = opts.content;
+    if (opts.bo) {
+      const id = /^\d+$/.test(opts.bo) ? Number(opts.bo) : (await resolveBusinessObjectByName(client, opts.bo)).id;
+      query["business_object_ids[]"] = [String(id)];
+    }
+    const items = unwrapPaginated(await client.get("/v1/notifications", query));
+    const rows = items.map((n) => ({
+      id: n.id,
+      notified_on: n.notified_on,
+      read: !!n.user_recipient?.is_read,
+      pinned: !!n.user_recipient?.is_pinned,
+      record_id: n.attributes?.record_id ?? n.record?.id ?? null,
+      title: n.title,
+      content: n.content
+    }));
+    const parentOpts = listFeedCommand.parent?.opts() ?? {};
+    print(listFeedCommand, parentOpts.json ? items : rows);
+  } catch (err) {
+    handleError(err);
+  }
+});
+var feedUnreadCountsCommand = new Command("feed-unread-counts").description("Unread Feed counts per business object (the menu badges) or per record").option("--by <bo|record>", "Group by business object or record", "bo").action(async (opts) => {
+  try {
+    const { client } = setup(feedUnreadCountsCommand);
+    if (opts.by !== "bo" && opts.by !== "record") throw new Error("--by must be bo or record");
+    const path = opts.by === "bo" ? "/v1/notifications/unread-by-bo" : "/v1/notifications/unread-by-record";
+    const raw = await client.get(path, { "mediums[]": ["feed"] });
+    const items = unwrapPaginated(raw);
+    print(feedUnreadCountsCommand, await viewableRows(client, items));
+  } catch (err) {
+    handleError(err);
+  }
+});
+var feedRecordsCommand = new Command("feed-records").description("The records your Feed and popups mention (the Feed page record list)").option("--bo <id>", "Only records of this business object").action(async (opts) => {
+  try {
+    const { client } = setup(feedRecordsCommand);
+    const query = { "mediums[]": ["feed", "popup"] };
+    if (opts.bo) query.business_object_id = String(opts.bo);
+    const raw = await client.get(
+      "/v1/notifications/record-identifiers",
+      query
+    );
+    print(feedRecordsCommand, await viewableRows(client, raw.records ?? []));
+  } catch (err) {
+    handleError(err);
+  }
+});
+var pinNotificationCommand = new Command("pin-notification").description("Pin (or with --unpin, unpin) one of your Feed items").argument("<notification-id>", "Notification id").option("--unpin", "Unpin instead").action(async (id, opts) => {
+  try {
+    const { client } = setup(pinNotificationCommand);
+    const result = await client.patch(`/v1/notifications/${id}/change-pinned-status`, {
+      user_id: await actingUserId2(client),
+      is_pinned: !opts.unpin
+    });
+    print(pinNotificationCommand, result, ["id", "title"]);
+  } catch (err) {
+    handleError(err);
+  }
+});
+var markNotificationReadCommand = new Command("mark-notification-read").description("Mark one of your Feed items (or with --popup, a popup) as read").argument("<notification-id>", "Notification id").option("--popup", "It is a popup notification").action(async (id, opts) => {
+  try {
+    const { client } = setup(markNotificationReadCommand);
+    const result = opts.popup ? await client.patch(`/v1/notifications/popup/${id}/mark-read`, {}) : await client.patch(`/v1/notifications/${id}/mark-read`, { user_id: await actingUserId2(client) });
+    print(markNotificationReadCommand, result, ["id", "title"]);
+  } catch (err) {
+    handleError(err);
+  }
+});
+var markAllNotificationsReadCommand = new Command("mark-all-notifications-read").description(`Mark every unread Feed item read (the Feed page "Mark all as read"), or one record's with --record-id`).option("--record-id <id>", "Only this record's items").option("--mediums <list>", "Comma-separated: feed, popup, email, sms, mobile (default feed)", "feed").action(async (opts) => {
+  try {
+    const { parentOpts, client } = setup(markAllNotificationsReadCommand);
+    const userId = await actingUserId2(client);
+    if (opts.recordId) {
+      await client.patch("/v1/notifications/mark-all-read-by-record", { user_id: userId, record_id: opts.recordId });
+    } else {
+      const mediums = String(opts.mediums).split(",").map((m) => m.trim()).filter(Boolean);
+      await client.patch("/v1/notifications/mark-all-read", { user_id: userId, mediums });
+    }
+    if (!parentOpts.quiet) {
+      console.log(opts.recordId ? `Marked record ${opts.recordId}'s Feed items read` : "Marked all Feed items read");
+    }
+  } catch (err) {
+    handleError(err);
+  }
+});
+var listPopupsCommand = new Command("list-popups").description("List your popup notifications (the in-app popups)").option("--unread", "Only unread popups").option("--page <n>", "Page number", "1").option("--per-page <n>", "Items per page", "25").action(async (opts) => {
+  try {
+    const { client } = setup(listPopupsCommand);
+    const query = { page: opts.page, perPage: opts.perPage };
+    if (opts.unread) query.is_read = "false";
+    print(listPopupsCommand, unwrapPaginated(await client.get("/v1/notifications/popup", query)), ["id", "title", "content"]);
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/profile.ts
+function setup2(command) {
+  const parentOpts = command.parent?.opts() ?? {};
+  const config2 = loadConfig({
+    accountId: parentOpts.account,
+    baseUrl: parentOpts.baseUrl
+  });
+  if (!config2.accountId) {
+    throw new Error(
+      'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+    );
+  }
+  return { parentOpts, client: new HttpClient(config2) };
+}
+function print2(command, data) {
+  const parentOpts = command.parent?.opts() ?? {};
+  const fields = parentOpts.fields?.split(",").map((s) => s.trim());
+  console.log(
+    formatOutput(data, { format: parentOpts.json ? "json" : void 0, fields, quiet: parentOpts.quiet })
+  );
+}
+function uiSettingsOf(user) {
+  const raw = user.profile?.ui_settings;
+  if (!raw) return {};
+  if (typeof raw === "string") {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return {};
+    }
+  }
+  return raw;
+}
+var getProfileCommand = new Command("get-profile").description("Show your profile settings: name, email, phone, time zone and muted report emails").action(async () => {
+  try {
+    const { client } = setup2(getProfileCommand);
+    const user = await client.get("/v1/users/current");
+    const ui = uiSettingsOf(user);
+    print2(getProfileCommand, {
+      id: user.id,
+      email: user.email,
+      first_name: user.profile?.first_name ?? user.first_name ?? null,
+      last_name: user.profile?.last_name ?? user.last_name ?? null,
+      phone_number: user.profile?.phone_number ?? null,
+      time_zone: ui.time_zone?.mode === "fixed" ? ui.time_zone.zone : ui.time_zone?.mode ?? "account",
+      muted_report_ids: ui.reports?.muted_report_ids ?? []
+    });
+  } catch (err) {
+    handleError(err);
+  }
+});
+var updateProfileCommand = new Command("update-profile").description("Change your name or time zone, the way the profile settings modal saves them").option("--first-name <name>", "First name (also written to your Person record)").option("--last-name <name>", "Last name (also written to your Person record)").option("--time-zone <zone>", "account (the account's zone), local (this device's), or an IANA zone such as America/Chicago").action(async (opts) => {
+  try {
+    const { parentOpts, client } = setup2(updateProfileCommand);
+    if (opts.firstName === void 0 && opts.lastName === void 0 && opts.timeZone === void 0) {
+      throw new Error("Nothing to change \u2014 give --first-name, --last-name or --time-zone");
+    }
+    const user = await client.get("/v1/users/current");
+    if (opts.firstName !== void 0 || opts.lastName !== void 0) {
+      const firstName = String(opts.firstName ?? user.profile?.first_name ?? user.first_name ?? "").trim();
+      const lastName = String(opts.lastName ?? user.profile?.last_name ?? user.last_name ?? "").trim();
+      if (!firstName || !lastName) throw new Error("First and last name are required");
+      const person = await client.get("/v1/users/current/person-record").catch(() => null);
+      if (person?.id) {
+        const fields = unwrapPaginated(
+          await client.get(`/v1/business-objects/${person.business_object_id}/fields`, { all: "true" })
+        );
+        const changes = [];
+        const first = fields.find((f) => f.standard_field_type === "FirstName");
+        const last = fields.find((f) => f.standard_field_type === "LastName");
+        if (opts.firstName !== void 0 && first) changes.push({ field_id: first.id, value: firstName });
+        if (opts.lastName !== void 0 && last) changes.push({ field_id: last.id, value: lastName });
+        if (changes.length) {
+          await client.post(
+            "/v1/pathways/-1/execute",
+            {
+              step_type: "edit_record",
+              input_content: { id: person.id, business_object_id: person.business_object_id, fields: changes }
+            },
+            recordContextHeaders(person.id)
+          );
+        }
+      }
+      await client.patch("/v1/users/current/name", { first_name: firstName, last_name: lastName });
+    }
+    if (opts.timeZone !== void 0) {
+      const zone = String(opts.timeZone).trim();
+      let timeZone;
+      if (zone === "account" || zone === "local") timeZone = { mode: zone, zone: null };
+      else {
+        try {
+          new Intl.DateTimeFormat("en-US", { timeZone: zone });
+        } catch {
+          throw new Error(`Unknown time zone "${zone}" \u2014 use account, local, or an IANA zone such as America/Chicago`);
+        }
+        timeZone = { mode: "fixed", zone };
+      }
+      await client.patch("/v1/users/current/preferences", { ui_settings: { ...uiSettingsOf(user), time_zone: timeZone } });
+    }
+    if (!parentOpts.quiet) console.log(`Updated the profile of ${(await UserAccess.load(client)).label}`);
+  } catch (err) {
+    handleError(err);
+  }
+});
+var MEDIUMS = ["feed", "email", "text", "mobile", "pop_up"];
+var getNotificationSettingsCommand = new Command("get-notification-settings").description(
+  "Your notification settings: account-wide rows (task, feed, \u2026), or with --resolved every notification that can reach you and which channels you may turn on"
+).option("--resolved", "Per-notification rows with each channel's required / allowed / not-allowed state").action(async (opts) => {
+  try {
+    const { client } = setup2(getNotificationSettingsCommand);
+    const raw = await client.get(opts.resolved ? "/v1/notifications/settings/resolved" : "/v1/notifications/settings");
+    const parentOpts = getNotificationSettingsCommand.parent?.opts() ?? {};
+    if (parentOpts.json) {
+      print2(getNotificationSettingsCommand, raw);
+      return;
+    }
+    const rows = opts.resolved ? unwrapPaginated(raw).map((r) => ({
+      key: `${r.entity_type}:${r.entity_id}`,
+      name: r.name,
+      ...Object.fromEntries(
+        MEDIUMS.map((m) => {
+          const s = r.mediums?.[m];
+          const on = s?.configurable ? !!s.user_value : s?.effective_state === "required";
+          return [m, `${on ? "on" : "off"}${s?.configurable ? "" : ` (${s?.effective_state ?? "n/a"})`}`];
+        })
+      )
+    })) : unwrapPaginated(raw).map((r) => ({
+      key: r.entity_id == null ? r.entity_type : `${r.entity_type}:${r.entity_id}`,
+      ...Object.fromEntries(
+        MEDIUMS.map((m) => [m, `${r.notification_config?.[m]?.value ? "on" : "off"}${r.notification_config?.[m]?.disable ? " (locked)" : ""}`])
+      )
+    }));
+    print2(getNotificationSettingsCommand, rows);
+  } catch (err) {
+    handleError(err);
+  }
+});
+function parseSet(text) {
+  const m = /^([a-z_]+)(?::(\d+))?\.([a-z_]+)=(on|off|true|false|yes|no)$/i.exec(text.trim());
+  if (!m || !MEDIUMS.includes(m[3].toLowerCase())) {
+    throw new Error(
+      `Can't read --set "${text}" \u2014 use <entity_type>[:<entity_id>].<${MEDIUMS.join("|")}>=on|off (keys from get-notification-settings)`
+    );
+  }
+  return {
+    entityType: m[1].toLowerCase(),
+    entityId: m[2] ? Number(m[2]) : null,
+    medium: m[3].toLowerCase(),
+    value: /^(on|true|yes)$/i.test(m[4])
+  };
+}
+var updateNotificationSettingsCommand = new Command("update-notification-settings").description("Turn your notification channels on or off, or change your notification phone number").option(
+  "--set <key.medium=on|off>",
+  "e.g. task.email=off or notification:42.text=on (repeatable; keys from get-notification-settings [--resolved])",
+  (value, previous = []) => [...previous, value]
+).option("--phone <number>", 'The phone number text notifications go to ("" to remove)').option("--data <json>", "Raw request body: { settings: [...], phone_number? } (as the web sends it)").action(async (opts) => {
+  try {
+    const { parentOpts, client } = setup2(updateNotificationSettingsCommand);
+    const body = opts.data ? JSON.parse(opts.data) : { settings: [] };
+    body.settings ??= [];
+    const sets = (opts.set ?? []).map(parseSet);
+    if (sets.length) {
+      const [saved, resolved] = await Promise.all([
+        client.get("/v1/notifications/settings").then((r) => unwrapPaginated(r)),
+        client.get("/v1/notifications/settings/resolved").then((r) => unwrapPaginated(r))
+      ]);
+      const rows = /* @__PURE__ */ new Map();
+      for (const set of sets) {
+        const key = `${set.entityType}:${set.entityId ?? ""}`;
+        let row = rows.get(key);
+        if (!row) {
+          const current2 = saved.find((s) => s.entity_type === set.entityType && (s.entity_id ?? null) === set.entityId);
+          const res = resolved.find((r) => r.entity_type === set.entityType && r.entity_id === set.entityId);
+          if (!current2 && !res) {
+            throw new Error(`No notification setting "${set.entityType}${set.entityId != null ? `:${set.entityId}` : ""}" \u2014 see get-notification-settings [--resolved]`);
+          }
+          const config2 = Object.fromEntries(
+            MEDIUMS.map((m) => [
+              m,
+              current2 ? { value: !!current2.notification_config?.[m]?.value, disable: !!current2.notification_config?.[m]?.disable } : {
+                value: res.mediums?.[m]?.configurable ? !!res.mediums[m].user_value : res.mediums?.[m]?.effective_state === "required",
+                disable: false
+              }
+            ])
+          );
+          row = { entity_type: set.entityType, entity_id: set.entityId, notification_config: config2 };
+          rows.set(key, row);
+        }
+        if (row.notification_config[set.medium].disable) {
+          throw new Error(`${set.medium} on ${set.entityType} is locked by your account's settings`);
+        }
+        row.notification_config[set.medium].value = set.value;
+      }
+      body.settings.push(...rows.values());
+    }
+    if (opts.phone !== void 0) body.phone_number = String(opts.phone);
+    if (!body.settings.length && body.phone_number === void 0) {
+      throw new Error("Nothing to change \u2014 give --set, --phone or --data");
+    }
+    const result = await client.patch("/v1/notifications/settings", body);
+    if (parentOpts.json) print2(updateNotificationSettingsCommand, result);
+    else if (!parentOpts.quiet) console.log(`Updated the notification settings of ${(await UserAccess.load(client)).label}`);
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// utils/history-events.ts
+var HistoryAction = /* @__PURE__ */ ((HistoryAction2) => {
+  HistoryAction2["Created"] = "created";
+  HistoryAction2["Updated"] = "updated";
+  HistoryAction2["Deleted"] = "deleted";
+  HistoryAction2["Viewed"] = "viewed";
+  HistoryAction2["Linked"] = "linked";
+  HistoryAction2["Unlinked"] = "unlinked";
+  HistoryAction2["Archived"] = "archived";
+  HistoryAction2["Unarchived"] = "unarchived";
+  HistoryAction2["MilestoneReached"] = "milestone_reached";
+  HistoryAction2["MilestoneExited"] = "milestone_exited";
+  HistoryAction2["Step"] = "step";
+  HistoryAction2["WorkflowStepDeactivated"] = "workflow_step_deactivated";
+  HistoryAction2["WorkflowStepReactivated"] = "workflow_step_reactivated";
+  HistoryAction2["WorkflowStepDeleted"] = "workflow_step_deleted";
+  HistoryAction2["FileUploaded"] = "file_uploaded";
+  HistoryAction2["FileRemoved"] = "file_removed";
+  HistoryAction2["FileArchived"] = "file_archived";
+  HistoryAction2["FileUnarchived"] = "file_unarchived";
+  HistoryAction2["FileDownloaded"] = "file_downloaded";
+  HistoryAction2["TaskCreated"] = "task_created";
+  HistoryAction2["TaskCompleted"] = "task_completed";
+  HistoryAction2["TaskCancelled"] = "task_cancelled";
+  HistoryAction2["TaskAssigned"] = "task_assigned";
+  HistoryAction2["TaskUpdated"] = "task_updated";
+  HistoryAction2["DocumentGenerated"] = "document_generated";
+  HistoryAction2["NotificationSent"] = "notification_sent";
+  HistoryAction2["EmailSent"] = "email_sent";
+  HistoryAction2["TextSent"] = "text_sent";
+  HistoryAction2["MessageSent"] = "message_sent";
+  HistoryAction2["MessageRemoved"] = "message_removed";
+  HistoryAction2["NoteAdded"] = "note_added";
+  HistoryAction2["NoteUpdated"] = "note_updated";
+  HistoryAction2["NoteRemoved"] = "note_removed";
+  HistoryAction2["IntegrationInbound"] = "integration_inbound";
+  HistoryAction2["IntegrationOutbound"] = "integration_outbound";
+  HistoryAction2["Logistics"] = "logistics";
+  HistoryAction2["CustomCodeRan"] = "custom_code_ran";
+  HistoryAction2["BusinessObjectCreated"] = "business_object_created";
+  HistoryAction2["BusinessObjectUpdated"] = "business_object_updated";
+  HistoryAction2["FieldCreated"] = "field_created";
+  HistoryAction2["FieldUpdated"] = "field_updated";
+  HistoryAction2["FieldDeleted"] = "field_deleted";
+  HistoryAction2["FieldGroupCreated"] = "field_group_created";
+  HistoryAction2["FieldGroupUpdated"] = "field_group_updated";
+  HistoryAction2["FieldGroupDeleted"] = "field_group_deleted";
+  HistoryAction2["SelectionOptionsChanged"] = "selection_options_changed";
+  HistoryAction2["RelationshipCreated"] = "relationship_created";
+  HistoryAction2["RelationshipUpdated"] = "relationship_updated";
+  HistoryAction2["RelationshipDeleted"] = "relationship_deleted";
+  HistoryAction2["CustomLogicUpdated"] = "custom_logic_updated";
+  HistoryAction2["StickerCreated"] = "sticker_created";
+  HistoryAction2["StickerUpdated"] = "sticker_updated";
+  HistoryAction2["StickerDeleted"] = "sticker_deleted";
+  HistoryAction2["ProcessContextCreated"] = "process_context_created";
+  HistoryAction2["ProcessContextUpdated"] = "process_context_updated";
+  HistoryAction2["ProcessContextDeleted"] = "process_context_deleted";
+  HistoryAction2["FolderCreated"] = "folder_created";
+  HistoryAction2["FolderUpdated"] = "folder_updated";
+  HistoryAction2["FolderDeleted"] = "folder_deleted";
+  HistoryAction2["MilestoneDefinitionCreated"] = "milestone_definition_created";
+  HistoryAction2["MilestoneDefinitionUpdated"] = "milestone_definition_updated";
+  HistoryAction2["MilestoneCriteriaUpdated"] = "milestone_criteria_updated";
+  HistoryAction2["MilestoneDefinitionArchived"] = "milestone_definition_archived";
+  HistoryAction2["MilestoneDefinitionRestored"] = "milestone_definition_restored";
+  HistoryAction2["WorkflowStepDefinitionCreated"] = "workflow_step_definition_created";
+  HistoryAction2["WorkflowStepDefinitionUpdated"] = "workflow_step_definition_updated";
+  HistoryAction2["WorkflowStepDefinitionArchived"] = "workflow_step_definition_archived";
+  HistoryAction2["WorkflowStepDefinitionRestored"] = "workflow_step_definition_restored";
+  HistoryAction2["TaskTemplateCreated"] = "task_template_created";
+  HistoryAction2["TaskTemplateUpdated"] = "task_template_updated";
+  HistoryAction2["TaskTemplateDeleted"] = "task_template_deleted";
+  HistoryAction2["PathwayCreated"] = "pathway_created";
+  HistoryAction2["PathwayUpdated"] = "pathway_updated";
+  HistoryAction2["PathwayArchived"] = "pathway_archived";
+  HistoryAction2["PathwayDeleted"] = "pathway_deleted";
+  HistoryAction2["PathwayStepAdded"] = "pathway_step_added";
+  HistoryAction2["PathwayStepUpdated"] = "pathway_step_updated";
+  HistoryAction2["PathwayStepRemoved"] = "pathway_step_removed";
+  HistoryAction2["PathwayStepReordered"] = "pathway_step_reordered";
+  HistoryAction2["PathwayGroupCreated"] = "pathway_group_created";
+  HistoryAction2["PathwayGroupUpdated"] = "pathway_group_updated";
+  HistoryAction2["PathwayGroupDeleted"] = "pathway_group_deleted";
+  HistoryAction2["UserCreated"] = "user_created";
+  HistoryAction2["UserUpdated"] = "user_updated";
+  HistoryAction2["UserDeactivated"] = "user_deactivated";
+  HistoryAction2["UserReactivated"] = "user_reactivated";
+  HistoryAction2["UserRoleAssigned"] = "user_role_assigned";
+  HistoryAction2["UserRoleUnassigned"] = "user_role_unassigned";
+  HistoryAction2["PasswordResetTriggered"] = "password_reset_triggered";
+  HistoryAction2["UserImpersonationStarted"] = "user_impersonation_started";
+  HistoryAction2["RoleCreated"] = "role_created";
+  HistoryAction2["RoleUpdated"] = "role_updated";
+  HistoryAction2["RolePermissionsUpdated"] = "role_permissions_updated";
+  HistoryAction2["RoleMembersUpdated"] = "role_members_updated";
+  HistoryAction2["TagCreated"] = "tag_created";
+  HistoryAction2["TagUpdated"] = "tag_updated";
+  HistoryAction2["TagDeleted"] = "tag_deleted";
+  HistoryAction2["TagGroupCreated"] = "tag_group_created";
+  HistoryAction2["TagGroupUpdated"] = "tag_group_updated";
+  HistoryAction2["TagGroupDeleted"] = "tag_group_deleted";
+  HistoryAction2["ActionCreated"] = "action_created";
+  HistoryAction2["ActionUpdated"] = "action_updated";
+  HistoryAction2["ActionEnabled"] = "action_enabled";
+  HistoryAction2["ActionDisabled"] = "action_disabled";
+  HistoryAction2["ActionScheduleUpdated"] = "action_schedule_updated";
+  HistoryAction2["NotificationTemplateCreated"] = "notification_template_created";
+  HistoryAction2["NotificationTemplateUpdated"] = "notification_template_updated";
+  HistoryAction2["NotificationTemplateDeleted"] = "notification_template_deleted";
+  HistoryAction2["IntegrationCreated"] = "integration_created";
+  HistoryAction2["IntegrationUpdated"] = "integration_updated";
+  HistoryAction2["IntegrationDeleted"] = "integration_deleted";
+  HistoryAction2["IntegrationEnabled"] = "integration_enabled";
+  HistoryAction2["IntegrationDisabled"] = "integration_disabled";
+  HistoryAction2["IntegrationCredentialsUpdated"] = "integration_credentials_updated";
+  HistoryAction2["IntegrationReplayed"] = "integration_replayed";
+  HistoryAction2["DocumentTemplateCreated"] = "document_template_created";
+  HistoryAction2["DocumentTemplateUpdated"] = "document_template_updated";
+  HistoryAction2["DocumentTemplateDeleted"] = "document_template_deleted";
+  HistoryAction2["FileTypeCreated"] = "file_type_created";
+  HistoryAction2["FileTypeUpdated"] = "file_type_updated";
+  HistoryAction2["FileTypeDeleted"] = "file_type_deleted";
+  HistoryAction2["ImportCreated"] = "import_created";
+  HistoryAction2["ImportUpdated"] = "import_updated";
+  HistoryAction2["ImportDeleted"] = "import_deleted";
+  HistoryAction2["ImportExecuted"] = "import_executed";
+  HistoryAction2["ExportCreated"] = "export_created";
+  HistoryAction2["ExportUpdated"] = "export_updated";
+  HistoryAction2["ExportDeleted"] = "export_deleted";
+  HistoryAction2["ExportExecuted"] = "export_executed";
+  HistoryAction2["AccountSettingCreated"] = "account_setting_created";
+  HistoryAction2["AccountSettingUpdated"] = "account_setting_updated";
+  HistoryAction2["DesignerNoteAdded"] = "designer_note_added";
+  HistoryAction2["DesignerNoteUpdated"] = "designer_note_updated";
+  HistoryAction2["DesignerNoteRemoved"] = "designer_note_removed";
+  return HistoryAction2;
+})(HistoryAction || {});
+var HISTORY_CATEGORY = {
+  ["created" /* Created */]: "saved_changes",
+  ["updated" /* Updated */]: "saved_changes",
+  ["deleted" /* Deleted */]: "saved_changes",
+  ["viewed" /* Viewed */]: "saved_changes",
+  ["linked" /* Linked */]: "saved_changes",
+  ["unlinked" /* Unlinked */]: "saved_changes",
+  ["archived" /* Archived */]: "saved_changes",
+  ["unarchived" /* Unarchived */]: "saved_changes",
+  ["milestone_reached" /* MilestoneReached */]: "milestones",
+  ["milestone_exited" /* MilestoneExited */]: "milestones_exited",
+  ["step" /* Step */]: "steps",
+  ["workflow_step_deactivated" /* WorkflowStepDeactivated */]: "steps",
+  ["workflow_step_reactivated" /* WorkflowStepReactivated */]: "steps",
+  ["workflow_step_deleted" /* WorkflowStepDeleted */]: "steps",
+  ["file_uploaded" /* FileUploaded */]: "files",
+  ["file_removed" /* FileRemoved */]: "files",
+  ["file_archived" /* FileArchived */]: "files",
+  ["file_unarchived" /* FileUnarchived */]: "files",
+  ["file_downloaded" /* FileDownloaded */]: "files",
+  ["task_created" /* TaskCreated */]: "tasks",
+  ["task_completed" /* TaskCompleted */]: "tasks",
+  ["task_cancelled" /* TaskCancelled */]: "tasks",
+  ["task_assigned" /* TaskAssigned */]: "tasks",
+  ["task_updated" /* TaskUpdated */]: "tasks",
+  ["document_generated" /* DocumentGenerated */]: "documents",
+  ["notification_sent" /* NotificationSent */]: "notifications",
+  ["email_sent" /* EmailSent */]: "emails_texts",
+  ["text_sent" /* TextSent */]: "emails_texts",
+  ["message_sent" /* MessageSent */]: "messages",
+  ["message_removed" /* MessageRemoved */]: "messages",
+  ["note_added" /* NoteAdded */]: "saved_changes",
+  ["note_updated" /* NoteUpdated */]: "saved_changes",
+  ["note_removed" /* NoteRemoved */]: "saved_changes",
+  ["integration_inbound" /* IntegrationInbound */]: "integrations",
+  ["integration_outbound" /* IntegrationOutbound */]: "integrations",
+  ["logistics" /* Logistics */]: "logistics",
+  ["custom_code_ran" /* CustomCodeRan */]: "custom_code",
+  ["business_object_created" /* BusinessObjectCreated */]: "designer_business_objects",
+  ["business_object_updated" /* BusinessObjectUpdated */]: "designer_business_objects",
+  ["field_created" /* FieldCreated */]: "designer_business_objects",
+  ["field_updated" /* FieldUpdated */]: "designer_business_objects",
+  ["field_deleted" /* FieldDeleted */]: "designer_business_objects",
+  ["field_group_created" /* FieldGroupCreated */]: "designer_business_objects",
+  ["field_group_updated" /* FieldGroupUpdated */]: "designer_business_objects",
+  ["field_group_deleted" /* FieldGroupDeleted */]: "designer_business_objects",
+  ["selection_options_changed" /* SelectionOptionsChanged */]: "designer_business_objects",
+  ["relationship_created" /* RelationshipCreated */]: "designer_business_objects",
+  ["relationship_updated" /* RelationshipUpdated */]: "designer_business_objects",
+  ["relationship_deleted" /* RelationshipDeleted */]: "designer_business_objects",
+  ["custom_logic_updated" /* CustomLogicUpdated */]: "designer_business_objects",
+  ["sticker_created" /* StickerCreated */]: "designer_business_objects",
+  ["sticker_updated" /* StickerUpdated */]: "designer_business_objects",
+  ["sticker_deleted" /* StickerDeleted */]: "designer_business_objects",
+  ["process_context_created" /* ProcessContextCreated */]: "designer_business_objects",
+  ["process_context_updated" /* ProcessContextUpdated */]: "designer_business_objects",
+  ["process_context_deleted" /* ProcessContextDeleted */]: "designer_business_objects",
+  ["folder_created" /* FolderCreated */]: "designer_business_objects",
+  ["folder_updated" /* FolderUpdated */]: "designer_business_objects",
+  ["folder_deleted" /* FolderDeleted */]: "designer_business_objects",
+  ["milestone_definition_created" /* MilestoneDefinitionCreated */]: "designer_workflow",
+  ["milestone_definition_updated" /* MilestoneDefinitionUpdated */]: "designer_workflow",
+  ["milestone_criteria_updated" /* MilestoneCriteriaUpdated */]: "designer_workflow",
+  ["milestone_definition_archived" /* MilestoneDefinitionArchived */]: "designer_workflow",
+  ["milestone_definition_restored" /* MilestoneDefinitionRestored */]: "designer_workflow",
+  ["workflow_step_definition_archived" /* WorkflowStepDefinitionArchived */]: "designer_workflow",
+  ["workflow_step_definition_restored" /* WorkflowStepDefinitionRestored */]: "designer_workflow",
+  ["workflow_step_definition_created" /* WorkflowStepDefinitionCreated */]: "designer_workflow",
+  ["workflow_step_definition_updated" /* WorkflowStepDefinitionUpdated */]: "designer_workflow",
+  ["task_template_created" /* TaskTemplateCreated */]: "designer_workflow",
+  ["task_template_updated" /* TaskTemplateUpdated */]: "designer_workflow",
+  ["task_template_deleted" /* TaskTemplateDeleted */]: "designer_workflow",
+  ["pathway_created" /* PathwayCreated */]: "designer_pathways",
+  ["pathway_updated" /* PathwayUpdated */]: "designer_pathways",
+  ["pathway_archived" /* PathwayArchived */]: "designer_pathways",
+  ["pathway_deleted" /* PathwayDeleted */]: "designer_pathways",
+  ["pathway_step_added" /* PathwayStepAdded */]: "designer_pathways",
+  ["pathway_step_updated" /* PathwayStepUpdated */]: "designer_pathways",
+  ["pathway_step_removed" /* PathwayStepRemoved */]: "designer_pathways",
+  ["pathway_step_reordered" /* PathwayStepReordered */]: "designer_pathways",
+  ["pathway_group_created" /* PathwayGroupCreated */]: "designer_pathways",
+  ["pathway_group_updated" /* PathwayGroupUpdated */]: "designer_pathways",
+  ["pathway_group_deleted" /* PathwayGroupDeleted */]: "designer_pathways",
+  ["user_created" /* UserCreated */]: "designer_users_roles",
+  ["user_updated" /* UserUpdated */]: "designer_users_roles",
+  ["user_deactivated" /* UserDeactivated */]: "designer_users_roles",
+  ["user_reactivated" /* UserReactivated */]: "designer_users_roles",
+  ["user_role_assigned" /* UserRoleAssigned */]: "designer_users_roles",
+  ["user_role_unassigned" /* UserRoleUnassigned */]: "designer_users_roles",
+  ["password_reset_triggered" /* PasswordResetTriggered */]: "designer_users_roles",
+  ["user_impersonation_started" /* UserImpersonationStarted */]: "designer_users_roles",
+  ["role_created" /* RoleCreated */]: "designer_users_roles",
+  ["role_updated" /* RoleUpdated */]: "designer_users_roles",
+  ["role_permissions_updated" /* RolePermissionsUpdated */]: "designer_users_roles",
+  ["role_members_updated" /* RoleMembersUpdated */]: "designer_users_roles",
+  ["tag_created" /* TagCreated */]: "designer_users_roles",
+  ["tag_updated" /* TagUpdated */]: "designer_users_roles",
+  ["tag_deleted" /* TagDeleted */]: "designer_users_roles",
+  ["tag_group_created" /* TagGroupCreated */]: "designer_users_roles",
+  ["tag_group_updated" /* TagGroupUpdated */]: "designer_users_roles",
+  ["tag_group_deleted" /* TagGroupDeleted */]: "designer_users_roles",
+  ["action_created" /* ActionCreated */]: "designer_actions",
+  ["action_updated" /* ActionUpdated */]: "designer_actions",
+  ["action_enabled" /* ActionEnabled */]: "designer_actions",
+  ["action_disabled" /* ActionDisabled */]: "designer_actions",
+  ["action_schedule_updated" /* ActionScheduleUpdated */]: "designer_actions",
+  ["notification_template_created" /* NotificationTemplateCreated */]: "designer_actions",
+  ["notification_template_updated" /* NotificationTemplateUpdated */]: "designer_actions",
+  ["notification_template_deleted" /* NotificationTemplateDeleted */]: "designer_actions",
+  ["integration_created" /* IntegrationCreated */]: "designer_integrations",
+  ["integration_updated" /* IntegrationUpdated */]: "designer_integrations",
+  ["integration_deleted" /* IntegrationDeleted */]: "designer_integrations",
+  ["integration_enabled" /* IntegrationEnabled */]: "designer_integrations",
+  ["integration_disabled" /* IntegrationDisabled */]: "designer_integrations",
+  ["integration_credentials_updated" /* IntegrationCredentialsUpdated */]: "designer_integrations",
+  ["integration_replayed" /* IntegrationReplayed */]: "designer_integrations",
+  ["document_template_created" /* DocumentTemplateCreated */]: "designer_files_templates",
+  ["document_template_updated" /* DocumentTemplateUpdated */]: "designer_files_templates",
+  ["document_template_deleted" /* DocumentTemplateDeleted */]: "designer_files_templates",
+  ["file_type_created" /* FileTypeCreated */]: "designer_files_templates",
+  ["file_type_updated" /* FileTypeUpdated */]: "designer_files_templates",
+  ["file_type_deleted" /* FileTypeDeleted */]: "designer_files_templates",
+  ["import_created" /* ImportCreated */]: "designer_files_templates",
+  ["import_updated" /* ImportUpdated */]: "designer_files_templates",
+  ["import_deleted" /* ImportDeleted */]: "designer_files_templates",
+  ["import_executed" /* ImportExecuted */]: "designer_files_templates",
+  ["export_created" /* ExportCreated */]: "designer_files_templates",
+  ["export_updated" /* ExportUpdated */]: "designer_files_templates",
+  ["export_deleted" /* ExportDeleted */]: "designer_files_templates",
+  ["export_executed" /* ExportExecuted */]: "designer_files_templates",
+  ["account_setting_created" /* AccountSettingCreated */]: "designer_settings",
+  ["account_setting_updated" /* AccountSettingUpdated */]: "designer_settings",
+  ["designer_note_added" /* DesignerNoteAdded */]: "designer_notes",
+  ["designer_note_updated" /* DesignerNoteUpdated */]: "designer_notes",
+  ["designer_note_removed" /* DesignerNoteRemoved */]: "designer_notes"
+};
+var HISTORY_ACTION_LABELS = {
+  ["created" /* Created */]: "Created",
+  ["updated" /* Updated */]: "Saved Changes",
+  ["deleted" /* Deleted */]: "Deleted",
+  ["viewed" /* Viewed */]: "Viewed",
+  ["linked" /* Linked */]: "Linked",
+  ["unlinked" /* Unlinked */]: "Unlinked",
+  ["archived" /* Archived */]: "Archived",
+  ["unarchived" /* Unarchived */]: "Unarchived",
+  ["milestone_reached" /* MilestoneReached */]: "Milestone Reached",
+  ["milestone_exited" /* MilestoneExited */]: "Milestone Exited",
+  ["step" /* Step */]: "Workflow Step Run",
+  ["workflow_step_deactivated" /* WorkflowStepDeactivated */]: "Step Deactivated",
+  ["workflow_step_reactivated" /* WorkflowStepReactivated */]: "Step Reactivated",
+  ["workflow_step_deleted" /* WorkflowStepDeleted */]: "Step Deleted",
+  ["file_uploaded" /* FileUploaded */]: "File Uploaded",
+  ["file_removed" /* FileRemoved */]: "File Removed",
+  ["file_archived" /* FileArchived */]: "File Archived",
+  ["file_unarchived" /* FileUnarchived */]: "File Unarchived",
+  ["file_downloaded" /* FileDownloaded */]: "File Downloaded",
+  ["task_created" /* TaskCreated */]: "Task Created",
+  ["task_completed" /* TaskCompleted */]: "Task Completed",
+  ["task_cancelled" /* TaskCancelled */]: "Task Cancelled",
+  ["task_assigned" /* TaskAssigned */]: "Task Assigned",
+  ["task_updated" /* TaskUpdated */]: "Task Updated",
+  ["document_generated" /* DocumentGenerated */]: "Document Generated",
+  ["notification_sent" /* NotificationSent */]: "Notification",
+  ["email_sent" /* EmailSent */]: "Email Sent",
+  ["text_sent" /* TextSent */]: "Text Sent",
+  ["message_sent" /* MessageSent */]: "Message Sent",
+  ["message_removed" /* MessageRemoved */]: "Message Removed",
+  ["note_added" /* NoteAdded */]: "Note Added",
+  ["note_updated" /* NoteUpdated */]: "Note Updated",
+  ["note_removed" /* NoteRemoved */]: "Note Removed",
+  ["integration_inbound" /* IntegrationInbound */]: "Inbound Integration",
+  ["integration_outbound" /* IntegrationOutbound */]: "Outbound Integration",
+  ["logistics" /* Logistics */]: "Logistics",
+  ["custom_code_ran" /* CustomCodeRan */]: "Custom Code Ran",
+  ["business_object_created" /* BusinessObjectCreated */]: "Business Object Created",
+  ["business_object_updated" /* BusinessObjectUpdated */]: "Business Object Updated",
+  ["field_created" /* FieldCreated */]: "Field Created",
+  ["field_updated" /* FieldUpdated */]: "Field Updated",
+  ["field_deleted" /* FieldDeleted */]: "Field Deleted",
+  ["field_group_created" /* FieldGroupCreated */]: "Field Group Created",
+  ["field_group_updated" /* FieldGroupUpdated */]: "Field Group Updated",
+  ["field_group_deleted" /* FieldGroupDeleted */]: "Field Group Deleted",
+  ["selection_options_changed" /* SelectionOptionsChanged */]: "Selection Options Changed",
+  ["relationship_created" /* RelationshipCreated */]: "Relationship Created",
+  ["relationship_updated" /* RelationshipUpdated */]: "Relationship Updated",
+  ["relationship_deleted" /* RelationshipDeleted */]: "Relationship Deleted",
+  ["custom_logic_updated" /* CustomLogicUpdated */]: "Custom Logic Updated",
+  ["sticker_created" /* StickerCreated */]: "Sticker Created",
+  ["sticker_updated" /* StickerUpdated */]: "Sticker Updated",
+  ["sticker_deleted" /* StickerDeleted */]: "Sticker Deleted",
+  ["process_context_created" /* ProcessContextCreated */]: "Process Context Created",
+  ["process_context_updated" /* ProcessContextUpdated */]: "Process Context Updated",
+  ["process_context_deleted" /* ProcessContextDeleted */]: "Process Context Deleted",
+  ["folder_created" /* FolderCreated */]: "Folder Created",
+  ["folder_updated" /* FolderUpdated */]: "Folder Updated",
+  ["folder_deleted" /* FolderDeleted */]: "Folder Deleted",
+  ["milestone_definition_created" /* MilestoneDefinitionCreated */]: "Milestone Created",
+  ["milestone_definition_updated" /* MilestoneDefinitionUpdated */]: "Milestone Updated",
+  ["milestone_criteria_updated" /* MilestoneCriteriaUpdated */]: "Milestone Criteria Updated",
+  ["milestone_definition_archived" /* MilestoneDefinitionArchived */]: "Milestone Archived",
+  ["milestone_definition_restored" /* MilestoneDefinitionRestored */]: "Milestone Restored",
+  ["workflow_step_definition_archived" /* WorkflowStepDefinitionArchived */]: "Workflow Step Archived",
+  ["workflow_step_definition_restored" /* WorkflowStepDefinitionRestored */]: "Workflow Step Restored",
+  ["workflow_step_definition_created" /* WorkflowStepDefinitionCreated */]: "Workflow Step Created",
+  ["workflow_step_definition_updated" /* WorkflowStepDefinitionUpdated */]: "Workflow Step Updated",
+  ["task_template_created" /* TaskTemplateCreated */]: "Task Template Created",
+  ["task_template_updated" /* TaskTemplateUpdated */]: "Task Template Updated",
+  ["task_template_deleted" /* TaskTemplateDeleted */]: "Task Template Deleted",
+  ["pathway_created" /* PathwayCreated */]: "Pathway Created",
+  ["pathway_updated" /* PathwayUpdated */]: "Pathway Updated",
+  ["pathway_archived" /* PathwayArchived */]: "Pathway Archived",
+  ["pathway_deleted" /* PathwayDeleted */]: "Pathway Deleted",
+  ["pathway_step_added" /* PathwayStepAdded */]: "Pathway Step Added",
+  ["pathway_step_updated" /* PathwayStepUpdated */]: "Pathway Step Updated",
+  ["pathway_step_removed" /* PathwayStepRemoved */]: "Pathway Step Removed",
+  ["pathway_step_reordered" /* PathwayStepReordered */]: "Pathway Steps Reordered",
+  ["pathway_group_created" /* PathwayGroupCreated */]: "Pathway Group Created",
+  ["pathway_group_updated" /* PathwayGroupUpdated */]: "Pathway Group Updated",
+  ["pathway_group_deleted" /* PathwayGroupDeleted */]: "Pathway Group Deleted",
+  ["user_created" /* UserCreated */]: "User Created",
+  ["user_updated" /* UserUpdated */]: "User Updated",
+  ["user_deactivated" /* UserDeactivated */]: "User Deactivated",
+  ["user_reactivated" /* UserReactivated */]: "User Reactivated",
+  ["user_role_assigned" /* UserRoleAssigned */]: "Role Assigned",
+  ["user_role_unassigned" /* UserRoleUnassigned */]: "Role Unassigned",
+  ["password_reset_triggered" /* PasswordResetTriggered */]: "Password Reset",
+  ["user_impersonation_started" /* UserImpersonationStarted */]: "Logged In As User",
+  ["role_created" /* RoleCreated */]: "Role Created",
+  ["role_updated" /* RoleUpdated */]: "Role Updated",
+  ["role_permissions_updated" /* RolePermissionsUpdated */]: "Role Permissions Updated",
+  ["role_members_updated" /* RoleMembersUpdated */]: "Role Members Updated",
+  ["tag_created" /* TagCreated */]: "Tag Created",
+  ["tag_updated" /* TagUpdated */]: "Tag Updated",
+  ["tag_deleted" /* TagDeleted */]: "Tag Deleted",
+  ["tag_group_created" /* TagGroupCreated */]: "Tag Group Created",
+  ["tag_group_updated" /* TagGroupUpdated */]: "Tag Group Updated",
+  ["tag_group_deleted" /* TagGroupDeleted */]: "Tag Group Deleted",
+  ["action_created" /* ActionCreated */]: "Action Created",
+  ["action_updated" /* ActionUpdated */]: "Action Updated",
+  ["action_enabled" /* ActionEnabled */]: "Action Enabled",
+  ["action_disabled" /* ActionDisabled */]: "Action Disabled",
+  ["action_schedule_updated" /* ActionScheduleUpdated */]: "Action Schedule Updated",
+  ["notification_template_created" /* NotificationTemplateCreated */]: "Notification Template Created",
+  ["notification_template_updated" /* NotificationTemplateUpdated */]: "Notification Template Updated",
+  ["notification_template_deleted" /* NotificationTemplateDeleted */]: "Notification Template Deleted",
+  ["integration_created" /* IntegrationCreated */]: "Integration Created",
+  ["integration_updated" /* IntegrationUpdated */]: "Integration Updated",
+  ["integration_deleted" /* IntegrationDeleted */]: "Integration Deleted",
+  ["integration_enabled" /* IntegrationEnabled */]: "Integration Enabled",
+  ["integration_disabled" /* IntegrationDisabled */]: "Integration Disabled",
+  ["integration_credentials_updated" /* IntegrationCredentialsUpdated */]: "Integration Credentials Updated",
+  ["integration_replayed" /* IntegrationReplayed */]: "Integration Replayed",
+  ["document_template_created" /* DocumentTemplateCreated */]: "Document Template Created",
+  ["document_template_updated" /* DocumentTemplateUpdated */]: "Document Template Updated",
+  ["document_template_deleted" /* DocumentTemplateDeleted */]: "Document Template Deleted",
+  ["file_type_created" /* FileTypeCreated */]: "File Type Created",
+  ["file_type_updated" /* FileTypeUpdated */]: "File Type Updated",
+  ["file_type_deleted" /* FileTypeDeleted */]: "File Type Deleted",
+  ["import_created" /* ImportCreated */]: "Import Created",
+  ["import_updated" /* ImportUpdated */]: "Import Updated",
+  ["import_deleted" /* ImportDeleted */]: "Import Deleted",
+  ["import_executed" /* ImportExecuted */]: "Import Run",
+  ["export_created" /* ExportCreated */]: "Export Created",
+  ["export_updated" /* ExportUpdated */]: "Export Updated",
+  ["export_deleted" /* ExportDeleted */]: "Export Deleted",
+  ["export_executed" /* ExportExecuted */]: "Export Run",
+  ["account_setting_created" /* AccountSettingCreated */]: "Account Setting Created",
+  ["account_setting_updated" /* AccountSettingUpdated */]: "Account Setting Updated",
+  ["designer_note_added" /* DesignerNoteAdded */]: "Note Added",
+  ["designer_note_updated" /* DesignerNoteUpdated */]: "Note Updated",
+  ["designer_note_removed" /* DesignerNoteRemoved */]: "Note Removed"
+};
+var HISTORY_ACTIONS = Object.values(HistoryAction);
+var HISTORY_ACTION_SET = new Set(HISTORY_ACTIONS);
+
+// .path-cli/src/access/history-gates.ts
+async function loadAsActingUser(client, recordId) {
+  try {
+    return await client.get(`/v1/records/${encodeURIComponent(recordId)}`);
+  } catch (err) {
+    if (err instanceof ApiError && [403, 404, 422].includes(err.statusCode)) return null;
+    throw err;
+  }
+}
+async function assertRecordHistoryVisible(client, recordId, what) {
+  const access = await realWorldAccess(client);
+  if (!access) return;
+  const record2 = await loadAsActingUser(client, recordId);
+  if (!record2) throw new AccessDeniedError(access.label, what, `record ${recordId} isn't visible to them`);
+  await assertBusinessObject(client, record2.business_object_id, "view", what);
+}
+async function viewableRecords(client, access, recordIds) {
+  const viewable = /* @__PURE__ */ new Set();
+  const queue = [...recordIds];
+  const worker = async () => {
+    for (let id = queue.shift(); id !== void 0; id = queue.shift()) {
+      const record2 = await loadAsActingUser(client, id);
+      if (record2 && access.canBusinessObject(record2.business_object_id, "view")) viewable.add(id);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(6, queue.length) }, worker));
+  return viewable;
+}
+async function filterHistorySessions(client, sessions) {
+  const access = await realWorldAccess(client);
+  if (!access) return { sessions, hiddenSessions: 0, hiddenEvents: 0 };
+  const ids = [...new Set(sessions.map((s) => s.recordId).filter((id) => !!id))];
+  const viewable = await viewableRecords(client, access, ids);
+  let hiddenSessions = 0;
+  let hiddenEvents = 0;
+  const kept = sessions.filter((s) => {
+    if (!s.recordId || viewable.has(s.recordId)) return true;
+    hiddenSessions++;
+    hiddenEvents += s.events.length;
+    return false;
+  });
+  return { sessions: kept, hiddenSessions, hiddenEvents };
+}
+function hiddenHistoryNote(hiddenSessions, hiddenEvents) {
+  if (!hiddenSessions) return null;
+  return `Real-world mode: hid ${hiddenSessions} session${hiddenSessions === 1 ? "" : "s"} (${hiddenEvents} event${hiddenEvents === 1 ? "" : "s"}) on records the acting user can't view.`;
+}
+var RECORD_ID2 = /^[0-9a-f]{24}$/i;
+async function assertSessionHistoryAccess(client, session, what) {
+  const access = await realWorldAccess(client);
+  if (!access || access.canOpenDesigner || access.canManageUsers) return;
+  const eventRecords = (session.events ?? []).map((e) => e.entityId).filter((id) => !!id && RECORD_ID2.test(id));
+  const records = [...new Set(session.recordId ? [session.recordId] : eventRecords)];
+  if (!records.length) {
+    throw new AccessDeniedError(access.label, what, "the session is on no record, and none of their roles has the Designer, User Admin (or Admin) permission");
+  }
+  for (const recordId of records) await assertRecordHistoryVisible(client, recordId, what);
+}
+function eventArea(event) {
+  const category = event.category ?? HISTORY_CATEGORY[event.action] ?? "";
+  if (category.startsWith("designer_") || category === "integrations" || String(event.action ?? "").startsWith("integration_")) {
+    return "designer";
+  }
+  return event.recordId ? "record" : "other";
+}
+async function assertEventMetadataAccess(client, event, what) {
+  const area = eventArea(event);
+  if (area === "designer") await assertDesigner(client, what);
+  else if (area === "record") await assertRecordHistoryVisible(client, event.recordId, what);
+}
+
+// .path-cli/src/output/history-flat.ts
+var PLUMBING_KEYS = /* @__PURE__ */ new Set([
+  "source",
+  "operation",
+  "relationship_id",
+  "message_id",
+  "file_id",
+  "note_id",
+  "email_id",
+  "notification_id",
+  "workflow_task_id",
+  "task_id",
+  "milestone_id",
+  "step_id",
+  "field_id",
+  "pathway_step_id",
+  "criteria"
+]);
+var TEXT_KEYS = /* @__PURE__ */ new Set([
+  "content",
+  "body",
+  "note_preview",
+  "note",
+  "previous_note"
+]);
+var TEXT_PREVIEW = 40;
+function flattenHistory(sessions, opts) {
+  const previousZone = displayZone;
+  displayZone = opts.timeZone;
+  try {
+    return flatten(sessions, opts);
+  } finally {
+    displayZone = previousZone;
+  }
+}
+function flatten(sessions, opts) {
+  const direction = opts.oldestFirst ? 1 : -1;
+  const rows = [];
+  const ordered = sessions.filter((session) => opts.includeViews || session.events.length > 0).sort((a, b) => a.startedAt.localeCompare(b.startedAt) * direction);
+  const showSource = ordered.some(
+    (session) => sessionSourceLabel(session) !== ""
+  );
+  ordered.forEach((session, index) => {
+    const sessionLabel = `#${index + 1}`;
+    const type = sessionTypeLabel(session, opts.pathwayNames);
+    const user = userName(session.userId, opts.userNames);
+    const source = showSource ? { source: sessionSourceLabel(session) } : {};
+    const events = [...session.events].sort(
+      (a, b) => a.timestamp.localeCompare(b.timestamp) * direction
+    );
+    if (events.length === 0) {
+      rows.push({
+        time: formatTime(session.startedAt),
+        session: sessionLabel,
+        type,
+        user,
+        ...source,
+        ...opts.includeRecord ? { record: session.recordId ?? "" } : {},
+        ...opts.includeEntity ? { entity: "" } : {},
+        action: "Viewed",
+        subject: "",
+        changes: "",
+        metadata: "",
+        ...opts.includeIds ? { event: "" } : {}
+      });
+      return;
+    }
+    for (const event of events) {
+      const subject = eventSubject(event);
+      rows.push({
+        time: formatTime(event.timestamp),
+        session: sessionLabel,
+        type,
+        user,
+        ...source,
+        ...opts.includeRecord ? { record: event.entityId ?? session.recordId ?? "" } : {},
+        ...opts.includeEntity ? {
+          entity: [event.entityType?.replace(/_/g, " "), event.entityId].filter(Boolean).join(" ")
+        } : {},
+        action: actionLabel(event.action),
+        subject: subject.text,
+        changes: cell(changeEntries(event.changes, opts.userNames), opts),
+        metadata: cell(
+          metadataEntries(event.metadata, {
+            onlyKeys: opts.metadataKeys,
+            // The subject already shows this key's value.
+            dropKeys: subject.key ? [subject.key] : [],
+            userNames: opts.userNames
+          }),
+          opts
+        ),
+        ...opts.includeIds ? { event: event.eventId } : {}
+      });
+    }
+  });
+  return rows;
+}
+function cell(entries, opts) {
+  return opts.multiline ? entries.join("\n") : clipEntries(entries, opts.maxWidth);
+}
+function actionLabel(action) {
+  return HISTORY_ACTION_LABELS[action] ?? humanize(action);
+}
+var AGENT_LABELS = {
+  claude_code: "Claude Code",
+  claude_cowork: "Claude Cowork",
+  claude_desktop: "Claude Desktop",
+  unknown: "Unknown agent"
+};
+var CLIENT_LABELS = {
+  path_cli: "PATH CLI",
+  path_designer_cli: "Designer CLI",
+  unknown: "Unknown client"
+};
+function sessionSource(session) {
+  return {
+    isAgent: session.isAgent === true,
+    agent: session.agentDescription || null,
+    client: session.client || null
+  };
+}
+function sessionSourceLabel(session) {
+  const { isAgent, agent, client } = sessionSource(session);
+  const parts = [];
+  if (isAgent)
+    parts.push(AGENT_LABELS[agent ?? "unknown"] ?? AGENT_LABELS.unknown);
+  const clientLabel = client ? CLIENT_LABELS[client] : void 0;
+  if (clientLabel) parts.push(clientLabel);
+  return parts.join(" \xB7 ");
+}
+function sessionTypeLabel(session, pathwayNames) {
+  const base = (() => {
+    switch (session.sessionType) {
+      case "record_viewer":
+        return "card view";
+      case "pathway_execution": {
+        if (session.pathwayId == null) return "pathway";
+        const name = pathwayNames?.get(session.pathwayId);
+        return name ? `pathway: ${name}` : `pathway ${session.pathwayId}`;
+      }
+      case "scheduled_action":
+        return "scheduled action";
+      case "inbound_integration":
+        return "inbound integration";
+      case "email_received":
+        return "email received";
+      default:
+        return session.sessionType.replace(/_/g, " ");
+    }
+  })();
+  return session.description ? `${base}: ${session.description}` : base;
+}
+function eventSubject(event) {
+  const meta = event.metadata ?? {};
+  const fromKey = (key, fallback) => meta[key] ? { text: meta[key], key } : { text: fallback, key: null };
+  const firstOf = (keys, fallback) => {
+    const key = keys.find((candidate) => meta[candidate]);
+    return key ? { text: meta[key], key } : { text: fallback, key: null };
+  };
+  if (HISTORY_CATEGORY[event.action]?.startsWith("designer_")) {
+    const name = meta["entity_name"] ?? "";
+    const bo = meta["business_object"];
+    return {
+      text: bo && bo !== name ? `${name} \u2014 ${bo}` : name,
+      key: meta["entity_name"] ? "entity_name" : null
+    };
+  }
+  switch (event.action) {
+    case "file_uploaded":
+    case "file_removed":
+    case "file_downloaded":
+    case "file_archived":
+    case "file_unarchived":
+      return fromKey("file_name", "File");
+    case "email_sent":
+      return fromKey("subject", "Email");
+    case "text_sent":
+      return firstOf(["title", "phone_number"], "Text");
+    case "linked":
+    case "unlinked":
+      return fromKey("relationship_name", "");
+    case "message_sent":
+    case "message_removed":
+      return { text: "Message", key: null };
+    case "note_added":
+    case "note_updated":
+    case "note_removed":
+      return meta["note_preview"] ? {
+        text: preview(stripTags(meta["note_preview"])),
+        key: "note_preview"
+      } : { text: "Note", key: null };
+    case "milestone_reached":
+    case "milestone_exited":
+      return fromKey("milestone_name", "Milestone");
+    case "step":
+    case "workflow_step_deactivated":
+    case "workflow_step_reactivated":
+    case "workflow_step_deleted":
+      return fromKey("step_name", "Step");
+    case "task_created":
+    case "task_completed":
+    case "task_cancelled":
+    case "task_assigned":
+    case "task_updated":
+      return fromKey("task_name", "Task");
+    case "document_generated":
+      return firstOf(["file_name", "document_name"], "Document");
+    case "notification_sent":
+      return fromKey("title", "Notification");
+    case "integration_inbound":
+    case "integration_outbound":
+      return fromKey("integration_name", "Integration");
+    case "logistics":
+      return fromKey("pathway_step_name", "Logistics");
+    default:
+      return { text: "", key: null };
+  }
+}
+function changeEntries(changes, userNames) {
+  return changes.filter((change) => !(isEmpty(change.oldValue) && isEmpty(change.newValue))).map(
+    (change) => `${change.fieldName ?? `Field #${change.fieldId}`}: ${changeValue(
+      change.oldValue,
+      change.fieldType,
+      userNames
+    )} \u2192 ${changeValue(change.newValue, change.fieldType, userNames)}`
+  );
+}
+function changeValue(value, fieldType, userNames) {
+  if (fieldType === "user" && !isEmpty(value)) {
+    const id = Number(value);
+    if (Number.isInteger(id)) return userName(id, userNames);
+  }
+  return formatValue(value, fieldType);
+}
+function isEmpty(value) {
+  return value == null || value === "";
+}
+function metadataEntries(metadata, { onlyKeys, dropKeys = [], userNames } = {}) {
+  if (!metadata) return [];
+  const keys = onlyKeys ? onlyKeys.filter((key) => key in metadata) : Object.keys(metadata).filter((key) => !PLUMBING_KEYS.has(key) && !dropKeys.includes(key)).sort(
+    (a, b) => Number(b === "custom_code_method") - Number(a === "custom_code_method")
+  );
+  return keys.map(
+    (key) => `${key}=${metadataValue(key, metadata[key], userNames)}`
+  );
+}
+function clipEntries(entries, max) {
+  if (entries.length === 0) return "";
+  const full = entries.join("; ");
+  if (max <= 0 || full.length <= max) return full;
+  const moreSuffix = (n) => ` (+${n} more)`;
+  let text = "";
+  let shown = 0;
+  for (const entry of entries) {
+    const candidate = text ? `${text}; ${entry}` : entry;
+    const remaining = entries.length - shown - 1;
+    const suffix = remaining > 0 ? moreSuffix(remaining) : "";
+    if (candidate.length + suffix.length > max) break;
+    text = candidate;
+    shown += 1;
+  }
+  if (shown === 0) {
+    const suffix = entries.length > 1 ? moreSuffix(entries.length - 1) : "";
+    return `${clip(entries[0], max - suffix.length)}${suffix}`;
+  }
+  return `${text}${moreSuffix(entries.length - shown)}`;
+}
+function metadataValue(key, raw, userNames) {
+  if (raw == null) return "";
+  const value = String(raw);
+  if (key.endsWith("_user_id")) {
+    return quote(userName(Number(value), userNames));
+  }
+  if (key === "recipients") {
+    const parsed = parseJson(value);
+    return Array.isArray(parsed) ? `${parsed.length}` : quote(value);
+  }
+  if (key === "payload") {
+    return `${value.length} chars`;
+  }
+  if (TEXT_KEYS.has(key)) {
+    return quote(preview(stripTags(value)));
+  }
+  return quote(value);
+}
+function userName(userId, userNames) {
+  if (userId == null || Number.isNaN(userId)) return "system";
+  return userNames?.get(userId) ?? String(userId);
+}
+function quote(value) {
+  return value.includes(";") ? `"${value.replace(/"/g, '\\"')}"` : value;
+}
+function formatValue(value, fieldType) {
+  if (value == null || value === "") return "(empty)";
+  if (typeof value === "boolean" || value === "true" || value === "false") {
+    return value === true || value === "true" ? "Yes" : "No";
+  }
+  if (fieldType === "date_time" || fieldType === "date") {
+    const date3 = new Date(String(value));
+    if (!Number.isNaN(date3.getTime())) {
+      return fieldType === "date" ? formatDate(date3) : formatDateTime(date3);
+    }
+  }
+  return typeof value === "object" ? JSON.stringify(value) : String(value);
+}
+function formatTime(iso) {
+  const date3 = new Date(iso);
+  return Number.isNaN(date3.getTime()) ? iso : formatDateTime(date3, true);
+}
+function formatTimeIn(iso, timeZone) {
+  const previousZone = displayZone;
+  displayZone = timeZone;
+  try {
+    return formatTime(iso);
+  } finally {
+    displayZone = previousZone;
+  }
+}
+var displayZone;
+function wall(date3) {
+  if (!displayZone) {
+    return {
+      year: date3.getFullYear(),
+      month: date3.getMonth() + 1,
+      day: date3.getDate(),
+      hour: date3.getHours(),
+      minute: date3.getMinutes()
+    };
+  }
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: displayZone,
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hourCycle: "h23"
+    }).formatToParts(date3).map((p) => [p.type, p.value])
+  );
+  return {
+    year: Number(parts.year),
+    month: Number(parts.month),
+    day: Number(parts.day),
+    hour: Number(parts.hour),
+    minute: Number(parts.minute)
+  };
+}
+function formatDate(date3) {
+  const w = wall(date3);
+  return `${w.month}/${w.day}/${w.year}`;
+}
+function formatDateTime(date3, shortYear = false) {
+  const w = wall(date3);
+  const year = shortYear ? String(w.year).slice(-2) : String(w.year);
+  const hours = w.hour % 12 === 0 ? 12 : w.hour % 12;
+  const minutes = String(w.minute).padStart(2, "0");
+  const meridian = w.hour < 12 ? "am" : "pm";
+  return `${w.month}/${w.day}/${year} ${hours}:${minutes}${meridian}`;
+}
+function clip(text, max) {
+  if (max <= 0 || text.length <= max) return text;
+  return `${text.slice(0, Math.max(0, max - 1))}\u2026`;
+}
+function preview(text) {
+  return text.length > TEXT_PREVIEW ? `${text.slice(0, TEXT_PREVIEW - 1)}\u2026` : text;
+}
+function stripTags(value) {
+  return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+function parseJson(raw) {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+function humanize(value) {
+  return value.split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+}
+
+// .path-cli/src/resolvers/resolve-pathway-names.ts
+async function loadPathwayNames(client) {
+  try {
+    const pathways = await cachedFetch(
+      () => client.get("/v1/pathways"),
+      "pathways",
+      "/v1/pathways"
+    );
+    return new Map(pathways.map((pathway2) => [pathway2.id, pathway2.name]));
+  } catch {
+    return /* @__PURE__ */ new Map();
+  }
+}
+
+// .path-cli/src/resolvers/resolve-user-names.ts
+async function loadUserNames(client) {
+  try {
+    const response = await cachedFetch(
+      () => client.get("/v1/users", { all: "true" }),
+      "users",
+      "/v1/users"
+    );
+    return new Map(
+      response.items.map((user) => [
+        user.id,
+        `${user.profile.first_name} ${user.profile.last_name}`.trim() || user.email
+      ])
+    );
+  } catch {
+    return /* @__PURE__ */ new Map();
+  }
+}
+
+// .path-cli/src/commands/get-history-session.ts
+function context(command) {
+  const parentOpts = command.parent?.opts() ?? {};
+  const config2 = loadConfig({ accountId: parentOpts.account, baseUrl: parentOpts.baseUrl });
+  if (!config2.accountId) {
+    throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
+  }
+  return { parentOpts, config: config2, accountId: config2.accountId, client: new HttpClient(config2) };
+}
+async function displayNames(client, accountId) {
+  const [userNames, pathwayNames, timeZone] = await Promise.all([
+    loadUserNames(client),
+    loadPathwayNames(client),
+    new RunMetadata(client, accountId).userTimeZone().catch(() => void 0)
+  ]);
+  return { userNames, pathwayNames, timeZone };
+}
+async function fetchSession(client, activitySessionId) {
+  const response = await client.get(
+    `/v1/tracking/history/sessions/${encodeURIComponent(activitySessionId)}`,
+    { include_metadata: "true" }
+  );
+  return response.data?.[0] ?? null;
+}
+var getHistorySessionCommand = new Command("get-history-session").description(
+  "Every event one activity session recorded \u2014 e.g. everything an inbound integration request did: the record it created, fields set, pathway steps, outbound calls \u2014 as the flat event table, oldest first (read-only)"
+).argument("<activity-session-id>", "Activity session id (sessionId in --json history; the session line of an integration delivery)").option("--newest-first", "Newest event first (default: in the order they happened)").option("--full", "Every field change and metadata entry in full, one per line").option("--metadata-keys <list>", "Comma-separated metadata keys to show in the METADATA column (default: all but plumbing)").option("--max-width <n>", "Max characters for the CHANGES and METADATA cells (0 = unlimited)", "60").action(async (activitySessionId, opts) => {
+  try {
+    const { client, parentOpts, accountId } = context(getHistorySessionCommand);
+    let session;
+    try {
+      session = await fetchSession(client, activitySessionId);
+    } catch (err) {
+      if (err instanceof ApiError && err.statusCode === 404) {
+        throw new Error(
+          /Cannot GET/i.test(err.message) ? "This server doesn't have the session history route (GET /v1/tracking/history/sessions/:id) yet" : `Session ${activitySessionId} not found`
+        );
+      }
+      throw err;
+    }
+    if (!session) throw new Error(`Session ${activitySessionId} not found`);
+    await assertSessionHistoryAccess(client, session, `read history session ${activitySessionId}`);
+    if (parentOpts.json) {
+      console.log(JSON.stringify(session, null, 2));
+      return;
+    }
+    const names2 = await displayNames(client, accountId);
+    const rows = flattenHistory([session], {
+      ...names2,
+      includeViews: true,
+      includeIds: true,
+      includeRecord: true,
+      oldestFirst: !opts.newestFirst,
+      multiline: !!opts.full,
+      maxWidth: parseInt(String(opts.maxWidth ?? "60"), 10) || 0,
+      metadataKeys: opts.metadataKeys ? String(opts.metadataKeys).split(",").map((k) => k.trim()).filter(Boolean) : void 0
+    }).map(({ session: _number2, type: _type, user: _user, source: _source, ...row }) => row);
+    const when = (iso) => iso ? formatTimeIn(iso, names2.timeZone) : "\u2026";
+    const source = sessionSourceLabel(session);
+    console.log(
+      [
+        `Session ${session.activitySessionId}: ${sessionTypeLabel(session, names2.pathwayNames)}`,
+        `user: ${userName(session.userId, names2.userNames)}${session.userId != null ? ` (${session.userId})` : ""}${source ? ` \xB7 ${source}` : ""} \xB7 ${session.platform ?? ""} \xB7 ${when(session.startedAt)} \u2013 ${when(session.endedAt)}${session.recordId ? ` \xB7 record ${session.recordId}` : ""}`,
+        ""
+      ].join("\n")
+    );
+    console.log(
+      formatOutput(rows, {
+        fields: parentOpts.fields?.split(",").map((s) => s.trim()),
+        quiet: parentOpts.quiet,
+        footer: `[${session.events.length} events]`
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/oauth-login.ts
+import { createServer } from "node:http";
+import { randomBytes, createHash as createHash3 } from "node:crypto";
+import { spawn } from "node:child_process";
+function buildPkce() {
+  const verifier = randomBytes(32).toString("base64url");
+  const challenge = createHash3("sha256").update(verifier).digest("base64url");
+  const state = randomBytes(16).toString("base64url");
+  return { verifier, challenge, state };
+}
+function buildAuthorizeUrl(config2, challenge, state, redirectUri) {
+  const base = config2.webBaseUrl.replace(/\/$/, "");
+  return `${base}/oauth/authorize?response_type=code&client_id=${encodeURIComponent(config2.clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodeURIComponent(state)}&code_challenge=${encodeURIComponent(challenge)}&code_challenge_method=S256&scope=user`;
+}
+async function startLoopbackLogin(config2) {
+  const { verifier, challenge, state } = buildPkce();
+  const { port, codePromise, close } = await startCallbackServer(state);
+  const redirectUri = `http://127.0.0.1:${port}/callback`;
+  const authorizeUrl = buildAuthorizeUrl(config2, challenge, state, redirectUri);
+  return {
+    authorization: { authorizeUrl, clientId: config2.clientId, redirectUri, verifier, state },
+    waitForCode: (timeoutMs = 3e5) => withTimeout(codePromise, timeoutMs, "Login timed out."),
+    close
+  };
+}
+async function exchangeAndStoreToken(config2, params) {
+  const client = new HttpClient(config2);
+  const token = await client.postRaw("/oauth/token", {
+    grant_type: "authorization_code",
+    code: params.code,
+    code_verifier: params.verifier,
+    client_id: params.clientId,
+    // Send only the loopback port, never the full redirect_uri: a
+    // http://127.0.0.1 URL in the body is blocked by the WAF's SSRF rule
+    // (EC2MetaDataSSRF_BODY), which is why browser login failed off-VPN.
+    // The gateway rebuilds the canonical http://127.0.0.1:<port>/callback.
+    redirect_port: Number(new URL(params.redirectUri).port),
+    // Required by the gateway's token DTO — omitting it 422s ("scope should not be empty").
+    scope: "user"
+  });
+  updateEnvValue("PATH_ACCESS_TOKEN", token.access_token);
+  updateEnvValue("PATH_REFRESH_TOKEN", token.refresh_token);
+  clearAllMetadata();
+  return token;
+}
+function startCallbackServer(expectedState) {
+  return new Promise((resolveServer) => {
+    let resolveCode;
+    let rejectCode;
+    const codePromise = new Promise((res, rej) => {
+      resolveCode = res;
+      rejectCode = rej;
+    });
+    const server = createServer((req, res) => {
+      res.setHeader("Connection", "close");
+      const url = new URL(req.url ?? "/", "http://127.0.0.1");
+      if (url.pathname !== "/callback") {
+        res.statusCode = 404;
+        res.end("Not found");
+        return;
+      }
+      const code = url.searchParams.get("code");
+      const state = url.searchParams.get("state");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      if (!code || state !== expectedState) {
+        res.statusCode = 400;
+        res.end(resultPage("Login failed. You can close this tab."));
+        rejectCode(new Error("Login failed: state mismatch or missing code."));
+        return;
+      }
+      res.statusCode = 200;
+      res.end(resultPage("Signed in. You can close this tab and return to Claude."));
+      resolveCode(code);
+    });
+    server.listen(0, "127.0.0.1", () => {
+      const port = server.address().port;
+      resolveServer({
+        port,
+        codePromise,
+        close: () => {
+          server.closeAllConnections?.();
+          server.close();
+        }
+      });
+    });
+  });
+}
+function withTimeout(promise, ms, message2) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(message2)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+function openBrowser(url) {
+  const launch = (command, args) => {
+    const child = spawn(command, args, { stdio: "ignore", detached: true });
+    child.on("error", () => {
+    });
+    child.unref();
+  };
+  try {
+    const platform = process.platform;
+    if (platform === "darwin") {
+      launch("open", [url]);
+    } else if (platform === "win32") {
+      launch("cmd", ["/c", "start", "", url]);
+    } else {
+      launch("xdg-open", [url]);
+    }
+  } catch {
+  }
+}
+function resultPage(message2) {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8" />
+<title>PATH</title>
+<style>body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#f4f5f7;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+.box{background:#fff;padding:32px 40px;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.08);font-size:15px;color:#374151}</style>
+</head><body><div class="box">${message2}</div></body></html>`;
+}
+
+// .path-cli/src/utils/active-accounts.ts
+function isActiveAccount(account) {
+  return !account.user_account?.deactivated_on;
+}
+async function listActiveAccounts(client) {
+  return (await client.get("/v1/accounts")).filter(isActiveAccount);
+}
+function accountKindLabel(account) {
+  const parent = account.parent_account_id;
+  if (parent) return `Child of ${parent}`;
+  const children = Number(account.child_account_count ?? 0);
+  return children > 0 ? `Parent of ${children}` : "Standard";
+}
+function withAccountKind(account) {
+  return { ...account, kind: accountKindLabel(account) };
+}
+function inactiveAccountReason(accounts, accountId) {
+  const account = accounts.find((a) => String(a.id) === String(accountId));
+  if (!account) {
+    return `Account ${accountId} isn't one of your accounts. Run "path list-accounts" to see the accounts you can use.`;
+  }
+  if (!isActiveAccount(account)) {
+    return `You're deactivated in account ${account.id} (${account.name}), so you can't use it. Run "path list-accounts" to see the accounts you can use.`;
+  }
+  return null;
+}
+var ACTIVE_CHECK_TTL_MS = 6e4;
+var passed = /* @__PURE__ */ new Map();
+async function assertActiveAccount(client, accountId, cacheKey) {
+  const key = cacheKey ? `${cacheKey}|${accountId}` : null;
+  if (key && (passed.get(key) ?? 0) > Date.now()) return;
+  const reason = inactiveAccountReason(await client.get("/v1/accounts"), accountId);
+  if (reason) throw new Error(reason);
+  if (key) passed.set(key, Date.now() + ACTIVE_CHECK_TTL_MS);
+}
+
+// .path-cli/src/commands/auth.ts
+var authCommand = new Command("auth").description("Authenticate and store token (browser sign-in by default)").option(
+  "--email <email>",
+  "User email (opt into the legacy password flow)"
+).option(
+  "--password <password>",
+  "User password (opt into the legacy password flow)"
+).option(
+  "--browser",
+  "Sign in via the browser (this is the default; the flag is optional)"
+).option(
+  "--no-open",
+  "Print the sign-in URL instead of auto-launching a browser (headless)"
+).action(async (opts) => {
+  try {
+    const parentOpts = authCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({ baseUrl: parentOpts.baseUrl });
+    const usePasswordFlow = !opts.browser && (opts.email || opts.password);
+    if (!usePasswordFlow) {
+      const noOpen = opts.open === false || process.env.PATH_CLI_NO_BROWSER === "1";
+      await browserLogin(config2.baseUrl, noOpen);
+      return;
+    }
+    if (!opts.email || !opts.password) {
+      throw new Error(
+        "Provide both --email and --password, or omit them to sign in via the browser."
+      );
+    }
+    if (!config2.clientId || !config2.clientSecret) {
+      throw new Error(
+        "Password sign-in isn't available in this version of the PATH CLI. Sign in through the browser instead (run auth login without --email and --password)."
+      );
+    }
+    const client = new HttpClient(config2);
+    const response = await client.postRaw("/oauth/token", {
+      client_id: config2.clientId,
+      client_secret: config2.clientSecret,
+      email: opts.email,
+      password: opts.password,
+      grant_type: "implicit",
+      scope: "user"
+    });
+    updateEnvValue("PATH_ACCESS_TOKEN", response.access_token);
+    updateEnvValue("PATH_REFRESH_TOKEN", response.refresh_token);
+    clearAllMetadata();
+    let expiryInfo = "";
+    if (response.expires_in) {
+      const num = Number(response.expires_in);
+      if (!isNaN(num) && num > 0) {
+        const expiresDate = new Date(Date.now() + num * 1e3);
+        expiryInfo = ` (token expires: ${expiresDate.toISOString().split("T")[0]})`;
+      } else {
+        expiryInfo = ` (expires: ${response.expires_in})`;
+      }
+    }
+    console.log(`Authenticated as ${opts.email}${expiryInfo}`);
+    await printAccounts(parentOpts.baseUrl);
+    await printDefaultSessionContext(parentOpts.baseUrl);
+  } catch (err) {
+    handleError(err);
+  }
+});
+async function browserLogin(baseUrl, noOpen = false) {
+  const config2 = loadConfig({ baseUrl });
+  const login = await startLoopbackLogin(config2);
+  const { authorizeUrl, verifier, redirectUri, clientId } = login.authorization;
+  try {
+    if (noOpen) {
+      console.log(`To sign in to PATH, open this URL in your browser:
+  ${authorizeUrl}
+`);
+    } else {
+      console.log("Opening your browser to sign in to PATH...");
+      console.log(`If it does not open, visit:
+  ${authorizeUrl}
+`);
+      openBrowser(authorizeUrl);
+    }
+    const code = await login.waitForCode();
+    await exchangeAndStoreToken(config2, { code, verifier, redirectUri, clientId });
+    console.log("Authenticated via browser.");
+    await printAccounts(baseUrl);
+    await printDefaultSessionContext(baseUrl);
+  } finally {
+    login.close();
+  }
+}
+async function printDefaultSessionContext(baseUrl) {
+  currentInfoGate()?.forgetSessionContexts();
+  const config2 = loadConfig({ baseUrl });
+  if (!config2.accountId) return;
+  try {
+    console.log("");
+    await printSessionContext(new HttpClient(config2), String(config2.accountId), false);
+  } catch {
+  }
+}
+async function printAccounts(baseUrl) {
+  try {
+    const authClient = new HttpClient(loadConfig({ baseUrl }));
+    const accounts = await listActiveAccounts(authClient);
+    if (accounts.length > 0) {
+      console.log("\nAvailable accounts:");
+      for (const acct of accounts) {
+        console.log(`  ${acct.id}: ${acct.name}`);
+      }
+      console.log(
+        "\nUse --account <id> per-command, or run `use-account <id>` to persist a default."
+      );
+    }
+  } catch {
+  }
+}
+
+// .path-cli/src/commands/logout.ts
+var logoutCommand = new Command("logout").description("Clear stored auth tokens").action(async () => {
+  try {
+    updateEnvValue("PATH_ACCESS_TOKEN", "");
+    updateEnvValue("PATH_REFRESH_TOKEN", "");
+    updateEnvValue("PATH_ACCOUNT_ID", "");
+    clearAllMetadata();
+    console.log("Logged out. Tokens and default account cleared.");
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/list-accounts.ts
+var listAccountsCommand = new Command("list-accounts").description("List your accounts (not the ones you've been deactivated in)").action(async () => {
+  try {
+    const parentOpts = listAccountsCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      baseUrl: parentOpts.baseUrl
+    });
+    const client = new HttpClient(config2);
+    const accounts = await listActiveAccounts(client);
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name", "kind"];
+    console.log(
+      formatOutput(accounts.map(withAccountKind), {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/list-business-objects.ts
+var listBusinessObjectsCommand = new Command("list-business-objects").description("List business objects (--json adds each one's context: what the designer says it is for)").action(async () => {
+  try {
+    const parentOpts = listBusinessObjectsCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId) {
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    }
+    const client = new HttpClient(config2);
+    const raw = await client.get("/v1/business-objects");
+    const all4 = unwrapPaginated(raw);
+    const visible = await filterReadableBusinessObjects(client, all4);
+    const data = visible === all4 ? raw : Array.isArray(raw) ? visible : { ...raw, items: visible };
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "singular_name", "plural_name"];
+    console.log(
+      formatOutput(data, {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/get-business-object.ts
+var getBusinessObjectCommand = new Command("get-business-object").description("Get a single business object, with its context (the designer's description of what it is for)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
+  try {
+    const parentOpts = getBusinessObjectCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId)
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    const client = new HttpClient(config2);
+    let boId3;
+    if (opts.boId) {
+      boId3 = opts.boId;
+    } else if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      boId3 = String(bo.id);
+    } else {
+      throw new Error("Provide either --bo-id or --bo-name");
+    }
+    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
+    const data = await client.get(`/v1/business-objects/${boId3}`);
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim());
+    console.log(
+      formatOutput(data, {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/list-fields.ts
+var listFieldsCommand = new Command("list-fields").description("List fields for a business object (--json adds each field's context: what it holds and when to fill it)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--page <n>", "Fetch only this single page (default: all fields)").option("--per-page <n>", "Items per page (single-page mode)", "100").option("--all", "Fetch all fields (this is now the default)").action(async (opts) => {
+  try {
+    const parentOpts = listFieldsCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId)
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    const client = new HttpClient(config2);
+    let boId3;
+    if (opts.boId) {
+      boId3 = opts.boId;
+    } else if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      boId3 = String(bo.id);
+    } else {
+      throw new Error("Provide either --bo-id or --bo-name");
+    }
+    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
+    let data;
+    const singlePage = opts.page !== void 0 && !opts.all;
+    if (!singlePage) {
+      const raw = await client.get(
+        "/v1/init/fields"
+      );
+      const items = unwrapPaginated(raw);
+      data = items.filter((f) => f.business_object_id === Number(boId3));
+    } else {
+      const query = {
+        page: opts.page,
+        perPage: opts.perPage
+      };
+      const raw = await client.get(
+        `/v1/business-objects/${boId3}/fields`,
+        query
+      );
+      data = unwrapPaginated(raw);
+    }
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? [
+      "id",
+      "name",
+      "field_type",
+      "is_required"
+    ];
+    console.log(
+      formatOutput(data, {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/get-field.ts
+var getFieldCommand = new Command("get-field").description("Get a single field on a business object, with its context (the designer's description of what the field holds and when to fill it)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--field-id <id>", "Field ID").option("--field-name <name>", "Field name (case-insensitive)").action(async (opts) => {
+  try {
+    const parentOpts = getFieldCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId)
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    const client = new HttpClient(config2);
+    let boId3;
+    if (opts.boId) {
+      boId3 = parseInt(opts.boId, 10);
+    } else if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      boId3 = bo.id;
+    }
+    let fieldId;
+    if (opts.fieldId) {
+      fieldId = parseInt(opts.fieldId, 10);
+    } else if (opts.fieldName) {
+      if (!boId3) {
+        throw new Error(
+          "--field-name requires --bo-id or --bo-name to scope the lookup."
+        );
+      }
+      const raw = await client.get(
+        "/v1/init/fields"
+      );
+      const all4 = unwrapPaginated(raw);
+      const target = opts.fieldName.toLowerCase();
+      const match = all4.find(
+        (f) => f.business_object_id === boId3 && f.name.toLowerCase() === target
+      );
+      if (!match) {
+        throw new Error(
+          `No field named "${opts.fieldName}" on BO ${boId3}.`
+        );
+      }
+      fieldId = match.id;
+    } else {
+      throw new Error("Provide --field-id or --field-name");
+    }
+    const path = boId3 ? `/v1/business-objects/${boId3}/fields/${fieldId}` : `/v1/business-objects/0/fields/${fieldId}`;
+    const data = await client.get(path);
+    await assertBusinessObjectReadable(client, data.business_object_id ?? boId3, `read field ${fieldId}`);
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim());
+    console.log(
+      formatOutput(data, {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/list-field-groups.ts
+var listFieldGroupsCommand = new Command("list-field-groups").description("List field groups for a business object (--json adds each one's context)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--all", "Fetch the full set via /init/field_groups").action(async (opts) => {
+  try {
+    const parentOpts = listFieldGroupsCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId)
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    const client = new HttpClient(config2);
+    let boId3;
+    if (opts.boId) {
+      boId3 = opts.boId;
+    } else if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      boId3 = String(bo.id);
+    } else {
+      throw new Error("Provide either --bo-id or --bo-name");
+    }
+    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
+    let data;
+    if (opts.all) {
+      const raw = await client.get("/v1/init/field_groups");
+      const items = unwrapPaginated(raw);
+      data = items.filter((g) => g.business_object_id === Number(boId3));
+    } else {
+      const raw = await client.get(
+        `/v1/business-objects/${boId3}/field-groups`
+      );
+      data = unwrapPaginated(raw);
+    }
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name"];
+    console.log(
+      formatOutput(data, {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/list-relationships.ts
+var listRelationshipsCommand = new Command("list-relationships").description("List relationships for a business object (--json adds each one's context)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--page <n>", "Fetch only this single page (default: all relationships)").option("--per-page <n>", "Items per page (single-page mode)", "50").option("--all", "Fetch all relationships (this is now the default)").action(async (opts) => {
+  try {
+    const parentOpts = listRelationshipsCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId)
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    const client = new HttpClient(config2);
+    let boId3;
+    if (opts.boId) {
+      boId3 = opts.boId;
+    } else if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      boId3 = String(bo.id);
+    } else {
+      throw new Error("Provide either --bo-id or --bo-name");
+    }
+    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
+    let data;
+    const singlePage = opts.page !== void 0 && !opts.all;
+    if (!singlePage) {
+      const raw = await client.get("/v1/init/relationships");
+      const items = unwrapPaginated(raw);
+      data = items.filter((r) => r.business_object_id === Number(boId3));
+    } else {
+      const query = {
+        page: opts.page,
+        perPage: opts.perPage
+      };
+      const raw = await client.get(
+        `/v1/business-objects/${boId3}/relationships`,
+        query
+      );
+      data = unwrapPaginated(raw);
+    }
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? [
+      "id",
+      "name",
+      "to_business_object_id"
+    ];
+    console.log(
+      formatOutput(data, {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/list-workflow-milestones.ts
+var listWorkflowMilestonesCommand = new Command(
+  "list-workflow-milestones"
+).description("List workflow milestones for a business object (--json adds each one's context)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").option("--all", "Fetch the full set via /init/milestones").action(async (opts) => {
+  try {
+    const parentOpts = listWorkflowMilestonesCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId)
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    const client = new HttpClient(config2);
+    let boId3;
+    if (opts.boId) {
+      boId3 = opts.boId;
+    } else if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      boId3 = String(bo.id);
+    } else {
+      throw new Error("Provide either --bo-id or --bo-name");
+    }
+    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
+    let data;
+    if (opts.all) {
+      const raw = await client.get("/v1/init/milestones");
+      const items = unwrapPaginated(raw);
+      data = items.filter((m) => m.business_object_id === Number(boId3));
+    } else {
+      const raw = await client.get(
+        `/v1/business-objects/${boId3}/workflows/milestones`
+      );
+      data = unwrapPaginated(raw);
+    }
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name"];
+    console.log(
+      formatOutput(data, {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/list-workflow-steps.ts
+var listWorkflowStepsCommand = new Command("list-workflow-steps").description("List workflow steps for a business object (--json adds each one's context)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
+  try {
+    const parentOpts = listWorkflowStepsCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId)
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    const client = new HttpClient(config2);
+    let boId3;
+    if (opts.boId) {
+      boId3 = opts.boId;
+    } else if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      boId3 = String(bo.id);
+    } else {
+      throw new Error("Provide either --bo-id or --bo-name");
+    }
+    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
+    const raw = await client.get(
+      `/v1/business-objects/${boId3}/workflows/steps`
+    );
+    const data = unwrapPaginated(raw);
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name", "milestone_id"];
+    console.log(
+      formatOutput(data, {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/list-workflow-tasks.ts
+var listWorkflowTasksCommand = new Command("list-workflow-tasks").description("List workflow tasks for a business object (--json adds each one's context)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name").action(async (opts) => {
+  try {
+    const parentOpts = listWorkflowTasksCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId)
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    const client = new HttpClient(config2);
+    let boId3;
+    if (opts.boId) {
+      boId3 = opts.boId;
+    } else if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      boId3 = String(bo.id);
+    } else {
+      throw new Error("Provide either --bo-id or --bo-name");
+    }
+    await assertBusinessObjectReadable(client, Number(boId3), `read business object ${boId3}`);
+    const raw = await client.get(
+      `/v1/business-objects/${boId3}/workflows/tasks`
+    );
+    const data = unwrapPaginated(raw);
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? ["id", "name", "step_id"];
+    console.log(
+      formatOutput(data, {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/utils/folder-sticker-info.ts
+async function withFolderStickerInfo(client, folders, loadStickers = async () => unwrapPaginated(await client.get("/v1/stickers"))) {
+  const needs = folders.some((f) => (f.folder_stickers ?? []).some((s) => !infoText(s.info) && s.sticker_id != null));
+  if (!needs) return folders;
+  const byId = /* @__PURE__ */ new Map();
+  try {
+    for (const sticker2 of await loadStickers()) byId.set(Number(sticker2.id), infoText(sticker2.info));
+  } catch {
+    return folders;
+  }
+  const out = folders.map((folder2) => {
+    if (!folder2.folder_stickers?.length) return folder2;
+    return {
+      ...folder2,
+      folder_stickers: folder2.folder_stickers.map((s) => {
+        if (infoText(s.info) || s.sticker_id == null) return s;
+        const info = byId.get(Number(s.sticker_id));
+        return info ? { ...s, bo_sticker_info: info } : s;
+      })
+    };
+  });
+  const meta = folders[PAGINATION_META];
+  if (meta) Object.defineProperty(out, PAGINATION_META, { value: meta, enumerable: false });
+  return out;
+}
+function folderStickerInfoLines(folders) {
+  const lines = [];
+  for (const folder2 of folders) {
+    for (const s of folder2.folder_stickers ?? []) {
+      const own = infoText(s.info);
+      const label = `folder ${folder2.id} "${folder2.folder_name ?? ""}" sticker "${s.name ?? s.id}"${own ? "" : " (from its business object sticker)"}`;
+      lines.push(...infoLines(own ?? s.bo_sticker_info, { indent: "  ", label, cap: INFO_TEXT_CAP }));
+    }
+  }
+  return lines.length ? ["", "Sticker context:", ...lines] : [];
+}
+
+// .path-cli/src/utils/designer-info-context.ts
+function businessObjectName(bo, id) {
+  return bo?.plural_name || bo?.name || bo?.singular_name || `Business object ${bo?.id ?? id}`;
+}
+async function businessObjectInfo(metadata, boId3) {
+  const bo = await metadata.businessObject(boId3).catch(() => void 0);
+  return { id: boId3, name: businessObjectName(bo, boId3), info: infoText(bo?.info) };
+}
+async function fieldInfo(metadata, field, relationships2) {
+  if (!field) return null;
+  const own = infoText(field.info);
+  if (own || field.relationship_id == null || field.reference_field_id == null) return own;
+  const relationship = relationships2.find((r) => r.id === field.relationship_id);
+  if (!relationship) return null;
+  const referenced = await metadata.field(relationship.to_business_object_id, field.reference_field_id).catch(() => void 0);
+  return infoText(referenced?.info);
+}
+function infoByName(entries) {
+  const out = {};
+  for (const { name, info } of entries) {
+    const text = infoText(info);
+    if (!text) continue;
+    let key = name;
+    for (let n = 2; key in out; n++) key = `${name} (${n})`;
+    out[key] = text;
+  }
+  return out;
+}
+function ownInfoLines(title, own) {
+  const lines = own ? infoLines(own.info, { indent: "  ", label: own.name, cap: INFO_TEXT_CAP }) : [];
+  return lines.length ? [`${title}:`, ...lines] : [];
+}
+function listInfoLines(title, items) {
+  const lines = items.flatMap((item2) => infoLines(item2.info, { indent: "  ", label: `${item2.name} (${item2.id})`, cap: INFO_TEXT_CAP }));
+  return lines.length ? ["", `${title}:`, ...lines] : [];
+}
+function infoContextLines(businessObject, sections = []) {
+  const lines = [];
+  const boLines = businessObject ? infoLines(businessObject.info, { indent: "  ", label: businessObject.name, cap: INFO_TEXT_CAP }) : [];
+  if (boLines.length) lines.push("Business object context:", ...boLines);
+  for (const section of sections) {
+    const entryLines = section.entries.flatMap((e) => infoLines(e.info, { indent: "  ", label: e.name, cap: INFO_TEXT_CAP }));
+    if (entryLines.length) lines.push(`${section.title}:`, ...entryLines);
+  }
+  return lines;
+}
+
+// .path-cli/src/commands/list-folders.ts
+var listFoldersCommand = new Command("list-folders").description("List folders. Each folder carries its own context (what the folder is for, who uses it; once per session like all context). Each folder_stickers[] entry carries its context; a copy of a business object sticker with no context of its own also gets bo_sticker_context (the business object sticker's context, which the copy shows). Text output lists folder context and sticker context under the table").option("--bo-id <id>", "Filter by business object ID").option("--bo-name <name>", "Filter by business object name").option("--page <n>", "Fetch only this single page (default: all folders)").option("--per-page <n>", "Items per page (single-page mode)", "50").option("--all", "Fetch all folders (this is now the default)").action(async (opts) => {
+  try {
+    const parentOpts = listFoldersCommand.parent?.opts() ?? {};
+    const config2 = loadConfig({
+      accountId: parentOpts.account,
+      baseUrl: parentOpts.baseUrl
+    });
+    if (!config2.accountId) {
+      throw new Error(
+        'Missing --account <id>. Run "path list-accounts" to see available accounts.'
+      );
+    }
+    const client = new HttpClient(config2);
+    const query = opts.page !== void 0 && !opts.all ? { page: opts.page, perPage: opts.perPage } : { all: "true" };
+    if (opts.boName) {
+      const bo = await resolveBusinessObjectByName(client, opts.boName);
+      query["business_object_ids[]"] = String(bo.id);
+    } else if (opts.boId) {
+      query["business_object_ids[]"] = opts.boId;
+    }
+    const raw = await client.get("/v1/folders", query);
+    const data = await withFolderStickerInfo(
+      client,
+      await filterVisibleFolders(
+        client,
+        unwrapPaginated(raw)
+      )
+    );
+    const format = parentOpts.json ? "json" : void 0;
+    const fields = parentOpts.fields?.split(",").map((s) => s.trim()) ?? [
+      "id",
+      "folder_name",
+      "business_object_id"
+    ];
+    console.log(
+      formatOutput(data, {
+        format,
+        fields,
+        quiet: parentOpts.quiet
+      })
+    );
+    if (!format && !parentOpts.quiet) {
+      const folderInfo = data.map((f) => ({ id: f.id, name: f.folder_name ?? `Folder ${f.id}`, info: infoText(f.info) }));
+      for (const line of listInfoLines("Folder context", folderInfo)) console.log(line);
+      for (const line of folderStickerInfoLines(data)) console.log(line);
+    }
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/utils/fetch-all-pages.ts
+async function fetchAllPages(client, path, query = {}, perPage = 30) {
+  const all4 = [];
+  const seenIds = /* @__PURE__ */ new Set();
+  let page = 1;
+  let totalPages;
+  let lastMeta;
+  for (; ; ) {
+    const raw = await client.get(path, {
+      ...query,
+      page: String(page),
+      perPage: String(perPage)
+    });
+    const meta = readMeta(raw);
+    if (meta) lastMeta = meta;
+    const items = unwrapPaginated(raw);
+    const pageItems = Array.isArray(items) ? items : [];
+    for (const item2 of pageItems) {
+      const id = idOf(item2);
+      if (id !== void 0) {
+        if (seenIds.has(id)) continue;
+        seenIds.add(id);
+      }
+      all4.push(item2);
+    }
+    if (meta && typeof meta.total_pages === "number") {
+      totalPages = meta.total_pages;
+      if (page >= totalPages || totalPages === 0) break;
+    } else {
+      if (pageItems.length < perPage) break;
+    }
+    page += 1;
+  }
+  attachMeta(all4, lastMeta, totalPages);
+  return all4;
+}
+function idOf(item2) {
+  if (typeof item2 === "object" && item2 !== null && "id" in item2) {
+    return item2.id;
+  }
+  return void 0;
+}
+function readMeta(raw) {
+  if (typeof raw === "object" && raw !== null && "meta" in raw) {
+    const meta = raw.meta;
+    if (meta && typeof meta === "object") return meta;
+  }
+  return void 0;
+}
+function attachMeta(all4, lastMeta, totalPages) {
+  if (!lastMeta) return;
+  const meta = {
+    ...lastMeta,
+    page: 1,
+    total_pages: totalPages ?? lastMeta.total_pages,
+    item_count: all4.length,
+    total_items: all4.length
+  };
+  Object.defineProperty(all4, PAGINATION_META, {
+    value: meta,
+    enumerable: false,
+    configurable: true
+  });
+}
+
+// .path-cli/src/resolvers/resolve-folder.ts
+async function listBusinessObjectFolders(client, boId3) {
+  const raw = await cachedFetch(
+    () => client.get("/v1/folders", { all: "true", "business_object_ids[]": String(boId3) }),
+    `bo-folders--${boId3}`,
+    `/v1/folders?business_object_ids[]=${boId3}`
+  );
+  return unwrapPaginated(raw).filter((f) => f.business_object_id === void 0 || f.business_object_id === boId3);
+}
+function resolveFolderByName(client, name, boId3) {
+  return freshOnMiss(() => findFolderByName(client, name, boId3));
+}
+async function findFolderByName(client, name, boId3) {
+  const folders = await listBusinessObjectFolders(client, boId3);
+  const lower = name.toLowerCase();
+  const matches = folders.filter((f) => f.folder_name.toLowerCase() === lower);
+  if (matches.length === 0) {
+    const available = folders.map((f) => `  ${f.id}: ${f.folder_name}`).join("\n");
+    throw new Error(
+      `Folder "${name}" not found on BO ${boId3}. Available:
+${available}`
+    );
+  }
+  if (matches.length > 1) {
+    const ambiguous = matches.map((f) => `  ${f.id}: ${f.folder_name}`).join("\n");
+    throw new Error(`Ambiguous folder name "${name}". Matches:
+${ambiguous}`);
+  }
+  return matches[0];
+}
+
 // packages/duration.ts
 function isNumberChar(charCode) {
   return charCode >= 45 && charCode <= 57 && charCode !== 47;
@@ -30601,14 +31492,14 @@ var DurationFormat = class _DurationFormat {
     return result;
   }
   display(duration3) {
-    const segments = this.toSegments(duration3);
-    const result = displaySegments(segments);
+    const segments2 = this.toSegments(duration3);
+    const result = displaySegments(segments2);
     if (result || !duration3.seconds) {
       return result;
     }
     let smallest = -1;
-    for (let i = 0; i < segments.length; i++) {
-      if (segments[i] !== null) {
+    for (let i = 0; i < segments2.length; i++) {
+      if (segments2[i] !== null) {
         smallest = i;
       }
     }
@@ -30627,8 +31518,8 @@ var DurationFormat = class _DurationFormat {
     };
   }
 };
-function displaySegments(segments) {
-  return segments.map((segment, index) => {
+function displaySegments(segments2) {
+  return segments2.map((segment, index) => {
     if (!segment) {
       return null;
     }
@@ -30752,7 +31643,16 @@ var NON_EDITABLE_TYPES = /* @__PURE__ */ new Set([
   FieldTypes3.Tag
 ]);
 function isEditableField(field) {
-  return !field.is_hidden && field.is_primary_object !== false && !SYSTEM_STANDARD_TYPES.has(field.standard_field_type ?? "") && !NON_EDITABLE_TYPES.has(field.field_type);
+  return !field.is_hidden && isEditableFieldKind(field);
+}
+function isEditableFieldKind(field) {
+  return field.is_primary_object !== false && !SYSTEM_STANDARD_TYPES.has(field.standard_field_type ?? "") && !NON_EDITABLE_TYPES.has(field.field_type);
+}
+function isShownInStepForm(field, selection) {
+  return !field.is_hidden || (selection?.some((entry) => entry.field_id === field.id) ?? false);
+}
+function isEditableTableCellField(field) {
+  return field.relationship_id == null && field.is_primary_object !== false && !SYSTEM_STANDARD_TYPES.has(field.standard_field_type ?? "") && !NON_EDITABLE_TYPES.has(field.field_type);
 }
 function isPercentField(field) {
   return field.field_type === FieldTypes3.Percent || field.formatting?.use_percentage_symbol === true;
@@ -30789,7 +31689,9 @@ async function sourceRecords(field, metadata) {
     for (let page = 1; ; page++) {
       const res2 = await client.get(
         `/v1/folders/${field.select_folder_id}/records`,
-        { page: String(page), perPage: "500" }
+        // As the web app: a folder on a BO the user can't view still lists
+        // its option values (each record's id and the values a dropdown shows).
+        { page: String(page), perPage: "500", purpose: "options" }
       );
       const items = Array.isArray(res2) ? res2 : res2.items ?? [];
       all4.push(...items);
@@ -31036,7 +31938,9 @@ function formatDate2(d, format, zone = activeTimeZone()) {
   const w = wallClockIn(d, zone);
   const tokens = {
     yyyy: () => String(w.year),
+    YYYY: () => String(w.year),
     yy: () => pad3(w.year % 100),
+    YY: () => pad3(w.year % 100),
     y: () => String(w.year),
     MMMM: () => MONTHS[w.month - 1],
     MMM: () => MONTHS[w.month - 1].slice(0, 3),
@@ -31044,6 +31948,8 @@ function formatDate2(d, format, zone = activeTimeZone()) {
     M: () => String(w.month),
     dd: () => pad3(w.day),
     d: () => String(w.day),
+    DD: () => pad3(w.day),
+    D: () => String(w.day),
     EEEE: () => DAYS[w.weekday],
     EEE: () => DAYS[w.weekday].slice(0, 3),
     HH: () => pad3(w.hour),
@@ -31054,17 +31960,18 @@ function formatDate2(d, format, zone = activeTimeZone()) {
     m: () => String(w.minute),
     ss: () => pad3(w.second),
     s: () => String(w.second),
-    a: () => w.hour < 12 ? "AM" : "PM"
+    a: () => w.hour < 12 ? "AM" : "PM",
+    tt: () => w.hour < 12 ? "AM" : "PM"
   };
   return format.replace(
-    /'([^']*)'|yyyy|yy|y|MMMM|MMM|MM|M|dd|d|EEEE|EEE|HH|H|hh|h|mm|m|ss|s|a/g,
+    /'([^']*)'|yyyy|YYYY|yy|YY|y|MMMM|MMM|MM|M|dd|DD|d|D|EEEE|EEE|HH|H|hh|h|mm|m|ss|s|tt|a/g,
     (match, literal2) => literal2 !== void 0 ? literal2 : tokens[match]?.() ?? match
   );
 }
 
 // .path-cli/src/pathway-runner/surfaces/helpers.ts
-import { existsSync as existsSync3, statSync } from "fs";
-import { isAbsolute, resolve as resolve3 } from "path";
+import { existsSync as existsSync4, statSync } from "fs";
+import { isAbsolute, resolve as resolve4 } from "path";
 
 // .path-cli/src/pathway-runner/surfaces/types.ts
 function emptyInput() {
@@ -31136,8 +32043,8 @@ function describeValue(field, value) {
 }
 function resolveFiles(input, ctx) {
   return input.files.map((file) => {
-    const path = isAbsolute(file) ? file : resolve3(ctx.cwd, file);
-    if (!existsSync3(path) || !statSync(path).isFile()) {
+    const path = isAbsolute(file) ? file : resolve4(ctx.cwd, file);
+    if (!existsSync4(path) || !statSync(path).isFile()) {
       throw new SurfaceInputError(`File not found: ${file}`);
     }
     return path;
@@ -31206,8 +32113,8 @@ async function relatedAppointmentRecordIds(client, metadata, recordId) {
   const ids = /* @__PURE__ */ new Set();
   for (const rel of relationships2) {
     if (rel.business_object_id !== boId3 || !withAppointments.has(rel.to_business_object_id)) continue;
-    const linked = record2.relationships?.[String(rel.id)];
-    for (const id of [linked ?? []].flat()) if (id) ids.add(String(id));
+    const linked2 = record2.relationships?.[String(rel.id)];
+    for (const id of [linked2 ?? []].flat()) if (id) ids.add(String(id));
   }
   const inverse = relationships2.filter(
     (rel) => rel.to_business_object_id === boId3 && withAppointments.has(rel.business_object_id)
@@ -31426,7 +32333,147 @@ function windowBound(text, edge, zones) {
   return (edge === "start" ? at(zones.user, day, 0) : instantOf(zones.user, day.year, day.month, day.day, 23, 59, 59, 999)).toISOString();
 }
 
+// .path-cli/src/access/record-notes.ts
+var NOTE_DATE_FORMAT = "MMM d, yyyy 'at' h:mm a";
+function isNotesField(field) {
+  return field.field_type === FieldTypes3.Notes && field.relationship_id == null && field.is_primary_object !== false;
+}
+function notesForField(record2, fieldId) {
+  return (record2.notes ?? []).filter((note) => note.field_id === fieldId).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+}
+function findNote(record2, noteId) {
+  const id = String(noteId).trim();
+  return (record2.notes ?? []).find((note) => String(note.id) === id);
+}
+function authorName(users, userId) {
+  const user = users.get(userId);
+  if (!user) return "Unknown";
+  return `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim() || user.email || "Unknown";
+}
+function noteEntry(note, users, zone, actingUserId3) {
+  const edited = note.updated_at && Math.abs(new Date(note.updated_at).getTime() - new Date(note.created_at).getTime()) > 1e3;
+  return {
+    id: String(note.id),
+    author: authorName(users, note.created_by),
+    created_by: note.created_by,
+    created: formatDate2(new Date(note.created_at), NOTE_DATE_FORMAT, zone),
+    created_at: note.created_at,
+    ...edited ? { updated_at: note.updated_at } : {},
+    mine: actingUserId3 != null && note.created_by === actingUserId3,
+    note: note.note
+  };
+}
+function shownNotesFields(fields, view4) {
+  return fields.filter((f) => isNotesField(f) && !f.is_hidden && (!view4 || view4.fields.has(f.id)));
+}
+function resolveNotesField(fields, key, shown) {
+  const choices = shown.map((f) => `${f.id} ${f.name}`).join(", ") || "(none)";
+  const k = key == null ? "" : String(key).trim();
+  if (!k) {
+    if (shown.length === 1) return shown[0];
+    throw new Error(
+      shown.length ? `This record has ${shown.length} Notes fields \u2014 give --field <id|name>. Notes fields: ${choices}` : "This record has no Notes field you can see."
+    );
+  }
+  const field = fields.find((f) => String(f.id) === k) ?? fields.find((f) => f.name.toLowerCase() === k.toLowerCase());
+  if (!field) throw new Error(`No field "${k}" on this business object. Notes fields: ${choices}`);
+  if (field.field_type !== FieldTypes3.Notes) throw new Error(`${field.name} is not a Notes field. Notes fields: ${choices}`);
+  if (!isNotesField(field)) {
+    throw new Error(`${field.name} shows a linked record's notes \u2014 add them on that record. Notes fields: ${choices}`);
+  }
+  return field;
+}
+async function notesContext(client, accountId, visibility2, record2, what) {
+  const metadata = visibility2?.metadata ?? new RunMetadata(client, accountId);
+  if (visibility2) await assertBusinessObject(client, record2.business_object_id, "view", what);
+  const [view4, fields, zone, current2, directory] = await Promise.all([
+    visibility2 ? visibility2.view(record2) : Promise.resolve(null),
+    metadata.fields(record2.business_object_id),
+    metadata.userTimeZone(),
+    metadata.currentUser().catch(() => null),
+    (record2.notes ?? []).length ? metadata.userDirectory().catch(() => []) : Promise.resolve([])
+  ]);
+  return {
+    metadata,
+    visibility: visibility2,
+    view: view4,
+    fields,
+    shown: shownNotesFields(fields, view4),
+    canAdd: visibility2 ? visibility2.access.canBusinessObject(record2.business_object_id, "edit") : true,
+    actingUserId: visibility2?.access.user.id ?? current2?.id ?? null,
+    zone,
+    users: new Map(directory.map((u) => [u.id, u]))
+  };
+}
+function assertNotesFieldShown(ctx, field, what) {
+  if (!ctx.visibility || !ctx.view || ctx.shown.some((f) => f.id === field.id)) return;
+  throw new AccessDeniedError(
+    ctx.visibility.access.label,
+    what,
+    `the "${field.name}" (${field.id}) Notes field isn't visible to them in the record viewer`
+  );
+}
+function notesListing(record2, ctx, only) {
+  return (only ? [only] : ctx.shown).map((field) => {
+    const notes = notesForField(record2, field.id).map((n) => noteEntry(n, ctx.users, ctx.zone, ctx.actingUserId));
+    return { field_id: field.id, field: field.name, can_add: ctx.canAdd, count: notes.length, notes };
+  });
+}
+function assertOwnNote(ctx, record2, noteId, what) {
+  const note = findNote(record2, noteId);
+  if (!note) throw new Error(`Note ${noteId} isn't on record ${record2.id}. List them with list-record-notes --record-id ${record2.id}`);
+  const visibility2 = ctx.visibility;
+  if (!visibility2 || !ctx.view) return note;
+  const label = visibility2.access.label;
+  const fieldId = note.field_id;
+  if (fieldId == null || !ctx.shown.some((f) => f.id === fieldId)) {
+    const name = fieldId != null ? ctx.fields.find((f) => f.id === fieldId)?.name : void 0;
+    throw new AccessDeniedError(
+      label,
+      what,
+      `${name ? `the "${name}" (${fieldId}) Notes field` : "its Notes field"} isn't visible to them in the record viewer`
+    );
+  }
+  if (note.created_by !== visibility2.access.user.id) {
+    throw new AccessDeniedError(label, what, "only the note's author can edit or delete it");
+  }
+  return note;
+}
+function renderNotesListing(header2, listings) {
+  const lines = [header2];
+  if (!listings.length) {
+    lines.push("", "No Notes fields you can see on this record.");
+    return lines.join("\n");
+  }
+  for (const field of listings) {
+    lines.push("", `${field.field} (field ${field.field_id}) \u2014 ${field.count} note${field.count === 1 ? "" : "s"}${field.can_add ? "" : " (read-only for you)"}`);
+    if (!field.notes.length) lines.push("  No notes");
+    for (const note of field.notes) lines.push(...renderNoteEntry(note, "  "));
+  }
+  return lines.join("\n");
+}
+function renderNoteEntry(note, indent = "") {
+  const byline = `${indent}${note.created} \u2014 ${note.author}${note.mine ? " (you)" : ""}${note.updated_at ? " (edited)" : ""}  [${note.id}]`;
+  return [byline, ...note.note.split(/\r?\n/).map((line) => `${indent}  ${line}`)];
+}
+function assertNoNotesFields(fields, fieldIds, recordId) {
+  const ids = new Set(fieldIds);
+  const notes = fields.filter((f) => ids.has(f.id) && f.field_type === FieldTypes3.Notes);
+  if (!notes.length) return;
+  throw new Error(
+    `${notes.map((f) => `"${f.name}" (${f.id})`).join(", ")} ${notes.length === 1 ? "is a Notes field" : "are Notes fields"}: add a note with add-record-note --record-id ${recordId} --field ${notes[0].id} --note "<text>" (list-record-notes, update-record-note, delete-record-note for the rest)`
+  );
+}
+function noteText(opts, readFile) {
+  if (opts.note != null && opts.noteFile != null) throw new Error("Give --note or --note-file, not both");
+  const text = opts.noteFile != null ? readFile(opts.noteFile) : opts.note;
+  if (text == null) throw new Error("Give the note text with --note <text> or --note-file <path>");
+  if (!text.trim()) throw new Error("The note is empty");
+  return text.replace(/\s+$/, "");
+}
+
 // .path-cli/src/access/record-display.ts
+var NOTES_IN_RECORD_VIEW = 3;
 var DATE = "EEE M/d/yy";
 var TIME = "h:mm a";
 function formatAppointmentValue(value, zones) {
@@ -31457,8 +32504,8 @@ function fieldValueOf(field, record2) {
   if (field.standard_field_type === "CreatedDate") return record2.created_at;
   if (field.standard_field_type === "ModifiedDate") return record2.updated_at;
   if (field.reference_field_id != null && field.relationship_id != null) {
-    const linked = record2.relationship_fields?.[String(field.relationship_id)]?.fields?.[String(field.reference_field_id)];
-    if (linked != null) return linked;
+    const linked2 = record2.relationship_fields?.[String(field.relationship_id)]?.fields?.[String(field.reference_field_id)];
+    if (linked2 != null) return linked2;
   }
   return record2.fields?.[String(field.id)];
 }
@@ -31473,12 +32520,15 @@ function withDisplayFormat(field) {
 async function recordDisplay(record2, view4, visibility2, sources) {
   const metadata = visibility2.metadata;
   const boId3 = record2.business_object_id;
-  const [zones, bos, groups, milestones] = await Promise.all([
+  const [zones, bos, groups, milestones, directory] = await Promise.all([
     appointmentZones(metadata),
     metadata.businessObjects().catch(() => []),
     visibility2.fieldGroups(boId3),
-    metadata.client.get(`/v1/business-objects/${boId3}/workflows/milestones`, { all: "true" }).then((r) => unwrapPaginated(r)).catch(() => [])
+    metadata.client.get(`/v1/business-objects/${boId3}/workflows/milestones`, { all: "true" }).then((r) => unwrapPaginated(r)).catch(() => []),
+    // Note authors, only when there are notes to show.
+    (record2.notes ?? []).length ? metadata.userDirectory().catch(() => []) : Promise.resolve([])
   ]);
+  const users = new Map(directory.map((u) => [u.id, u]));
   const boById = new Map(bos.map((b) => [b.id, b]));
   const bo = boById.get(boId3);
   const groupOrder = new Map(groups.map((g, i) => [g.id, g.order_number ?? i]));
@@ -31490,7 +32540,30 @@ async function recordDisplay(record2, view4, visibility2, sources) {
       (a, b) => (groupOrder.get(a.field_group_id ?? -1) ?? 1e9) - (groupOrder.get(b.field_group_id ?? -1) ?? 1e9) || (a.order_number ?? 1e9) - (b.order_number ?? 1e9) || a.id - b.id
     );
     const fields = {};
+    const notes = {};
     for (const field of shown) {
+      if (isNotesField(field)) {
+        const entries = notesForField(record2, field.id);
+        if (!entries.length) continue;
+        let name2 = field.name;
+        for (let n = 2; name2 in notes || name2 in fields; n++) name2 = `${field.name} (${n})`;
+        notes[name2] = {
+          field_id: field.id,
+          count: entries.length,
+          latest: entries.slice(0, NOTES_IN_RECORD_VIEW).map((entry) => {
+            const shownNote = noteEntry(entry, users, zones.user, visibility2.access.user.id);
+            return {
+              id: shownNote.id,
+              author: shownNote.author,
+              created: shownNote.created,
+              note: shownNote.note,
+              ...shownNote.mine ? { mine: true } : {}
+            };
+          })
+        };
+        sources?.fields.push({ name: name2, field });
+        continue;
+      }
       const text = displayValue(withDisplayFormat(field), fieldValueOf(field, record2), zones);
       if (text === "") continue;
       let name = field.name;
@@ -31501,15 +32574,15 @@ async function recordDisplay(record2, view4, visibility2, sources) {
     const related = {};
     const relatedIds = {};
     for (const relationshipId of view4.relationships) {
-      const linkedId = record2.relationships?.[String(relationshipId)];
-      if (!linkedId) continue;
+      const linkedId2 = record2.relationships?.[String(relationshipId)];
+      if (!linkedId2) continue;
       const relationship = view4.relationshipMeta.get(relationshipId);
       const target = relationship ? boById.get(relationship.to_business_object_id) : void 0;
       const linkedFields = record2.relationship_fields?.[String(relationshipId)]?.fields ?? {};
       const linkedIdentifier = target?.identifier_field_id != null ? linkedFields[String(target.identifier_field_id)] : void 0;
       const name = relationship?.name ?? `Relationship ${relationshipId}`;
-      related[name] = linkedIdentifier != null && linkedIdentifier !== "" ? String(linkedIdentifier) : String(linkedId);
-      relatedIds[name] = String(linkedId);
+      related[name] = linkedIdentifier != null && linkedIdentifier !== "" ? String(linkedIdentifier) : String(linkedId2);
+      relatedIds[name] = String(linkedId2);
       if (relationship) sources?.relationships.push({ name, relationship });
     }
     const milestoneNames = new Map(milestones.map((m) => [m.id, m.name]));
@@ -31520,7 +32593,8 @@ async function recordDisplay(record2, view4, visibility2, sources) {
       ...record2.archived_on ? { archived: true } : {},
       fields,
       related,
-      related_ids: relatedIds
+      related_ids: relatedIds,
+      ...Object.keys(notes).length ? { notes } : {}
     };
   } finally {
     setActiveTimeZone(previous);
@@ -31535,6 +32609,16 @@ function renderRecordDisplay(display) {
   if (display.milestones.length) lines.push(`Milestones: ${display.milestones.join(" \u2022 ")}`);
   lines.push("");
   for (const [name, value] of Object.entries(display.fields)) lines.push(`${name}: ${value}`);
+  const notes = Object.entries(display.notes ?? {});
+  for (const [name, field] of notes) {
+    lines.push("", `${name} (${field.count} note${field.count === 1 ? "" : "s"}):`);
+    for (const note of field.latest) {
+      lines.push(`  ${note.created} \u2014 ${note.author}${note.mine ? " (you)" : ""}  [${note.id}]`);
+      lines.push(...note.note.split(/\r?\n/).map((line) => `    ${line}`));
+    }
+    const older = field.count - field.latest.length;
+    if (older > 0) lines.push(`  \u2026 ${older} older: list-record-notes --record-id ${display.id} --field ${field.field_id}`);
+  }
   const related = Object.entries(display.related);
   if (related.length) {
     lines.push("", "Related:");
@@ -31544,98 +32628,6 @@ function renderRecordDisplay(display) {
     }
   }
   return lines.join("\n");
-}
-
-// .path-cli/src/pathway-runner/pipeline-eval.ts
-var MAX_ROUNDS = 6;
-var CliPipelineEvaluator = class {
-  constructor(metadata) {
-    this.metadata = metadata;
-  }
-  #records = /* @__PURE__ */ new Map();
-  #personName;
-  #settings;
-  async evaluate(pipeline, record2) {
-    const parsed = parsePipeline(pipeline);
-    if (!parsed) return { decided: true, matches: true };
-    const timeZone = effectiveTimeZone((await this.metadata.account())?.time_zone);
-    let last = { decided: false, reason: "not evaluated" };
-    for (let round = 0; round < MAX_ROUNDS; round++) {
-      const missing = { records: /* @__PURE__ */ new Set(), bos: /* @__PURE__ */ new Set(), settings: false, person: false };
-      const result = record_filter_exports.evaluateOnClient(parsed, record2, {
-        fields: (boId3, fieldId) => {
-          const fields = this.metadata.loadedFields.get(boId3);
-          if (!fields) {
-            missing.bos.add(boId3);
-            return void 0;
-          }
-          return fields.find((f) => f.id === fieldId);
-        },
-        accountSettings: this.#settings ?? (missing.settings = true, void 0),
-        relatedRecords: {
-          get: (id) => {
-            const cached2 = this.#records.get(id);
-            if (cached2) return record_filter_exports.toRecordSnapshot(cached2);
-            if (cached2 === void 0) missing.records.add(id);
-            return void 0;
-          }
-        },
-        currentUserFullName: () => {
-          if (this.#personName === void 0) missing.person = true;
-          return this.#personName;
-        },
-        timeZone
-      });
-      if (result.decided) return { decided: true, matches: result.matches };
-      last = { decided: false, reason: result.reason };
-      if (!await this.#load(missing)) return last;
-    }
-    return last;
-  }
-  async #load(missing) {
-    const loads = [];
-    for (const id of missing.records) {
-      loads.push(
-        this.metadata.record(id).then((r) => this.#records.set(id, r)).catch(() => this.#records.set(id, null))
-      );
-    }
-    for (const boId3 of missing.bos) loads.push(this.metadata.fields(boId3).catch(() => this.metadata.loadedFields.set(boId3, [])));
-    if (missing.settings) {
-      loads.push(
-        this.metadata.dynamicSettings().then((all4) => {
-          this.#settings = new Map(all4.map((s) => [s.id, s.value]));
-        })
-      );
-    }
-    if (missing.person) {
-      loads.push(
-        this.metadata.client.get("/v1/users/current/person-record").then(async (person) => {
-          if (!person) {
-            this.#personName = null;
-            return;
-          }
-          const fields = await this.metadata.fields(person.business_object_id);
-          const nameField = fields.find((f) => f.standard_field_type === "PersonName");
-          const name = nameField ? person.fields?.[String(nameField.id)] : void 0;
-          this.#personName = typeof name === "string" ? name : null;
-        }).catch(() => {
-          this.#personName = null;
-        })
-      );
-    }
-    if (!loads.length) return false;
-    await Promise.all(loads);
-    return true;
-  }
-};
-function parsePipeline(filters) {
-  if (!filters) return null;
-  try {
-    const pipeline = typeof filters === "string" ? JSON.parse(filters) : filters;
-    return pipeline?.filters?.filter_types?.length ? pipeline : null;
-  } catch {
-    return null;
-  }
 }
 
 // .path-cli/src/access/record-visibility.ts
@@ -31779,6 +32771,11 @@ function trimRecord(record2, view4) {
       Object.entries(record2.relationship_fields).filter(([id]) => relKeep(id))
     );
   }
+  if (Array.isArray(record2.notes)) {
+    out.notes = record2.notes.filter(
+      (note) => note.field_id == null || !view4.fieldMeta.has(note.field_id) || view4.fields.has(note.field_id)
+    );
+  }
   return { record: out, hiddenFields, hiddenRelationships };
 }
 
@@ -31886,7 +32883,7 @@ function hiddenNote(parts) {
 
 // .path-cli/src/commands/list-records.ts
 var listRecordsCommand = new Command("list-records").description(
-  `List records in a folder (--folder-id / --folder-name), or your recent records. JSON is { folder: {id, name, info}, business_object: {id, name, info}, field_info: [{field_id, name, info}], items } for a folder \u2014 folder.info is the folder's own info (what it is for, who uses it), field_info lists the folder's columns that have designer info (a relationship field without its own shows the related field's) \u2014 and { business_objects: [{id, name, info, field_info}], items } for recent records (one entry per business object present). items is the record list as before. Text output prints the table, then a "Folder info:", a "Business object info:" and a "Field info:" block (only what has info). Like all info, each is shown once per session; later calls leave it out (pass --with-info to repeat)`
+  `List records in a folder (--folder-id / --folder-name), or your recent records. JSON is { folder: {id, name, context}, business_object: {id, name, context}, field_context: [{field_id, name, context}], items } for a folder \u2014 folder.context is the folder's own context (what it is for, who uses it), field_context lists the folder's columns that have designer context (a relationship field without its own shows the related field's) \u2014 and { business_objects: [{id, name, context, field_context}], items } for recent records (one entry per business object present). items is the record list as before. Text output prints the table, then a "Folder context:", a "Business object context:" and a "Field context:" block (only what has context). Like all context, each is shown once per session; later calls leave it out (pass --with-context to repeat)`
 ).option("--folder-id <id>", "Folder ID to list records from").option("--folder-name <name>", "Folder name (requires --bo-id or --bo-name)").option("--bo-id <id>", "Business object ID (for --folder-name)").option("--bo-name <name>", "Business object name (for --folder-name)").option(
   "--page <n>",
   "Fetch only this single page (disables auto-pagination)"
@@ -32025,18 +33022,18 @@ async function recordListInfo(metadata, records, folder2) {
 function renderRecordListInfo(context3) {
   if ("business_object" in context3) {
     return [
-      ...ownInfoLines("Folder info", context3.folder),
-      ...infoContextLines(context3.business_object, [{ title: "Field info", entries: context3.field_info }])
+      ...ownInfoLines("Folder context", context3.folder),
+      ...infoContextLines(context3.business_object, [{ title: "Field context", entries: context3.field_info }])
     ];
   }
   return context3.business_objects.flatMap(
-    (bo) => infoContextLines(bo, [{ title: `Field info (${bo.name})`, entries: bo.field_info }])
+    (bo) => infoContextLines(bo, [{ title: `Field context (${bo.name})`, entries: bo.field_info }])
   );
 }
 
 // .path-cli/src/commands/get-record.ts
 var getRecordCommand = new Command("get-record").description(
-  "Get a single record by ID, as the record viewer shows it to you. Also gives the designer info of what it shows: business_object {id, name, info}, field_info {<field name>: info} and relationship_info {<relationship name>: info} (only entries that have info; a relationship field without its own shows the related field's). In the record view, related_ids gives each related record's id (open it with get-record). Text output ends with a compact info block. Lists of related records (inverse relationship tabs, linked records): list-related-records"
+  "Get a single record by ID, as the record viewer shows it to you. Also gives the designer context of what it shows: business_object {id, name, context}, field_context {<field name>: context} and relationship_context {<relationship name>: context} (only entries that have context; a relationship field without its own shows the related field's). In the record view, related_ids gives each related record's id (open it with get-record). Text output ends with a compact context block. Lists of related records (inverse relationship tabs, linked records): list-related-records"
 ).requiredOption("--record-id <id>", "Record ID").option(
   "--raw",
   "The stored record (fields keyed by id, UTC dates) instead of the record viewer's names and display values (real-world mode) / name enrichment"
@@ -32170,8 +33167,8 @@ async function recordInfo(metadata, boId3, fields, relationships2, allRelationsh
 function renderRecordInfo(context3, recordId) {
   const toEntries = (map) => Object.entries(map).map(([name, info]) => ({ name, info }));
   const lines = infoContextLines(context3.business_object, [
-    { title: "Field info", entries: toEntries(context3.field_info) },
-    { title: "Relationship info", entries: toEntries(context3.relationship_info) }
+    { title: "Field context", entries: toEntries(context3.field_info) },
+    { title: "Relationship context", entries: toEntries(context3.relationship_info) }
   ]);
   return ["", ...lines, ...lines.length ? [""] : [], `Related lists: list-related-records --record-id ${recordId}`];
 }
@@ -32288,30 +33285,30 @@ async function directList(visibility2, record2, tab) {
   const items = await withZone(zones, async () => {
     const out = [];
     for (const [i, id] of linkedIds.entries()) {
-      let linked = i === 0 ? record2.relationship_fields?.[String(rel.id)] : void 0;
-      if (!linked) {
+      let linked2 = i === 0 ? record2.relationship_fields?.[String(rel.id)] : void 0;
+      if (!linked2) {
         const fetched = await metadata.record(id).catch(() => null);
         if (!fetched) continue;
-        linked = { fields: fetched.fields, milestones: fetched.milestones, archived_on: fetched.archived_on };
+        linked2 = { fields: fetched.fields, milestones: fetched.milestones, archived_on: fetched.archived_on };
       }
       const values = {};
       for (const plan of plans) {
         let text = "";
-        if (plan.kind === "identifier") text = identifierOf(target, linked.fields, id);
-        else if (plan.kind === "milestones") text = (linked.milestones ?? []).map((m) => milestoneName.get(m) ?? `Milestone ${m}`).join(", ");
+        if (plan.kind === "identifier") text = identifierOf(target, linked2.fields, id);
+        else if (plan.kind === "milestones") text = (linked2.milestones ?? []).map((m) => milestoneName.get(m) ?? `Milestone ${m}`).join(", ");
         else if (plan.field && tab.section === "addresses") {
-          const related = { ...record2, id, business_object_id: targetBoId, fields: linked.fields ?? {}, milestones: linked.milestones ?? [] };
-          if (await visibility2.isFieldVisible(plan.field, related)) text = displayValue(withDisplayFormat(plan.field), linked.fields?.[String(plan.field.id)], zones);
+          const related = { ...record2, id, business_object_id: targetBoId, fields: linked2.fields ?? {}, milestones: linked2.milestones ?? [] };
+          if (await visibility2.isFieldVisible(plan.field, related)) text = displayValue(withDisplayFormat(plan.field), linked2.fields?.[String(plan.field.id)], zones);
         } else if (plan.field) {
-          const source = i === 0 ? record2 : { ...record2, relationship_fields: { [String(rel.id)]: linked } };
+          const source = i === 0 ? record2 : { ...record2, relationship_fields: { [String(rel.id)]: linked2 } };
           text = displayValue(withDisplayFormat(plan.field), fieldValueOf(plan.field, source), zones);
         }
         values[plan.name] = text;
       }
       out.push({
         id,
-        identifier: identifierOf(target, linked.fields, id),
-        ...linked.archived_on ? { archived: true } : {},
+        identifier: identifierOf(target, linked2.fields, id),
+        ...linked2.archived_on ? { archived: true } : {},
         values
       });
     }
@@ -32429,7 +33426,7 @@ async function inverseList(visibility2, record2, tab) {
     const out = [];
     for (const row of rows) {
       const values = {};
-      const linked = {};
+      const linked2 = {};
       for (const plan of plans) {
         let text = "";
         if (plan.filters && !await visibility2.logicPasses(plan.filters, row)) {
@@ -32441,12 +33438,12 @@ async function inverseList(visibility2, record2, tab) {
         } else if (plan.kind === "milestone") {
           text = (row.milestones ?? []).map((m) => milestoneName.get(m) ?? `Milestone ${m}`).join(", ");
         } else if (plan.kind === "lookup" && plan.relationship_id) {
-          const linkedId = row.relationships?.[String(plan.relationship_id)];
-          if (linkedId) {
+          const linkedId2 = row.relationships?.[String(plan.relationship_id)];
+          if (linkedId2) {
             const lookupRel = relById.get(plan.relationship_id);
             const target = lookupRel ? boById.get(lookupRel.to_business_object_id) : void 0;
-            text = identifierOf(target, row.relationship_fields?.[String(plan.relationship_id)]?.fields, String(linkedId));
-            linked[plan.name] = String(linkedId);
+            text = identifierOf(target, row.relationship_fields?.[String(plan.relationship_id)]?.fields, String(linkedId2));
+            linked2[plan.name] = String(linkedId2);
           }
         }
         values[plan.name] = text;
@@ -32456,7 +33453,7 @@ async function inverseList(visibility2, record2, tab) {
         identifier: identifierOf(listedBo, row.fields, row.id),
         ...row.archived_on ? { archived: true } : {},
         values,
-        ...Object.keys(linked).length ? { linked_ids: linked } : {}
+        ...Object.keys(linked2).length ? { linked_ids: linked2 } : {}
       });
     }
     return out;
@@ -32477,7 +33474,7 @@ async function inverseList(visibility2, record2, tab) {
 
 // .path-cli/src/commands/list-related-records.ts
 var listRelatedRecordsCommand = new Command("list-related-records").description(
-  "A record's related records as the record viewer shows them to you. Without --relationship-*: every related list the record viewer shows \u2014 direct relationships (the records this one links to: relationship cards, Contacts, People, Addresses) and inverse relationship tabs (records that link to this one), each with direction, relationship id, name, the related business object {id, name, info}, the relationship's info and a count. With --relationship-id / --relationship-name: that list's records with the record viewer's columns \u2014 an inverse tab's Table Columns (fields, linked-record lookups, nested tables, pathway buttons, milestones), a direct relationship's identifier, milestones and linked fields (an address's Street / City / State / Zip). JSON: { record, direction, relationship {id, name, info}, business_object {id, name, info}, columns [{kind, name, field_id?, relationship_id?, pathway_id?, info}], items [{id, identifier, values, linked_ids?}] } \u2014 a column's info is the info of the field / relationship / pathway it is based on (once per session, like all info). Open any listed record with get-record --record-id <id>. Relationships the record viewer doesn't show you (hidden, visibility rules, business objects you can't view) are refused"
+  "A record's related records as the record viewer shows them to you. Without --relationship-*: every related list the record viewer shows \u2014 direct relationships (the records this one links to: relationship cards, Contacts, People, Addresses) and inverse relationship tabs (records that link to this one), each with direction, relationship id, name, the related business object {id, name, context}, the relationship's context and a count. With --relationship-id / --relationship-name: that list's records with the record viewer's columns \u2014 an inverse tab's Table Columns (fields, linked-record lookups, nested tables, pathway buttons, milestones), a direct relationship's identifier, milestones and linked fields (an address's Street / City / State / Zip). JSON: { record, direction, relationship {id, name, context}, business_object {id, name, context}, columns [{kind, name, field_id?, relationship_id?, pathway_id?, context}], items [{id, identifier, values, linked_ids?}] } \u2014 a column's context is the context of the field / relationship / pathway it is based on (once per session, like all context). Open any listed record with get-record --record-id <id>. Relationships the record viewer doesn't show you (hidden, visibility rules, business objects you can't view) are refused"
 ).requiredOption("--record-id <id>", "The record whose related records to list").option("--relationship-id <id>", "The relationship (from the overview)").option("--relationship-name <name>", "The relationship by name or inverse tab name (case-insensitive)").option("--direction <direction>", "direct or inverse, when a name or a self-relationship matches both").option("--no-count", "Overview: skip the per-tab record counts (one small request each)").action(async (opts) => {
   try {
     const parentOpts = listRelatedRecordsCommand.parent?.opts() ?? {};
@@ -32513,8 +33510,8 @@ var listRelatedRecordsCommand = new Command("list-related-records").description(
         )
       );
       const lines = infoContextLines(null, [
-        { title: "Relationship info", entries: overview.relationships.map((t) => ({ name: t.tab_name ?? t.name, info: t.info })) },
-        { title: "Business object info", entries: uniqueBos(overview.relationships.map((t) => t.business_object)) }
+        { title: "Relationship context", entries: overview.relationships.map((t) => ({ name: t.tab_name ?? t.name, info: t.info })) },
+        { title: "Business object context", entries: uniqueBos(overview.relationships.map((t) => t.business_object)) }
       ]);
       if (lines.length) console.log(["", ...lines].join("\n"));
       console.log("\nList one: list-related-records --record-id " + record2.id + " --relationship-id <id>");
@@ -32540,7 +33537,7 @@ async function relatedOverview(client, metadata, record2, tabs, withCounts = tru
   const relationships2 = await Promise.all(
     tabs.map(async (tab) => {
       const rel = tab.relationship;
-      const linked = tab.direction === "direct" ? [record2.relationships?.[String(rel.id)] ?? []].flat().filter(Boolean).length : null;
+      const linked2 = tab.direction === "direct" ? [record2.relationships?.[String(rel.id)] ?? []].flat().filter(Boolean).length : null;
       return {
         direction: tab.direction,
         relationship_id: rel.id,
@@ -32549,7 +33546,7 @@ async function relatedOverview(client, metadata, record2, tabs, withCounts = tru
         ...tab.section ? { section: tab.section } : {},
         business_object: await businessObjectInfo(metadata, tab.businessObjectId),
         info: infoText(rel.info),
-        count: tab.direction === "direct" ? linked : withCounts ? await inverseCount(client, rel, record2.id) : null
+        count: tab.direction === "direct" ? linked2 : withCounts ? await inverseCount(client, rel, record2.id) : null
       };
     })
   );
@@ -32587,11 +33584,11 @@ function renderRelatedList(list3, quiet = false) {
   if (list3.items.some((i) => i.archived)) keys.push("archived");
   const table = formatOutput(rows, { fields: keys });
   const info = infoContextLines(list3.business_object, [
-    { title: "Relationship info", entries: [{ name: label, info: list3.relationship.info }] },
-    { title: "Column info", entries: list3.columns.map((c) => ({ name: c.name, info: c.info })) }
+    { title: "Relationship context", entries: [{ name: label, info: list3.relationship.info }] },
+    { title: "Column context", entries: list3.columns.map((c) => ({ name: c.name, info: c.info })) }
   ]);
-  const linked = list3.items.some((i) => i.linked_ids) ? ["", "Linked record ids (open with get-record):", ...list3.items.filter((i) => i.linked_ids).map((i) => `  ${i.id}: ${Object.entries(i.linked_ids).map(([k, v]) => `${k} \u2192 ${v}`).join(", ")}`)] : [];
-  return [head, table, ...linked, ...info.length ? ["", ...info] : []].join("\n");
+  const linked2 = list3.items.some((i) => i.linked_ids) ? ["", "Linked record ids (open with get-record):", ...list3.items.filter((i) => i.linked_ids).map((i) => `  ${i.id}: ${Object.entries(i.linked_ids).map(([k, v]) => `${k} \u2192 ${v}`).join(", ")}`)] : [];
+  return [head, table, ...linked2, ...info.length ? ["", ...info] : []].join("\n");
 }
 
 // .path-cli/src/utils/record-files.ts
@@ -32693,8 +33690,8 @@ var listRecordFilesCommand = new Command("list-record-files").description(
 });
 
 // .path-cli/src/commands/download-record-file.ts
-import { existsSync as existsSync4, mkdirSync as mkdirSync4, statSync as statSync2, writeFileSync as writeFileSync4 } from "fs";
-import { basename, dirname as dirname3, join, resolve as resolve4 } from "path";
+import { existsSync as existsSync5, mkdirSync as mkdirSync5, statSync as statSync2, writeFileSync as writeFileSync5 } from "fs";
+import { basename, dirname as dirname3, join, resolve as resolve5 } from "path";
 var downloadRecordFileCommand = new Command("download-record-file").description(
   "Download one file attached to a record (to a local path, or to stdout with --stdout)"
 ).requiredOption("--record-id <id>", "Record ID").requiredOption(
@@ -32747,12 +33744,12 @@ var downloadRecordFileCommand = new Command("download-record-file").description(
       return;
     }
     const fileName = basename(file.file_name || file.file_id);
-    let target = resolve4(opts.out ?? fileName);
-    if (existsSync4(target) && statSync2(target).isDirectory()) {
+    let target = resolve5(opts.out ?? fileName);
+    if (existsSync5(target) && statSync2(target).isDirectory()) {
       target = join(target, fileName);
     }
-    mkdirSync4(dirname3(target), { recursive: true });
-    writeFileSync4(target, bytes);
+    mkdirSync5(dirname3(target), { recursive: true });
+    writeFileSync5(target, bytes);
     if (parentOpts.quiet) {
       console.log(target);
     } else {
@@ -33168,7 +34165,7 @@ var listRolesCommand = new Command("list-roles").description("List roles").optio
 });
 
 // .path-cli/src/commands/list-pathways.ts
-var listPathwaysCommand = new Command("list-pathways").description("List pathways (--json adds each pathway's info: what the designer built it for)").action(async () => {
+var listPathwaysCommand = new Command("list-pathways").description("List pathways (--json adds each pathway's context: what the designer built it for)").action(async () => {
   try {
     const parentOpts = listPathwaysCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -33415,7 +34412,7 @@ var listCalendarEventsCommand = new Command("list-calendar-events").alias("list-
 
 // .path-cli/src/commands/list-reports.ts
 var listReportsCommand = new Command("list-reports").description(
-  "List reports. Each report carries its own info (what the report is for, how to read it; once per session like all info); text output lists it under the table"
+  "List reports. Each report carries its own context (what the report is for, how to read it; once per session like all context); text output lists it under the table"
 ).option("--page <n>", "Fetch only this single page (default: all reports)").option("--per-page <n>", "Items per page (single-page mode)", "50").option("--all", "Fetch all reports (this is now the default)").action(async (opts) => {
   try {
     const parentOpts = listReportsCommand.parent?.opts() ?? {};
@@ -33450,7 +34447,7 @@ var listReportsCommand = new Command("list-reports").description(
     );
     if (!format && !parentOpts.quiet) {
       const reportInfo2 = data.map((r) => ({ id: r.id, name: r.name ?? `Report ${r.id}`, info: infoText(r.info) }));
-      for (const line of listInfoLines("Report info", reportInfo2)) console.log(line);
+      for (const line of listInfoLines("Report context", reportInfo2)) console.log(line);
     }
   } catch (err) {
     handleError(err);
@@ -37468,11 +38465,11 @@ var Printer = class {
   group(group2, depth) {
     const connective = group2.condition === "or" /* Or */ ? "OR" : "AND";
     const indent = Math.max(depth - 1, 0);
-    const segments = [];
+    const segments2 = [];
     let run = [];
     const flush = () => {
       if (run.length) {
-        segments.push([{ indent, text: run.join(` ${connective} `) }]);
+        segments2.push([{ indent, text: run.join(` ${connective} `) }]);
       }
       run = [];
     };
@@ -37481,16 +38478,16 @@ var Printer = class {
         const lines2 = this.group(child, depth + 1);
         if (lines2.length === 0) continue;
         flush();
-        segments.push(lines2);
+        segments2.push(lines2);
       } else {
         const text = this.leaf(child);
         if (text) run.push(text);
       }
     }
     flush();
-    if (segments.length === 0) return [];
-    const lines = segments.flatMap(
-      (segment, i) => i === segments.length - 1 ? segment : segment.map(
+    if (segments2.length === 0) return [];
+    const lines = segments2.flatMap(
+      (segment, i) => i === segments2.length - 1 ? segment : segment.map(
         (line, j) => j === segment.length - 1 ? { ...line, text: `${line.text} ${connective}` } : line
       )
     );
@@ -37826,7 +38823,7 @@ async function listOnce(client, path, query) {
   }
   const key = `${path}?${new URLSearchParams(query ?? {})}`;
   let pending2 = byKey.get(key);
-  if (!pending2) {
+  if (!pending2 || refreshingMetadata()) {
     pending2 = client.get(path, query);
     byKey.set(key, pending2);
     pending2.catch(() => byKey.delete(key));
@@ -37868,7 +38865,7 @@ var FilterCatalogLoader = class _FilterCatalogLoader {
     const milestonesByBo = groupBy(
       milestones.map((m) => [m.business_object_id, { id: m.id, name: m.name }])
     );
-    this.catalog = {
+    this.#catalog = {
       timeZone,
       businessObjectId: boId3 ?? void 0,
       fields: boId3 == null ? [] : fieldsOf4(boId3),
@@ -37895,10 +38892,22 @@ var FilterCatalogLoader = class _FilterCatalogLoader {
       }))
     };
   }
-  catalog;
+  #catalog;
   #steps = /* @__PURE__ */ new Map();
   #wanted = /* @__PURE__ */ new Set();
+  /** Loads this catalog again (with fresh data, after a miss). */
+  #reload;
+  /** The catalog loaded again after a parse missed a name: used from then on. */
+  #replacement;
+  get catalog() {
+    return this.#replacement?.catalog ?? this.#catalog;
+  }
   static async load(client, accountId, boId3, only) {
+    const loader = await _FilterCatalogLoader.#build(client, accountId, boId3, only);
+    loader.#reload = () => _FilterCatalogLoader.#build(client, accountId, boId3, only);
+    return loader;
+  }
+  static async #build(client, accountId, boId3, only) {
     if (boId3 == null) {
       const [settings3, timeZone2] = await Promise.all([
         loadSettings(client, accountId),
@@ -37939,6 +38948,7 @@ var FilterCatalogLoader = class _FilterCatalogLoader {
    * related BO not loaded yet, load them (in parallel) and run it again.
    */
   async resolve(run) {
+    if (this.#replacement) return this.#replacement.resolve(run);
     for (let round = 0; round < 8; round++) {
       this.#wanted.clear();
       const result = run();
@@ -37951,8 +38961,17 @@ var FilterCatalogLoader = class _FilterCatalogLoader {
     }
     return run();
   }
-  parse(text, options) {
-    return this.resolve(() => parseFilterText(text, this.catalog, options));
+  async parse(text, options) {
+    const result = await this.resolve(() => parseFilterText(text, this.catalog, options));
+    if (!result.errors.length || this.#replacement || !this.#reload || !canRefresh()) return result;
+    const reload = this.#reload;
+    const fresh = await withFreshMetadata(async () => {
+      const loader = await reload();
+      loader.catalog.reportColumns = this.catalog.reportColumns;
+      return { loader, result: await loader.parse(text, options) };
+    });
+    this.#replacement = fresh.loader;
+    return fresh.result;
   }
   print(group2) {
     return this.resolve(() => printFilterText(group2, this.catalog));
@@ -38145,7 +39164,7 @@ function isUserFilterEligibleLeaf(leaf2) {
   const l = leaf2;
   switch (leaf2.type) {
     case "field" /* Field */:
-      return !l.for_field && !l.for_setting && !l.for_current_user;
+      return !l.for_field && !l.for_setting;
     case "milestone" /* Milestone */:
     case "step" /* Step */:
       return ENTRY_DATE_LOGICS2.has(l.logic ?? "");
@@ -38178,7 +39197,9 @@ function leavesOf(group2) {
 }
 function flagLegacyUserFilterKeys(group2, keys, newUid) {
   if (!keys?.length) return 0;
-  const leaves = leavesOf(group2).filter(isUserFilterEligibleLeaf);
+  const leaves = leavesOf(group2).filter(
+    (leaf2) => isUserFilterEligibleLeaf(leaf2) && !leaf2.for_current_user
+  );
   const usedUids = new Set(
     leaves.map((leaf2) => leaf2.uid).filter(Boolean)
   );
@@ -38670,6 +39691,7 @@ var folder = {
       label: `folder ${f.id} "${f.folder_name}" (BO ${boId3})`,
       rootBoId: boId3,
       pipeline,
+      userFilters: true,
       prepare: userFilters.prepare,
       notes: userFilters.notes,
       save: (next) => client.put(
@@ -38816,6 +39838,7 @@ var report = {
       rootBoId: boId3,
       pipeline,
       reportColumns: reportCatalogColumns(r),
+      userFilters: true,
       prepare: userFilters.prepare,
       notes: userFilters.notes,
       save: (next) => client.put(
@@ -39294,85 +40317,119 @@ function parseCustomFieldExpression(text, catalog) {
   if (result.errors.length > 0 || !result.expression) {
     throw new Error(describeParseErrors(text, result.errors));
   }
-  const resolve12 = remoteFieldResolver(catalog);
+  const resolve14 = remoteFieldResolver(catalog);
   const output = inferOutputType(
     result.expression,
     catalog.fields,
-    resolve12,
+    resolve14,
     catalog.settings
   );
   return toBackendFormat(
     { output, expression: result.expression },
     catalog.fields,
-    resolve12,
+    resolve14,
     catalog.settings
   );
 }
-function byName(rows, name, what) {
-  const wanted = name.trim().toLowerCase();
-  const found2 = rows.find((r) => r.name.trim().toLowerCase() === wanted);
-  if (!found2) throw new Error(`Unknown ${what} "${name}"`);
-  return found2;
+function hopsFor(catalog, relationshipIds) {
+  return relationshipIds.map((id) => {
+    const rel = (catalog.relationships ?? []).find((r) => r.id === id);
+    if (!rel) throw new Error(`relationship ${id} not found`);
+    return { relationship_id: rel.id, business_object_id: rel.to_business_object_id };
+  });
 }
 function parseTimeBetweenSource(text, catalog, occurrence2) {
   const trimmed = text.trim();
   if (trimmed.toLowerCase() === "today") {
     return { type: "date", field_id: 0, date_value: "today" };
   }
-  const sep = trimmed.indexOf(":");
-  const kind = sep > 0 ? trimmed.slice(0, sep).trim().toLowerCase() : "";
-  const name = sep > 0 ? trimmed.slice(sep + 1) : "";
-  switch (kind) {
+  const kinded = /^(?:(.*)\.)?(field|milestone|step)\s*:\s*(.+)$/is.exec(
+    trimmed
+  );
+  if (!kinded) {
+    throw new Error(
+      `Time Between source "${text}" must be today, field:<date field>, milestone:<name> or step:<name> (on a related record: milestone:<Relationship>.<name>)`
+    );
+  }
+  const prefix = kinded[1]?.trim();
+  const name = kinded[3].trim();
+  const path = prefix ? `${prefix}.${name}` : name;
+  const chain = (relationshipIds) => relationshipIds.length ? { relationship_mappings: hopsFor(catalog, relationshipIds) } : {};
+  switch (kinded[2].toLowerCase()) {
     case "field": {
-      const field = byName(
-        catalog.fields.filter((f) => f.is_primary_object),
-        name,
-        "field"
-      );
-      if (!DATE_FIELD_TYPES.has(field.field_type)) {
+      const found2 = findFilterField(catalog, path);
+      if (!found2.ok) throw new Error(found2.message);
+      if (!DATE_FIELD_TYPES.has(found2.item.field_type)) {
         throw new Error(
-          `Field "${field.name}" is not a date field (${field.field_type})`
+          `Field "${found2.item.name}" is not a date field (${found2.item.field_type})`
         );
       }
-      return { type: "field", field_id: field.id, date_value: "" };
+      return {
+        type: "field",
+        field_id: found2.item.id,
+        date_value: "",
+        ...chain(found2.relationshipIds)
+      };
     }
-    case "milestone":
+    case "milestone": {
+      const found2 = findFilterMilestone(catalog, path);
+      if (!found2.ok) throw new Error(found2.message);
       return {
         type: "milestone",
         field_id: 0,
         date_value: "",
-        entity_id: byName(catalog.milestones, name, "milestone").id,
-        occurrence: occurrence2
+        entity_id: found2.item.id,
+        occurrence: occurrence2,
+        ...chain(found2.relationshipIds)
       };
-    case "step":
+    }
+    default: {
+      const found2 = findFilterStep(catalog, path);
+      if (!found2.ok) throw new Error(found2.message);
       return {
         type: "workflow_step",
         field_id: 0,
         date_value: "",
-        entity_id: byName(catalog.steps, name, "workflow step").id,
-        occurrence: occurrence2
+        entity_id: found2.item.id,
+        occurrence: occurrence2,
+        ...chain(found2.relationshipIds)
       };
-    default:
-      throw new Error(
-        `Time Between source "${text}" must be today, field:<date field>, milestone:<name> or step:<name>`
-      );
+    }
   }
 }
 function printTimeBetweenSource(source, catalog) {
   if (!source) return "?";
   const occurrence2 = source.occurrence === "first" ? " (first)" : "";
+  const relIds2 = (source.relationship_mappings ?? []).map(
+    (h) => Number(h.relationship_id)
+  );
+  const prefix = chainPrefix(catalog, relIds2);
+  const boId3 = relIds2.length ? businessObjectAt(catalog, relIds2) : void 0;
+  const nameOf3 = (rows, id) => rows.find((r) => r.id === Number(id))?.name ?? `#${id}`;
   switch (source.type) {
     case "date":
       return "today";
-    case "field":
-      return `field:${catalog.fields.find((f) => f.id === source.field_id)?.name ?? `#${source.field_id}`}`;
-    case "milestone":
-      return `milestone:${catalog.milestones.find((m) => m.id === source.entity_id)?.name ?? `#${source.entity_id}`}${occurrence2}`;
-    case "workflow_step":
-      return `step:${catalog.steps.find((s) => s.id === source.entity_id)?.name ?? `#${source.entity_id}`}${occurrence2}`;
+    case "field": {
+      const fields = relIds2.length ? nativeFieldsAt(catalog, boId3) : catalog.fields;
+      return `field:${prefix}${nameOf3(fields, source.field_id)}`;
+    }
+    case "milestone": {
+      const rows = relIds2.length ? milestonesAt(catalog, boId3) : catalog.milestones;
+      return `milestone:${prefix}${nameOf3(rows, source.entity_id)}${occurrence2}`;
+    }
+    case "workflow_step": {
+      const rows = relIds2.length ? stepsAt(catalog, boId3) : catalog.steps;
+      return `step:${prefix}${nameOf3(rows, source.entity_id)}${occurrence2}`;
+    }
   }
 }
-function describeComputedColumn(column, catalog) {
+function hasRelatedTimeBetweenSource(column) {
+  return [column.from_field, column.to_field].some((v) => {
+    const src = typeof v === "string" && v ? JSON.parse(v) : v;
+    return !!src?.relationship_mappings?.length;
+  });
+}
+function describeComputedColumn(column, catalog, timeBetweenCatalog) {
   if (column.column_type === "custom_calculation") {
     const expressions = typeof column.expressions === "string" && column.expressions ? JSON.parse(column.expressions) : column.expressions;
     if (!expressions?.detail) return "(group expression only)";
@@ -39381,7 +40438,8 @@ function describeComputedColumn(column, catalog) {
   }
   if (column.column_type === "timespan" || column.column_type === "time_between") {
     const parse3 = (v) => typeof v === "string" && v ? JSON.parse(v) : v;
-    return `time between ${printTimeBetweenSource(parse3(column.from_field), catalog)} and ${printTimeBetweenSource(parse3(column.to_field), catalog)}`;
+    const names2 = timeBetweenCatalog ?? catalog;
+    return `time between ${printTimeBetweenSource(parse3(column.from_field), names2)} and ${printTimeBetweenSource(parse3(column.to_field), names2)}`;
   }
   return "";
 }
@@ -39450,28 +40508,38 @@ async function definitionFrom(client, accountId, report2, opts) {
     throw new Error("Use --expression or --from/--to, not both");
   }
   if (opts.expression == null && !timeBetween) return null;
-  const catalog = await loadExpressionCatalog(
-    client,
-    accountId,
-    report2.business_object_id
-  );
   if (opts.expression != null) {
+    const catalog = await loadExpressionCatalog(
+      client,
+      accountId,
+      report2.business_object_id
+    );
     return { expression: parseCustomFieldExpression(opts.expression, catalog) };
   }
   if (opts.from == null || opts.to == null) {
     throw new Error("A Time Between Custom Field needs both --from and --to");
   }
-  return {
+  const { from, to } = opts;
+  const loader = await FilterCatalogLoader.load(
+    client,
+    accountId,
+    report2.business_object_id
+  );
+  return loader.resolve(() => ({
     from: parseTimeBetweenSource(
-      opts.from,
-      catalog,
+      from,
+      loader.catalog,
       occurrence(opts.fromOccurrence)
     ),
-    to: parseTimeBetweenSource(opts.to, catalog, occurrence(opts.toOccurrence))
-  };
+    to: parseTimeBetweenSource(
+      to,
+      loader.catalog,
+      occurrence(opts.toOccurrence)
+    )
+  }));
 }
 var getReportCommand = new Command("get-report").description(
-  "Show a report's columns (with column_key / usage), its filter-only Custom Fields, its filter as formula text, and the report's and each column's own info (what it is for; JSON keys info and columns[].info, once per session like all info)"
+  "Show a report's columns (with column_key / usage), its filter-only Custom Fields, its filter as formula text, and the report's and each column's own context (what it is for; JSON keys context and columns[].context, once per session like all context)"
 ).argument("<report-id>", "Report ID").action(async (idArg) => {
   try {
     const { parentOpts, config: config2, client } = setup3(getReportCommand);
@@ -39488,6 +40556,10 @@ var getReportCommand = new Command("get-report").description(
       boId3
     );
     const columns = reportColumns(report2);
+    const relatedLoader = columns.some(hasRelatedTimeBetweenSource) ? await FilterCatalogLoader.load(client, config2.accountId, boId3) : null;
+    const describe = (c) => relatedLoader ? relatedLoader.resolve(
+      () => describeComputedColumn(c, exprCatalog, relatedLoader.catalog)
+    ) : Promise.resolve(describeComputedColumn(c, exprCatalog));
     console.log(
       `report ${report2.id} "${report2.name}" (BO ${boId3}, ${report2.report_type})`
     );
@@ -39496,7 +40568,7 @@ var getReportCommand = new Command("get-report").description(
       const filterable = reportColumnCatalogEntry(
         c
       );
-      const computed = describeComputedColumn(c, exprCatalog);
+      const computed = await describe(c);
       console.log(
         `  #${c.order_number} ${c.name} [${c.column_type}${c.show_column ? "" : ", hidden"}] id=${c.id} key=${c.column_key}` + (filterable ? ` \u2014 filter: COLUMN("${c.name}") (${filterable.kind})` : "") + (computed ? `
       ${computed}` : "")
@@ -39513,7 +40585,7 @@ var getReportCommand = new Command("get-report").description(
       const used = isReferencedByFilter(report2, String(c.column_key));
       console.log(
         `  ${c.name} id=${c.id} key=${c.column_key} \u2014 CUSTOMFIELD("${c.name}") (${entry?.kind ?? "not comparable"})${used ? "" : " [unused]"}
-      ${describeComputedColumn(c, exprCatalog)}`
+      ${await describe(c)}`
       );
       for (const line of infoLines(c.info, { indent: "      ", label: "info", cap: INFO_TEXT_CAP })) console.log(line);
     }
@@ -39545,11 +40617,11 @@ ${infoBlock(report2.info)}`);
   }
 });
 var createCustomFieldCommand = new Command("create-custom-field").description(
-  'Add a filter-only Custom Field to a report: a calculation (--expression, expression syntax) or a Time Between (--from/--to: today | field:<date field> | milestone:<name> | step:<name>). Compare it in the report filter with CUSTOMFIELD("name"); time spans compare in DAYS()/HOURS()...'
+  'Add a filter-only Custom Field to a report: a calculation (--expression, expression syntax) or a Time Between (--from/--to: today | field:<date field> | milestone:<name> | step:<name>, or the same on a related record through to-one relationships, e.g. milestone:Order Related PO.Received). Compare it in the report filter with CUSTOMFIELD("name"); time spans compare in DAYS()/HOURS()...'
 ).argument("<report-id>", "Report ID").requiredOption(
   "--name <name>",
   "Custom Field name (unique among the report custom columns/fields)"
-).option("--expression <formula>", 'Calculation, e.g. "[Total] - [Paid]"').option("--from <source>", "Time Between start").option("--to <source>", "Time Between end").option("--from-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--to-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--info <text>", "The Custom Field's info: what it measures and why the filter compares it (at most 50,000 characters)").option("--info-file <path>", "Read the info from a text or markdown file (instead of --info)").option("--dry-run", "Print the column without saving").action(async (idArg, opts) => {
+).option("--expression <formula>", 'Calculation, e.g. "[Total] - [Paid]"').option("--from <source>", "Time Between start, e.g. milestone:Won or milestone:<Relationship>.<name> on a related record").option("--to <source>", "Time Between end (same forms as --from)").option("--from-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--to-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--context <text>", "The Custom Field's context: what it measures and why the filter compares it (at most 50,000 characters)").option("--context-file <path>", "Read the context from a text or markdown file (instead of --context)").option("--dry-run", "Print the column without saving").action(async (idArg, opts) => {
   try {
     const { parentOpts, config: config2, client } = setup3(createCustomFieldCommand);
     const report2 = await fetchReport(client, parseInt(idArg, 10));
@@ -39594,8 +40666,8 @@ var createCustomFieldCommand = new Command("create-custom-field").description(
   }
 });
 var updateCustomFieldCommand = new Command("update-custom-field").description(
-  "Change a report Custom Field's name, definition (--expression, or --from/--to) or info (--info / --info-file). Filter rules keep working: they reference the field's key, not its name."
-).argument("<report-id>", "Report ID").argument("<field>", "Custom Field name or column_key").option("--name <name>", "New name").option("--expression <formula>", "New calculation").option("--from <source>", "New Time Between start").option("--to <source>", "New Time Between end").option("--from-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--to-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--info <text>", 'New info for the Custom Field ("" clears it)').option("--info-file <path>", "Read the new info from a text or markdown file (instead of --info)").action(async (idArg, fieldArg, opts) => {
+  "Change a report Custom Field's name, definition (--expression, or --from/--to) or context (--context / --context-file). Filter rules keep working: they reference the field's key, not its name."
+).argument("<report-id>", "Report ID").argument("<field>", "Custom Field name or column_key").option("--name <name>", "New name").option("--expression <formula>", "New calculation").option("--from <source>", "New Time Between start").option("--to <source>", "New Time Between end").option("--from-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--to-occurrence <first|most_recent>", OCCURRENCE_HELP).option("--context <text>", 'New context for the Custom Field ("" clears it)').option("--context-file <path>", "Read the new context from a text or markdown file (instead of --context)").action(async (idArg, fieldArg, opts) => {
   try {
     const { parentOpts, config: config2, client } = setup3(updateCustomFieldCommand);
     const report2 = await fetchReport(client, parseInt(idArg, 10));
@@ -39617,7 +40689,7 @@ var updateCustomFieldCommand = new Command("update-custom-field").description(
     const info = infoFromOptions(opts);
     if (!definition && !opts.name && info === void 0) {
       throw new Error(
-        "Nothing to change: pass --name, --expression, --from/--to or --info"
+        "Nothing to change: pass --name, --expression, --from/--to or --context"
       );
     }
     const updated = {
@@ -39948,8 +41020,11 @@ var SearchVisibility = class _SearchVisibility {
       } else if (leaf2.type === "relationship") {
         logic.push(...this.#walk(rootBoId, [Number(leaf2.relationship_id)]).logic);
       }
-      if (leaf2.for_field && typeof leaf2.value === "number") {
-        logic.push(...this.#fieldAt(rootBoId, leaf2.comparison_relationship_ids ?? [], leaf2.value));
+      if (leaf2.for_field) {
+        const compared = (Array.isArray(leaf2.value) ? leaf2.value : [leaf2.value]).filter((v) => typeof v === "number");
+        for (const fieldId of compared) {
+          logic.push(...this.#fieldAt(rootBoId, leaf2.comparison_relationship_ids ?? [], fieldId));
+        }
       }
       return and(n, logic);
     };
@@ -40067,9 +41142,10 @@ function parseColumnSpec(text) {
   const options = /* @__PURE__ */ new Map();
   for (const opt of optionTexts) {
     const eq = opt.indexOf("=");
-    const key = (eq === -1 ? opt : opt.slice(0, eq)).trim().toLowerCase();
+    const rawKey = (eq === -1 ? opt : opt.slice(0, eq)).trim().toLowerCase();
+    const key = rawKey === "context" ? "info" : rawKey;
     if (!KNOWN_OPTIONS.has(key)) {
-      throw new Error(`Column "${text}": unknown option "${key}". Options: name=, info=, detail, group[=\u2026], total, average, minimum, maximum, sort=, width=, occurrence=, from-occurrence=, to-occurrence=, group-expression=, format=, decimals=, commas, currency[=\u2026], percent, duration=`);
+      throw new Error(`Column "${text}": unknown option "${key}". Options: name=, context=, detail, group[=\u2026], total, average, minimum, maximum, sort=, width=, occurrence=, from-occurrence=, to-occurrence=, group-expression=, format=, decimals=, commas, currency[=\u2026], percent, duration=`);
     }
     if (options.has(key)) throw new Error(`Column "${text}": option "${key}" given twice`);
     options.set(key, eq === -1 ? true : unquote(opt.slice(eq + 1)));
@@ -40120,9 +41196,9 @@ function mappingsFor(catalog, relationshipIds) {
 function parseGroupExpression(text, catalog) {
   const result = parseExpressionText(text, catalog, { allowAggregateFunctions: true, allowEntryDateOperands: true });
   if (result.errors.length > 0 || !result.expression) throw new Error(describeParseErrors(text, result.errors));
-  const resolve12 = remoteFieldResolver(catalog);
-  const output = inferOutputType(result.expression, catalog.fields, resolve12, catalog.settings);
-  return toBackendFormat({ output, expression: result.expression }, catalog.fields, resolve12, catalog.settings);
+  const resolve14 = remoteFieldResolver(catalog);
+  const output = inferOutputType(result.expression, catalog.fields, resolve14, catalog.settings);
+  return toBackendFormat({ output, expression: result.expression }, catalog.fields, resolve14, catalog.settings);
 }
 function baseColumn(spec, ctx, asCustomField) {
   const { catalog } = ctx;
@@ -40206,11 +41282,10 @@ function baseColumn(spec, ctx, asCustomField) {
       });
     }
     case "timebetween": {
-      if (!ctx.expressions) throw new Error("expression catalog not loaded");
       const fromOcc = occurrenceOf(str(spec.options, "from-occurrence"), "from-occurrence") ?? "most_recent";
       const toOcc = occurrenceOf(str(spec.options, "to-occurrence"), "to-occurrence") ?? "most_recent";
-      const from = parseTimeBetweenSource(src.from, ctx.expressions, fromOcc);
-      const to = parseTimeBetweenSource(src.to, ctx.expressions, toOcc);
+      const from = parseTimeBetweenSource(src.from, catalog, fromOcc);
+      const to = parseTimeBetweenSource(src.to, catalog, toOcc);
       return base({ name: "Time Between", entity_name: "Time Between", column_type: "timespan", from_field: from, to_field: to });
     }
   }
@@ -40324,7 +41399,7 @@ function customFieldColumn2(spec, ctx) {
   const column = baseColumn(spec, ctx, true);
   const allowed = /* @__PURE__ */ new Set(["name", "as", "info", "from-occurrence", "to-occurrence"]);
   const extra = [...spec.options.keys()].filter((k) => !allowed.has(k));
-  if (extra.length) throw new Error(`a Custom Field takes only name=, info= (and from-occurrence= / to-occurrence=), not ${extra.join(", ")}`);
+  if (extra.length) throw new Error(`a Custom Field takes only name=, context= (and from-occurrence= / to-occurrence=), not ${extra.join(", ")}`);
   const { entity_name: _entity, ...rest } = column;
   return {
     ...rest,
@@ -40399,19 +41474,19 @@ function applyColumnInfo(columns, json) {
   try {
     parsed = JSON.parse(json);
   } catch (err) {
-    throw new Error(`--column-info is not valid JSON: ${err.message}`);
+    throw new Error(`--column-context is not valid JSON: ${err.message}`);
   }
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error('--column-info must be a JSON object: {"<column name>": "info text"}');
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error('--column-context must be a JSON object: {"<column name>": "context text"}');
   const out = columns.map((c) => ({ ...c }));
   for (const [name, value] of Object.entries(parsed)) {
     const wanted = name.trim().toLowerCase();
     const matches = out.filter((c) => String(c.name).trim().toLowerCase() === wanted);
     if (matches.length !== 1) {
       throw new Error(
-        matches.length ? `--column-info: ${matches.length} columns are named "${name}" \u2014 give them different name= options` : `--column-info: no column named "${name}". Columns: ${out.map((c) => `"${c.name}"`).join(", ")}`
+        matches.length ? `--column-context: ${matches.length} columns are named "${name}" \u2014 give them different name= options` : `--column-context: no column named "${name}". Columns: ${out.map((c) => `"${c.name}"`).join(", ")}`
       );
     }
-    const info = checkInfo(value, `--column-info "${name}"`);
+    const info = checkInfo(value, `--column-context "${name}"`);
     if (info) matches[0].info = info;
     else delete matches[0].info;
   }
@@ -40474,6 +41549,9 @@ var NUMBER_KEYS = [
 ];
 var DEPRECATED_STANDARD_DATE_TIME_FORMAT2 = "yyyy-MM-dd H:mm:ss";
 var STANDARD_DATE_TIME_DISPLAY = "M/d/yyyy h:mm a";
+function reportDateFormat(format) {
+  return format.replaceAll("tt", "a");
+}
 function fieldReportFormatting(field) {
   const formatting = field?.formatting;
   const type = field?.field_type ?? "";
@@ -40488,7 +41566,7 @@ function fieldReportFormatting(field) {
   }
   const format = formatting["format"];
   if (DATE_FIELD_TYPES3.has(type) && typeof format === "string" && format) {
-    out.format = format === DEPRECATED_STANDARD_DATE_TIME_FORMAT2 ? STANDARD_DATE_TIME_DISPLAY : format;
+    out.format = format === DEPRECATED_STANDARD_DATE_TIME_FORMAT2 ? STANDARD_DATE_TIME_DISPLAY : reportDateFormat(format);
   }
   return Object.keys(out).length ? out : null;
 }
@@ -40497,6 +41575,12 @@ function effectiveColumnFormatting(columnFormatting, field) {
   if (!columnFormatting) return fromField;
   if (!columnFormatting.format && fromField?.format) {
     return { ...columnFormatting, format: fromField.format };
+  }
+  if (columnFormatting.format) {
+    return {
+      ...columnFormatting,
+      format: reportDateFormat(columnFormatting.format)
+    };
   }
   return columnFormatting;
 }
@@ -40648,8 +41732,8 @@ function sortGroups(rows, by) {
 var MAX_PER_PAGE = 100;
 var CATALOG_OPTIONS_CAP = 50;
 var findRecordsCommand = new Command("find-records").description(
-  `Advanced search: the records of one business object that match a Logic Builder formula (e.g. 'ISLASTWEEK([Created Date]) AND HASSTEP("Quote Sent")'), run on the fly without saving a folder or report. Only what the record viewer shows you can be searched: hidden fields, fields in hidden field groups and hidden relationships are unknown to the formula, and a rule on a field whose visibility depends on the record only matches records that show it. Archived records are left out unless --include-archived. --catalog lists what you can search on (fields with their options, relationships, milestones, steps) with each one's designer info. --group-by groups the matches instead of listing them (as a grouped report does, run on the fly): one row per group with its record count and any --sum / --avg / --min / --max totals; only fields and relationships every record shows you can be grouped or totaled. JSON is { business_object, formula, total, page, per_page, columns, items: [{ id, record, milestones, values }] }, or with --group-by { business_object, formula, total, groups, columns, items: [{ <column>: text }] }. Formula syntax: the path-logic-formula-syntax skill`
-).option("--bo-id <id>", "Business object ID to search").option("--bo-name <name>", "Business object name (resolved to ID)").option("--logic <formula>", "The search as a Logic Builder formula").option("--catalog", "List what you can search on in this business object, with designer info, instead of searching").option("--include-archived", "Include archived records (left out by default)").option("--columns <names>", "Comma-separated field / relationship names to show (default: the ones the formula uses)").option("--sort <field>", 'Sort by a field of the business object; add " desc" for descending (e.g. "Created Date desc")').option("--count", "Print only how many records match").option("--page <n>", "Page to show", "1").option("--per-page <n>", `Records per page (max ${MAX_PER_PAGE})`, "25").option("--all", "Every matching record (pages through them)").option(
+  `Advanced search: the records of one business object that match a Logic Builder formula (e.g. 'ISLASTWEEK([Created Date]) AND HASSTEP("Quote Sent")'), run on the fly without saving a folder or report. Only what the record viewer shows you can be searched: hidden fields, fields in hidden field groups and hidden relationships are unknown to the formula, and a rule on a field whose visibility depends on the record only matches records that show it. Archived records are left out unless --include-archived. --catalog lists what you can search on (fields with their options, relationships, milestones, steps) with each one's designer context. --group-by groups the matches instead of listing them (as a grouped report does, run on the fly): one row per group with its record count and any --sum / --avg / --min / --max totals; only fields and relationships every record shows you can be grouped or totaled. JSON is { business_object, formula, total, page, per_page, columns, items: [{ id, record, milestones, values }] }, or with --group-by { business_object, formula, total, groups, columns, items: [{ <column>: text }] }. Formula syntax: the path-logic-formula-syntax skill`
+).option("--bo-id <id>", "Business object ID to search").option("--bo-name <name>", "Business object name (resolved to ID)").option("--logic <formula>", "The search as a Logic Builder formula").option("--catalog", "List what you can search on in this business object, with designer context, instead of searching").option("--include-archived", "Include archived records (left out by default)").option("--columns <names>", "Comma-separated field / relationship names to show (default: the ones the formula uses)").option("--sort <field>", 'Sort by a field of the business object; add " desc" for descending (e.g. "Created Date desc")').option("--count", "Print only how many records match").option("--page <n>", "Page to show", "1").option("--per-page <n>", `Records per page (max ${MAX_PER_PAGE})`, "25").option("--all", "Every matching record (pages through them)").option(
   "--group-by <names>",
   `Group the matching records instead of listing them: comma-separated fields (at most 3; [Relationship.Field] for a linked record's field; "<date field> by day|week|month|quarter|year"; milestones for the current milestones). Each group comes with its record count`
 ).option("--sum <names>", "With --group-by: total these number / currency fields in each group").option("--avg <names>", "With --group-by: average these number / currency fields in each group").option("--min <names>", "With --group-by: the smallest value of these fields in each group").option("--max <names>", "With --group-by: the largest value of these fields in each group").option("--top <n>", 'With --group-by: only the first n groups (after sorting). Groups sort by --sort "<column> [desc]" (Count, a total like "Qty (total)", a group field); default the first total, else Count, largest first').action(async (opts) => {
@@ -40958,18 +42042,21 @@ function renderCatalog(catalog) {
   section("Steps", catalog.steps.map((s) => `${s.name}${s.disabled ? " (disabled)" : ""}`));
   const named = (entries) => entries.map((e) => ({ name: e.name, info: e.info ?? null }));
   const info = infoContextLines(catalog.business_object, [
-    { title: "Field group info", entries: named(catalog.field_groups) },
-    { title: "Field info", entries: named(catalog.fields) },
-    { title: "Relationship info", entries: named(catalog.relationships) },
-    { title: "Milestone info", entries: named(catalog.milestones) },
-    { title: "Step info", entries: named(catalog.steps) }
+    { title: "Field group context", entries: named(catalog.field_groups) },
+    { title: "Field context", entries: named(catalog.fields) },
+    { title: "Relationship context", entries: named(catalog.relationships) },
+    { title: "Milestone context", entries: named(catalog.milestones) },
+    { title: "Step context", entries: named(catalog.steps) }
   ]);
   if (info.length) lines.push("", ...info);
   return lines;
 }
 
 // .path-cli/src/resolvers/resolve-relationship.ts
-async function resolveRelationshipByName(client, name, boId3) {
+function resolveRelationshipByName(client, name, boId3) {
+  return freshOnMiss(() => findRelationshipByName(client, name, boId3));
+}
+async function findRelationshipByName(client, name, boId3) {
   const relsRaw = await cachedFetch(
     () => client.get(`/v1/business-objects/${boId3}/relationships`, {
       all: "true"
@@ -40999,6 +42086,16 @@ ${ambiguous}`
 
 // .path-cli/src/resolvers/resolve-roles.ts
 async function resolveRolesByNames(client, names2) {
+  const { resolved, notFound: notFound4 } = await freshOnMiss(
+    () => findRolesByNames(client, names2),
+    (found2) => found2.notFound.length > 0
+  );
+  if (notFound4.length > 0) {
+    console.warn(`WARNING: Roles not found: ${notFound4.join(", ")}`);
+  }
+  return resolved;
+}
+async function findRolesByNames(client, names2) {
   const response = await cachedFetch(
     () => client.get("/v1/roles", { all: "true" }),
     "roles",
@@ -41016,14 +42113,21 @@ async function resolveRolesByNames(client, names2) {
       notFound4.push(name.trim());
     }
   }
-  if (notFound4.length > 0) {
-    console.warn(`WARNING: Roles not found: ${notFound4.join(", ")}`);
-  }
-  return resolved;
+  return { resolved, notFound: notFound4 };
 }
 
 // .path-cli/src/resolvers/resolve-users.ts
 async function resolveUsersByNames(client, names2) {
+  const { resolved, notFound: notFound4 } = await freshOnMiss(
+    () => findUsersByNames(client, names2),
+    (found2) => found2.notFound.length > 0
+  );
+  if (notFound4.length > 0) {
+    console.warn(`WARNING: Users not found: ${notFound4.join(", ")}`);
+  }
+  return resolved;
+}
+async function findUsersByNames(client, names2) {
   const response = await cachedFetch(
     () => client.get("/v1/users", { all: "true" }),
     "users",
@@ -41047,10 +42151,7 @@ async function resolveUsersByNames(client, names2) {
       notFound4.push(name.trim());
     }
   }
-  if (notFound4.length > 0) {
-    console.warn(`WARNING: Users not found: ${notFound4.join(", ")}`);
-  }
-  return resolved;
+  return { resolved, notFound: notFound4 };
 }
 
 // .path-cli/src/commands/create-folder.ts
@@ -41104,16 +42205,16 @@ function formatPermissions(config2) {
   if (config2.deletion) parts.push("delete");
   return parts.join(",");
 }
-var createFolderCommand = new Command("create-folder").description("Create a folder with permissions (and its info: --info / --info-file)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name (resolved to ID)").requiredOption("--folder-name <name>", "Folder name").option("--roles <names>", "Comma-separated role names").option("--role-permissions <perms>", "Comma-separated: view,edit,delete").option("--users <names>", "Comma-separated user full names").option("--user-permissions <perms>", "Comma-separated: view,edit,delete").option(
+var createFolderCommand = new Command("create-folder").description("Create a folder with permissions (and its context: --context / --context-file)").option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name (resolved to ID)").requiredOption("--folder-name <name>", "Folder name").option("--roles <names>", "Comma-separated role names").option("--role-permissions <perms>", "Comma-separated: view,edit,delete").option("--users <names>", "Comma-separated user full names").option("--user-permissions <perms>", "Comma-separated: view,edit,delete").option(
   "--logic <formula>",
   `Logic Builder formula, e.g. '[Department] = "Residential" AND INMILESTONE("Won")' \u2014 see /path-logic-formula-syntax`
 ).option("--logic-raw <json>", "Raw GroupFilter JSON (escape hatch for edge cases)").option(
   "--map-relationship <name-or-id>",
   "Relationship (name or ID) from this folder's BO to the account's Address BO; sets map_enabled and map_relationship_id"
 ).option(
-  "--info <text>",
-  "The folder's info: what it is for, who uses it, what its records have in common \u2014 shown with the folder to people and AI agents (at most 50,000 characters)"
-).option("--info-file <path>", "Read the folder's info from a text or markdown file (instead of --info)").option("--dry-run", "Parse/build the request bodies and print them, but create nothing").action(async (opts) => {
+  "--context <text>",
+  "The folder's context: what it is for, who uses it, what its records have in common \u2014 shown with the folder to people and AI agents (at most 50,000 characters)"
+).option("--context-file <path>", "Read the folder's context from a text or markdown file (instead of --context)").option("--dry-run", "Parse/build the request bodies and print them, but create nothing").action(async (opts) => {
   try {
     const parentOpts = createFolderCommand.parent?.opts?.() ?? {};
     const config2 = loadConfig({
@@ -41304,7 +42405,7 @@ function parseData(data) {
     throw new Error(`--data is not valid JSON: ${err.message}`);
   }
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("--data must be a JSON object (the report create body)");
-  const row = parsed;
+  const row = contextKeysToInfo(parsed);
   const unknown2 = Object.keys(row).filter((k) => !CREATE_REPORT_DATA_KEYS.includes(k) && k !== "business_object_id" && k !== "permissions");
   if (unknown2.length) throw new Error(`--data keys: ${CREATE_REPORT_DATA_KEYS.join(", ")} \u2014 not ${unknown2.join(", ")}`);
   return row;
@@ -41322,7 +42423,7 @@ async function buildReportPlan(client, accountId, boId3, opts, newKey = () => cr
   }
   if (opts.logic !== void 0 && data.filter_condition !== void 0) throw new Error("Give the filter with --logic or in --data filter_condition, not both");
   const loader = await FilterCatalogLoader.load(client, accountId, boId3);
-  const needsExpressions = [...displaySpecs, ...fieldSpecs].some((s) => s.source.kind === "calc" || s.source.kind === "timebetween");
+  const needsExpressions = [...displaySpecs, ...fieldSpecs].some((s) => s.source.kind === "calc");
   const expressions = needsExpressions ? await loadExpressionCatalog(client, accountId, boId3) : void 0;
   let columns;
   if (displaySpecs.length) {
@@ -41346,7 +42447,7 @@ async function buildReportPlan(client, accountId, boId3, opts, newKey = () => cr
     const errors = checkColumns(columns);
     if (errors.length) throw new Error(errors.join("\n"));
   }
-  columns = applyColumnInfo(columns, opts.columnInfo);
+  columns = applyColumnInfo(columns, opts.columnContext);
   const derived = reportTypeOf(columns);
   const askedType = opts.type ?? (typeof data.report_type === "string" ? data.report_type : void 0);
   if (askedType !== void 0) {
@@ -41370,7 +42471,7 @@ async function buildReportPlan(client, accountId, boId3, opts, newKey = () => cr
       formula = await loader.print(filter.filters);
     }
   }
-  const info = infoFromOptions(opts) ?? checkInfo(data.info, "--data info");
+  const info = infoFromOptions(opts) ?? checkInfo(data.info, "--data context");
   const body = {
     name,
     ...info ? { info } : {},
@@ -41426,15 +42527,15 @@ function collect(value, previous = []) {
   return [...previous, value];
 }
 var createReportCommand = new Command("create-report").description(
-  "Create a report the way the web report builder does: columns (fields, Relationship.Field, milestone/step dates, Milestones, Count, CALC(<expression>), TIMEBETWEEN(<from>, <to>)), Group / Calculation columns, a Logic Builder filter, Custom Fields, info. You become its owner; --users / --roles share it. Needs Create Reports on the business object."
+  "Create a report the way the web report builder does: columns (fields, Relationship.Field, milestone/step dates, Milestones, Count, CALC(<expression>), TIMEBETWEEN(<from>, <to>)), Group / Calculation columns, a Logic Builder filter, Custom Fields, context. You become its owner; --users / --roles share it. Needs Create Reports on the business object."
 ).option("--bo-id <id>", "Business object ID").option("--bo-name <name>", "Business object name (resolved to ID)").option("--name <name>", "Report name (unique on the business object)").option(
   "--columns <specs>",
-  "Columns, in order, separated by commas: <source> [| option \u2026]. Sources: Field, Relationship.Field ([\u2026] for names with commas), milestone:<name>, step:<name>, milestones, count, CALC(<expression>), TIMEBETWEEN(<from>, <to>) with from/to = today | field:<date field> | milestone:<name> | step:<name>. Options: name=<title>, info=<text>, group[=day|week|month|quarter|year|<range>|<1d, 12h\u2026>], total|average|minimum|maximum, sort=asc|desc, width=<n>, occurrence=first|most_recent, from-occurrence=, to-occurrence=, group-expression=<TOTAL([x])\u2026>, format=<date format>, decimals=<n>, commas, currency[=<symbol>], percent, duration=days+hours+minutes+seconds"
+  "Columns, in order, separated by commas: <source> [| option \u2026]. Sources: Field, Relationship.Field ([\u2026] for names with commas), milestone:<name>, step:<name>, milestones, count, CALC(<expression>), TIMEBETWEEN(<from>, <to>) with from/to = today | field:<date field> | milestone:<name> | step:<name>, or the same on a related record through to-one relationships (first related record), e.g. milestone:Order Related PO.Received. Options: name=<title>, context=<text>, group[=day|week|month|quarter|year|<range>|<1d, 12h\u2026>], total|average|minimum|maximum, sort=asc|desc, width=<n>, occurrence=first|most_recent, from-occurrence=, to-occurrence=, group-expression=<TOTAL([x])\u2026>, format=<date format>, decimals=<n>, commas, currency[=<symbol>], percent, duration=days+hours+minutes+seconds"
 ).option("--column <spec>", "One more column (repeatable; same spec as --columns, handy for CALC expressions with commas)", collect).option(
   "--custom-field <spec>",
   'A filter-only Custom Field (repeatable): CALC(<expression>) | name=<n> or TIMEBETWEEN(<from>, <to>) | name=<n> \u2014 never shown, compared in --logic with CUSTOMFIELD("<n>")',
   collect
-).option("--type <type>", `Report type: ${REPORT_TYPES.join(" | ")} (the web picks it: grouped once a column is a Group column); checked against the columns`).option("--logic <formula>", `Filter, a Logic Builder formula (see /path-logic-formula-syntax); COLUMN("<computed column>") and CUSTOMFIELD("<custom field>") compare this report's own`).option("--include-archived", "Include archived records").option("--info <text>", "The report's info: what it is for, who uses it, how to read it \u2014 shown with it to people and AI agents (at most 50,000 characters)").option("--info-file <path>", "Read the report's info from a text or markdown file (instead of --info)").option("--column-info <json>", `Info on columns by name, e.g. '{"Margin":"Sell minus cost, per job"}' (computed columns: say how they are calculated)`).option("--roles <names>", "Share with these roles (comma-separated)").option("--role-permissions <perms>", "Comma-separated: view,edit,delete (default view)").option("--users <names>", "Share with these users (comma-separated full names)").option("--user-permissions <perms>", "Comma-separated: view,edit,delete (default view)").option("--data <json>", `Escape hatch: the create body as JSON (keys: ${CREATE_REPORT_DATA_KEYS.join(", ")}); flags override it`).option("--dry-run", "Build and validate the body and print it, but create nothing").option(
+).option("--type <type>", `Report type: ${REPORT_TYPES.join(" | ")} (the web picks it: grouped once a column is a Group column); checked against the columns`).option("--logic <formula>", `Filter, a Logic Builder formula (see /path-logic-formula-syntax); COLUMN("<computed column>") and CUSTOMFIELD("<custom field>") compare this report's own`).option("--include-archived", "Include archived records").option("--context <text>", "The report's context: what it is for, who uses it, how to read it \u2014 shown with it to people and AI agents (at most 50,000 characters)").option("--context-file <path>", "Read the report's context from a text or markdown file (instead of --context)").option("--column-context <json>", `Context on columns by name, e.g. '{"Margin":"Sell minus cost, per job"}' (computed columns: say how they are calculated)`).option("--roles <names>", "Share with these roles (comma-separated)").option("--role-permissions <perms>", "Comma-separated: view,edit,delete (default view)").option("--users <names>", "Share with these users (comma-separated full names)").option("--user-permissions <perms>", "Comma-separated: view,edit,delete (default view)").option("--data <json>", `Escape hatch: the create body as JSON (keys: ${CREATE_REPORT_DATA_KEYS.join(", ")}); flags override it`).option("--dry-run", "Build and validate the body and print it, but create nothing").option(
   "--preview",
   "Run the report as built and print its rows, but save nothing (no --name needed): try a report before creating it, then create it with the same options"
 ).option("--groups-only", "With --preview on a grouped report: only the group total rows").option("--page <n>", "With --preview: page to show", "1").option("--per-page <n>", "With --preview: rows per page", "50").option("--all", "With --preview: every row in one page").action(async (opts) => {
@@ -41540,7 +42641,7 @@ function parseData2(data) {
     throw new Error(`--data is not valid JSON: ${err.message}`);
   }
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("--data must be a JSON object");
-  return parsed;
+  return contextKeysToInfo(parsed);
 }
 function changesFrom(data, opts, allowed, what, elsewhere) {
   const changes = parseData2(data);
@@ -41548,11 +42649,11 @@ function changesFrom(data, opts, allowed, what, elsewhere) {
   if (unknown2.length) {
     throw new Error(`update-${what} doesn't change ${unknown2.join(", ")}. --data keys: ${allowed.join(", ")}. ${elsewhere}`);
   }
-  if ("info" in changes) changes.info = checkInfo(changes.info, "--data info");
+  if ("info" in changes) changes.info = checkInfo(changes.info, "--data context");
   const flag = infoFromOptions(opts);
   if (flag !== void 0) changes.info = flag;
   if (!Object.keys(changes).length) {
-    throw new Error(`Nothing to change: pass --info <text>, --info-file <path> or --data <json> (keys: ${allowed.join(", ")})`);
+    throw new Error(`Nothing to change: pass --context <text>, --context-file <path> or --data <json> (keys: ${allowed.join(", ")})`);
   }
   return changes;
 }
@@ -41560,13 +42661,13 @@ function folderUpdateBody(folder2, changes) {
   const { sticker_info: stickerInfo, ...rest } = changes;
   if (stickerInfo === void 0) return folderBody(folder2, rest);
   if (!stickerInfo || typeof stickerInfo !== "object" || Array.isArray(stickerInfo)) {
-    throw new Error('sticker_info must be an object: {"<sticker id or name>": "info text" | null}');
+    throw new Error('sticker_context must be an object: {"<sticker id or name>": "context text" | null}');
   }
   if (!folder2.is_custom) throw new Error(`Folder ${folder2.id} "${folder2.folder_name}" is not custom; its stickers can't be changed.`);
   const stickers = folder2.folder_stickers ?? [];
   const changed = /* @__PURE__ */ new Map();
   for (const [ref, value] of Object.entries(stickerInfo)) {
-    changed.set(findFolderSticker(folder2, ref), checkInfo(value, `sticker_info "${ref}"`) ?? "");
+    changed.set(findFolderSticker(folder2, ref), checkInfo(value, `sticker_context "${ref}"`) ?? "");
   }
   return folderBody(folder2, { ...rest, stickers: stickers.map((s) => changed.has(s) ? { ...s, info: changed.get(s) } : s) });
 }
@@ -41585,10 +42686,10 @@ function reportChangeBody(report2, changes) {
   const { column_info: columnInfo, ...rest } = changes;
   if (columnInfo === void 0) return { ...reportUpdateBody(report2, {}), ...rest };
   if (!columnInfo || typeof columnInfo !== "object" || Array.isArray(columnInfo)) {
-    throw new Error('column_info must be an object: {"<column id, column_key or name>": "info text" | null}');
+    throw new Error('column_context must be an object: {"<column id, column_key or name>": "context text" | null}');
   }
   const infos = {};
-  for (const [ref, value] of Object.entries(columnInfo)) infos[ref] = checkInfo(value, `column_info "${ref}"`) ?? "";
+  for (const [ref, value] of Object.entries(columnInfo)) infos[ref] = checkInfo(value, `column_context "${ref}"`) ?? "";
   return { ...reportUpdateBody(report2, { columns: columnsWithInfo(report2, infos) }), ...rest };
 }
 async function resolveReport(client, opts) {
@@ -41605,11 +42706,11 @@ ${listed(matches)}`);
 }
 function savedLine(what, changes) {
   const parts = Object.keys(changes).map((k) => {
-    if (k === "column_info") return `column info (${Object.keys(changes.column_info ?? {}).join(", ")})`;
-    if (k === "sticker_info") return `sticker info (${Object.keys(changes.sticker_info ?? {}).join(", ")})`;
+    if (k === "column_info") return `column context (${Object.keys(changes.column_info ?? {}).join(", ")})`;
+    if (k === "sticker_info") return `sticker context (${Object.keys(changes.sticker_info ?? {}).join(", ")})`;
     if (k !== "info") return k;
     const info = String(changes.info ?? "");
-    return info ? `info (${info.length} characters)` : "info (cleared)";
+    return info ? `context (${info.length} characters)` : "context (cleared)";
   });
   return `Updated ${what}: ${parts.join(", ")}`;
 }
@@ -41626,12 +42727,12 @@ function markShown(changes) {
     for (const value of Object.values(changes[key] ?? {})) gate?.written(value);
   }
 }
-var INFO_HELP = 'Info: what it is for, who uses it, how to read it \u2014 shown with it to people and AI agents ("" clears it; at most 50,000 characters)';
+var INFO_HELP = 'Context: what it is for, who uses it, how to read it \u2014 shown with it to people and AI agents ("" clears it; at most 50,000 characters)';
 var updateFolderCommand = new Command("update-folder").description(
-  `Change a folder's info or settings, saved the way the folder form saves it (everything else as stored). Needs Edit on the folder. --data keys: ${FOLDER_DATA_KEYS.join(", ")} (criteria: set-filter folder; sticker criteria: set-filter folder-sticker)`
-).option("--folder-id <id>", "Folder ID").option("--folder-name <name>", "Folder name (requires --bo-id or --bo-name)").option("--bo-id <id>", "Business object ID (for --folder-name)").option("--bo-name <name>", "Business object name (for --folder-name)").option("--info <text>", INFO_HELP).option("--info-file <path>", "Read the info from a text or markdown file (instead of --info)").option(
+  `Change a folder's context or settings, saved the way the folder form saves it (everything else as stored). Needs Edit on the folder. --data keys: ${FOLDER_DATA_KEYS.join(", ")} (criteria: set-filter folder; sticker criteria: set-filter folder-sticker)`
+).option("--folder-id <id>", "Folder ID").option("--folder-name <name>", "Folder name (requires --bo-id or --bo-name)").option("--bo-id <id>", "Business object ID (for --folder-name)").option("--bo-name <name>", "Business object name (for --folder-name)").option("--context <text>", INFO_HELP).option("--context-file <path>", "Read the context from a text or markdown file (instead of --context)").option(
   "--data <json>",
-  `JSON object of folder keys to change, e.g. '{"folder_name":"Active Jobs","info":"\u2026","sticker_info":{"Late":"Past its due date"}}' \u2014 sticker_info sets each named sticker's own info (by sticker id or name; null clears it)`
+  `JSON object of folder keys to change, e.g. '{"folder_name":"Active Jobs","context":"\u2026","sticker_context":{"Late":"Past its due date"}}' \u2014 sticker_context sets each named sticker's own context (by sticker id or name; null clears it)`
 ).option("--dry-run", "Print the save body without saving").action(async (opts) => {
   try {
     const { parentOpts, client } = setup4(updateFolderCommand);
@@ -41665,10 +42766,10 @@ var updateFolderCommand = new Command("update-folder").description(
   }
 });
 var updateReportCommand = new Command("update-report").description(
-  `Change a report's info or settings, saved the way the report form saves it (columns, filter, scheduling as stored). Needs Edit on the report. --data keys: ${REPORT_DATA_KEYS.join(", ")} (filter: set-filter report; Custom Fields: create-custom-field / update-custom-field)`
-).option("--report-id <id>", "Report ID").option("--report-name <name>", "Report name (resolved to ID)").option("--info <text>", INFO_HELP).option("--info-file <path>", "Read the info from a text or markdown file (instead of --info)").option(
+  `Change a report's context or settings, saved the way the report form saves it (columns, filter, scheduling as stored). Needs Edit on the report. --data keys: ${REPORT_DATA_KEYS.join(", ")} (filter: set-filter report; Custom Fields: create-custom-field / update-custom-field)`
+).option("--report-id <id>", "Report ID").option("--report-name <name>", "Report name (resolved to ID)").option("--context <text>", INFO_HELP).option("--context-file <path>", "Read the context from a text or markdown file (instead of --context)").option(
   "--data <json>",
-  `JSON object of report keys to change, e.g. '{"name":"Open Quotes","info":"\u2026","column_info":{"Total":"Quoted price incl. tax"}}' \u2014 column_info sets each named column's own info (by column id, column_key or name; null clears it, and the column shows its field's info again)`
+  `JSON object of report keys to change, e.g. '{"name":"Open Quotes","context":"\u2026","column_context":{"Total":"Quoted price incl. tax"}}' \u2014 column_context sets each named column's own context (by column id, column_key or name; null clears it, and the column shows its field's context again)`
 ).option("--dry-run", "Print the save body without saving").action(async (opts) => {
   try {
     const { parentOpts, client } = setup4(updateReportCommand);
@@ -41786,6 +42887,12 @@ var updateRecordCommand = new Command("update-record").description("Update a rec
       boId3 ??= current2.business_object_id;
     }
     if (current2) {
+      const metadata = (await recordVisibility(client, config2.accountId))?.metadata ?? new RunMetadata(client, config2.accountId);
+      assertNoNotesFields(
+        await metadata.fields(current2.business_object_id),
+        (data.fields ?? []).map((f) => Number(f.field_id)),
+        opts.recordId
+      );
       await assertRecordFieldsEditable(
         client,
         config2.accountId,
@@ -41823,7 +42930,10 @@ var updateRecordCommand = new Command("update-record").description("Update a rec
 });
 
 // .path-cli/src/resolvers/resolve-pathway.ts
-async function resolvePathwayByName(client, name) {
+function resolvePathwayByName(client, name) {
+  return freshOnMiss(() => findPathwayByName(client, name));
+}
+async function findPathwayByName(client, name) {
   const pathways = await cachedFetch(
     () => client.get("/v1/pathways"),
     "pathways",
@@ -41844,87 +42954,6 @@ ${ambiguous}`);
   return matches[0];
 }
 
-// .path-cli/src/pathway-runner/access.ts
-var SUPER_USER_CHECK = "visibility criteria";
-function launchOutcome(checks, mode) {
-  const failed = checks.filter((c) => !c.ok);
-  const overridable = (c) => mode === "super-user" && c.name === SUPER_USER_CHECK;
-  return { blocking: failed.filter((c) => !overridable(c)), overridden: failed.filter(overridable) };
-}
-function isRoleAdmin(user) {
-  return !!user.roles?.some((r) => r.role?.is_admin);
-}
-async function checkLaunch(params) {
-  const { pathway: pathway2, point, user, metadata } = params;
-  const checks = [];
-  const add = (name, ok, detail) => checks.push({ name, ok, detail });
-  add(
-    "runnable",
-    isRunnablePathway(pathway2),
-    pathway2.validation_errors ? "the pathway has validation errors" : pathway2.has_steps ? "no validation errors" : "the pathway has no steps"
-  );
-  if (point !== "task") {
-    if (isRoleAdmin(user)) {
-      add("role permission", true, "the user is an admin");
-    } else {
-      const roles = new Set((user.roles ?? []).map((r) => r.role_id));
-      const granted = (pathway2.role_entity_permissions ?? []).some((p) => roles.has(p.role_id));
-      add("role permission", granted, granted ? "one of the user's roles holds the pathway" : "none of the user's roles holds the pathway");
-    }
-  }
-  switch (point) {
-    case "record": {
-      const record2 = params.record;
-      add("record access", !!record2, record2 ? "the user can open the record" : "the user can't open the record (missing, archived or hidden by tags)");
-      add("shown on records", !!pathway2.show_in_record, pathway2.show_in_record ? "show_in_record is on" : "show_in_record is off");
-      if (record2) {
-        const sameBo = pathway2.starting_bo_id === record2.business_object_id;
-        add(
-          "starting business object",
-          sameBo,
-          sameBo ? `starts on ${await metadata.boName(record2.business_object_id)}` : pathway2.starting_bo_id == null ? "the pathway starts without a record" : `starts on ${await metadata.boName(pathway2.starting_bo_id)}, the record is a ${await metadata.boName(record2.business_object_id)}`
-        );
-        if (pathway2.visibility_criteria) {
-          const verdict = await new CliPipelineEvaluator(metadata).evaluate(pathway2.visibility_criteria, record2);
-          add(
-            "visibility criteria",
-            verdict.decided && verdict.matches,
-            verdict.decided ? verdict.matches ? "the record meets them" : "the record doesn't meet them" : `undecidable: ${verdict.reason}`
-          );
-        }
-      }
-      break;
-    }
-    case "dashboard":
-      add("shown on dashboard", !!pathway2.show_on_dashboard, pathway2.show_on_dashboard ? "show_on_dashboard is on" : "show_on_dashboard is off");
-      break;
-    case "folder": {
-      const folder2 = params.folder;
-      const ok = !!pathway2.show_in_folders && !!folder2 && pathway2.folder_bo_id === folder2.business_object_id;
-      add(
-        "shown in folder",
-        ok,
-        !pathway2.show_in_folders ? "show_in_folders is off" : !folder2 ? "folder not found" : pathway2.folder_bo_id === folder2.business_object_id ? `shown in ${await metadata.boName(folder2.business_object_id)} folders` : `shown in ${await metadata.boName(pathway2.folder_bo_id)} folders, this folder lists ${await metadata.boName(folder2.business_object_id)}`
-      );
-      break;
-    }
-    case "task": {
-      const task = params.task;
-      add("task", !!task, task ? `task "${task.task_name}" (${task.task_status})` : "task not found on the record");
-      if (task) {
-        add("task pending", task.task_status === "pending", `status is ${task.task_status}`);
-        add("task pathway", task.pathway_id === pathway2.id, task.pathway_id === pathway2.id ? "completing the task runs this pathway" : `the task runs pathway ${task.pathway_id ?? "(none)"}`);
-        const assigneeOnly = !!task.task_settings?.only_assignee_finish;
-        const effectiveAdmin = !!user.effective_permissions?.is_admin;
-        const may = !assigneeOnly || task.assigned_to?.user_id === user.id || task.created_by === user.id || effectiveAdmin;
-        add("may complete task", may, assigneeOnly ? may ? "assignee, creator or admin" : "only the assignee can finish it" : "anyone may complete it");
-      }
-      break;
-    }
-  }
-  return { allowed: checks.every((c) => c.ok), checks };
-}
-
 // .path-cli/src/commands/execute-pathway.ts
 var executePathwayCommand = new Command("execute-pathway").description(
   "Execute a pathway headlessly on a record. Like a record's Pathways tab in the web app, it only starts where the acting user could start it (role, shown on records, starting business object, record access, the pathway's visibility criteria)"
@@ -41933,7 +42962,7 @@ var executePathwayCommand = new Command("execute-pathway").description(
   'Additional JSON body fields (e.g. {"task_id":123}); starting_record.id is set from --record-id'
 ).option(
   "--mode <mode>",
-  "real-world (default) | super-user (also when the pathway's visibility criteria don't match the record; Admin or Designer only, this run only)"
+  "real-world (default) | super-user (also when the pathway's visibility criteria don't match the record; Designer only, this run only)"
 ).action(async (opts) => {
   try {
     const parentOpts = executePathwayCommand.parent?.opts() ?? {};
@@ -41967,7 +42996,7 @@ var executePathwayCommand = new Command("execute-pathway").description(
         [
           `${user.email ?? `user ${user.id}`} can't start "${pathway2.name}" on record ${opts.recordId}:`,
           ...failed.map((c) => `  \u2717 ${c.name}: ${c.detail}`),
-          ...failed.length === 1 && failed[0].name === SUPER_USER_CHECK ? ["  (only the visibility criteria block it: an Admin or Designer can run it with --mode super-user)"] : []
+          ...failed.length === 1 && failed[0].name === SUPER_USER_CHECK ? ["  (only the visibility criteria block it: a Designer can run it with --mode super-user)"] : []
         ].join("\n")
       );
     }
@@ -42054,7 +43083,7 @@ var HttpApiExecutor = class {
 // .path-cli/src/pathway-runner/labels.ts
 async function busyLabel(busy2, metadata) {
   const bo = async (id) => metadata.boName(id);
-  const plural = async (id) => {
+  const plural2 = async (id) => {
     const meta = await metadata.businessObject(id).catch(() => void 0);
     return meta?.plural_name || `${await bo(id)}s`;
   };
@@ -42118,7 +43147,7 @@ async function busyLabel(busy2, metadata) {
     case "fetching-record":
       return `Getting ${await bo(busy2.businessObjectId)}`;
     case "fetching-records":
-      return `Getting ${await plural(busy2.businessObjectId)}`;
+      return `Getting ${await plural2(busy2.businessObjectId)}`;
     case "deleting-file":
       return "Deleting file";
     case "preparing-email":
@@ -42149,12 +43178,12 @@ function stepTitleText(title) {
 }
 
 // .path-cli/src/pathway-runner/run-store.ts
-import { appendFileSync, existsSync as existsSync5, mkdirSync as mkdirSync5, readdirSync, readFileSync as readFileSync5, rmSync as rmSync2, writeFileSync as writeFileSync5 } from "fs";
-import { homedir as homedir3 } from "os";
-import { join as join2, resolve as resolve5 } from "path";
+import { appendFileSync, existsSync as existsSync6, mkdirSync as mkdirSync6, readdirSync as readdirSync2, readFileSync as readFileSync6, rmSync as rmSync3, writeFileSync as writeFileSync6 } from "fs";
+import { homedir as homedir4 } from "os";
+import { join as join2, resolve as resolve6 } from "path";
 function runsDir() {
-  const dir = resolve5(homedir3(), ".path-cli", "runs");
-  mkdirSync5(dir, { recursive: true });
+  const dir = resolve6(homedir4(), ".path-cli", "runs");
+  mkdirSync6(dir, { recursive: true });
   return dir;
 }
 function runDir(runId) {
@@ -42163,9 +43192,9 @@ function runDir(runId) {
 function saveRun(run) {
   run.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
   const dir = runDir(run.runId);
-  mkdirSync5(dir, { recursive: true });
-  writeFileSync5(join2(dir, "run.json"), JSON.stringify(run, null, 2));
-  writeFileSync5(join2(runsDir(), "current"), run.runId);
+  mkdirSync6(dir, { recursive: true });
+  writeFileSync6(join2(dir, "run.json"), JSON.stringify(run, null, 2));
+  writeFileSync6(join2(runsDir(), "current"), run.runId);
 }
 function loadRun(runId) {
   const id = runId || currentRunId();
@@ -42173,30 +43202,30 @@ function loadRun(runId) {
     throw new Error('No pathway run in progress. Start one with "pathway-run start".');
   }
   const path = join2(runDir(id), "run.json");
-  if (!existsSync5(path)) {
+  if (!existsSync6(path)) {
     throw new Error(`Pathway run ${id} not found. "pathway-run list" shows saved runs.`);
   }
-  return JSON.parse(readFileSync5(path, "utf-8"));
+  return JSON.parse(readFileSync6(path, "utf-8"));
 }
 function currentRunId() {
   const path = join2(runsDir(), "current");
-  return existsSync5(path) ? readFileSync5(path, "utf-8").trim() || null : null;
+  return existsSync6(path) ? readFileSync6(path, "utf-8").trim() || null : null;
 }
 function listRuns() {
-  return readdirSync(runsDir(), { withFileTypes: true }).filter((d) => d.isDirectory() && existsSync5(join2(runDir(d.name), "run.json"))).map((d) => JSON.parse(readFileSync5(join2(runDir(d.name), "run.json"), "utf-8"))).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return readdirSync2(runsDir(), { withFileTypes: true }).filter((d) => d.isDirectory() && existsSync6(join2(runDir(d.name), "run.json"))).map((d) => JSON.parse(readFileSync6(join2(runDir(d.name), "run.json"), "utf-8"))).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 function deleteRun(runId) {
-  rmSync2(runDir(runId), { recursive: true, force: true });
+  rmSync3(runDir(runId), { recursive: true, force: true });
 }
 function appendLog(runId, entry) {
   const dir = runDir(runId);
-  mkdirSync5(dir, { recursive: true });
+  mkdirSync6(dir, { recursive: true });
   appendFileSync(join2(dir, "log.jsonl"), JSON.stringify({ at: (/* @__PURE__ */ new Date()).toISOString(), ...entry }) + "\n");
 }
 function readLog(runId) {
   const path = join2(runDir(runId), "log.jsonl");
-  if (!existsSync5(path)) return [];
-  return readFileSync5(path, "utf-8").split("\n").filter(Boolean).map((line) => JSON.parse(line));
+  if (!existsSync6(path)) return [];
+  return readFileSync6(path, "utf-8").split("\n").filter(Boolean).map((line) => JSON.parse(line));
 }
 function recordsCreatedInRun(log) {
   const started = log.find((e) => e.kind === "started");
@@ -42214,7 +43243,7 @@ function recordsCreatedInRun(log) {
 }
 
 // .path-cli/src/pathway-runner/services.ts
-import { mkdirSync as mkdirSync6, writeFileSync as writeFileSync6 } from "fs";
+import { mkdirSync as mkdirSync7, writeFileSync as writeFileSync7 } from "fs";
 import { basename as basename2, join as join3 } from "path";
 var BROWSER_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36";
 var CliPathwayResolver = class extends PathwayResolverLike {
@@ -42353,9 +43382,9 @@ var CliFileService = class extends FileServiceLike {
     if (!res.ok) {
       throw new Error(`File server returned ${res.status} for ${fileName}`);
     }
-    mkdirSync6(this.downloadDir, { recursive: true });
+    mkdirSync7(this.downloadDir, { recursive: true });
     const target = join3(this.downloadDir, basename2(fileName || fileId));
-    writeFileSync6(target, Buffer.from(await res.arrayBuffer()));
+    writeFileSync7(target, Buffer.from(await res.arrayBuffer()));
     this.downloaded.push(target);
     return target;
   }
@@ -42663,11 +43692,11 @@ var editTask = {
 
 // .path-cli/src/pathway-runner/surfaces/record-form.ts
 async function buildEditForm(record2, selection, metadata) {
-  const fields = (await metadata.fields(record2.business_object_id)).filter((f) => !f.is_hidden);
+  const fields = (await metadata.fields(record2.business_object_id)).filter((f) => isShownInStepForm(f, selection));
   const ordered = orderBySelection(fields, selection);
   const form = [];
   for (const field of ordered) {
-    if (!isEditableField(field)) continue;
+    if (!isEditableFieldKind(field)) continue;
     const entry = selection?.find((e) => e.field_id === field.id);
     if (selection !== null && !entry) continue;
     form.push({
@@ -42680,7 +43709,9 @@ async function buildEditForm(record2, selection, metadata) {
   return form;
 }
 async function buildCreateForm(boId3, selection, settled, metadata) {
-  const fields = (await metadata.fields(boId3)).filter((f) => !f.is_hidden && f.is_primary_object !== false);
+  const fields = (await metadata.fields(boId3)).filter(
+    (f) => isShownInStepForm(f, selection) && f.is_primary_object !== false
+  );
   const ordered = orderBySelection(fields, selection);
   const inlineTags = await inlineTagFields(fields, settled, metadata);
   const form = [];
@@ -42690,7 +43721,7 @@ async function buildCreateForm(boId3, selection, settled, metadata) {
       form.push({ field, required: true, allowList: [], value: null, tagGroupId: tag.groupId, tagOptions: tag.options });
       continue;
     }
-    if (!isEditableField(field)) continue;
+    if (!isEditableFieldKind(field)) continue;
     const entry = selection?.find((e) => e.field_id === field.id);
     if (selection !== null && !entry) continue;
     form.push({
@@ -42839,6 +43870,15 @@ function exampleSet(form) {
 
 // .path-cli/src/pathway-runner/surfaces/edit-record-table.ts
 var stateKey = (ctx) => `edit-record-table:${ctx.stepId}`;
+function isEditableColumn(column) {
+  return !!column.field && column.editable && isEditableTableCellField(column.field);
+}
+function cellField(key, columns, fields) {
+  const k = normalizeKey(key);
+  const byColumn = columns.find((c) => c.field && normalizeKey(c.field_name) === k)?.field;
+  if (byColumn) return fields.find((f) => f.id === byColumn.id) ?? byColumn;
+  return findField(fields, key) ?? fields.find((f) => normalizeKey(f.name) === k);
+}
 async function context2(data, ctx) {
   const [fields, user] = await Promise.all([ctx.metadata.fields(data.business_object_id), ctx.metadata.currentUser()]);
   const roles = new Set((user.roles ?? []).map((r) => r.role_id));
@@ -42901,7 +43941,7 @@ async function applyInput(data, input, ctx, forSubmit) {
   state.messages = [];
   const editable = /* @__PURE__ */ new Map();
   for (const column of [...columns, ...details]) {
-    if (column.field && column.editable && isEditableField(column.field) && !editable.has(column.field.id)) {
+    if (column.field && isEditableColumn(column) && !editable.has(column.field.id)) {
       editable.set(column.field.id, { column });
     }
   }
@@ -42963,7 +44003,7 @@ async function applyInput(data, input, ctx, forSubmit) {
     }
     const row = rowRef(rawKey.slice(0, dot), visibleRows(state));
     const fieldKey = rawKey.slice(dot + 1);
-    const field = findField(fields, fieldKey);
+    const field = cellField(fieldKey, [...columns, ...details], fields);
     if (!field || !editable.has(field.id)) {
       throw new SurfaceInputError(
         `"${fieldKey}" isn't an editable column. Editable: ${[...editable.values()].map((e) => e.column.field_name).join(", ") || "(none)"}`
@@ -43009,7 +44049,7 @@ async function applyInput(data, input, ctx, forSubmit) {
   ctx.state[stateKey(ctx)] = state;
   return state;
 }
-async function save(data, state, editable, ctx) {
+async function sendEdits(data, state, editable, ctx) {
   const rows = visibleRows(state).map((record2) => ({
     record: record2,
     fields: Object.entries(state.edits[record2.id] ?? {}).filter(([fieldId]) => editable.has(Number(fieldId))).map(([fieldId, cell2]) => ({ field_id: Number(fieldId), value: cell2.current }))
@@ -43022,6 +44062,9 @@ async function save(data, state, editable, ctx) {
     state.messages.push("Nothing to save");
   }
   state.edits = {};
+}
+async function save(data, state, editable, ctx) {
+  await sendEdits(data, state, editable, ctx);
   state.selected = [];
   const pages = Math.max(state.pages, 1);
   for (let page = 1; page <= pages; page++) await loadPage(data, state, page, ctx);
@@ -43034,8 +44077,9 @@ async function render(data, ctx, showRow) {
   const fieldCols = columns.filter((c) => c.field);
   const lines = [];
   if (data.parent_record) lines.push(`  for ${await recordLabel(data.parent_record, ctx.metadata)}`);
+  const searchFirst = behaviour.searchEnabled && data.source?.source_type !== "step_records";
   const flags = [
-    behaviour.searchEnabled ? `search${state.search ? ` "${state.search}"` : " (required before rows load)"}` : "",
+    behaviour.searchEnabled ? `search${state.search ? ` "${state.search}"` : searchFirst ? " (required before rows load)" : ""}` : "",
     behaviour.selectorVisible ? (behaviour.multiSelect ? "multi-select" : "single-select") + (behaviour.selectRequired ? " (required)" : "") : "",
     behaviour.createNew ? "add" : "",
     behaviour.delete ? "archive" : "",
@@ -43045,13 +44089,13 @@ async function render(data, ctx, showRow) {
   lines.push(`  ${await ctx.metadata.boName(data.business_object_id)} rows: ${rows.length} shown of ${state.total}${flags.length ? ` \xB7 ${flags.join(" \xB7 ")}` : ""}`);
   lines.push(
     `  columns: ${columns.map((c) => {
-      const editable = !!c.field && c.editable && isEditableField(c.field);
+      const editable = isEditableColumn(c);
       return `${c.field_name}${editable ? "\u270E" : ""}${c.required ? "*" : ""}${c.column_type && c.column_type !== "Field" ? ` (${c.column_type} column)` : ""}`;
     }).join(" | ")}`
   );
   const columnInfo = columns.filter((c) => infoText(c.field?.info));
   if (columnInfo.length) {
-    lines.push("  column info:");
+    lines.push("  column context:");
     for (const c of columnInfo) {
       lines.push(...infoLines(c.field.info, { indent: "    ", label: c.field_name, cap: INFO_TEXT_CAP }));
     }
@@ -43062,19 +44106,19 @@ async function render(data, ctx, showRow) {
     const cells = fieldCols.map((c) => formatFieldValue(c.field, row.fields?.[String(c.field.id)]) || "\u2014");
     lines.push(`   ${String(i + 1).padStart(3)}. ${mark6}${cells.join(" | ")}${edited}  (${row.id})`);
   });
-  if (!rows.length) lines.push(behaviour.searchEnabled && !state.search ? "    (enter a search to load rows)" : "    (no rows)");
+  if (!rows.length) lines.push(searchFirst && !state.search ? "    (enter a search to load rows)" : "    (no rows)");
   if (state.total > rows.length + state.archived.length) lines.push(`    \u2026 more rows: act --set page=${state.pages + 1}`);
   if (showRow) {
     const row = rowRef(showRow, rows);
     lines.push(`  Row details (${row.id}):`);
     for (const d of details.filter((c) => c.field)) {
-      const editable = d.editable && isEditableField(d.field);
+      const editable = isEditableColumn(d);
       lines.push(`    ${d.field_name}${editable ? "\u270E" : ""} (${fieldTypeLabel(d.field)}) = ${formatFieldValue(d.field, row.fields?.[String(d.field.id)]) || "\u2014"}`);
       lines.push(...fieldInfoLines(d.field, "      "));
     }
   }
   for (const m of state.messages) lines.push(`  \u2713 ${m}`);
-  const firstEditable = fieldCols.find((c) => c.editable && isEditableField(c.field));
+  const firstEditable = fieldCols.find(isEditableColumn);
   return {
     heading: data.title || "Edit Record Table",
     lines,
@@ -43092,8 +44136,8 @@ async function render(data, ctx, showRow) {
       behaviour,
       search: state.search,
       total: state.total,
-      columns: columns.map((c) => ({ field_id: c.field_id, name: c.field_name, editable: !!c.field && c.editable && isEditableField(c.field), required: c.required, column_type: c.column_type, info: infoText(c.field?.info) })),
-      detail_columns: details.map((c) => ({ field_id: c.field_id, name: c.field_name, editable: !!c.field && c.editable && isEditableField(c.field), info: infoText(c.field?.info) })),
+      columns: columns.map((c) => ({ field_id: c.field_id, name: c.field_name, editable: isEditableColumn(c), required: c.required, column_type: c.column_type, info: infoText(c.field?.info) })),
+      detail_columns: details.map((c) => ({ field_id: c.field_id, name: c.field_name, editable: isEditableColumn(c), info: infoText(c.field?.info) })),
       rows: rows.map((r, i) => ({ n: i + 1, id: r.id, selected: selected.has(r.id), edited: Object.keys(state.edits[r.id] ?? {}).length > 0, fields: r.fields })),
       field_names: Object.fromEntries(fields.map((f) => [f.id, f.name]))
     }
@@ -43125,7 +44169,7 @@ var editRecordTable = {
     if (behaviour.autoSaveOnComplete && Object.values(state.edits).some((cells) => Object.keys(cells).length)) {
       const editable = /* @__PURE__ */ new Map();
       for (const c of [...columns, ...details]) if (c.field && c.editable) editable.set(c.field.id, c);
-      await save(data, state, editable, ctx);
+      await sendEdits(data, state, editable, ctx);
     }
     return { selected_records: edit_record_table_exports.recordsForNextStep(visibleRows(state), new Set(state.selected), behaviour) };
   }
@@ -43135,8 +44179,8 @@ var editRecordTable = {
 import { deflateSync } from "zlib";
 
 // .path-cli/src/utils/file-upload.ts
-import { existsSync as existsSync6, readFileSync as readFileSync6, statSync as statSync3 } from "fs";
-import { basename as basename3, extname, resolve as resolve6 } from "path";
+import { existsSync as existsSync7, readFileSync as readFileSync7, statSync as statSync3 } from "fs";
+import { basename as basename3, extname, resolve as resolve7 } from "path";
 var MIME_TYPES = {
   ".pdf": "application/pdf",
   ".png": "image/png",
@@ -43161,11 +44205,11 @@ var MIME_TYPES = {
   ".mov": "video/quicktime"
 };
 function readUploadFile(path) {
-  const full = resolve6(path);
-  if (!existsSync6(full)) throw new Error(`File not found: ${full}`);
+  const full = resolve7(path);
+  if (!existsSync7(full)) throw new Error(`File not found: ${full}`);
   if (!statSync3(full).isFile()) throw new Error(`Not a file: ${full}`);
   const type = MIME_TYPES[extname(full).toLowerCase()] ?? "application/octet-stream";
-  return { blob: new Blob([readFileSync6(full)], { type }), name: basename3(full) };
+  return { blob: new Blob([readFileSync7(full)], { type }), name: basename3(full) };
 }
 
 // .path-cli/src/pathway-runner/surfaces/files.ts
@@ -44576,8 +45620,8 @@ var scheduling = {
 };
 
 // .path-cli/src/pathway-runner/surfaces/send-email.ts
-import { existsSync as existsSync7, readFileSync as readFileSync7 } from "fs";
-import { isAbsolute as isAbsolute2, resolve as resolve7 } from "path";
+import { existsSync as existsSync8, readFileSync as readFileSync8 } from "fs";
+import { isAbsolute as isAbsolute2, resolve as resolve8 } from "path";
 var ACCEPTED2 = ["to", "cc", "bcc", "subject", "body", "body file", "remove upload"];
 var stateKey5 = (ctx) => `send-email:${ctx.stepId}`;
 async function getState5(data, ctx) {
@@ -44722,9 +45766,9 @@ async function applyInput5(data, input, ctx) {
         form.body = contentWithTokens(bodyHtml(value), form.body);
         break;
       case "body file": {
-        const path = isAbsolute2(value) ? value : resolve7(ctx.cwd, value);
-        if (!existsSync7(path)) throw new SurfaceInputError(`File not found: ${value}`);
-        form.body = contentWithTokens(bodyHtml(readFileSync7(path, "utf8")), form.body);
+        const path = isAbsolute2(value) ? value : resolve8(ctx.cwd, value);
+        if (!existsSync8(path)) throw new SurfaceInputError(`File not found: ${value}`);
+        form.body = contentWithTokens(bodyHtml(readFileSync8(path, "utf8")), form.body);
         break;
       }
       case "remove upload": {
@@ -44846,8 +45890,8 @@ var sendEmail = {
 };
 
 // .path-cli/src/pathway-runner/surfaces/edit-document.ts
-import { existsSync as existsSync8, readFileSync as readFileSync8 } from "fs";
-import { isAbsolute as isAbsolute3, resolve as resolve8 } from "path";
+import { existsSync as existsSync9, readFileSync as readFileSync9 } from "fs";
+import { isAbsolute as isAbsolute3, resolve as resolve9 } from "path";
 
 // utils/html-document-template/html-template-source.ts
 var PageSizes = {
@@ -44955,9 +45999,9 @@ function chosenFormat(data, input) {
 function editedBody(data, input, ctx) {
   const file = getSet(input, "body file");
   if (file !== void 0) {
-    const path = isAbsolute3(file) ? file : resolve8(ctx.cwd, file);
-    if (!existsSync8(path)) throw new SurfaceInputError(`File not found: ${file}`);
-    return readFileSync8(path, "utf8");
+    const path = isAbsolute3(file) ? file : resolve9(ctx.cwd, file);
+    if (!existsSync9(path)) throw new SurfaceInputError(`File not found: ${file}`);
+    return readFileSync9(path, "utf8");
   }
   return getSet(input, "body") ?? data.source.body;
 }
@@ -45043,6 +46087,1123 @@ var editDocumentFromTemplate = {
     const path = await ctx.files.download(copy.file_id, copy.file_name);
     const view4 = await editDocumentFromTemplate.view(data, ctx);
     return { ...view4, lines: [...view4.lines, "", `  Downloaded ${path}`] };
+  }
+};
+
+// .path-cli/src/pathway-runner/surfaces/quote-builder.ts
+import { resolve as resolve10 } from "path";
+
+// utils/html-document-template/quote-draft-regions.ts
+var QUOTE_DRAFT_TAG_ATTR = "data-qb-tag";
+var QUOTE_DRAFT_ROWS_ATTR = "data-qb-rows";
+var QUOTE_DRAFT_SORT_ATTR = "data-qb-sort";
+var QUOTE_DRAFT_ITEM_ATTR = "data-qb-item";
+var QUOTE_DRAFT_ROW_TEMPLATE_ATTR = "data-qb-row-template";
+function segments(html) {
+  const out = [];
+  const pattern = /<!--[\s\S]*?-->|<[^>]*>|[^<]+/g;
+  for (const match of html.matchAll(pattern)) {
+    out.push({
+      kind: match[0].startsWith("<") ? "tag" : "text",
+      text: match[0],
+      start: match.index ?? 0
+    });
+  }
+  return out;
+}
+function tagName(tag) {
+  const match = /^<\/?\s*([a-zA-Z][\w-]*)/.exec(tag);
+  return match ? match[1].toLowerCase() : "";
+}
+function isOpening(tag) {
+  return !tag.startsWith("</") && !tag.startsWith("<!") && !tag.endsWith("/>");
+}
+function isClosing(tag) {
+  return tag.startsWith("</");
+}
+function readAttribute(tag, name) {
+  const pattern = new RegExp(`\\s${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, "i");
+  const match = pattern.exec(tag);
+  if (!match) return null;
+  return unescapeHtml(match[1] ?? match[2] ?? "");
+}
+function removeAttribute(tag, name) {
+  return tag.replace(
+    new RegExp(`\\s${name}\\s*=\\s*(?:"[^"]*"|'[^']*')`, "gi"),
+    ""
+  );
+}
+function setAttribute(tag, name, value) {
+  const cleaned = removeAttribute(tag, name);
+  const insertAt = cleaned.endsWith("/>") ? cleaned.length - 2 : cleaned.length - 1;
+  return `${cleaned.slice(0, insertAt)} ${name}="${escapeAttribute(value)}"${cleaned.slice(insertAt)}`;
+}
+function escapeHtml2(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function escapeAttribute(text) {
+  return escapeHtml2(text).replace(/"/g, "&quot;");
+}
+function unescapeHtml(text) {
+  return text.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, "\xA0").replace(/&amp;/g, "&");
+}
+function renderQuoteDraftValue(value) {
+  return escapeHtml2(value ?? "").replace(/\r?\n/g, "<br>");
+}
+function matchingClose(segs, openIndex) {
+  const name = tagName(segs[openIndex].text);
+  let depth = 0;
+  for (let i = openIndex; i < segs.length; i++) {
+    const seg = segs[i];
+    if (seg.kind !== "tag" || tagName(seg.text) !== name) continue;
+    if (isOpening(seg.text)) depth += 1;
+    else if (isClosing(seg.text)) {
+      depth -= 1;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+function tagRegions(segs) {
+  const regions = [];
+  segs.forEach((seg, index) => {
+    if (seg.kind !== "tag" || tagName(seg.text) !== "span" || !isOpening(seg.text))
+      return;
+    const tag = readAttribute(seg.text, QUOTE_DRAFT_TAG_ATTR);
+    if (tag === null) return;
+    const close = matchingClose(segs, index);
+    if (close !== -1) regions.push({ tag, open: index, close });
+  });
+  return regions;
+}
+function rowsTables(segs) {
+  const tables = [];
+  segs.forEach((seg, index) => {
+    if (seg.kind !== "tag" || tagName(seg.text) !== "table" || !isOpening(seg.text))
+      return;
+    const name = readAttribute(seg.text, QUOTE_DRAFT_ROWS_ATTR);
+    const template = readAttribute(seg.text, QUOTE_DRAFT_ROW_TEMPLATE_ATTR);
+    if (name === null || template === null) return;
+    const close = matchingClose(segs, index);
+    if (close === -1) return;
+    const rows = [];
+    for (let i = index + 1; i < close; i++) {
+      const row = segs[i];
+      if (row.kind !== "tag" || tagName(row.text) !== "tr" || !isOpening(row.text))
+        continue;
+      const id = readAttribute(row.text, QUOTE_DRAFT_ITEM_ATTR);
+      if (id === null) continue;
+      const rowClose = matchingClose(segs, i);
+      if (rowClose === -1 || rowClose > close) continue;
+      rows.push({ id, open: i, close: rowClose });
+      i = rowClose;
+    }
+    tables.push({
+      name,
+      sort: readAttribute(seg.text, QUOTE_DRAFT_SORT_ATTR),
+      template,
+      open: index,
+      close,
+      rows
+    });
+  });
+  return tables;
+}
+function joinSegments(segs, from, to) {
+  let out = "";
+  for (let i = from; i <= to; i++) out += segs[i].text;
+  return out;
+}
+function inAnyRow(index, tables) {
+  return tables.some(
+    (table) => table.rows.some((row) => index > row.open && index < row.close)
+  );
+}
+function fillQuoteDraftValues(html, values) {
+  const segs = segments(html);
+  const tables = rowsTables(segs);
+  const regions = tagRegions(segs).filter(
+    (region) => !inAnyRow(region.open, tables)
+  );
+  return replaceRegionContents(segs, regions, values);
+}
+function replaceRegionContents(segs, regions, values) {
+  const replacements = /* @__PURE__ */ new Map();
+  for (const region of regions) {
+    if (!Object.prototype.hasOwnProperty.call(values, region.tag)) continue;
+    replacements.set(region.open, {
+      close: region.close,
+      content: renderQuoteDraftValue(values[region.tag])
+    });
+  }
+  let out = "";
+  for (let i = 0; i < segs.length; i++) {
+    const replacement = replacements.get(i);
+    if (!replacement) {
+      out += segs[i].text;
+      continue;
+    }
+    out += segs[i].text + replacement.content + segs[replacement.close].text;
+    i = replacement.close;
+  }
+  return out;
+}
+function instantiateRow(template, rowsName, item2) {
+  const withIds = segments(template).map((seg) => {
+    if (seg.kind !== "tag" || tagName(seg.text) !== "tr" || !isOpening(seg.text))
+      return seg.text;
+    return setAttribute(
+      setAttribute(seg.text, QUOTE_DRAFT_ITEM_ATTR, item2.id),
+      QUOTE_DRAFT_ROWS_ATTR,
+      rowsName
+    );
+  }).join("");
+  const segs = segments(withIds);
+  const regions = tagRegions(segs);
+  const values = Object.fromEntries(
+    regions.map((region) => [region.tag, item2.values[region.tag] ?? ""])
+  );
+  return replaceRegionContents(segs, regions, values);
+}
+function updateRow(row, item2) {
+  const segs = segments(row);
+  return replaceRegionContents(segs, tagRegions(segs), item2.values);
+}
+function syncQuoteDraftItems(html, rowsName, items) {
+  const segs = segments(html);
+  const tables = rowsTables(segs).filter((table) => table.name === rowsName);
+  if (tables.length === 0) return html;
+  const edits = [];
+  for (const table of tables) {
+    const existing = /* @__PURE__ */ new Map();
+    for (const row of table.rows) {
+      if (row.id && !existing.has(row.id)) existing.set(row.id, row);
+    }
+    const wanted = items.length > 0 ? items : [{ id: "", values: {} }];
+    const block = wanted.map((item2) => {
+      const row = item2.id ? existing.get(item2.id) : void 0;
+      return row ? updateRow(joinSegments(segs, row.open, row.close), item2) : instantiateRow(table.template, table.name, item2);
+    }).join("");
+    if (table.rows.length === 0) {
+      let insertBefore = table.close;
+      for (let i = table.close - 1; i > table.open; i--) {
+        const seg = segs[i];
+        if (seg.kind === "tag" && tagName(seg.text) === "tbody" && isClosing(seg.text)) {
+          insertBefore = i;
+          break;
+        }
+      }
+      edits.push({ from: insertBefore, to: insertBefore - 1, content: block });
+      continue;
+    }
+    const first = table.rows[0];
+    edits.push({ from: first.open, to: first.close, content: block });
+    for (const row of table.rows.slice(1)) {
+      edits.push({ from: row.open, to: row.close, content: "" });
+    }
+  }
+  edits.sort((a, b) => a.from - b.from);
+  let out = "";
+  let index = 0;
+  for (const edit of edits) {
+    out += joinSegments(segs, index, edit.from - 1);
+    out += edit.content;
+    index = edit.to + 1;
+  }
+  out += joinSegments(segs, index, segs.length - 1);
+  return out;
+}
+function listQuoteDraftTags(html) {
+  const segs = segments(html);
+  const tables = rowsTables(segs);
+  const tags = /* @__PURE__ */ new Set();
+  for (const region of tagRegions(segs)) {
+    if (!inAnyRow(region.open, tables)) tags.add(region.tag);
+  }
+  return {
+    tags: [...tags],
+    rows: tables.map((table) => ({
+      name: table.name,
+      sort: table.sort,
+      tags: [
+        ...new Set(tagRegions(segments(table.template)).map((r) => r.tag))
+      ]
+    }))
+  };
+}
+
+// .path-cli/src/pathway-runner/surfaces/quote-builder.ts
+var PICKER_KEYS = [
+  "customer",
+  "contact",
+  "ship_to",
+  "bill_to",
+  "outside_salesperson",
+  "inside_support"
+];
+var PICKER_LABELS = {
+  customer: "Customer",
+  contact: "Contact",
+  ship_to: "Ship-to",
+  bill_to: "Bill-to",
+  outside_salesperson: "Outside Salesperson",
+  inside_support: "Inside Support"
+};
+var ITEM_KEYS = [
+  "vendor",
+  "description",
+  "quote_number",
+  "sell",
+  "tax_category"
+];
+var ITEM_KEY_PATTERN = /^item\.(\d+)\.([a-z_ ]+)$/i;
+var CREATE_FORMS = {
+  contact: [
+    "First Name",
+    "Last Name",
+    "Email",
+    "Cell Phone",
+    "Work Phone",
+    "Contact Type",
+    "Job Title"
+  ],
+  ship_to: ["Street", "City", "State", "Zip"],
+  bill_to: ["Street", "City", "State", "Zip"]
+};
+var CREATE_KEY_PATTERN = /^create\.(contact|ship to|bill to)\.(.+)$/;
+function createEntries(set) {
+  const byPicker = /* @__PURE__ */ new Map();
+  for (const [rawKey, value] of set) {
+    const match = CREATE_KEY_PATTERN.exec(normalizeKey(rawKey));
+    if (!match) continue;
+    const key = match[1].replace(" ", "_");
+    byPicker.set(key, [...byPicker.get(key) ?? [], [match[2], value]]);
+  }
+  return byPicker;
+}
+function pickerBusinessObject(state, key) {
+  const objects = state.wiring.business_objects;
+  switch (key) {
+    case "customer":
+      return objects.customer;
+    case "contact":
+      return objects.contact;
+    case "ship_to":
+    case "bill_to":
+      return objects.address;
+    default:
+      return objects.people;
+  }
+}
+async function createFormFields(state, key, ctx) {
+  const names2 = CREATE_FORMS[key];
+  const boId3 = pickerBusinessObject(state, key);
+  if (!names2 || boId3 === null) return [];
+  const fields = await ctx.metadata.fields(boId3).catch(() => []);
+  return names2.flatMap((name) => {
+    const field = fields.find((candidate) => candidate.name === name);
+    return field ? [field] : [];
+  });
+}
+var LINE_COLUMNS = [
+  { key: "vendor", label: "Vendor" },
+  { key: "description", label: "Description" },
+  { key: "quote_number", label: "Quote #" },
+  { key: "sell", label: "Price" },
+  { key: "tax_category", label: "Taxable" },
+  { key: "tax_amount", label: "Tax" }
+];
+var CELL_MAX = 36;
+function formatTable2(rows, header2 = true) {
+  const cells = rows.map(
+    (row) => row.map((cell2) => {
+      const flat = cell2.replace(/\s+/g, " ").trim();
+      return flat.length > CELL_MAX ? `${flat.slice(0, CELL_MAX - 1)}\u2026` : flat;
+    })
+  );
+  const widths = cells[0]?.map(
+    (_, column) => Math.max(...cells.map((row) => row[column]?.length ?? 0))
+  ) ?? [];
+  const line = (row) => row.map((cell2, column) => cell2.padEnd(widths[column])).join("  ").trimEnd();
+  const out = cells.map(line);
+  if (header2 && out.length > 0) {
+    out.splice(1, 0, widths.map((width) => "-".repeat(width)).join("  "));
+  }
+  return out;
+}
+function withLinkedValues(state) {
+  const record2 = state.record;
+  const relationshipFields = { ...record2.relationship_fields ?? {} };
+  for (const [relationshipId, id] of Object.entries(record2.relationships ?? {})) {
+    const linkedRecord = state.related.find((candidate) => candidate.id === id);
+    if (!linkedRecord || relationshipFields[relationshipId]) continue;
+    relationshipFields[relationshipId] = {
+      fields: linkedRecord.fields ?? {},
+      milestones: linkedRecord.milestones ?? [],
+      archived_on: linkedRecord.archived_on ?? null
+    };
+  }
+  return { ...record2, relationship_fields: relationshipFields };
+}
+function uploadSettled(entries, fileId) {
+  const entry = (entries ?? []).find((candidate) => candidate.file_id === fileId);
+  return !entry || entry.item_id !== null || entry.status === "failed";
+}
+var PARSE_WAIT_MS = 12e4;
+var PARSE_POLL_MS = 3e3;
+var ACT_KEYS = [
+  "scope",
+  "notable",
+  "terms",
+  "deposit",
+  ...PICKER_KEYS.map((key) => `link.${key}`),
+  ...PICKER_KEYS.map((key) => `unlink.${key}`),
+  "create.<contact|ship_to|bill_to>.<field>",
+  "add item",
+  "remove item",
+  "move item",
+  "item.<n>.<vendor|description|quote_number|sell|tax_category>",
+  "upload",
+  "remove upload"
+];
+var stateKey6 = (ctx) => `quote-builder:${ctx.stepId}`;
+function manufacturerFileTypes(data) {
+  const quote4 = data.config.manufacturer_quote_file_type_id;
+  const item2 = data.config.item_manufacturer_quote_file_type_id;
+  return quote4 && item2 ? { quote: Number(quote4), item: Number(item2) } : null;
+}
+function waitingUploads(entries) {
+  return (entries ?? []).filter((entry) => entry.item_id === null);
+}
+function manufacturerQuoteLines(entries) {
+  const waiting = waitingUploads(entries);
+  if (waiting.length === 0) return [];
+  return [
+    "",
+    "  Manufacturer quotes being parsed:",
+    ...waiting.map(
+      (entry, index) => `    ${index + 1}. ${entry.file_name}  ${entry.status === "failed" ? "Parse failed" : "waiting for the parsed quote"}`
+    )
+  ];
+}
+function quoteRef(state) {
+  return {
+    id: state.record.id,
+    business_object_id: state.record.business_object_id
+  };
+}
+function parseItemLine(line) {
+  const parts = line.split("|").map((part) => part.trim());
+  const [vendor, description, quote_number, sell, tax_category] = parts;
+  const item2 = {};
+  if (vendor) item2.vendor = vendor;
+  if (description) item2.description = description;
+  if (quote_number) item2.quote_number = quote_number;
+  if (sell) item2.sell = sell;
+  if (tax_category) item2.tax_category = tax_category;
+  if (!item2.description && !item2.sell) {
+    throw new SurfaceInputError(
+      'add_item needs at least a description or a price: "vendor|description|quote #|price|taxable"'
+    );
+  }
+  return item2;
+}
+function moveRow(rows, spec) {
+  const match = /^(\d+)\s*:\s*(\d+)$/.exec(spec.trim());
+  if (!match)
+    throw new SurfaceInputError("move_item takes <from>:<to>, e.g. 3:1");
+  const from = Number(match[1]) - 1;
+  const to = Number(match[2]) - 1;
+  if (from < 0 || from >= rows.length || to < 0 || to >= rows.length) {
+    throw new SurfaceInputError(
+      `move_item rows must be between 1 and ${rows.length}`
+    );
+  }
+  const next = [...rows];
+  const [row] = next.splice(from, 1);
+  next.splice(to, 0, row);
+  return next;
+}
+function errorText2(err) {
+  return err instanceof Error ? err.message : String(err);
+}
+function numberOrNull(value) {
+  if (value.trim() === "") return null;
+  const number4 = Number(value);
+  if (!Number.isFinite(number4))
+    throw new SurfaceInputError(`"${value}" is not a number`);
+  return number4;
+}
+async function ensureState(data, ctx) {
+  const saved = ctx.state[stateKey6(ctx)];
+  if (saved) return saved;
+  const run = { state: null, draft: null };
+  ctx.state[stateKey6(ctx)] = run;
+  try {
+    const state = await executeRequest(
+      ctx.apiExecutor,
+      "QuoteBuilder.Initialize",
+      {
+        stage: "initialize",
+        mode: data.mode,
+        id: data.record.id,
+        business_object_id: data.business_object_id,
+        summary_template_id: data.config.summary_template_id ?? 0,
+        tax_rate_source: data.config.tax_rate_source,
+        tax_address_record_id: data.tax_address_record_id,
+        manufacturer_quote_file_type_id: manufacturerFileTypes(data)?.quote ?? null
+      }
+    );
+    run.draft = state.draft ?? null;
+    await applyState(run, state, data, ctx);
+  } catch (err) {
+    delete ctx.state[stateKey6(ctx)];
+    run.error = `Unable to open the quote: ${errorText2(err)}`;
+  }
+  return run;
+}
+async function applyState(run, state, data, ctx) {
+  const previous = run.state;
+  run.state = {
+    ...state,
+    options: state.options ?? previous?.options,
+    suggestions: state.suggestions ?? previous?.suggestions,
+    manufacturer_quotes: state.manufacturer_quotes ?? previous?.manufacturer_quotes
+  };
+  const draft = run.draft;
+  if (!draft) return;
+  const items = state.items.map((item2) => ({
+    id: item2.id,
+    values: state.item_tag_values[item2.id] ?? {}
+  }));
+  const update = (html) => {
+    let out = fillQuoteDraftValues(html, state.tag_values);
+    for (const rows of listQuoteDraftTags(out).rows)
+      out = syncQuoteDraftItems(out, rows.name, items);
+    return out;
+  };
+  const next = {
+    ...draft,
+    body: update(draft.body),
+    header: draft.header ? update(draft.header) : draft.header,
+    footer: draft.footer ? update(draft.footer) : draft.footer
+  };
+  if (next.body === draft.body && next.header === draft.header && next.footer === draft.footer)
+    return;
+  run.draft = next;
+  await executeRequest(ctx.apiExecutor, "QuoteBuilder.SaveDraft", {
+    stage: "save-draft",
+    ...quoteRef(state),
+    draft: next
+  });
+}
+function linkedId(state, key) {
+  const relationshipId = state.wiring.relationships[key];
+  return relationshipId === null ? null : state.record.relationships?.[String(relationshipId)] ?? null;
+}
+function linked(state, key) {
+  const id = linkedId(state, key);
+  return id ? state.related.find((record2) => record2.id === id) ?? null : null;
+}
+function defaultFileName(state) {
+  const parent = state.wiring.parent;
+  const name = parent?.fields.name && state.parent_record ? String(state.parent_record.fields?.[String(parent.fields.name)] ?? "") : "";
+  return `${name ? `${name} ` : ""}Quote.pdf`;
+}
+async function buildPdf(run, data, ctx) {
+  if (!run.draft || !run.state)
+    throw new SurfaceInputError("The quote has not opened yet");
+  return executeRequest(ctx.apiExecutor, "QuoteBuilder.BuildFinalPdf", {
+    stage: "build-final-pdf",
+    ...quoteRef(run.state),
+    draft: run.draft,
+    terms_template_id: data.config.terms_template_id ?? 0,
+    order: ["summary", ...manufacturerQuoteParts(run.state), "terms"],
+    file_name: defaultFileName(run.state)
+  });
+}
+function manufacturerQuoteParts(state) {
+  const position = new Map(state.items.map((item2, index) => [item2.id, index]));
+  return (state.manufacturer_quotes ?? []).filter((entry) => entry.item_id !== null && entry.mergeable).sort(
+    (a, b) => (position.get(a.item_id) ?? Number.MAX_SAFE_INTEGER) - (position.get(b.item_id) ?? Number.MAX_SAFE_INTEGER)
+  ).map((entry) => ({ file_id: entry.file_id }));
+}
+function missingForFinalize(state) {
+  const missing = [];
+  for (const key of PICKER_KEYS) {
+    if (key === "inside_support") continue;
+    if (!linkedId(state, key)) missing.push(PICKER_LABELS[key]);
+  }
+  const terms = state.wiring.fields.quote.terms;
+  if (terms === null || !state.record.fields?.[String(terms)])
+    missing.push("Terms");
+  if (state.items.length === 0) missing.push("at least one item");
+  else {
+    const { description, sell } = state.wiring.fields.item;
+    const incomplete = state.items.some(
+      (item2) => description !== null && !String(item2.fields?.[String(description)] ?? "").trim() || sell !== null && (item2.fields?.[String(sell)] === null || item2.fields?.[String(sell)] === void 0)
+    );
+    if (incomplete) missing.push("a description and price on every item");
+  }
+  return missing;
+}
+async function render6(run, data, ctx) {
+  const state = run.state;
+  if (!state) {
+    return {
+      heading: data.title || "Quote Builder",
+      lines: [`  ${run.error ?? "The quote has not opened yet"}`],
+      actions: ["pathway-run view"],
+      detail: { error: run.error ?? null }
+    };
+  }
+  const { wiring } = state;
+  const quoteFields = await ctx.metadata.fields(wiring.quote_bo_id).catch(() => []);
+  const itemFields = wiring.quote_item_bo_id ? await ctx.metadata.fields(wiring.quote_item_bo_id).catch(() => []) : [];
+  const quote4 = recordFieldDisplay(state.record, quoteFields);
+  const show = (fieldId) => fieldId === null ? "" : quote4(fieldId);
+  const parent = state.parent_record;
+  const quoteNumber = wiring.parent && parent ? [
+    wiring.parent.fields.number === null ? "" : String(
+      parent.fields?.[String(wiring.parent.fields.number)] ?? ""
+    ),
+    // The quote's own number, taken when the run opened it.
+    wiring.fields.quote.quote_number === null ? "" : String(
+      state.record.fields?.[String(wiring.fields.quote.quote_number)] ?? ""
+    )
+  ].filter(Boolean).join("-") : "";
+  const people = wiring.fields.people;
+  const linkedValues = recordFieldDisplay(withLinkedValues(state), quoteFields);
+  const titled = (title, command, body) => [
+    "",
+    `  ${title}  (${command})`,
+    ...body.map((line) => `    ${line}`)
+  ];
+  const card = async (key) => {
+    const record2 = linked(state, key);
+    if (!record2) return ["(not set)"];
+    const relationshipId = wiring.relationships[key];
+    const lookups = quoteFields.filter(
+      (field) => field.relationship_id === relationshipId && !field.is_hidden && field.standard_field_type !== "Identifier" && field.field_type !== "notes" && field.field_type !== "appointment"
+    );
+    return [
+      await recordLabel(record2, ctx.metadata),
+      ...lookups.flatMap((field) => {
+        const value = linkedValues(field.id);
+        return value ? [`${field.name}: ${value}`] : [];
+      })
+    ];
+  };
+  const addressCard = async (key) => {
+    const record2 = linked(state, key);
+    if (!record2) return ["(not set)"];
+    const fields = await ctx.metadata.fields(record2.business_object_id).catch(() => []);
+    const value = recordFieldDisplay(record2, fields);
+    const part = (type) => {
+      const field = fields.find((candidate) => candidate.standard_field_type === type);
+      return field ? value(field.id).trim() : "";
+    };
+    const cityLine = [[part("City"), part("State")].filter(Boolean).join(", "), part("Zip")].filter(Boolean).join(" ");
+    const lines2 = [part("Street"), cityLine].filter(Boolean);
+    return [
+      `${await recordLabel(record2, ctx.metadata)}`,
+      ...lines2.length ? lines2 : []
+    ];
+  };
+  const choices = async (key) => {
+    const offered = (state.suggestions?.[key] ?? []).filter(
+      (record2) => record2.id !== linkedId(state, key)
+    );
+    if (offered.length === 0) return [];
+    const isPerson = key === "outside_salesperson" || key === "inside_support";
+    const name = async (record2) => {
+      const personName = isPerson && people.name !== null ? String(record2.fields?.[String(people.name)] ?? "") : "";
+      return personName ? `${personName} (${record2.id})` : recordLabel(record2, ctx.metadata);
+    };
+    return [`Choices: ${(await Promise.all(offered.map(name))).join(", ")}`];
+  };
+  const createHint = async (key) => {
+    const formFields = await createFormFields(state, key, ctx);
+    return formFields.length ? [`New: create.${key}.<field> (${formFields.map((field) => field.name).join(", ")})`] : [];
+  };
+  const text = (fieldId) => {
+    const value = show(fieldId).trim();
+    return value ? value.split("\n") : ["(empty)"];
+  };
+  const item2 = wiring.fields.item;
+  const fileOf = new Map(
+    (state.manufacturer_quotes ?? []).flatMap(
+      (entry) => entry.item_id ? [[entry.item_id, entry.file_name]] : []
+    )
+  );
+  const columns = LINE_COLUMNS.filter(({ key }) => item2[key] !== null);
+  const withFile = state.items.some((row) => fileOf.has(row.id));
+  const lineValues = state.items.map((row) => {
+    const value = recordFieldDisplay(row, itemFields);
+    return Object.fromEntries(
+      columns.map(({ key }) => [key, item2[key] === null ? "" : value(item2[key])])
+    );
+  });
+  const linesTable = state.items.length === 0 ? ["(no lines)"] : formatTable2([
+    ["#", ...columns.map(({ label }) => label), ...withFile ? ["File"] : []],
+    ...state.items.map((row, index) => [
+      String(index + 1),
+      ...columns.map(({ key }) => lineValues[index][key]),
+      ...withFile ? [fileOf.get(row.id) ?? ""] : []
+    ])
+  ]);
+  const quoteFieldIds = wiring.fields.quote;
+  const taxRate = show(quoteFieldIds.tax_rate);
+  const override = show(quoteFieldIds.override_deposit_amount);
+  const totals = formatTable2(
+    [
+      ["Subtotal", show(quoteFieldIds.total_sell_pre_tax) || "0"],
+      [`Total Tax${taxRate ? ` (${taxRate})` : ""}`, show(quoteFieldIds.total_tax) || "0"],
+      ["Total", show(quoteFieldIds.total_sell_with_tax) || "0"]
+    ],
+    false
+  );
+  const lines = [
+    `  Quote # ${quoteNumber || "(assigned at finalize)"}   ${(/* @__PURE__ */ new Date()).toLocaleDateString()}`,
+    ...titled(PICKER_LABELS.ship_to, "link.ship_to", [
+      ...await addressCard("ship_to"),
+      ...await choices("ship_to"),
+      ...await createHint("ship_to")
+    ]),
+    ...titled(PICKER_LABELS.bill_to, "link.bill_to", [
+      ...await addressCard("bill_to"),
+      ...await choices("bill_to"),
+      ...await createHint("bill_to")
+    ]),
+    ...titled("Scope of Work", "scope", text(quoteFieldIds.scope_of_work)),
+    ...titled("Notable Items", "notable", text(quoteFieldIds.notable_items)),
+    ...titled(PICKER_LABELS.outside_salesperson, "link.outside_salesperson", [
+      ...await card("outside_salesperson"),
+      ...await choices("outside_salesperson")
+    ]),
+    ...data.config.show_inside_support ? titled(PICKER_LABELS.inside_support, "link.inside_support", [
+      ...await card("inside_support"),
+      ...await choices("inside_support")
+    ]) : [],
+    ...titled(PICKER_LABELS.customer, "link.customer", [
+      ...await card("customer"),
+      ...await choices("customer")
+    ]),
+    ...titled(PICKER_LABELS.contact, "link.contact", [
+      ...await card("contact"),
+      ...await choices("contact"),
+      ...await createHint("contact")
+    ]),
+    ...titled("Lines", "add_item, item.<n>.<field>, remove_item, move_item", linesTable),
+    ...manufacturerQuoteLines(state.manufacturer_quotes),
+    "",
+    ...totals.map((line) => `  ${line}`),
+    ...titled("Terms", "terms", [show(quoteFieldIds.terms) || "(not set)"]),
+    ...titled("Deposit", "deposit", [
+      `${show(quoteFieldIds.required_deposit) || "0"}${override ? ` (override ${override})` : ""}`
+    ])
+  ];
+  const missing = missingForFinalize(state);
+  if (missing.length)
+    lines.push("", `  Before finalizing: ${missing.join(", ")}`);
+  else
+    lines.push(
+      "",
+      `  Ready: submit finalizes the quote and saves "${defaultFileName(state)}" to it.`
+    );
+  if (wiring.missing_settings.length || wiring.missing_fields.length) {
+    lines.push(
+      "",
+      `  Setup incomplete: ${[...wiring.missing_settings, ...wiring.missing_fields].join(", ")}`
+    );
+  }
+  return {
+    heading: data.title || "Quote Builder",
+    lines,
+    actions: [
+      'pathway-run act --set scope="\u2026"',
+      "pathway-run act --set link.customer=<record id>",
+      'pathway-run act --set add_item="Marvin|Casement window|M-100|1000|Taxable"',
+      'pathway-run act --set terms="Net 10th"',
+      "pathway-run submit"
+    ],
+    detail: {
+      quote_number: quoteNumber,
+      links: Object.fromEntries(
+        PICKER_KEYS.map((key) => [key, linkedId(state, key)])
+      ),
+      items: state.items.map((row, index) => ({
+        id: row.id,
+        ...lineValues[index]
+      })),
+      totals: {
+        subtotal: show(wiring.fields.quote.total_sell_pre_tax),
+        tax: show(wiring.fields.quote.total_tax),
+        total: show(wiring.fields.quote.total_sell_with_tax),
+        tax_rate: taxRate,
+        deposit: show(wiring.fields.quote.required_deposit)
+      },
+      terms: show(wiring.fields.quote.terms),
+      terms_options: state.options?.terms.map((option) => option.value) ?? [],
+      tax_categories: state.options?.tax_categories ?? [],
+      file_name: defaultFileName(state),
+      missing,
+      suggestions: Object.fromEntries(
+        Object.entries(state.suggestions ?? {}).map(([key, records]) => [
+          key,
+          records.map((record2) => record2.id)
+        ])
+      ),
+      accepted: ACT_KEYS
+    }
+  };
+}
+var quoteBuilder = {
+  mirrored: true,
+  async view(data, ctx) {
+    const run = await ensureState(data, ctx);
+    if (run.state && waitingUploads(run.state.manufacturer_quotes).length > 0) {
+      const next = await executeRequest(ctx.apiExecutor, "QuoteBuilder.Refresh", {
+        stage: "refresh",
+        ...quoteRef(run.state),
+        manufacturer_quote_file_type_id: manufacturerFileTypes(data)?.quote ?? null
+      });
+      await applyState(run, next, data, ctx);
+    }
+    return render6(run, data, ctx);
+  },
+  async act(data, input, ctx) {
+    assertKnownKeys(
+      {
+        ...input,
+        set: input.set.filter(
+          ([key]) => !ITEM_KEY_PATTERN.test(normalizeKey(key)) && !CREATE_KEY_PATTERN.test(normalizeKey(key))
+        )
+      },
+      ACT_KEYS
+    );
+    const run = await ensureState(data, ctx);
+    const state = run.state;
+    if (!state)
+      throw new SurfaceInputError(run.error ?? "The quote has not opened yet");
+    const { wiring } = state;
+    const request = quoteRef(state);
+    let next = null;
+    for (const key of PICKER_KEYS) {
+      const relationshipId = wiring.relationships[key];
+      const target = getSet(input, `link.${key}`);
+      if (target !== void 0) {
+        if (relationshipId === null)
+          throw new SurfaceInputError(
+            `The ${PICKER_LABELS[key]} relationship is not set up`
+          );
+        next = await executeRequest(ctx.apiExecutor, "QuoteBuilder.Link", {
+          stage: "link",
+          ...request,
+          relationship_id: relationshipId,
+          relationship_record_id: target.trim()
+        });
+      }
+      if (parseBool(getSet(input, `unlink.${key}`), `unlink.${key}`)) {
+        if (relationshipId === null)
+          throw new SurfaceInputError(
+            `The ${PICKER_LABELS[key]} relationship is not set up`
+          );
+        next = await executeRequest(ctx.apiExecutor, "QuoteBuilder.Unlink", {
+          stage: "unlink",
+          ...request,
+          relationship_id: relationshipId
+        });
+      }
+    }
+    for (const [key, entries] of createEntries(input.set)) {
+      const relationshipId = wiring.relationships[key];
+      const boId3 = pickerBusinessObject(state, key);
+      if (relationshipId === null || boId3 === null)
+        throw new SurfaceInputError(
+          `The ${PICKER_LABELS[key]} relationship is not set up`
+        );
+      if (getSet(input, `link.${key}`) !== void 0)
+        throw new SurfaceInputError(
+          `Either link.${key} or create.${key}.<field>, not both`
+        );
+      const formFields = await createFormFields(state, key, ctx);
+      const values = [];
+      for (const [name, raw] of entries) {
+        const formField = formFields.find(
+          (candidate) => normalizeKey(candidate.name) === name
+        );
+        if (!formField)
+          throw new SurfaceInputError(
+            `create.${key} takes ${formFields.map((f) => f.name).join(", ") || "(no fields)"}`
+          );
+        try {
+          values.push({
+            field_id: formField.id,
+            value: await parseFieldInput(formField, raw, { metadata: ctx.metadata })
+          });
+        } catch (err) {
+          if (err instanceof FieldInputError) throw new SurfaceInputError(err.message);
+          throw err;
+        }
+      }
+      const customerId = linkedId(next ?? state, "customer");
+      next = await executeRequest(ctx.apiExecutor, "QuoteBuilder.Link", {
+        stage: "link",
+        ...request,
+        relationship_id: relationshipId,
+        relationship_record_id: null,
+        create: {
+          business_object_id: boId3,
+          fields: values,
+          links: key === "contact" && customerId && wiring.contact_customer_relationship_id !== null ? [
+            {
+              relationship_id: wiring.contact_customer_relationship_id,
+              relationship_record_id: customerId
+            }
+          ] : []
+        }
+      });
+    }
+    const fields = [];
+    const field = (key, value) => {
+      const fieldId = wiring.fields.quote[key];
+      if (fieldId === null)
+        throw new SurfaceInputError(
+          `The Quote has no ${key.replace(/_/g, " ")} field`
+        );
+      fields.push({ field_id: fieldId, value });
+    };
+    const scope = getSet(input, "scope");
+    if (scope !== void 0) field("scope_of_work", scope);
+    const notable = getSet(input, "notable");
+    if (notable !== void 0) field("notable_items", notable);
+    const terms = getSet(input, "terms");
+    if (terms !== void 0) {
+      const options = state.options?.terms.map((option) => option.value) ?? [];
+      if (options.length && !options.includes(terms.trim())) {
+        throw new SurfaceInputError(
+          `Unknown terms "${terms}" \u2014 one of: ${options.join(", ")}`
+        );
+      }
+      field("terms", terms.trim());
+    }
+    const deposit = getSet(input, "deposit");
+    if (deposit !== void 0)
+      field("override_deposit_amount", numberOrNull(deposit));
+    if (fields.length > 0) {
+      next = await executeRequest(ctx.apiExecutor, "QuoteBuilder.SaveFields", {
+        stage: "save-fields",
+        ...request,
+        fields,
+        tax_rate_source: data.config.tax_rate_source,
+        tax_address_record_id: data.tax_address_record_id
+      });
+    }
+    const itemField = wiring.fields.item;
+    const current2 = (next ?? state).items;
+    let rows = current2.map((row) => ({ id: row.id, values: {} }));
+    let removed = [];
+    let itemsChanged = false;
+    for (const [key, line] of input.set) {
+      if (normalizeKey(key) !== "add item") continue;
+      rows.push({ id: null, values: parseItemLine(line) });
+      itemsChanged = true;
+    }
+    for (const [rawKey, value] of input.set) {
+      const match = ITEM_KEY_PATTERN.exec(normalizeKey(rawKey));
+      if (!match) continue;
+      const index = Number(match[1]) - 1;
+      const key = match[2].replace(/ /g, "_");
+      if (!ITEM_KEYS.includes(key))
+        throw new SurfaceInputError(
+          `Unknown item field "${match[2]}" \u2014 one of ${ITEM_KEYS.join(", ")}`
+        );
+      if (index < 0 || index >= rows.length)
+        throw new SurfaceInputError(
+          `item.${match[1]}: there are ${rows.length} items`
+        );
+      rows[index].values[key] = value;
+      itemsChanged = true;
+    }
+    const removeItem = getSet(input, "remove item");
+    if (removeItem !== void 0) {
+      const index = Number(removeItem) - 1;
+      if (!Number.isInteger(index) || index < 0 || index >= rows.length) {
+        throw new SurfaceInputError(
+          `remove_item: there are ${rows.length} items`
+        );
+      }
+      const [row] = rows.splice(index, 1);
+      if (row.id) removed = [row.id];
+      itemsChanged = true;
+    }
+    const moveItem = getSet(input, "move item");
+    if (moveItem !== void 0) {
+      rows = moveRow(rows, moveItem);
+      itemsChanged = true;
+    }
+    if (itemsChanged) {
+      const items = rows.map((row) => {
+        const saved = row.id ? current2.find((candidate) => candidate.id === row.id) : void 0;
+        const value = (key, fieldId) => {
+          if (fieldId === null) return [];
+          if (row.values[key] !== void 0) {
+            const raw = row.values[key];
+            return [
+              {
+                field_id: fieldId,
+                value: key === "sell" ? numberOrNull(raw) : raw
+              }
+            ];
+          }
+          if (!saved) return [];
+          return [
+            {
+              field_id: fieldId,
+              value: saved.fields?.[String(fieldId)] ?? null
+            }
+          ];
+        };
+        return {
+          id: row.id,
+          fields: [
+            ...value("vendor", itemField.vendor),
+            ...value("description", itemField.description),
+            ...value("quote_number", itemField.quote_number),
+            ...value("sell", itemField.sell),
+            ...value("tax_category", itemField.tax_category)
+          ]
+        };
+      });
+      next = await executeRequest(ctx.apiExecutor, "QuoteBuilder.SaveItems", {
+        stage: "save-items",
+        ...request,
+        items,
+        removed_ids: removed,
+        manufacturer_quote_file_type_id: manufacturerFileTypes(data)?.quote ?? null
+      });
+    }
+    const uploadPath = getSet(input, "upload");
+    const removeUpload = getSet(input, "remove_upload");
+    if (uploadPath !== void 0 || removeUpload !== void 0) {
+      const types = manufacturerFileTypes(data);
+      if (!types)
+        throw new SurfaceInputError(
+          "The step has no manufacturer quote file types (Manufacturer Quote File Type and Item Manufacturer Quote File Type)"
+        );
+      if (uploadPath !== void 0) {
+        const { blob, name } = readUploadFile(resolve10(ctx.cwd, uploadPath.trim()));
+        const [uploaded] = await uploadToRecord(
+          state.record,
+          [{ blob, name, fileTypeId: types.quote }],
+          ctx
+        );
+        if (!uploaded?.file_id) throw new SurfaceInputError(`Unable to upload ${name}`);
+        next = await executeRequest(ctx.apiExecutor, "QuoteBuilder.ParseManufacturerQuote", {
+          stage: "parse-manufacturer-quote",
+          ...request,
+          file_id: uploaded.file_id,
+          manufacturer_quote_file_type_id: types.quote,
+          item_manufacturer_quote_file_type_id: types.item
+        });
+        const deadline = Date.now() + PARSE_WAIT_MS;
+        while (!uploadSettled(next.manufacturer_quotes, uploaded.file_id) && Date.now() < deadline) {
+          await new Promise((done) => setTimeout(done, PARSE_POLL_MS));
+          next = await executeRequest(ctx.apiExecutor, "QuoteBuilder.Refresh", {
+            stage: "refresh",
+            ...request,
+            manufacturer_quote_file_type_id: types.quote
+          });
+        }
+      }
+      if (removeUpload !== void 0) {
+        const waiting = waitingUploads((next ?? state).manufacturer_quotes);
+        const index = Number(removeUpload) - 1;
+        const entry = waiting[index];
+        if (!Number.isInteger(index) || !entry)
+          throw new SurfaceInputError(
+            waiting.length ? `remove_upload must be between 1 and ${waiting.length}` : "There are no uploads waiting to be parsed"
+          );
+        next = await executeRequest(ctx.apiExecutor, "QuoteBuilder.RemoveManufacturerQuote", {
+          stage: "remove-manufacturer-quote",
+          ...request,
+          file_id: entry.file_id,
+          manufacturer_quote_file_type_id: types.quote
+        });
+      }
+    }
+    if (next) await applyState(run, next, data, ctx);
+    return render6(run, data, ctx);
+  },
+  /** Done with the form: build the PDF and commit, as the web's Finalize "Yes" does. */
+  async answer(data, input, ctx) {
+    assertKnownKeys(input, []);
+    const run = await ensureState(data, ctx);
+    const state = run.state;
+    if (!state)
+      throw new SurfaceInputError(run.error ?? "The quote has not opened yet");
+    const missing = missingForFinalize(state);
+    if (missing.length)
+      throw new SurfaceInputError(
+        `Before finalizing, fill in: ${missing.join(", ")}`
+      );
+    const fileTypeId = data.config.merged_pdf_file_type_id;
+    const completedStep = data.config.completed_workflow_step_id;
+    if (fileTypeId === null || completedStep === null) {
+      throw new SurfaceInputError(
+        "The step needs a merged PDF file type and a Completed step"
+      );
+    }
+    const finalize = async (pdf2) => executeRequest(ctx.apiExecutor, "QuoteBuilder.Finalize", {
+      stage: "finalize",
+      ...quoteRef(state),
+      merged_file_id: pdf2.file_id,
+      file_name: pdf2.file_name,
+      file_type_id: Number(fileTypeId),
+      expected_quote_count: pdf2.quote_count,
+      completed_workflow_step_id: Number(completedStep)
+    });
+    let pdf = await buildPdf(run, data, ctx);
+    let result = await finalize(pdf);
+    if (result.status === "stale") {
+      pdf = await buildPdf(run, data, ctx);
+      result = await finalize(pdf);
+    }
+    if (result.status === "stale") {
+      throw new SurfaceInputError(
+        "The quote number keeps moving on (another quote is being finalized on this parent); submit again."
+      );
+    }
+    const quoteNumberField = state.wiring.fields.quote.quote_number;
+    const number4 = quoteNumberField === null ? "" : String(result.record.fields?.[String(quoteNumberField)] ?? "");
+    ctx.note?.(
+      `Quote${number4 ? ` #${number4}` : ""} finalized \xB7 "${pdf.file_name}" saved to the quote`
+    );
+    ctx.note?.(`  ${pdf.download_url}`);
+    return { record: result.record };
+  }
+};
+var quoteBuilderPicker = {
+  mirrored: false,
+  async view(data) {
+    return {
+      heading: data.title,
+      lines: [
+        "  The terminal links records by id: use act --set link.<key>=<record id> on the Quote Builder step."
+      ],
+      actions: [`submit --data '{"kind":"select","record":{\u2026}}'`],
+      detail: {
+        business_object_id: data.business_object_id,
+        suggestions: data.suggestions.map((record2) => record2.id),
+        allow_create: data.allow_create
+      }
+    };
+  },
+  async answer(_data, input) {
+    if (input.data === void 0)
+      throw new SurfaceInputError("Answer the picker with --data");
+    return input.data;
   }
 };
 
@@ -45293,24 +47454,24 @@ async function runLookup(key, data, search, page, ctx) {
     records: out?.items ?? []
   };
 }
-function stateKey6(ctx, surface) {
+function stateKey7(ctx, surface) {
   return `${surface}:${ctx.stepId}`;
 }
 async function currentListing(key, data, ctx, surface) {
-  const saved = ctx.state[stateKey6(ctx, surface)];
+  const saved = ctx.state[stateKey7(ctx, surface)];
   if (saved) return saved;
   if (data.require_search) return null;
   const listing = await runLookup(key, data, "", 1, ctx);
-  ctx.state[stateKey6(ctx, surface)] = listing;
+  ctx.state[stateKey7(ctx, surface)] = listing;
   return listing;
 }
 async function searchFromInput(key, data, input, ctx, surface) {
   const search = getSet(input, "search");
   const pageRaw = getSet(input, "page");
   if (search === void 0 && pageRaw === void 0) return currentListing(key, data, ctx, surface);
-  const previous = ctx.state[stateKey6(ctx, surface)];
+  const previous = ctx.state[stateKey7(ctx, surface)];
   const listing = await runLookup(key, data, search ?? previous?.search ?? "", pageRaw ? Number(pageRaw) : 1, ctx);
-  ctx.state[stateKey6(ctx, surface)] = listing;
+  ctx.state[stateKey7(ctx, surface)] = listing;
   return listing;
 }
 async function listingLines(listing, data, ctx) {
@@ -45596,8 +47757,8 @@ async function send(ctx, key, input) {
 function slim(r, relIds2 = []) {
   const kept = {};
   for (const id of relIds2) {
-    const linked = r.relationships?.[String(id)];
-    if (linked) kept[String(id)] = linked;
+    const linked2 = r.relationships?.[String(id)];
+    if (linked2) kept[String(id)] = linked2;
   }
   return {
     id: r.id,
@@ -45668,7 +47829,7 @@ function parseCommands(input) {
 function baseState() {
   return { error: null, session: null, failed: [], failedCounter: 0, messages: [], history: [], numbers: {}, nextNumber: 1 };
 }
-var stateKey7 = (ctx, surface) => `${surface}:${ctx.stepId}`;
+var stateKey8 = (ctx, surface) => `${surface}:${ctx.stepId}`;
 function number3(state, ids) {
   for (const id of ids) if (state.numbers[id] === void 0) state.numbers[id] = state.nextNumber++;
 }
@@ -45682,11 +47843,11 @@ function say(state, msg, color = "success") {
   const m = typeof msg === "string" ? { message: msg, color } : msg;
   state.messages.push(`${ICON[m.color]} ${m.message}`);
 }
-function errorText2(err) {
+function errorText3(err) {
   return err instanceof Error ? err.message : String(err);
 }
 function sayError(state, toast, err) {
-  say(state, `${toast} (${errorText2(err)})`, "danger");
+  say(state, `${toast} (${errorText3(err)})`, "danger");
 }
 function findRow2(state, ref, candidates, what) {
   const t = ref.trim().replace(/^#/, "");
@@ -45762,7 +47923,7 @@ async function finish(state, customCodeSelector, ctx, swallow = false) {
       const { result } = await send(ctx, "ScanAndProcess.RunCustomCode", post);
       failure3 = scan_sessions_exports.finishFailureMessage(result, post.method_name);
     } catch (err) {
-      if (!swallow) throw new SurfaceInputError(`Post-processing failed \u2014 ${scan_sessions_exports.FINISH_FAILED} (${errorText2(err)})`);
+      if (!swallow) throw new SurfaceInputError(`Post-processing failed \u2014 ${scan_sessions_exports.FINISH_FAILED} (${errorText3(err)})`);
       failure3 = null;
     }
     if (failure3) {
@@ -45817,7 +47978,7 @@ async function runCommands(commands, handlers, state) {
   return { row };
 }
 async function loadState(mode, data, ctx) {
-  const key = stateKey7(ctx, mode.surface);
+  const key = stateKey8(ctx, mode.surface);
   const saved = ctx.state[key];
   if (saved) return saved;
   const state = await mode.open(data, ctx);
@@ -46426,7 +48587,7 @@ async function open3(data, ctx) {
     try {
       state.pallets = await load2(ctx, palletIds);
     } catch (e) {
-      say(state, `Could not load the pallet bins (${errorText2(e)})`, "warning");
+      say(state, `Could not load the pallet bins (${errorText3(e)})`, "warning");
     }
   }
   state.om = await om;
@@ -46525,7 +48686,7 @@ async function scanFromOtherAppointment(state, code, ctx) {
     }
   } catch (e) {
     recordFailed(state, code, "scan-failed");
-    say(state, `Scan failed (${errorText2(e)})`, "danger");
+    say(state, `Scan failed (${errorText3(e)})`, "danger");
   }
 }
 async function scanPallet(state, pallet, code, ctx) {
@@ -46821,7 +48982,7 @@ async function open4(data, ctx) {
     try {
       state.pallets = await load2(ctx, palletIds);
     } catch (e) {
-      say(state, `Could not load the pallet bins (${errorText2(e)})`, "warning");
+      say(state, `Could not load the pallet bins (${errorText3(e)})`, "warning");
     }
   }
   return state;
@@ -46895,7 +49056,7 @@ async function scan4(state, code, appointmentId, ctx) {
       await scanPallet2(state, pallet, code, appointmentId, ctx);
     } catch (e) {
       recordFailed(state, code, "scan-failed");
-      say(state, `Scan failed (${errorText2(e)})`, "danger");
+      say(state, `Scan failed (${errorText3(e)})`, "danger");
     }
     return;
   }
@@ -47075,7 +49236,7 @@ async function createBinSession(state, ctx, build, sessionBoId) {
     return true;
   } catch (e) {
     state.session = null;
-    state.error = `Could not start the session (${errorText2(e)})`;
+    state.error = `Could not start the session (${errorText3(e)})`;
     return false;
   }
 }
@@ -47498,18 +49659,24 @@ var surfaceHandlers = {
   "po-receiving": scanHandler(poReceivingMode),
   "stop-receiving": scanHandler(stopReceivingMode),
   "bin-check-in": scanHandler(binCheckInMode),
-  "bin-check-out": scanHandler(binCheckOutMode)
+  "bin-check-out": scanHandler(binCheckOutMode),
+  // Quote Builder (the picker is web-only: the terminal links by record id)
+  "quote-builder": quoteBuilder,
+  "quote-builder-picker": quoteBuilderPicker
 };
 function handlerFor(surface) {
   const handler = surfaceHandlers[surface];
-  if (!handler) throw new Error(`Unknown surface "${surface}" \u2014 the CLI runner needs updating`);
+  if (!handler)
+    throw new Error(
+      `Unknown surface "${surface}" \u2014 the CLI runner needs updating`
+    );
   return handler;
 }
 
 // .path-cli/src/pathway-runner/scenario.ts
-import { readFileSync as readFileSync9 } from "fs";
+import { readFileSync as readFileSync10 } from "fs";
 function loadScenario(source) {
-  const text = source.trim().startsWith("[") ? source : readFileSync9(source, "utf-8");
+  const text = source.trim().startsWith("[") ? source : readFileSync10(source, "utf-8");
   const parsed = JSON.parse(text);
   if (!Array.isArray(parsed)) throw new Error("A scenario must be a JSON array of answers");
   return parsed;
@@ -47548,7 +49715,7 @@ function pathwayJson(run) {
   return { id: run.pathwayId, name: run.pathwayName, info: infoText(run.pathwayInfo) };
 }
 function pathwayInfoLines(info) {
-  return infoLines(info, { indent: "  ", label: "Pathway info" });
+  return infoLines(info, { indent: "  ", label: "Pathway context" });
 }
 function waitingForJson(run, view4) {
   const p = run.pending;
@@ -47569,7 +49736,7 @@ function waitingScreenLines(view4, run, inputError) {
   const lines = [
     "",
     `\u2501\u2501 Waiting for input \xB7 step "${p.stepTitle}" [${p.stepType}] \xB7 screen: ${p.surface} \u2501\u2501`,
-    ...infoLines(p.stepInfo, { indent: "  ", label: "Step info" }),
+    ...infoLines(p.stepInfo, { indent: "  ", label: "Step context" }),
     view4.heading,
     ...view4.lines
   ];
@@ -48089,7 +50256,11 @@ var PathwayRunner = class {
       stepId: pending2.stepId,
       stepTitle: pending2.stepTitle,
       userId: session.run.userId,
-      mode: session.run.mode
+      mode: session.run.mode,
+      note: (line) => {
+        this.opts.out.line(`  ${line}`);
+        appendLog(session.run.runId, { kind: "note", line });
+      }
     };
   }
   /** What was entered on a screen (accepted input only), for `save-test`. Files are logged as absolute paths. */
@@ -48124,19 +50295,19 @@ var StrictPauseError = class extends Error {
 };
 
 // .path-cli/src/pathway-runner/scenario-test.ts
-import { existsSync as existsSync9, readFileSync as readFileSync10, readdirSync as readdirSync2, statSync as statSync4 } from "fs";
-import { join as join5, resolve as resolve9 } from "path";
+import { existsSync as existsSync10, readFileSync as readFileSync11, readdirSync as readdirSync3, statSync as statSync4 } from "fs";
+import { join as join5, resolve as resolve11 } from "path";
 function loadScenarioTests(paths, cwd) {
   const out = [];
   const addFile = (file) => {
-    const parsed = JSON.parse(readFileSync10(file, "utf-8"));
+    const parsed = JSON.parse(readFileSync11(file, "utf-8"));
     for (const test of Array.isArray(parsed) ? parsed : [parsed]) out.push({ file, test });
   };
   for (const p of paths) {
-    const abs = resolve9(cwd, p);
-    if (!existsSync9(abs)) throw new Error(`Test file or folder not found: ${abs}`);
+    const abs = resolve11(cwd, p);
+    if (!existsSync10(abs)) throw new Error(`Test file or folder not found: ${abs}`);
     if (statSync4(abs).isDirectory()) {
-      for (const name of readdirSync2(abs).filter((n) => n.endsWith(".json")).sort()) addFile(join5(abs, name));
+      for (const name of readdirSync3(abs).filter((n) => n.endsWith(".json")).sort()) addFile(join5(abs, name));
     } else {
       addFile(abs);
     }
@@ -48598,7 +50769,7 @@ function isSystemField(f) {
 }
 
 // .path-cli/src/commands/pathway-run.ts
-import { mkdirSync as mkdirSync7, writeFileSync as writeFileSync7 } from "fs";
+import { mkdirSync as mkdirSync8, writeFileSync as writeFileSync8 } from "fs";
 import { dirname as dirname5, resolve as resolvePath3 } from "path";
 function collect2(value, previous) {
   return [...previous, value];
@@ -48701,7 +50872,7 @@ function handleRunError(err, json) {
       console.error(`\u2717 ${err.message}`);
       for (const c of err.checks) console.error(`  ${c.ok ? "\u2713" : "\u2717"} ${c.name}: ${c.detail}`);
       if (err.checks.some((c) => !c.ok && c.name === SUPER_USER_CHECK) && err.checks.filter((c) => !c.ok).length === 1) {
-        console.error("  (only the visibility criteria block it: an Admin or Designer can run it with --mode super-user)");
+        console.error("  (only the visibility criteria block it: a Designer can run it with --mode super-user)");
       }
     }
     setExitCode(5);
@@ -48752,7 +50923,7 @@ function runMode(value) {
 }
 var startCommand = new Command("start").description("Start a pathway run, exactly as the web app runs it; stops at the first screen that needs input").option("--pathway-id <id>", "Pathway ID").option("--pathway-name <name>", "Pathway name (resolved to ID)").option("--record-id <id>", "Starting record ID").option("--copy-of <id>", "Start on a fresh copy of this record (its editable fields and links), made just for this run").option("--copy-set <Field=value>", "With --copy-of: a field value for the copy (repeatable)", collect2, []).option("--task-id <id>", "Launch by completing this task on --record-id (Complete Task steps complete it)").option("--folder-id <id>", "Launch from this folder's header").option("--from <point>", "Where it is launched: record | dashboard | folder | task (default: from the other flags)").option(
   "--mode <mode>",
-  "real-world (default: only launches the user could make in the web app) | super-user (also when the pathway's visibility criteria don't match the record; Admin or Designer only, this run only)"
+  "real-world (default: only launches the user could make in the web app) | super-user (also when the pathway's visibility criteria don't match the record; Designer only, this run only)"
 ).option("--as-user <id|email|name>", "Run as another account member (admin impersonation session)").option("--tag <tag>", 'Pre-run tag choice for created records: "<tag name|id>" or "<group id>=<tag>" (repeatable)', collect2, []).option("--answers <file|json>", "Scenario: JSON array of scripted answers, consumed in order").option("--strict", "Fail (exit 4) instead of pausing when a screen has no usable scripted answer").action(async (opts) => {
   let json = false;
   try {
@@ -48932,7 +51103,7 @@ var deleteCommand = new Command("delete").description("Delete a saved run and it
   console.log(`Deleted run ${opts.run}.`);
 });
 var availableCommand = new Command("available").description(
-  "Which pathways a user could start from a launch point (a record's Pathways tab, the dashboard, a folder or a task), each with its designer info (what it is for: read it to decide whether a pathway does what the user asked), and with --all the reason for each one left out. Like all info, a pathway's is shown once per session (later calls leave it out; --with-info repeats it)"
+  "Which pathways a user could start from a launch point (a record's Pathways tab, the dashboard, a folder or a task), each with its designer context (what it is for: read it to decide whether a pathway does what the user asked), and with --all the reason for each one left out. Like all context, a pathway's is shown once per session (later calls leave it out; --with-context repeats it)"
 ).option("--record-id <id>", "Record viewer of this record").option("--task-id <id>", "Completing this task (with --record-id)").option("--folder-id <id>", "This folder's header").option("--from <point>", "record | dashboard | folder | task (default: from the other flags)").option("--as-user <id|email|name>", "Check for another account member (admin impersonation session)").option("--all", "Also list the pathways that are not available, with why").action(async (opts) => {
   let json = false;
   try {
@@ -49132,8 +51303,8 @@ var saveTestCommand = new Command("save-test").description(
     const test = await buildTestFromRun(run, readLog(run.runId), ctx.client, { name: opts.name, copyStart: !!opts.copyStart, outFile });
     const text = JSON.stringify(test, null, 2) + "\n";
     if (outFile) {
-      mkdirSync7(dirname5(outFile), { recursive: true });
-      writeFileSync7(outFile, text);
+      mkdirSync8(dirname5(outFile), { recursive: true });
+      writeFileSync8(outFile, text);
       console.log(json ? JSON.stringify({ file: outFile, answers: test.answers?.length ?? 0 }) : `Saved test "${test.name}" to ${outFile} (${test.answers?.length ?? 0} answer(s)). Run it with: pathway-run test ${opts.out}`);
     } else {
       process.stdout.write(text);
@@ -49148,7 +51319,7 @@ var pathwayRunCommand = new Command("pathway-run").description(
 
 // .path-cli/src/commands/run-report.ts
 var runReportCommand = new Command("run-report").description(
-  `Run a report and print its rows (the web app's report view; in real-world mode only reports the acting user can open). Also gives the report's own info (report {id, name, info}: what it is for, how to read it), its root business object {id, name, info} and each column's info \u2014 the column's own info when the report has one on it, otherwise the info of the field the column shows (for a column through relationships, the end field's, with the relationships on the path and their info); count, milestone, step and calculated columns have only their own, a Time Between / Time Span column on one field falls back to that field's. Filter-only Custom Fields (compared by the filter, not shown) come with their own info. --json keeps the server's { rows, meta } and adds report, business_object, columns [{name, column_type, field_id?, relationship_path?, info}] and custom_fields [{name, column_type, info}]; text output prints a "Report info:", a "Business object info:", a "Column info:" and a "Custom Field info" block under the rows (only what has info). Like all info, each is shown once per session; later runs leave it out (pass --with-info to repeat)`
+  `Run a report and print its rows (the web app's report view; in real-world mode only reports the acting user can open). Also gives the report's own context (report {id, name, context}: what it is for, how to read it), its root business object {id, name, context} and each column's context \u2014 the column's own context when the report has one on it, otherwise the context of the field the column shows (for a column through relationships, the end field's, with the relationships on the path and their context); count, milestone, step and calculated columns have only their own, a Time Between / Time Span column on one field falls back to that field's. Filter-only Custom Fields (compared by the filter, not shown) come with their own context. --json keeps the server's { rows, meta } and adds report, business_object, columns [{name, column_type, field_id?, relationship_path?, context}] and custom_fields [{name, column_type, context}]; text output prints a "Report context:", a "Business object context:", a "Column context:" and a "Custom Field context" block under the rows (only what has context). Like all context, each is shown once per session; later runs leave it out (pass --with-context to repeat)`
 ).option("--report-id <id>", "Report ID").option("--report-name <name>", "Report name (resolved to ID)").option("--page <n>", "Page number", "1").option("--per-page <n>", "Rows per page", "50").option("--all", "Every row in one call (--page / --per-page are ignored)").option(
   "--user-filter <json>",
   `Runtime filters for the report's user-filterable columns, e.g. '[{"entity_id":12,"logic":"equal","values":["John"]}]'`
@@ -49211,13 +51382,17 @@ async function reportInfo(metadata, report2) {
   for (const column of columns) {
     const entry = { name: column.name, column_type: column.column_type, info: null };
     const mappings = column.relationship_mappings ?? [];
-    const boId3 = mappings.length ? mappings[mappings.length - 1].business_object_id : rootBoId;
+    let boId3 = mappings.length ? mappings[mappings.length - 1].business_object_id : rootBoId;
     let fieldId = null;
     if (column.column_type === "field" && column.column_entity_id) {
       fieldId = column.column_entity_id;
     } else if (column.column_type === "timespan" || column.column_type === "time_between") {
-      const sources = [column.from_field, column.to_field].filter((f) => f?.type === "field" && f.field_id).map((f) => f.field_id);
-      if (new Set(sources).size === 1) fieldId = sources[0];
+      const sources = [column.from_field, column.to_field].filter((f) => f?.type === "field" && f.field_id);
+      if (new Set(sources.map((f) => f.field_id)).size === 1) {
+        fieldId = sources[0].field_id;
+        const chain = sources[0].relationship_mappings ?? [];
+        if (chain.length) boId3 = chain[chain.length - 1].business_object_id;
+      }
     }
     if (fieldId != null) {
       entry.field_id = fieldId;
@@ -49248,10 +51423,10 @@ async function reportInfo(metadata, report2) {
 function renderReportInfo(context3) {
   const relationships2 = /* @__PURE__ */ new Map();
   for (const c of context3.columns) for (const r of c.relationship_path ?? []) relationships2.set(r.id, r);
-  return [...ownInfoLines("Report info", context3.report), ...infoContextLines(context3.business_object, [
-    { title: "Column info", entries: context3.columns.map((c) => ({ name: c.name, info: c.info })) },
-    { title: "Relationship info (column paths)", entries: [...relationships2.values()] },
-    { title: "Custom Field info (compared by the filter, not shown)", entries: context3.custom_fields }
+  return [...ownInfoLines("Report context", context3.report), ...infoContextLines(context3.business_object, [
+    { title: "Column context", entries: context3.columns.map((c) => ({ name: c.name, info: c.info })) },
+    { title: "Relationship context (column paths)", entries: [...relationships2.values()] },
+    { title: "Custom Field context (compared by the filter, not shown)", entries: context3.custom_fields }
   ])];
 }
 
@@ -49356,8 +51531,228 @@ async function listReports(client) {
   }));
 }
 
+// .path-cli/src/utils/calendar-management.ts
+var ALL_USERS_ROLE_NAME = "All Users";
+var DEFAULT_CALENDAR_COLOR = "#1A5E20";
+function parseColor(value) {
+  const v = value.trim();
+  if (!/^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(v)) {
+    throw new Error(`--color must be a hex color like #1A5E20 (got "${value}")`);
+  }
+  return v;
+}
+function parseName(value, what) {
+  const v = value.trim();
+  if (!v) throw new Error(`${what} can't be blank`);
+  return v;
+}
+function parseAllUsers(value) {
+  const v = value.trim().toLowerCase();
+  if (v === "view" || v === "edit" || v === "none") return v;
+  throw new Error("--all-users must be view, edit or none");
+}
+function parseShareAccess(value) {
+  const v = value.trim().toLowerCase();
+  if (v === "view" || v === "edit" || v === "owner" || v === "remove") return v;
+  throw new Error("--access must be view, edit, owner or remove");
+}
+function splitList(value) {
+  return (value ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+}
+async function listManagedCalendars(client) {
+  return unwrapPaginated(await client.get("/v1/calendars"));
+}
+async function listCalendarGroups(client) {
+  return unwrapPaginated(await client.get("/v1/calendar-groups"));
+}
+function byIdOrName(items, key, noun) {
+  const k = key.trim();
+  const match = items.find((c) => String(c.id) === k) ?? items.find((c) => c.name.toLowerCase() === k.toLowerCase());
+  if (!match) {
+    throw new Error(
+      `Unknown ${noun} "${k}" (or one this user can't see). ${noun[0].toUpperCase()}${noun.slice(1)}s: ${items.map((c) => `${c.id} ${c.name}`).join(", ") || "(none)"}`
+    );
+  }
+  return match;
+}
+function resolveManagedCalendar(calendars2, key) {
+  return byIdOrName(calendars2, key, "calendar");
+}
+function resolveCalendarGroup(groups, key) {
+  return byIdOrName(groups, key, "calendar group");
+}
+async function listPeople(client) {
+  const raw = unwrapPaginated(await client.get("/v1/users/directory", { all: "true" }));
+  return raw.map((u) => {
+    const id = u.user_id ?? u.id;
+    return {
+      id,
+      name: [u.first_name, u.last_name].filter(Boolean).join(" ") || u.email || `User ${id}`,
+      email: u.email,
+      deactivated: !!(u.deactivated_on || u.user_account?.deactivated_on)
+    };
+  });
+}
+function resolvePeople(people, keys) {
+  return keys.map((key) => {
+    const k = key.trim().toLowerCase();
+    const person = people.find((p) => String(p.id) === k) ?? people.find((p) => p.email?.toLowerCase() === k) ?? people.find((p) => p.name.toLowerCase() === k);
+    if (!person) throw new Error(`No user "${key}" in this account (give an id, email or full name; see list-users)`);
+    if (person.deactivated) throw new Error(`${person.name} is deactivated`);
+    return person;
+  });
+}
+async function listRoleRefs(client) {
+  return unwrapPaginated(await client.get("/v1/roles", { all: "true" })).map((r) => ({
+    id: r.id,
+    name: r.name
+  }));
+}
+function resolveRoleRefs(roles, keys) {
+  return keys.map((key) => {
+    const k = key.trim().toLowerCase();
+    const role = roles.find((r) => String(r.id) === k) ?? roles.find((r) => r.name.toLowerCase() === k);
+    if (!role) throw new Error(`No role "${key}" in this account (see list-roles)`);
+    return role;
+  });
+}
+function parseConfig(raw) {
+  let c = {};
+  if (typeof raw === "string") {
+    try {
+      c = JSON.parse(raw);
+    } catch {
+      c = {};
+    }
+  } else if (raw && typeof raw === "object") {
+    c = raw;
+  }
+  return { view: !!c.view, edit: !!c.edit, owner: !!c.owner };
+}
+async function entityGrants(client, type, id) {
+  const raw = await client.get("/v1/permissions");
+  return grantsFor(raw, type, id);
+}
+function grantsFor(raw, type, id) {
+  const mine = (row) => row.entity_type === type && row.entity_id === id;
+  return [
+    ...(raw.users ?? []).filter(mine).map((r) => ({ kind: "user", id: r.user_id, config: parseConfig(r.config) })),
+    ...(raw.roles ?? []).filter(mine).map((r) => ({ kind: "role", id: r.role_id, config: parseConfig(r.config) }))
+  ];
+}
+function allUsersLevel(grants, allUsersRoleId, defaultEdit) {
+  const row = grants.find((g) => g.kind === "role" && g.id === allUsersRoleId);
+  if (!row) return defaultEdit ? "edit" : "view";
+  if (row.config.edit) return "edit";
+  return row.config.view ? "view" : "none";
+}
+function emptyChanges() {
+  return { roles: [], users: [], remove_roles: [], remove_users: [] };
+}
+function allUsersChanges(type, id, allUsersRoleId, level) {
+  const changes = emptyChanges();
+  changes.roles.push({
+    role_id: allUsersRoleId,
+    entity_type: type,
+    entity_id: id,
+    config: { view: level !== "none", edit: level === "edit", owner: false }
+  });
+  return changes;
+}
+function shareChanges(type, id, current2, userIds, roleIds, access) {
+  const changes = emptyChanges();
+  const ref = { entity_type: type, entity_id: id };
+  const currentUser = (userId) => current2.find((g) => g.kind === "user" && g.id === userId);
+  if (access === "owner") {
+    if (userIds.length !== 1 || roleIds.length > 0) {
+      throw new Error("--access owner takes exactly one user (--users) and no roles: a calendar has a single owner, and owner is user-only");
+    }
+    const [newOwner] = userIds;
+    changes.users.push({ user_id: newOwner, ...ref, config: { view: true, edit: true, owner: true } });
+    for (const g of current2) {
+      if (g.kind === "user" && g.id !== newOwner && g.config.owner) {
+        changes.users.push({ user_id: g.id, ...ref, config: { ...g.config, owner: false } });
+      }
+    }
+    return changes;
+  }
+  if (access === "remove") {
+    for (const userId of userIds) changes.remove_users.push({ user_id: userId, ...ref });
+    for (const roleId of roleIds) changes.remove_roles.push({ role_id: roleId, ...ref });
+    return changes;
+  }
+  const edit = access === "edit";
+  for (const userId of userIds) {
+    changes.users.push({ user_id: userId, ...ref, config: { view: true, edit, owner: currentUser(userId)?.config.owner ?? false } });
+  }
+  for (const roleId of roleIds) {
+    changes.roles.push({ role_id: roleId, ...ref, config: { view: true, edit, owner: false } });
+  }
+  return changes;
+}
+function mergeChanges(a, b) {
+  return {
+    roles: [...a.roles, ...b.roles],
+    users: [...a.users, ...b.users],
+    remove_roles: [...a.remove_roles, ...b.remove_roles],
+    remove_users: [...a.remove_users, ...b.remove_users]
+  };
+}
+function hasChanges(c) {
+  return c.roles.length + c.users.length + c.remove_roles.length + c.remove_users.length > 0;
+}
+async function saveGrants(client, changes) {
+  const body = {};
+  if (changes.roles.length) body.roles = changes.roles;
+  if (changes.users.length) body.users = changes.users;
+  if (changes.remove_roles.length) body.remove_roles = changes.remove_roles;
+  if (changes.remove_users.length) body.remove_users = changes.remove_users;
+  const saved = await client.post("/v1/permissions", body);
+  if (saved?.refused) {
+    throw new Error(`Some role grants were not saved: ${saved.refused.message ?? "refused by the server"}`);
+  }
+}
+function accessWords(config2) {
+  const parts = [];
+  if (config2.owner) parts.push("owner");
+  if (config2.edit) parts.push("edit");
+  else if (config2.view) parts.push("view");
+  return parts.join(", ") || "no access";
+}
+function sharingRows(grants, people, roles, allUsersRoleId) {
+  return grants.filter((g) => !(g.kind === "role" && g.id === allUsersRoleId)).map((g) => ({
+    type: g.kind,
+    id: g.id,
+    name: g.kind === "user" ? people.find((p) => p.id === g.id)?.name ?? `User ${g.id}` : roles.find((r) => r.id === g.id)?.name ?? `Role ${g.id}`,
+    access: accessWords(g.config),
+    owner: g.config.owner
+  })).sort((a, b) => Number(b.owner) - Number(a.owner) || a.type.localeCompare(b.type) || a.name.localeCompare(b.name)).map(({ owner: _owner, ...row }) => row);
+}
+function ownerName(ownerId, people) {
+  if (ownerId == null) return "Unassigned";
+  return people.find((p) => p.id === ownerId)?.name ?? `User ${ownerId}`;
+}
+function canManage(access, ownerId) {
+  return !access || access.canManageCalendar(ownerId);
+}
+
 // .path-cli/src/commands/send-message.ts
-var sendMessageCommand = new Command("send-message").description("Post a message on a record").requiredOption("--record-id <id>", "Record ID").requiredOption("--message <text>", "Message text").action(async (opts) => {
+function mentionSpan(person) {
+  const name = person.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return `<span class="mention" data-user-id="${person.id}" contenteditable="false">@${name}</span>`;
+}
+function messageBody(message2, people) {
+  const unique = people.filter((p, i) => people.findIndex((q) => q.id === p.id) === i);
+  const chips = unique.filter((p) => !message2.includes(`data-user-id="${p.id}"`)).map(mentionSpan);
+  return {
+    message: chips.length ? `${chips.join("&nbsp;")}&nbsp;${message2}` : message2,
+    to_users: unique.map((p) => p.id)
+  };
+}
+var sendMessageCommand = new Command("send-message").description("Post a message on a record").requiredOption("--record-id <id>", "Record ID").requiredOption("--message <text>", "Message text").option(
+  "--to <users>",
+  "Comma-separated users to @mention and notify, as the web's message box does: ids, emails or full names"
+).action(async (opts) => {
   try {
     const parentOpts = sendMessageCommand.parent?.opts() ?? {};
     const config2 = loadConfig({
@@ -49371,11 +51766,11 @@ var sendMessageCommand = new Command("send-message").description("Post a message
     }
     const client = new HttpClient(config2);
     await assertRecordViewable(client, opts.recordId, `post a message on record ${opts.recordId}`);
+    const keys = splitList(opts.to);
+    const recipients = keys.length ? resolvePeople(await listPeople(client), keys) : [];
     const result = await client.post(
       `/v1/records/${opts.recordId}/messages`,
-      {
-        message: opts.message
-      }
+      messageBody(String(opts.message), recipients)
     );
     const format = parentOpts.json ? "json" : void 0;
     const fields = parentOpts.fields?.split(",").map((s) => s.trim());
@@ -49461,6 +51856,30 @@ async function assertEventWrite(client, event, what, change = {}) {
   if (change.newBoId != null && change.newBoId !== event.business_object_id) {
     await assertBusinessObject(client, change.newBoId, "edit", what);
   }
+}
+async function assertCalendarAdmin(client, what) {
+  const access = await realWorldAccess(client);
+  if (!access || access.isCalendarAdmin) return;
+  throw new AccessDeniedError(access.label, what, "only Admins and Calendar Admins create calendars and calendar groups");
+}
+async function assertCalendarManage(client, entity, noun, what) {
+  const access = await realWorldAccess(client);
+  if (!access || access.canManageCalendar(entity.owner_user_id)) return;
+  throw new AccessDeniedError(
+    access.label,
+    what,
+    `only the ${noun}'s owner or an Admin / Calendar Admin can manage ${noun} "${entity.name}"`
+  );
+}
+async function assertCalendarGroupEdit(client, group2, what) {
+  const access = await realWorldAccess(client);
+  if (!access || access.canCalendarGroup(group2.id, "edit", !!group2.default_edit)) return;
+  throw new AccessDeniedError(access.label, what, `they can only view calendar group "${group2.name}" (no Edit permission)`);
+}
+async function assertCalendarEdit(client, calendarId, what) {
+  const access = await realWorldAccess(client);
+  if (!access) return;
+  await checkCalendarEdit(client, access, calendarId, what);
 }
 
 // .path-cli/src/utils/calendar-event-flags.ts
@@ -49671,6 +52090,451 @@ var deleteCalendarEventCommand = new Command("delete-calendar-event").descriptio
     }
     await client.delete(`/v1/calendar-events/${id}`);
     if (!parentOpts.quiet) console.log(`Deleted calendar event ${id}`);
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/utils/confirm-delete.ts
+import { createHmac } from "node:crypto";
+import { createInterface } from "node:readline/promises";
+var CODE_WINDOW_MS = 10 * 60 * 1e3;
+function deleteCode(subject, now = Date.now(), windowOffset = 0) {
+  const window = Math.floor(now / CODE_WINDOW_MS) - windowOffset;
+  const digest = createHmac("sha256", subject.token).update(JSON.stringify([subject.accountId, subject.actingUserId, subject.command, subject.args, window])).digest("hex");
+  return `DEL-${digest.slice(0, 8).toUpperCase()}`;
+}
+function isValidDeleteCode(code, subject, now = Date.now()) {
+  const given = code.trim().toUpperCase();
+  return [0, 1].some((offset) => deleteCode(subject, now, offset) === given);
+}
+function confirmArgs(args, opts) {
+  const kept = Object.keys(opts).filter((key) => key !== "confirm" && opts[key] !== void 0).sort().map((key) => [key, opts[key]]);
+  return { args, opts: Object.fromEntries(kept) };
+}
+function interactive() {
+  return !!(process.stdin.isTTY && process.stdout.isTTY);
+}
+async function askYesNo(question) {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    return /^y(es)?$/i.test((await rl.question(`${question} [y/N] `)).trim());
+  } finally {
+    rl.close();
+  }
+}
+async function requireDeleteConfirmation(what, given, config2, command, args) {
+  const subject = {
+    token: commandEnv("PATH_SIGNED_IN_TOKEN") || config2.accessToken || "",
+    accountId: config2.accountId ?? "",
+    actingUserId: actingUserId(),
+    command,
+    args
+  };
+  if (given && isValidDeleteCode(given, subject)) return;
+  if (!given && interactive()) {
+    if (await askYesNo(`This permanently deletes ${what} in account ${config2.accountId}. Delete it?`)) return;
+    throw new Error("Not deleted.");
+  }
+  throw new Error(
+    [
+      given ? `NOT DELETED: confirmation code ${given} doesn't match this delete (or has expired).` : "NOT DELETED: this needs confirmation.",
+      `It would permanently delete ${what} in account ${config2.accountId}.`,
+      "Show this to the user and ask them to confirm. Only after they explicitly say yes, run the same command again with:",
+      `  --confirm ${deleteCode(subject)}`,
+      `The code works only for this exact command and expires within ${2 * CODE_WINDOW_MS / 6e4} minutes.`
+    ].join("\n")
+  );
+}
+
+// .path-cli/src/commands/calendar-management.ts
+function commandClient(command) {
+  const root2 = command.parent?.opts() ?? {};
+  const config2 = loadConfig({ accountId: root2.account, baseUrl: root2.baseUrl });
+  if (!config2.accountId) {
+    throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
+  }
+  return { root: root2, client: new HttpClient(config2), config: config2 };
+}
+function forDisplay(root2, described) {
+  if (root2.json || !Array.isArray(described.shared_with)) return described;
+  const rows = described.shared_with;
+  return {
+    ...described,
+    shared_with: rows.length ? rows.map((r) => `${r.name} (${r.type} ${r.id}): ${r.access}`).join("; ") : "(no one else)"
+  };
+}
+function print3(root2, data) {
+  const out = formatOutput(data, {
+    format: root2.json ? "json" : void 0,
+    fields: root2.fields?.split(",").map((s) => s.trim()),
+    quiet: root2.quiet
+  });
+  if (out) console.log(out);
+}
+function allUsersRole(roles) {
+  const role = roles.find((r) => r.name === ALL_USERS_ROLE_NAME);
+  if (!role) throw new Error(`This account has no "${ALL_USERS_ROLE_NAME}" role to set what everyone gets`);
+  return role;
+}
+async function describeCalendar(client, calendar) {
+  const access = await realWorldAccess(client);
+  const [people, roles, grants] = await Promise.all([
+    listPeople(client),
+    listRoleRefs(client),
+    entityGrants(client, "calendar", calendar.id)
+  ]);
+  const allUsersId = roles.find((r) => r.name === ALL_USERS_ROLE_NAME)?.id;
+  const result = {
+    id: calendar.id,
+    name: calendar.name,
+    color: calendar.icon_color,
+    type: calendar.calendar_type,
+    owner: ownerName(calendar.owner_user_id, people),
+    owner_user_id: calendar.owner_user_id ?? null,
+    all_users: allUsersLevel(grants, allUsersId, !!calendar.default_edit)
+  };
+  if (canManage(access, calendar.owner_user_id)) {
+    result.shared_with = sharingRows(grants, people, roles, allUsersId);
+  }
+  return result;
+}
+async function findCalendar(client, key) {
+  return resolveManagedCalendar(await listManagedCalendars(client), key);
+}
+var createCalendarCommand = new Command("create-calendar").description(
+  "Create a calendar (Admins and Calendar Admins, as the web's Add Calendar form). You become its owner; everyone can view it until you change --all-users (update-calendar) or share it (share-calendar)"
+).requiredOption("--name <name>", "Calendar name (unique in the account)").option("--color <hex>", `Color, a hex like #1A5E20 (default ${DEFAULT_CALENDAR_COLOR}, the web's preset)`).action(async (opts) => {
+  try {
+    const { root: root2, client } = commandClient(createCalendarCommand);
+    const name = parseName(opts.name, "--name");
+    const color = parseColor(opts.color ?? DEFAULT_CALENDAR_COLOR);
+    await assertCalendarAdmin(client, `create calendar "${name}"`);
+    const created = await client.post("/v1/calendars", {
+      name,
+      icon_color: color,
+      calendar_type: "standard"
+    });
+    if (root2.json) return print3(root2, created);
+    if (!root2.quiet) console.log(`Created calendar ${created.id} "${created.name}" (${created.icon_color})`);
+    else console.log(created.id);
+  } catch (err) {
+    handleError(err);
+  }
+});
+var getCalendarCommand = new Command("get-calendar").description("Show a calendar: color, owner, what All Users get, and (for its owner or an Admin / Calendar Admin) who it is shared with").argument("<calendar>", "Calendar id or name").action(async (key) => {
+  try {
+    const { root: root2, client } = commandClient(getCalendarCommand);
+    print3(root2, forDisplay(root2, await describeCalendar(client, await findCalendar(client, key))));
+  } catch (err) {
+    handleError(err);
+  }
+});
+var updateCalendarCommand = new Command("update-calendar").description(
+  "Rename or recolor a calendar, or set what All Users get (view, edit or none) \u2014 the calendar's owner or an Admin / Calendar Admin"
+).argument("<calendar>", "Calendar id or name").option("--name <name>", "New name").option("--color <hex>", "New color, a hex like #1A5E20").option(
+  "--all-users <level>",
+  "What every member gets without another grant: view (the default for a new calendar), edit, or none (only people and roles it is shared with)"
+).action(async (key, opts) => {
+  try {
+    const { root: root2, client } = commandClient(updateCalendarCommand);
+    if (opts.name === void 0 && opts.color === void 0 && opts.allUsers === void 0) {
+      throw new Error("Nothing to change: give --name, --color and/or --all-users");
+    }
+    const name = opts.name !== void 0 ? parseName(opts.name, "--name") : void 0;
+    const color = opts.color !== void 0 ? parseColor(opts.color) : void 0;
+    const level = opts.allUsers !== void 0 ? parseAllUsers(opts.allUsers) : void 0;
+    const calendar = await findCalendar(client, key);
+    await assertCalendarManage(client, calendar, "calendar", `change calendar "${calendar.name}"`);
+    const allUsers = level !== void 0 ? allUsersRole(await listRoleRefs(client)) : void 0;
+    const settings2 = {
+      name: name ?? calendar.name,
+      icon_color: color ?? calendar.icon_color ?? DEFAULT_CALENDAR_COLOR,
+      default_edit: level !== void 0 ? level === "edit" : !!calendar.default_edit
+    };
+    let saved = calendar;
+    if (settings2.name !== calendar.name || settings2.icon_color !== calendar.icon_color || settings2.default_edit !== !!calendar.default_edit) {
+      saved = await client.put(`/v1/calendars/${calendar.id}`, settings2);
+    }
+    if (level !== void 0 && allUsers) {
+      await saveGrants(client, allUsersChanges("calendar", calendar.id, allUsers.id, level));
+    }
+    if (root2.json) return print3(root2, { ...calendar, ...saved, owner_user_id: calendar.owner_user_id ?? null });
+    if (!root2.quiet) {
+      const changed = [
+        name !== void 0 ? `name "${settings2.name}"` : null,
+        color !== void 0 ? `color ${settings2.icon_color}` : null,
+        level !== void 0 ? `All Users: ${level}` : null
+      ].filter(Boolean);
+      console.log(`Updated calendar ${calendar.id}: ${changed.join(", ")}`);
+    }
+  } catch (err) {
+    handleError(err);
+  }
+});
+async function shareEntity(client, type, entity, opts, putDefaultEdit) {
+  const access = parseShareAccess(opts.access);
+  const userKeys = splitList(opts.users);
+  const roleKeys = splitList(opts.roles);
+  if (!userKeys.length && !roleKeys.length) throw new Error("Give --users and/or --roles to share with");
+  const [people, roles, current2] = await Promise.all([listPeople(client), listRoleRefs(client), entityGrants(client, type, entity.id)]);
+  const users = resolvePeople(people, userKeys);
+  const roleRefs = resolveRoleRefs(roles, roleKeys);
+  const allUsers = roleRefs.find((r) => r.name === ALL_USERS_ROLE_NAME);
+  const otherRoles = roleRefs.filter((r) => r !== allUsers);
+  let changes = shareChanges(type, entity.id, current2, users.map((u) => u.id), otherRoles.map((r) => r.id), access);
+  let defaultEdit;
+  if (allUsers) {
+    if (access === "owner") throw new Error("Owner is user-only: give one user with --users");
+    const level = access === "remove" ? "none" : access;
+    changes = mergeChanges(changes, allUsersChanges(type, entity.id, allUsers.id, level));
+    defaultEdit = level === "edit";
+  }
+  if (defaultEdit !== void 0 && defaultEdit !== !!entity.default_edit) await putDefaultEdit(defaultEdit);
+  if (hasChanges(changes)) await saveGrants(client, changes);
+  const names2 = [...users.map((u) => u.name), ...roleRefs.map((r) => `${r.name} (role)`)].join(", ");
+  return [
+    access === "remove" ? `Removed ${names2} from ${type === "calendar" ? "calendar" : "calendar group"} ${entity.id} "${entity.name}"` : access === "owner" ? `${names2} is now the owner of ${type === "calendar" ? "calendar" : "calendar group"} ${entity.id} "${entity.name}"` : `Shared ${type === "calendar" ? "calendar" : "calendar group"} ${entity.id} "${entity.name}" with ${names2}: ${access}`
+  ];
+}
+var shareCalendarCommand = new Command("share-calendar").description(
+  "Share a calendar with users and/or roles (view or edit its events), make one user its owner, or remove their access \u2014 the calendar's owner or an Admin / Calendar Admin, as the web's Permissions tab"
+).argument("<calendar>", "Calendar id or name").option("--users <list>", "Comma-separated users: ids, emails or full names").option("--roles <list>", 'Comma-separated roles: ids or names ("All Users" sets what everyone gets)').requiredOption(
+  "--access <level>",
+  "view, edit (implies view), owner (one user; the previous owner keeps view/edit), or remove (drop their row)"
+).action(async (key, opts) => {
+  try {
+    const { root: root2, client } = commandClient(shareCalendarCommand);
+    parseShareAccess(opts.access);
+    const calendar = await findCalendar(client, key);
+    await assertCalendarManage(client, calendar, "calendar", `change who calendar "${calendar.name}" is shared with`);
+    const lines = await shareEntity(client, "calendar", calendar, opts, async (defaultEdit) => {
+      await client.put(`/v1/calendars/${calendar.id}`, {
+        name: calendar.name,
+        icon_color: calendar.icon_color ?? DEFAULT_CALENDAR_COLOR,
+        default_edit: defaultEdit
+      });
+    });
+    if (root2.json) return print3(root2, await describeCalendar(client, await findCalendar(client, String(calendar.id))));
+    if (!root2.quiet) console.log(lines.join("\n"));
+  } catch (err) {
+    handleError(err);
+  }
+});
+function plural(n, noun) {
+  return `${n} ${noun}${n === 1 ? "" : "s"}`;
+}
+var deleteCalendarCommand = new Command("delete-calendar").description(
+  "Delete a calendar and its events (record appointments are cleared), or move the events to another calendar first \u2014 the calendar's owner or an Admin / Calendar Admin. Asks for confirmation (--confirm <code>)"
+).argument("<calendar>", "Calendar id or name").option("--move-events-to <calendar>", "Keep the events: move every one to this calendar (one you can edit); record appointments follow").option(
+  "--external-events <choice>",
+  "A calendar merged with Google / Office 365: delete the events PATH created there too, or leave them (default leave)"
+).option("--confirm <code>", "The confirmation code the first run printed").action(async (key, opts) => {
+  try {
+    const { root: root2, client, config: config2 } = commandClient(deleteCalendarCommand);
+    if (opts.externalEvents !== void 0 && !["delete", "leave"].includes(opts.externalEvents)) {
+      throw new Error("--external-events must be delete or leave");
+    }
+    const calendars2 = await listManagedCalendars(client);
+    const calendar = resolveManagedCalendar(calendars2, key);
+    await assertCalendarManage(client, calendar, "calendar", `delete calendar "${calendar.name}"`);
+    let moveTo;
+    if (opts.moveEventsTo !== void 0) {
+      moveTo = resolveManagedCalendar(calendars2, opts.moveEventsTo);
+      if (moveTo.id === calendar.id) throw new Error("Events can't be moved to the calendar being deleted");
+      await assertCalendarEdit(client, moveTo.id, `move calendar "${calendar.name}"'s events to calendar "${moveTo.name}"`);
+    }
+    const summary = await client.get(`/v1/calendars/${calendar.id}/deletion-summary`);
+    const provider = summary.provider === "google" ? "Google" : summary.provider === "outlook" ? "Office 365" : "the external calendar";
+    const external = opts.externalEvents ?? "leave";
+    const parts = [`calendar ${calendar.id} "${calendar.name}"`];
+    if (summary.event_count > 0) {
+      parts.push(
+        moveTo ? `(its ${plural(summary.event_count, "event")} move to calendar "${moveTo.name}"; record appointments follow)` : `and its ${plural(summary.event_count, "event")} (record appointments on them are cleared)`
+      );
+    }
+    if (summary.external_linked) {
+      parts.push(
+        `\u2014 it is disconnected from ${provider}; the ${plural(summary.path_event_count, "event")} PATH created there ${external === "delete" ? "are deleted there too" : "stay there"}, and events that came from ${provider} stay there`
+      );
+    }
+    await requireDeleteConfirmation(parts.join(" "), opts.confirm, config2, "delete-calendar", confirmArgs([key, calendar.id], opts));
+    const query = new URLSearchParams();
+    if (opts.externalEvents) query.set("external_events", opts.externalEvents);
+    if (moveTo) query.set("move_to_calendar_id", String(moveTo.id));
+    const qs = query.toString();
+    await client.delete(`/v1/calendars/${calendar.id}${qs ? `?${qs}` : ""}`);
+    if (root2.json) return print3(root2, { deleted: calendar.id, name: calendar.name, events: summary.event_count, moved_to: moveTo?.id ?? null });
+    if (!root2.quiet) {
+      console.log(
+        `Deleted calendar ${calendar.id} "${calendar.name}"${summary.event_count ? moveTo ? `; moved ${plural(summary.event_count, "event")} to "${moveTo.name}"` : ` and ${plural(summary.event_count, "event")}` : ""}`
+      );
+    }
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/calendar-group-management.ts
+async function findGroup(client, key) {
+  return resolveCalendarGroup(await listCalendarGroups(client), key);
+}
+function calendarIds(calendars2, list3) {
+  return [...new Set(splitList(list3).map((k) => resolveManagedCalendar(calendars2, k).id))];
+}
+function calendarNames(ids, calendars2) {
+  return ids.map((id) => calendars2.find((c) => c.id === id)?.name ?? `Calendar ${id}`);
+}
+async function describeGroup(client, group2) {
+  const access = await realWorldAccess(client);
+  const [people, roles, grants, calendars2] = await Promise.all([
+    listPeople(client),
+    listRoleRefs(client),
+    entityGrants(client, "calendar-group", group2.id),
+    listManagedCalendars(client)
+  ]);
+  const allUsersId = roles.find((r) => r.name === ALL_USERS_ROLE_NAME)?.id;
+  const result = {
+    id: group2.id,
+    name: group2.name,
+    calendars: calendarNames(group2.calendar_ids, calendars2).join(", "),
+    calendar_ids: group2.calendar_ids,
+    owner: ownerName(group2.owner_user_id, people),
+    owner_user_id: group2.owner_user_id ?? null,
+    all_users: allUsersLevel(grants, allUsersId, !!group2.default_edit)
+  };
+  if (canManage(access, group2.owner_user_id)) {
+    result.shared_with = sharingRows(grants, people, roles, allUsersId);
+  }
+  return result;
+}
+var listCalendarGroupsCommand = new Command("list-calendar-groups").description("List the calendar groups you can see, with their calendars and owner").action(async () => {
+  try {
+    const { root: root2, client } = commandClient(listCalendarGroupsCommand);
+    const [groups, calendars2, people] = await Promise.all([listCalendarGroups(client), listManagedCalendars(client), listPeople(client)]);
+    if (root2.json) return print3(root2, groups);
+    print3(
+      { ...root2, fields: root2.fields ?? "id,name,calendars,owner" },
+      groups.map((g) => ({
+        id: g.id,
+        name: g.name,
+        calendars: calendarNames(g.calendar_ids, calendars2).join(", "),
+        owner: ownerName(g.owner_user_id, people)
+      }))
+    );
+  } catch (err) {
+    handleError(err);
+  }
+});
+var getCalendarGroupCommand = new Command("get-calendar-group").description("Show a calendar group: its calendars, owner, what All Users get, and (for its owner or an Admin / Calendar Admin) who it is shared with").argument("<group>", "Calendar group id or name").action(async (key) => {
+  try {
+    const { root: root2, client } = commandClient(getCalendarGroupCommand);
+    print3(root2, forDisplay(root2, await describeGroup(client, await findGroup(client, key))));
+  } catch (err) {
+    handleError(err);
+  }
+});
+var createCalendarGroupCommand = new Command("create-calendar-group").description("Create a calendar group (Admins and Calendar Admins, as the web's Add Group form). You become its owner").requiredOption("--name <name>", "Group name (unique in the account)").requiredOption("--calendars <list>", "Comma-separated calendars (ids or names), at least one").action(async (opts) => {
+  try {
+    const { root: root2, client } = commandClient(createCalendarGroupCommand);
+    const name = parseName(opts.name, "--name");
+    const calendars2 = await listManagedCalendars(client);
+    const ids = calendarIds(calendars2, opts.calendars);
+    if (!ids.length) throw new Error("--calendars needs at least one calendar");
+    await assertCalendarAdmin(client, `create calendar group "${name}"`);
+    const created = await client.post("/v1/calendar-groups", { name, calendar_ids: ids });
+    if (root2.json) return print3(root2, created);
+    if (!root2.quiet) {
+      console.log(`Created calendar group ${created.id} "${created.name}": ${calendarNames(ids, calendars2).join(", ")}`);
+    } else console.log(created.id);
+  } catch (err) {
+    handleError(err);
+  }
+});
+var updateCalendarGroupCommand = new Command("update-calendar-group").description(
+  "Rename a calendar group or change its calendars (Edit on the group), or set what All Users get (the group's owner or an Admin / Calendar Admin)"
+).argument("<group>", "Calendar group id or name").option("--name <name>", "New name").option("--calendars <list>", "Replace its calendars (comma-separated ids or names)").option("--add-calendars <list>", "Add calendars").option("--remove-calendars <list>", "Remove calendars").option("--all-users <level>", "What every member gets on the group without another grant: view, edit or none").action(
+  async (key, opts) => {
+    try {
+      const { root: root2, client } = commandClient(updateCalendarGroupCommand);
+      const membership = opts.calendars !== void 0 || opts.addCalendars !== void 0 || opts.removeCalendars !== void 0;
+      if (opts.name === void 0 && !membership && opts.allUsers === void 0) {
+        throw new Error("Nothing to change: give --name, --calendars / --add-calendars / --remove-calendars and/or --all-users");
+      }
+      const name = opts.name !== void 0 ? parseName(opts.name, "--name") : void 0;
+      const level = opts.allUsers !== void 0 ? parseAllUsers(opts.allUsers) : void 0;
+      const [group2, calendars2] = await Promise.all([findGroup(client, key), listManagedCalendars(client)]);
+      let ids = [...group2.calendar_ids];
+      if (opts.calendars !== void 0) ids = calendarIds(calendars2, opts.calendars);
+      for (const id of calendarIds(calendars2, opts.addCalendars)) if (!ids.includes(id)) ids.push(id);
+      const removing = calendarIds(calendars2, opts.removeCalendars);
+      ids = ids.filter((id) => !removing.includes(id));
+      if (!ids.length) throw new Error("A calendar group needs at least one calendar");
+      if (name !== void 0 || membership) await assertCalendarGroupEdit(client, group2, `change calendar group "${group2.name}"`);
+      if (level !== void 0) await assertCalendarManage(client, group2, "calendar group", `change what All Users get on calendar group "${group2.name}"`);
+      const allUsers = level !== void 0 ? allUsersRole(await listRoleRefs(client)) : void 0;
+      const defaultEdit = level !== void 0 ? level === "edit" : void 0;
+      const body = {
+        name: name ?? group2.name,
+        calendar_ids: ids,
+        // Only owners may flip the default; it's sent only when it changes (the web's rule).
+        ...defaultEdit !== void 0 && defaultEdit !== !!group2.default_edit ? { default_edit: defaultEdit } : {}
+      };
+      const sameIds = ids.length === group2.calendar_ids.length && ids.every((id, i) => id === group2.calendar_ids[i]);
+      let saved = group2;
+      if (body.name !== group2.name || !sameIds || "default_edit" in body) {
+        saved = await client.put(`/v1/calendar-groups/${group2.id}`, body);
+      }
+      if (level !== void 0 && allUsers) {
+        await saveGrants(client, allUsersChanges("calendar-group", group2.id, allUsers.id, level));
+      }
+      if (root2.json) return print3(root2, { ...group2, ...saved, owner_user_id: group2.owner_user_id ?? null });
+      if (!root2.quiet) {
+        const changed = [
+          name !== void 0 ? `name "${body.name}"` : null,
+          membership ? `calendars ${calendarNames(ids, calendars2).join(", ")}` : null,
+          level !== void 0 ? `All Users: ${level}` : null
+        ].filter(Boolean);
+        console.log(`Updated calendar group ${group2.id}: ${changed.join("; ")}`);
+      }
+    } catch (err) {
+      handleError(err);
+    }
+  }
+);
+var shareCalendarGroupCommand = new Command("share-calendar-group").description(
+  "Share a calendar group with users and/or roles (view, or edit its name and calendars), make one user its owner, or remove their access \u2014 the group's owner or an Admin / Calendar Admin. Doesn't change access to the calendars inside it"
+).argument("<group>", "Calendar group id or name").option("--users <list>", "Comma-separated users: ids, emails or full names").option("--roles <list>", 'Comma-separated roles: ids or names ("All Users" sets what everyone gets)').requiredOption("--access <level>", "view, edit (implies view), owner (one user; the previous owner keeps view/edit), or remove").action(async (key, opts) => {
+  try {
+    const { root: root2, client } = commandClient(shareCalendarGroupCommand);
+    const group2 = await findGroup(client, key);
+    await assertCalendarManage(client, group2, "calendar group", `change who calendar group "${group2.name}" is shared with`);
+    const lines = await shareEntity(client, "calendar-group", group2, opts, async (defaultEdit) => {
+      await client.put(`/v1/calendar-groups/${group2.id}`, { name: group2.name, calendar_ids: group2.calendar_ids, default_edit: defaultEdit });
+    });
+    if (root2.json) return print3(root2, await describeGroup(client, await findGroup(client, String(group2.id))));
+    if (!root2.quiet) console.log(lines.join("\n"));
+  } catch (err) {
+    handleError(err);
+  }
+});
+var deleteCalendarGroupCommand = new Command("delete-calendar-group").description(
+  "Delete a calendar group (its calendars and events stay) \u2014 the group's owner or an Admin / Calendar Admin. Asks for confirmation (--confirm <code>)"
+).argument("<group>", "Calendar group id or name").option("--confirm <code>", "The confirmation code the first run printed").action(async (key, opts) => {
+  try {
+    const { root: root2, client, config: config2 } = commandClient(deleteCalendarGroupCommand);
+    const group2 = await findGroup(client, key);
+    await assertCalendarManage(client, group2, "calendar group", `delete calendar group "${group2.name}"`);
+    await requireDeleteConfirmation(
+      `calendar group ${group2.id} "${group2.name}" (its calendars and their events stay)`,
+      opts.confirm,
+      config2,
+      "delete-calendar-group",
+      confirmArgs([key, group2.id], opts)
+    );
+    await client.delete(`/v1/calendar-groups/${group2.id}`);
+    if (root2.json) return print3(root2, { deleted: group2.id, name: group2.name });
+    if (!root2.quiet) console.log(`Deleted calendar group ${group2.id} "${group2.name}"`);
   } catch (err) {
     handleError(err);
   }
@@ -50096,6 +52960,238 @@ function countRules(group2) {
   }, 0);
 }
 
+// .path-cli/src/utils/user-filter-marks.ts
+var LABEL_PREFIX = /^\s*"((?:[^"]|"")*)"\s*:\s*([\s\S]*)$/;
+var LINE_PREFIX = /^\s*user filter(?=[\s:"])\s*(?::(?!\s*"))?/i;
+function parseUserFilterSpec(spec, tick) {
+  const text = spec.replace(LINE_PREFIX, "");
+  const m = LABEL_PREFIX.exec(text);
+  const row = (m ? m[2] : text).trim();
+  if (!row) {
+    throw new Error(
+      `${flagOf(tick)} '${spec}': name the row, e.g. '[Job Type]' or '"Job Type": ISNOTANYOF([Job Type], "A", "B")'.`
+    );
+  }
+  return {
+    spec,
+    row,
+    label: m ? m[1].replace(/""/g, '"') : void 0,
+    tick
+  };
+}
+function flagOf(tick) {
+  return tick ? "--user-filter" : "--untick-user-filter";
+}
+function leavesOf2(group2) {
+  return (group2?.filter_types ?? []).flatMap(
+    (leaf2) => leaf2.type === "group" /* Group */ ? leavesOf2(leaf2) : [leaf2]
+  );
+}
+function oneRule(leaf2) {
+  return {
+    type: "group" /* Group */,
+    condition: "and",
+    for_groups: true,
+    filter_types: [leaf2]
+  };
+}
+function fieldOf(catalog, leaf2) {
+  const id = Number(leaf2.field_id);
+  const chain = leaf2.relationship_ids ?? [];
+  const native = nativeFieldsAt(catalog, businessObjectAt(catalog, chain)).find(
+    (f) => f.id === id
+  );
+  if (!native && chain.length === 0) {
+    const shadow = catalog.fields.find((f) => f.id === id);
+    if (shadow?.relationship_id != null && shadow.reference_field_id != null) {
+      const shadowChain = [shadow.relationship_id];
+      const remote = nativeFieldsAt(
+        catalog,
+        businessObjectAt(catalog, shadowChain)
+      ).find((f) => f.id === shadow.reference_field_id);
+      return { field: remote, id: shadow.reference_field_id, chain: shadowChain };
+    }
+  }
+  return { field: native, id, chain };
+}
+function userFilterIneligibility(catalog, leaf2) {
+  const l = leaf2;
+  if (isUserFilterEligibleLeaf(leaf2)) {
+    if (l.type === "field" /* Field */ && l.for_current_user) {
+      const { field } = fieldOf(catalog, l);
+      if (!field || fieldKind(field) !== "string") {
+        return "a CURRENTUSER() rule can be a user filter only on a text field (not a pick list, number or date field)";
+      }
+    }
+    return null;
+  }
+  switch (leaf2.type) {
+    case "field" /* Field */:
+      return l.for_field ? "it compares the field with another field (viewers can only enter values)" : "it compares the field with an account setting (viewers can only enter values)";
+    case "milestone" /* Milestone */:
+    case "step" /* Step */:
+      return 'only a "first in" / "most recently in" date rule (MILESTONEFIRSTENTERED, MILESTONELASTENTERED, STEPFIRSTOCCURRED, STEPLASTOCCURRED) on a milestone or step can be a user filter';
+    case "account_setting" /* AccountSetting */:
+      return "an account setting rule can't be a user filter";
+    default:
+      return "this kind of rule can't be a user filter";
+  }
+}
+function sameChain(a, b) {
+  return a.length === b.length && a.every((id, i) => id === b[i]);
+}
+function squash(text) {
+  return text.replace(/\s+/g, " ").trim();
+}
+function singleRule(group2) {
+  let g = group2;
+  while (g.filter_types.length === 1 && g.filter_types[0].type === "group" /* Group */) {
+    g = g.filter_types[0];
+  }
+  return g.filter_types.length === 1 ? g.filter_types[0] : null;
+}
+async function applyUserFilterMarks(pipeline, marks, ctx) {
+  if (marks.length === 0) return { notes: [] };
+  const leaves = leavesOf2(pipeline?.filters);
+  if (!pipeline || leaves.length === 0) {
+    throw new Error(
+      "There are no criteria rows to mark as user filters: give the rules with --text."
+    );
+  }
+  const texts = await Promise.all(leaves.map((leaf2) => ctx.print(oneRule(leaf2))));
+  const problems = [];
+  const chosen = /* @__PURE__ */ new Map();
+  for (const mark6 of marks) {
+    const matches = await matchRow(mark6.row, leaves, texts, ctx, problems, mark6);
+    if (!matches) continue;
+    for (const leaf2 of matches) {
+      const rule = texts[leaves.indexOf(leaf2)];
+      const earlier = chosen.get(leaf2);
+      if (earlier && (earlier.tick !== mark6.tick || mark6.tick && earlier.label !== mark6.label)) {
+        problems.push(
+          `${flagOf(mark6.tick)} '${mark6.spec}' and ${flagOf(earlier.tick)} '${earlier.spec}' both pick ${rule}.`
+        );
+        continue;
+      }
+      if (mark6.tick) {
+        const why = userFilterIneligibility(ctx.catalog(), leaf2);
+        if (why) {
+          problems.push(`--user-filter '${mark6.spec}': ${rule} can't be a user filter: ${why}.`);
+          continue;
+        }
+      }
+      chosen.set(leaf2, mark6);
+    }
+  }
+  if (problems.length > 0) {
+    throw new Error(
+      [
+        "User filters not changed (nothing saved):",
+        ...problems.map((p) => `  ${p}`),
+        "Rules in the criteria:",
+        ...texts.map((t, i) => {
+          const ticked = leaves[i].user_filter && leaves[i].uid;
+          return `  ${squash(t)}${ticked ? "   [user filter]" : ""}`;
+        })
+      ].join("\n")
+    );
+  }
+  const notes = [];
+  const otherUids = (self) => new Set(
+    leaves.filter((l) => l !== self && l.user_filter && l.uid).map((l) => l.uid)
+  );
+  for (const [leaf2, mark6] of chosen) {
+    const rule = squash(texts[leaves.indexOf(leaf2)]);
+    if (!mark6.tick) {
+      if (!leaf2.user_filter) {
+        notes.push(`NOTE: ${rule} was not a user filter; nothing to untick.`);
+      }
+      delete leaf2.uid;
+      delete leaf2.user_filter;
+      delete leaf2.user_filter_label;
+      continue;
+    }
+    const taken = otherUids(leaf2);
+    let uid = leaf2.uid;
+    while (!uid || taken.has(uid)) uid = newUserFilterUid();
+    leaf2.uid = uid;
+    leaf2.user_filter = true;
+    const label = (mark6.label ?? leaf2.user_filter_label ?? "").trim();
+    if (label) leaf2.user_filter_label = label;
+    else delete leaf2.user_filter_label;
+  }
+  return { notes };
+}
+async function matchRow(row, leaves, texts, ctx, problems, mark6) {
+  const flag = `${flagOf(mark6.tick)} '${mark6.spec}'`;
+  const ref = fieldReference(row);
+  if (ref != null) {
+    const catalog = ctx.catalog();
+    const found2 = findFilterField(catalog, ref);
+    if (!found2.ok) {
+      problems.push(`${flag}: ${found2.message}.`);
+      return null;
+    }
+    const matches2 = leaves.filter((leaf2) => {
+      if (leaf2.type !== "field" /* Field */) return false;
+      const { id, chain } = fieldOf(catalog, leaf2);
+      return id === found2.item.id && sameChain(chain, found2.relationshipIds);
+    });
+    if (matches2.length === 0) {
+      problems.push(`${flag}: no rule in the criteria compares [${ref}].`);
+      return null;
+    }
+    if (matches2.length > 1) {
+      problems.push(
+        `${flag}: ${matches2.length} rules compare [${ref}] \u2014 give the whole rule instead: ${matches2.map((leaf2) => squash(texts[leaves.indexOf(leaf2)])).join(" | ")}`
+      );
+      return null;
+    }
+    return matches2;
+  }
+  const parsed = await ctx.parse(row);
+  if (parsed.errors.length > 0 || !parsed.filter) {
+    const error2 = parsed.errors[0];
+    problems.push(
+      `${flag}: not a rule of this filter's formula language${error2 ? ` (${error2.message})` : ""}.`
+    );
+    return null;
+  }
+  const rule = singleRule(parsed.filter);
+  if (!rule) {
+    problems.push(`${flag}: give one rule (no AND / OR), or a field such as [Job Type].`);
+    return null;
+  }
+  const wanted = squash(await ctx.print(oneRule(rule)));
+  const matches = leaves.filter((_, i) => squash(texts[i]) === wanted);
+  if (matches.length === 0) {
+    problems.push(`${flag}: no rule in the criteria is ${wanted}.`);
+    return null;
+  }
+  return matches;
+}
+function fieldReference(row) {
+  try {
+    const tokens = tokenize(row);
+    return tokens.length === 2 && tokens[0].type === "field" && tokens[1].type === "eof" ? tokens[0].text : null;
+  } catch {
+    return null;
+  }
+}
+async function userFilterLines(pipeline, print4) {
+  const lines = [];
+  for (const leaf2 of leavesOf2(pipeline?.filters)) {
+    if (!(isUserFilterEligibleLeaf(leaf2) && leaf2.user_filter && leaf2.uid)) {
+      continue;
+    }
+    const rule = squash(await print4(oneRule(leaf2)));
+    lines.push(
+      `user filter${leaf2.user_filter_label ? ` ${quote3(leaf2.user_filter_label)}` : ""}: ${rule}`
+    );
+  }
+  return lines;
+}
+
 // .path-cli/src/commands/get-filter.ts
 function targetOptions(accountId, opts) {
   const int2 = (v) => v == null ? void 0 : parseInt(v, 10);
@@ -50154,16 +53250,11 @@ function createGetFilterCommand(scope) {
         );
       }
       console.log(text);
-      for (const leaf2 of tickedLeaves(site.pipeline)) {
-        const rule = await loader.print({
-          type: "group",
-          condition: "and",
-          for_groups: true,
-          filter_types: [leaf2]
-        });
-        console.log(
-          `user filter${leaf2.user_filter_label ? ` "${leaf2.user_filter_label}"` : ""}: ${rule}`
-        );
+      for (const line of await userFilterLines(
+        site.pipeline,
+        (g) => loader.print(g)
+      )) {
+        console.log(line);
       }
     } catch (err) {
       handleError(err);
@@ -50173,6 +53264,9 @@ function createGetFilterCommand(scope) {
 var getFilterCommand = createGetFilterCommand("path");
 
 // .path-cli/src/commands/set-filter.ts
+function collect3(value, previous = []) {
+  return [...previous, value];
+}
 function createSetFilterCommand(scope) {
   const command = new Command("set-filter").description(
     "Replace a stored Logic Builder filter from formula text. Parses against the business object the filter is rooted on, validates the pipeline with the API (as the Logic Builder does), then saves the object with only its filter changed. " + (scope === "designer" ? "Folder, folder-sticker and report filters are the PATH CLI's." : "The PATH CLI changes folder, folder-sticker and report filters (with Edit on them); the other targets are Designer work for the PATH Designer CLI.")
@@ -50184,7 +53278,15 @@ function createSetFilterCommand(scope) {
     "Remove the filter (saved as null, as the builder does when emptied)"
   ).option("--bo <id>", "Business object ID (task targets)").option("--pathway <id>", "Pathway ID (fork, table-filter)");
   if (scope === "path") {
-    command.option("--sticker <id>", "Folder sticker ID (folder-sticker)");
+    command.option("--sticker <id>", "Folder sticker ID (folder-sticker)").option(
+      "--user-filter <row>",
+      `folder / report: tick the row's User Filter checkbox (repeatable). <row> = [Field] / [Relationship.Field] when one rule compares it, or the whole rule, e.g. 'ISNOTANYOF([Job Type], "A", "B")'; prefix '"Label": ' to name it for viewers (a get-filter "user filter" line is taken as is). Without --text the stored rules are kept`,
+      collect3
+    ).option(
+      "--untick-user-filter <row>",
+      "folder / report: untick the row's User Filter checkbox (repeatable; <row> as for --user-filter)",
+      collect3
+    );
   }
   return command.option(
     "--dry-run",
@@ -50201,8 +53303,23 @@ function createSetFilterCommand(scope) {
           'Missing --account <id>. Run "path list-accounts" to see available accounts.'
         );
       }
-      if (!opts.clear && !opts.text) {
-        throw new Error("Provide --text <formula> or --clear");
+      const marks = [
+        ...(opts.userFilter ?? []).map(
+          (s) => parseUserFilterSpec(s, true)
+        ),
+        ...(opts.untickUserFilter ?? []).map(
+          (s) => parseUserFilterSpec(s, false)
+        )
+      ];
+      if (!opts.clear && !opts.text && marks.length === 0) {
+        throw new Error(
+          scope === "path" ? "Provide --text <formula>, --clear, or --user-filter / --untick-user-filter" : "Provide --text <formula> or --clear"
+        );
+      }
+      if (opts.clear && (opts.text || marks.length > 0)) {
+        throw new Error(
+          "--clear removes the whole filter: leave out --text and the user-filter options"
+        );
       }
       const client = new HttpClient(config2);
       const target = findTarget(targetName, scope);
@@ -50212,6 +53329,11 @@ function createSetFilterCommand(scope) {
         targetOptions(config2.accountId, opts)
       );
       const id = parseInt(idArg, 10);
+      if (marks.length > 0 && !site.userFilters) {
+        throw new Error(
+          `--user-filter / --untick-user-filter are for folder and report criteria; ${site.label} has no user filters.`
+        );
+      }
       if (target.name === "folder" || target.name === "folder-sticker") {
         await assertFolderEdit(client, id, `change ${site.label}`);
       } else if (target.name === "report") {
@@ -50233,27 +53355,48 @@ function createSetFilterCommand(scope) {
       if (site.reportColumns)
         loader.catalog.reportColumns = site.reportColumns;
       let pipeline = null;
+      const markNotes = [];
       if (!opts.clear) {
-        const result = await loader.parse(opts.text, target.parseOptions);
-        if (result.errors.length > 0 || !result.filter) {
-          throw new Error(describeParseErrors(opts.text, result.errors));
+        if (opts.text) {
+          const result = await loader.parse(opts.text, target.parseOptions);
+          if (result.errors.length > 0 || !result.filter) {
+            throw new Error(describeParseErrors(opts.text, result.errors));
+          }
+          if (result.filter.filter_types.length === 0) {
+            throw new Error(
+              "The formula is empty \u2014 use --clear to remove the filter."
+            );
+          }
+          pipeline = withFilters(site.pipeline, site.rootBoId, result.filter);
+          site.prepare?.(pipeline);
+        } else {
+          pipeline = site.pipeline ? structuredClone(site.pipeline) : null;
         }
-        if (result.filter.filter_types.length === 0) {
-          throw new Error(
-            "The formula is empty \u2014 use --clear to remove the filter."
-          );
-        }
-        pipeline = withFilters(site.pipeline, site.rootBoId, result.filter);
-        site.prepare?.(pipeline);
-        if (site.validateWithBuilder !== false) {
+        const marked = await applyUserFilterMarks(pipeline, marks, {
+          catalog: () => loader.catalog,
+          parse: (text) => loader.parse(text, target.parseOptions),
+          print: (group2) => loader.print(group2)
+        });
+        markNotes.push(...marked.notes);
+        if (pipeline && site.validateWithBuilder !== false) {
           await validatePipeline(client, pipeline);
         }
       }
       if (opts.clear) site.prepare?.(null);
-      for (const note of site.notes?.(pipeline) ?? []) console.error(note);
+      for (const note of [...site.notes?.(pipeline) ?? [], ...markNotes]) {
+        console.error(note);
+      }
       if (opts.dryRun) {
         console.log(`Dry run \u2014 not saved: ${site.label}`);
         console.log(JSON.stringify(pipeline, null, 2));
+        if (site.userFilters && !parentOpts.json) {
+          for (const line of await userFilterLines(
+            pipeline,
+            (g) => loader.print(g)
+          )) {
+            console.log(line);
+          }
+        }
         return;
       }
       const saved = await site.save(pipeline);
@@ -50265,6 +53408,14 @@ function createSetFilterCommand(scope) {
       console.log(
         `formula: ${pipeline ? await loader.print(pipeline.filters) : "(no filter)"}`
       );
+      if (site.userFilters) {
+        for (const line of await userFilterLines(
+          pipeline,
+          (g) => loader.print(g)
+        )) {
+          console.log(line);
+        }
+      }
     } catch (err) {
       handleError(err);
     }
@@ -50660,6 +53811,154 @@ var deleteMessageCommand = new Command("delete-message").description("Delete a m
   }
 });
 
+// .path-cli/src/utils/notes-command.ts
+import { readFileSync as readFileSync12 } from "node:fs";
+async function openNotesRecord(command, recordId, what) {
+  const global = command.parent?.opts() ?? {};
+  const config2 = loadConfig({ accountId: global.account, baseUrl: global.baseUrl });
+  if (!config2.accountId) {
+    throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
+  }
+  const client = new HttpClient(config2);
+  const record2 = await client.get(`/v1/records/${encodeURIComponent(String(recordId).trim())}`);
+  const visibility2 = await recordVisibility(client, config2.accountId);
+  const ctx = await notesContext(client, config2.accountId, visibility2, record2, what);
+  return { client, global, record: record2, ctx, label: await recordLabel2(ctx, record2) };
+}
+async function recordLabel2(ctx, record2) {
+  const bo = await ctx.metadata.businessObject(record2.business_object_id).catch(() => void 0);
+  const name = bo?.singular_name || bo?.name || `Business object ${record2.business_object_id}`;
+  const identifier = bo?.identifier_field_id != null ? record2.fields?.[String(bo.identifier_field_id)] : void 0;
+  return [name, identifier != null && identifier !== "" ? String(identifier) : ""].filter(Boolean).join(" ");
+}
+function readNoteText(opts) {
+  return noteText(opts, (path) => readFileSync12(path, "utf-8"));
+}
+function printNoteResult(global, summary, payload) {
+  if (global.json) {
+    console.log(JSON.stringify(payload, null, 2));
+    return;
+  }
+  if (global.quiet) {
+    console.log(payload.note?.id ?? payload.deleted ?? "");
+    return;
+  }
+  console.log([summary, ...payload.note ? renderNoteEntry(payload.note, "  ") : []].join("\n"));
+}
+
+// .path-cli/src/commands/list-record-notes.ts
+var listRecordNotesCommand = new Command("list-record-notes").description(
+  "List a record's Notes fields and every note in them, newest first, as the record viewer shows them: author, when (your clock), note id, and whether each is yours (only the author can edit or delete a note). Only Notes fields the record viewer shows you"
+).requiredOption("--record-id <id>", "Record ID").option("--field <id|name>", "Only this Notes field").action(async (opts) => {
+  try {
+    const { global, record: record2, ctx, label } = await openNotesRecord(
+      listRecordNotesCommand,
+      opts.recordId,
+      `read the notes of record ${opts.recordId}`
+    );
+    const only = opts.field != null ? resolveNotesField(ctx.fields, opts.field, ctx.shown) : void 0;
+    if (only) assertNotesFieldShown(ctx, only, `read the ${only.name} notes of record ${record2.id}`);
+    const listings = notesListing(record2, ctx, only);
+    if (global.json) {
+      console.log(JSON.stringify({ record: label, id: record2.id, notes_fields: listings }, null, 2));
+    } else if (global.quiet) {
+      console.log(listings.flatMap((f) => f.notes.map((n) => n.id)).join("\n"));
+    } else {
+      console.log(renderNotesListing(`${label}  (${record2.id})`, listings));
+    }
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/add-record-note.ts
+var addRecordNoteCommand = new Command("add-record-note").description(
+  "Add a note to a record's Notes field, as the field's Add Note button does (posted as you, now). Needs Edit on the business object and the field visible to you in the record viewer"
+).requiredOption("--record-id <id>", "Record ID").option("--field <id|name>", "The Notes field (optional when the record has only one)").option("--note <text>", "The note text").option("--note-file <path>", "Read the note text from a file (instead of --note)").action(async (opts) => {
+  try {
+    const text = readNoteText(opts);
+    const { client, global, record: record2, ctx } = await openNotesRecord(
+      addRecordNoteCommand,
+      opts.recordId,
+      `add a note to record ${opts.recordId}`
+    );
+    const field = resolveNotesField(ctx.fields, opts.field, ctx.shown);
+    await assertRecordFieldsEditable(client, ctx.metadata.accountId, record2, [field.id], `add a note to ${field.name} on record ${record2.id}`);
+    const before = new Set((record2.notes ?? []).map((n) => String(n.id)));
+    const response = await client.post(
+      "/v1/pathways/-1/execute",
+      { step_type: "post_note", input_content: { id: record2.id, field_id: field.id, note: text } },
+      // Filed in this record's History session, as the record viewer does.
+      recordContextHeaders(record2.id)
+    );
+    const updated = response.output_content;
+    const added = (updated?.notes ?? []).filter((n) => !before.has(String(n.id)) && n.field_id === field.id).pop();
+    const users = added && !ctx.users.has(added.created_by) ? new Map((await ctx.metadata.userDirectory().catch(() => [])).map((u) => [u.id, u])) : ctx.users;
+    const note = added ? noteEntry(added, users, ctx.zone, ctx.actingUserId) : void 0;
+    printNoteResult(global, `Added a note to ${field.name} on record ${record2.id}${note ? ` (note ${note.id})` : ""}.`, {
+      record_id: record2.id,
+      field_id: field.id,
+      field: field.name,
+      ...note ? { note } : {}
+    });
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/update-record-note.ts
+var updateRecordNoteCommand = new Command("update-record-note").description(
+  "Change the text of a note in a record's Notes field, as its Edit Note form does. Only the note's author can (list-record-notes shows which are yours)"
+).requiredOption("--record-id <id>", "Record ID").requiredOption("--note-id <id>", "Note id (from list-record-notes)").option("--note <text>", "The new note text").option("--note-file <path>", "Read the new note text from a file (instead of --note)").action(async (opts) => {
+  try {
+    const text = readNoteText(opts);
+    const what = `edit note ${opts.noteId} on record ${opts.recordId}`;
+    const { client, global, record: record2, ctx } = await openNotesRecord(updateRecordNoteCommand, opts.recordId, what);
+    const existing = assertOwnNote(ctx, record2, opts.noteId, what);
+    const updated = await client.put(
+      `/v1/records/${encodeURIComponent(record2.id)}/notes/${encodeURIComponent(String(existing.id))}`,
+      { note: text }
+    );
+    const saved = findNote(updated ?? record2, String(existing.id));
+    const field = existing.field_id != null ? ctx.fields.find((f) => f.id === existing.field_id) : void 0;
+    const note = saved ? noteEntry(saved, ctx.users, ctx.zone, ctx.actingUserId) : void 0;
+    printNoteResult(global, `Updated note ${existing.id} in ${field?.name ?? "its Notes field"} on record ${record2.id}.`, {
+      record_id: record2.id,
+      field_id: existing.field_id,
+      field: field?.name ?? null,
+      ...note ? { note } : {}
+    });
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/delete-record-note.ts
+var deleteRecordNoteCommand = new Command("delete-record-note").description(
+  "Delete a note from a record's Notes field, as the Delete button of its Edit Note form does. Only the note's author can (list-record-notes shows which are yours)"
+).requiredOption("--record-id <id>", "Record ID").requiredOption("--note-id <id>", "Note id (from list-record-notes)").action(async (opts) => {
+  try {
+    const what = `delete note ${opts.noteId} on record ${opts.recordId}`;
+    const { client, global, record: record2, ctx } = await openNotesRecord(deleteRecordNoteCommand, opts.recordId, what);
+    const existing = assertOwnNote(ctx, record2, opts.noteId, what);
+    const updated = await client.delete(
+      `/v1/records/${encodeURIComponent(record2.id)}/notes/${encodeURIComponent(String(existing.id))}`
+    );
+    if (updated?.notes && findNote(updated, String(existing.id))) {
+      throw new Error(`Note ${existing.id} is still on record ${record2.id} after the delete`);
+    }
+    const field = existing.field_id != null ? ctx.fields.find((f) => f.id === existing.field_id) : void 0;
+    printNoteResult(global, `Deleted note ${existing.id} from ${field?.name ?? "its Notes field"} on record ${record2.id}.`, {
+      record_id: record2.id,
+      field_id: existing.field_id,
+      field: field?.name ?? null,
+      deleted: String(existing.id)
+    });
+  } catch (err) {
+    handleError(err);
+  }
+});
+
 // .path-cli/src/commands/archive-record.ts
 var archiveRecordCommand = new Command("archive-record").description(
   "Archive a record (or several with --record-ids) via the Archive Record step"
@@ -50825,7 +54124,7 @@ var sendRecordEmailCommand = new Command("send-record-email").description("Send 
 });
 
 // .path-cli/src/commands/clear-cache.ts
-var clearCacheCommand = new Command("clear-cache").description("Clear the resolver cache (all accounts, or one with --account)").option("--account <id>", "Clear cache for a specific account only").action((opts) => {
+var clearCacheCommand = new Command("clear-cache").description("Clear the cached design metadata (all accounts, or one with --account); the next commands fetch it again").option("--account <id>", "Clear cache for a specific account only").action((opts) => {
   const account = opts.account ?? clearCacheCommand.parent?.opts().account;
   if (account) {
     cacheClearAccount(account);
@@ -50849,12 +54148,12 @@ async function accountInfo(client, accountId, listed) {
   }
 }
 function accountInfoLines(info, indent = "  ") {
-  return infoLines(info, { indent, label: "Account info" });
+  return infoLines(info, { indent, label: "Account context" });
 }
 
 // .path-cli/src/commands/use-account.ts
 var useAccountCommand = new Command("use-account").description(
-  "Set the default account for subsequent commands (persists to ~/.path-cli/.env), and show the account's info (what the business does, written by its designers)"
+  "Set the default account for subsequent commands (persists to ~/.path-cli/.env), and show its session context: the account and its context (what the business does), the pathways you can start from the dashboard, and your process context"
 ).argument(
   "[account-id]",
   "Account ID to use (omit to print the current default)"
@@ -50886,7 +54185,12 @@ var useAccountCommand = new Command("use-account").description(
     console.log(
       `Default account set to ${accountId}${acctName ? ` (${acctName})` : ""}`
     );
-    for (const line of accountInfoLines(info)) console.log(line);
+    console.log("");
+    try {
+      await printSessionContext(new HttpClient(loadConfig({ accountId })), accountId, false);
+    } catch {
+      for (const line of accountInfoLines(info)) console.log(line);
+    }
   } catch (err) {
     handleError(err);
   }
@@ -50895,7 +54199,7 @@ var useAccountCommand = new Command("use-account").description(
 // .path-cli/src/commands/get-account.ts
 var SHOWN = ["id", "name", "status", "time_zone", "country"];
 var getAccountCommand = new Command("get-account").description(
-  "Show the active account (or --account-id): its name, time zone, country and info, the designers' description of the business. Read the info at the start of a session; it says what the account's records and pathways are for."
+  "Show the active account (or --account-id): its name, time zone, country and context, the designers' description of the business. Read the context at the start of a session; it says what the account's records and pathways are for."
 ).option("--account-id <id>", "Account ID (default: the saved / --account account)").action(async (opts) => {
   try {
     const parentOpts = getAccountCommand.parent?.opts() ?? {};
@@ -50913,8 +54217,10 @@ var getAccountCommand = new Command("get-account").description(
     for (const key of SHOWN) {
       if (record2[key] != null && record2[key] !== "") console.log(`${key}: ${String(record2[key])}`);
     }
+    const kind = accountKindLabel(account);
+    if (kind !== "Standard") console.log(`kind: ${kind}`);
     const info = accountInfoLines(account.info, "");
-    console.log(info.length ? info.join("\n") : "Account info: (none)");
+    console.log(info.length ? info.join("\n") : "Account context: (none)");
   } catch (err) {
     handleError(err);
   }
@@ -50923,12 +54229,12 @@ var getAccountCommand = new Command("get-account").description(
 // .path-cli/src/index.ts
 var ACCOUNT_CHECK_EXEMPT = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache"]);
 function createProgram() {
-  const program2 = new Command("path").version("1.0.4").description(
-    "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
+  const program2 = new Command("path").version("1.0.5").description(
+    "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, notes, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
     "Account ID (overrides PATH_ACCOUNT_ID env var / saved default)"
-  ).option("--base-url <url>", "One-time API URL override").option("--no-cache", "Bypass resolver cache for this invocation").option(
+  ).option("--base-url <url>", "One-time API URL override").option("--no-cache", "Fetch design metadata live for this command (it refreshes the session cache)").option(
     "--as-user <id|email|name>",
     "Act as another member of the account, as the web's Impersonate does (account Admins only; not yourself or a deactivated user)"
   ).addOption(
@@ -50954,12 +54260,13 @@ function createProgram() {
       handleError(err);
     }
   });
-  installInfoHooks(program2);
+  installInfoHooks(program2, { sessionContext: sessionContextLoader });
   program2.addCommand(authCommand);
   program2.addCommand(logoutCommand);
   program2.addCommand(listAccountsCommand);
   program2.addCommand(useAccountCommand);
   program2.addCommand(getAccountCommand);
+  program2.addCommand(sessionContextCommand);
   program2.addCommand(listBusinessObjectsCommand);
   program2.addCommand(getBusinessObjectCommand);
   program2.addCommand(listFieldsCommand);
@@ -50998,6 +54305,9 @@ function createProgram() {
   program2.addCommand(markAllNotificationsReadCommand);
   program2.addCommand(listPopupsCommand);
   program2.addCommand(listCalendarsCommand);
+  program2.addCommand(getCalendarCommand);
+  program2.addCommand(listCalendarGroupsCommand);
+  program2.addCommand(getCalendarGroupCommand);
   program2.addCommand(listCalendarEventsCommand);
   program2.addCommand(listAppointmentFieldsCommand);
   program2.addCommand(listTagGroupsCommand);
@@ -51027,6 +54337,14 @@ function createProgram() {
   program2.addCommand(getCalendarEventCommand);
   program2.addCommand(updateCalendarEventCommand);
   program2.addCommand(deleteCalendarEventCommand);
+  program2.addCommand(createCalendarCommand);
+  program2.addCommand(updateCalendarCommand);
+  program2.addCommand(shareCalendarCommand);
+  program2.addCommand(deleteCalendarCommand);
+  program2.addCommand(createCalendarGroupCommand);
+  program2.addCommand(updateCalendarGroupCommand);
+  program2.addCommand(shareCalendarGroupCommand);
+  program2.addCommand(deleteCalendarGroupCommand);
   program2.addCommand(setAppointmentCommand);
   program2.addCommand(clearAppointmentCommand);
   program2.addCommand(uploadRecordFileCommand);
@@ -51038,6 +54356,10 @@ function createProgram() {
   program2.addCommand(cancelTaskCommand);
   program2.addCommand(updateMessageCommand);
   program2.addCommand(deleteMessageCommand);
+  program2.addCommand(listRecordNotesCommand);
+  program2.addCommand(addRecordNoteCommand);
+  program2.addCommand(updateRecordNoteCommand);
+  program2.addCommand(deleteRecordNoteCommand);
   program2.addCommand(archiveRecordCommand);
   program2.addCommand(unarchiveRecordCommand);
   program2.addCommand(sendRecordEmailCommand);
@@ -51047,7 +54369,7 @@ function createProgram() {
   program2.addCommand(listFileTypesCommand);
   program2.addCommand(clearCacheCommand);
   program2.addCommand(apiCommand);
-  return program2;
+  return acceptLegacyFlags(program2);
 }
 
 // .path-mcp/src/cli-runner.ts
@@ -51199,10 +54521,10 @@ function runCli(argv) {
       }
     });
     let timer;
-    const timeout = new Promise((resolve12) => {
+    const timeout = new Promise((resolve14) => {
       timer = setTimeout(() => {
         controller.abort();
-        resolve12(124);
+        resolve14(124);
       }, limit);
       timer.unref?.();
     });
@@ -57322,7 +60644,7 @@ var Protocol = class {
           return;
         }
         const pollInterval = task2.pollInterval ?? this._options?.defaultTaskPollInterval ?? 1e3;
-        await new Promise((resolve12) => setTimeout(resolve12, pollInterval));
+        await new Promise((resolve14) => setTimeout(resolve14, pollInterval));
         options?.signal?.throwIfAborted();
       }
     } catch (error2) {
@@ -57339,7 +60661,7 @@ var Protocol = class {
    */
   request(request, resultSchema, options) {
     const { relatedRequestId, resumptionToken, onresumptiontoken, task, relatedTask } = options ?? {};
-    return new Promise((resolve12, reject) => {
+    return new Promise((resolve14, reject) => {
       const earlyReject = (error2) => {
         reject(error2);
       };
@@ -57417,7 +60739,7 @@ var Protocol = class {
           if (!parseResult.success) {
             reject(parseResult.error);
           } else {
-            resolve12(parseResult.data);
+            resolve14(parseResult.data);
           }
         } catch (error2) {
           reject(error2);
@@ -57679,12 +61001,12 @@ var Protocol = class {
       }
     } catch {
     }
-    return new Promise((resolve12, reject) => {
+    return new Promise((resolve14, reject) => {
       if (signal.aborted) {
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
         return;
       }
-      const timeoutId = setTimeout(resolve12, interval);
+      const timeoutId = setTimeout(resolve14, interval);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
@@ -58815,7 +62137,7 @@ var McpServer = class {
     let task = createTaskResult.task;
     const pollInterval = task.pollInterval ?? 5e3;
     while (task.status !== "completed" && task.status !== "failed" && task.status !== "cancelled") {
-      await new Promise((resolve12) => setTimeout(resolve12, pollInterval));
+      await new Promise((resolve14) => setTimeout(resolve14, pollInterval));
       const updatedTask = await extra.taskStore.getTask(taskId);
       if (!updatedTask) {
         throw new McpError(ErrorCode.InternalError, `Task ${taskId} not found during polling`);
@@ -59384,12 +62706,12 @@ var EMPTY_COMPLETION_RESULT = {
 };
 
 // .path-mcp/src/server.ts
-import { readFileSync as readFileSync11, existsSync as existsSync10 } from "fs";
-import { resolve as resolve10, dirname as dirname6 } from "path";
+import { readFileSync as readFileSync13, existsSync as existsSync11 } from "fs";
+import { resolve as resolve12, dirname as dirname6 } from "path";
 import { fileURLToPath } from "url";
 
 // .path-mcp/src/command-parser.ts
-import { homedir as homedir4 } from "node:os";
+import { homedir as homedir5 } from "node:os";
 function parseCommand(command) {
   const args = [];
   const chars = [...command.replace(/\r\n?/g, "\n")];
@@ -59444,7 +62766,7 @@ function parseCommand(command) {
       continue;
     }
     if (char === "~" && (!inToken || /^--[^=]+=$/.test(current2)) && isTildeEnd(chars[i + 1])) {
-      current2 += homedir4();
+      current2 += homedir5();
       inToken = true;
       continue;
     }
@@ -59461,7 +62783,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.4";
+var VERSION = "1.0.5";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;
@@ -59486,7 +62808,7 @@ function isAuthRejection(err) {
 var PATH_CLI_SERVER = {
   name: "path-cli",
   toolName: "path_cli",
-  toolDescription: `Run a PATH CLI command (the PATH user app: records, folders, reports, tasks, calendars, messages, files, pathway runs \u2014 always with the user's web-app access; Designer work is done in PATH's Designer). Pass the command string exactly as you would after the binary name. Examples: "list-accounts", "--account 1234 list-business-objects", "--account 1234 search --query test". Use the path://command-reference resource for the full command reference.`,
+  toolDescription: `Run a PATH CLI command (the PATH user app: records, folders, reports, tasks, calendars, messages, notes, files, pathway runs \u2014 always with the user's web-app access; Designer work is done in PATH's Designer). Pass the command string exactly as you would after the binary name. Examples: "list-accounts", "--account 1234 list-business-objects", "--account 1234 search --query test". Use the path://command-reference resource for the full command reference.`,
   formatDescription: "Output format \u2014 json (full; the default), compact (table), quiet (IDs only). Left out, get-record answers with the record viewer's field names and display values; pass json explicitly for the stored record.",
   referenceUri: "path://command-reference",
   referenceDescription: "PATH CLI command reference \u2014 lists all available commands, flags, and usage examples.",
@@ -59494,14 +62816,14 @@ var PATH_CLI_SERVER = {
 };
 function loadCommandReference(options) {
   const scriptDir = dirname6(fileURLToPath(import.meta.url));
-  const repoDir = resolve10(scriptDir, "..", "..");
+  const repoDir = resolve12(scriptDir, "..", "..");
   const candidates = [
-    resolve10(scriptDir, "command-reference.md"),
-    ...options.devReferencePaths.map((path) => resolve10(repoDir, path))
+    resolve12(scriptDir, "command-reference.md"),
+    ...options.devReferencePaths.map((path) => resolve12(repoDir, path))
   ];
   for (const candidate of candidates) {
-    if (existsSync10(candidate)) {
-      return readFileSync11(candidate, "utf-8");
+    if (existsSync11(candidate)) {
+      return readFileSync13(candidate, "utf-8");
     }
   }
   return "Command reference not found. Ensure command-reference.md is next to the MCP server script, or run from the repo.";
@@ -59746,8 +63068,10 @@ ${pendingAuth.authorizeUrl}`
             isError: true
           };
         }
+        const notes = result.stderr.trim();
+        const text = [result.stdout.trimEnd(), notes].filter(Boolean).join("\n\n");
         return {
-          content: [{ type: "text", text: result.stdout || "(no output)" }]
+          content: [{ type: "text", text: text || "(no output)" }]
         };
       } catch (err) {
         const message2 = err instanceof Error ? err.message : String(err);
@@ -59782,7 +63106,7 @@ ${pendingAuth.authorizeUrl}`
 }
 
 // .path-mcp/src/stdio.ts
-async function accountInstructions(timeoutMs = 2e3) {
+async function accountInstructions(timeoutMs = 2e3, sessionNote) {
   try {
     const config2 = loadConfig();
     if (!config2.accessToken || !config2.accountId) return void 0;
@@ -59797,14 +63121,14 @@ async function accountInstructions(timeoutMs = 2e3) {
     if (!account) return void 0;
     const summary = accountSummaryOf(account, accountId);
     if (summary.info && summary.info.length > INFO_TEXT_CAP) summary.info = `${summary.info.slice(0, INFO_TEXT_CAP).trimEnd()} \u2026`;
-    return ["PATH account in use (the saved default; --account overrides it):", ...accountBlockLines(summary)].join("\n");
+    return ["PATH account in use (the saved default; --account overrides it):", ...accountBlockLines(summary), ...sessionNote ? ["", sessionNote] : []].join("\n");
   } catch {
     return void 0;
   }
 }
 async function serveStdio(options) {
   trustSystemCertificates();
-  if (dirname7(process.cwd()) === process.cwd()) process.chdir(homedir5());
+  if (dirname7(process.cwd()) === process.cwd()) process.chdir(homedir6());
   const exit = process.exit.bind(process);
   const logError = process.stderr.write.bind(process.stderr);
   const name = options?.name ?? "path-mcp";
@@ -59825,12 +63149,14 @@ async function serveStdio(options) {
   const stop = () => void closeTabs().finally(() => exit(0));
   process.on("SIGTERM", stop);
   process.on("SIGINT", stop);
-  useFileInfoStore(resolve11(getConfigDir(), "info-seen.json"));
+  useFileInfoStore(resolve13(getConfigDir(), "info-seen.json"));
   setInfoSessionAnchor(`app:${process.ppid}`);
-  const server = createServer2(options, { instructions: await accountInstructions() });
+  const sessionNote = !options || options.toolName === PATH_CLI_SERVER.toolName ? "The first command of every session also gives the session context: the pathways you can start from the dashboard and your process context (how the business uses its business objects, for your roles). Read it before acting; `session-context` reloads it." : void 0;
+  const server = createServer2(options, { instructions: await accountInstructions(2e3, sessionNote) });
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }
 
 // .path-mcp/bin/path-mcp.ts
+useSessionMetadataCache();
 await serveStdio();

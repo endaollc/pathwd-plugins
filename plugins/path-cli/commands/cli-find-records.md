@@ -1,10 +1,10 @@
 ---
 name: find-records
-description: Use this skill when the user wants to find records matching conditions they describe in plain language — an advanced search, run now, nothing saved. E.g. "Show me all the jobs created last week where a quote was sent" or "Which retail jobs are waiting on a deposit?" Reads what the user can search on (with designer info), turns the request into a Logic Builder formula, runs find-records and shows the records; can save it as a folder or report.
+description: Use this skill when the user wants to find records matching conditions they describe in plain language — an advanced search, run now, nothing saved. E.g. "Show me all the jobs created last week where a quote was sent" or "Which retail jobs are waiting on a deposit?" Reads what the user can search on (with designer context), turns the request into a Logic Builder formula, runs find-records and shows the records; can save it as a folder or report.
 
 Examples:
 - User: "Show me all the jobs created last week where a quote was sent"
-  Assistant: Uses the find-records skill — loads the Job catalog, picks the quote-sent steps from their info, runs ISLASTWEEK([Created Date]) AND HASSTEP(...), shows the jobs.
+  Assistant: Uses the find-records skill — loads the Job catalog, picks the quote-sent steps from their context, runs ISLASTWEEK([Created Date]) AND HASSTEP(...), shows the jobs.
 
 - User: "Any purchase orders still open from more than 30 days ago?"
   Assistant: Uses the find-records skill to search Purchase Orders by milestone and created date.
@@ -26,13 +26,13 @@ All formula syntax (comparisons, `AND`/`OR`, functions, operators per field type
 
 The records being listed ("show me **jobs** …") are the business object. `list-business-objects` if unsure which one; ask if the words fit two.
 
-### 2. Load everything you can search on — with its info
+### 2. Load everything you can search on — with its context
 
 ```
 find-records --bo-name <BO> --catalog
 ```
 
-The catalog lists, for this user only: the business object, its field groups, its fields (type, selection options, which are shown on some records only), the relationships a formula can follow, its milestones and its steps — **each with its designer info**. Read all of it: the info is how the designers explain what each field, milestone and step means and when it happens (for example, which step marks "a quote was sent"). Earlier-shown info is left out with an `info_elided` flag; it is still in your context — pass `--with-info` if your context was compacted.
+The catalog lists, for this user only: the business object, its field groups, its fields (type, selection options, which are shown on some records only), the relationships a formula can follow, its milestones and its steps — **each with its designer context**. Read all of it: the context is how the designers explain what each field, milestone and step means and when it happens (for example, which step marks "a quote was sent"). Earlier-shown context is left out with a `context_elided` flag; it is still in your context — pass `--with-context` if your context was compacted.
 
 When the request involves related records ("where the customer is in Austin", "whose quote was signed"), load the related business object's catalog too — `find-records --bo-name <related BO> --catalog` — its fields, milestones and steps are reached as `[Relationship.Field]`, `INMILESTONE("Relationship.Milestone")`, `HASSTEP("Relationship.Step")`. Relationships are followed from the record that holds the link only (the catalog lists those).
 
@@ -40,7 +40,7 @@ Don't use `list-fields` / `list-relationships` for this: they list fields that m
 
 ### 3. Translate the request
 
-Map each phrase onto catalog names, using the info to choose:
+Map each phrase onto catalog names, using the context to choose:
 
 | The user says | Usually |
 |---|---|
@@ -51,8 +51,10 @@ Map each phrase onto catalog names, using the info to choose:
 | "in the last 7 days" / "older than 30 days" | `INTHELAST([d], DAYS(7))`, `MORETHANAGO([d], DAYS(30))` |
 | a field value — "retail", "over $5,000" | the field and an option's exact text from the catalog: `[Department] = "Retail"`, `[Total] > 5000` |
 | a related record's value | `[Relationship.Field] = …` |
+| "my jobs", "assigned to me", "I'm the salesperson" | the field or relationship that names the person (pick it by its context), compared with `CURRENTUSER()`: `[Job Outside Salesperson.Person Name] = CURRENTUSER()` (by full name), or as one of a selection's options: `ISANYOF([Assigned To], CURRENTUSER())` |
+| "has a … date" / "no … date yet" | `ISANYTIME([d])` / `ISEMPTY([d])` (dates have no `ISNOTEMPTY`) |
 
-Keep to what the user asked; don't add conditions. When two readings remain after the info (a Job step vs. a related Quote's milestone, say), pick the closest, say which you used, and offer the other — ask first only when the readings would give clearly different answers.
+Every value goes in the formula: `?` (fill in later) is for saved folders and reports, not a search. Keep to what the user asked; don't add conditions. When two readings remain after the context (a Job step vs. a related Quote's milestone, say), pick the closest, say which you used, and offer the other — ask first only when the readings would give clearly different answers.
 
 ### 4. Run it
 
@@ -97,6 +99,6 @@ If they'll want this again, offer a **folder** (`cli-folders-skill`: `create-fol
 
 1. **Use the path_cli tool** for every command.
 2. **Only the user's own view** — never search on, mention or reach for fields hidden from them.
-3. **Read the info** in the catalog before translating; it is the designers' meaning of each name.
+3. **Read the context** in the catalog before translating; it is the designers' meaning of each name.
 4. **Resolve names from the catalog** — never guess field, milestone or step names, or ids.
 5. **Plain language first**; the formula is there so the user can check it.

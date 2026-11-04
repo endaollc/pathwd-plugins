@@ -1,6 +1,6 @@
 ---
 name: create-report
-description: Use this skill when the user wants a new report in PATH, or to fix one just made. A report is a table of one business object's records that meet its rules, with the columns the user picks (fields, linked records' fields, milestone dates, counts, calculations), optionally grouped with totals. Users ask like "Make a report of won jobs this month by salesperson with total sell." It finds the fields, picks columns, writes the filter and info, sets access, creates, runs and fixes the report.
+description: Use this skill when the user wants a new report in PATH, or to fix one just made. A report is a table of one business object's records that meet its rules, with the columns the user picks (fields, linked records' fields, milestone dates, counts, calculations), optionally grouped with totals. Users ask like "Make a report of won jobs this month by salesperson with total sell." It finds the fields, picks columns, writes the filter and context, sets access, creates, runs and fixes the report.
 
 Examples:
 - User: "Make a report of won jobs this month by salesperson with total sell"
@@ -43,19 +43,19 @@ Use the `path-session` skill to sign in and pick an account first. Use the `path
 
 ### Step 1: Load the business object (always, before writing the filter or running create-report)
 
-Field names and types and the designers' info decide which fields the filter and columns should use, so load them first:
+Field names and types and the designers' context decide which fields the filter and columns should use, so load them first:
 
 ```
 # Find the BO
 --account <ID> list-business-objects
 
-# The BO itself, with its info
+# The BO itself, with its context
 --account <ID> get-business-object --bo-name <name>
 
-# Its fields, with each field's type and info
+# Its fields, with each field's type and context
 --account <ID> list-fields --bo-name <name> --json
 
-# Its relationships (linked records), with their info
+# Its relationships (linked records), with their context
 --account <ID> list-relationships --bo-name <name> --json
 
 # The fields of every related BO a filter leaf or column reaches through a relationship
@@ -69,9 +69,9 @@ Field names and types and the designers' info decide which fields the filter and
 --account <ID> list-reports
 ```
 
-Skip what you already loaded this session. If your context no longer has it (for example after compaction), run it again with the global `--with-info` option (`--account <ID> --with-info list-fields …`): info is shown once per session, so a plain re-run leaves it out.
+Skip what you already loaded this session. If your context no longer has it (for example after compaction), run it again with the global `--with-context` option (`--account <ID> --with-context list-fields …`): context is shown once per session, so a plain re-run leaves it out.
 
-Map each of the user's words to a real field: "salesperson" might be a field on the record or a linked person (`Job Outside Salesperson.Person Name`); "sell" might be `Total Sell Price`. Read the info: it says what each field is for and often settles which one the user means. If two fields could fit, ask. If an existing report already does this, say so instead of making a duplicate.
+Map each of the user's words to a real field: "salesperson" might be a field on the record or a linked person (`Job Outside Salesperson.Person Name`); "sell" might be `Total Sell Price`. Read the context: it says what each field is for and often settles which one the user means. If two fields could fit, ask. If an existing report already does this, say so instead of making a duplicate.
 
 ### Step 2: Choose the report type and the columns
 
@@ -88,12 +88,12 @@ Map each of the user's words to a real field: "salesperson" might be a field on 
 | `milestones` | The record's current milestones (`Customer.milestones` for a linked record's) |
 | `count` | The number of records (per group in a grouped report) |
 | `CALC(<expression>)` | A Custom Calculation, e.g. `CALC([Sell Price] - [Cost])` — the expression language of calculation fields (`[Field]`, `[Relationship.Field]`, `+ - * /`, `IF(…)`, milestone/step entry dates) |
-| `TIMEBETWEEN(<from>, <to>)` | The time between two dates; each end is `today`, `field:<date field>`, `milestone:<name>` or `step:<name>` |
+| `TIMEBETWEEN(<from>, <to>)` | The time between two dates; each end is `today`, `field:<date field>`, `milestone:<name>` or `step:<name>` — on the report's record, or on a linked record with the relationship path in front of the name, like a linked column: `milestone:Order Related PO.Received`, `field:Customer.Customer Since`, `step:Order Related PO.PO Job.Ship` (`Order Related PO.milestone:Received` works too). Linked ends follow one-to-one relationships (multi-hop) and read the first linked record; no linked record = an empty value |
 
 | Option | Meaning |
 |---|---|
 | `name=<title>` | The column title (default: the field's name; `Custom Calculation`, `Time Between`, `Count`, `Milestones` for the special columns — give calculated columns a real name) |
-| `info=<text>` | The column's info (see Step 5) |
+| `context=<text>` | The column's context (see Step 5) |
 | `group` | A Group column. Dates: `group=day\|week\|month\|quarter\|year`; numbers: `group=<range size>` (e.g. `group=1000`); time spans: `group=1d`, `group=12h`, `group=1d 4:30` |
 | `total`, `average`, `minimum`, `maximum` | A Calculation column — number, currency, percent and time span columns only |
 | `sort=asc` / `sort=desc` | Sort by this column |
@@ -113,8 +113,8 @@ A CALC whose expression has commas goes in its own `--column '<spec>'` flag (rep
 --account <ID> create-report --bo-name Jobs --name "Won Jobs This Month by Salesperson" \
   --columns 'Job Outside Salesperson.Person Name | group | name=Salesperson | sort=asc, count | name=Jobs Won, Total Sell Price | total | currency | decimals=2 | name=Total Sell' \
   --logic 'ISTHISMONTH(MILESTONEFIRSTENTERED("Won"))' \
-  --info "Jobs that first entered Won this calendar month, grouped by outside salesperson, with the number of jobs and their total sell price. For the monthly sales review." \
-  --column-info '{"Total Sell":"Sum of Total Sell Price for the jobs in each salesperson group.","Jobs Won":"Number of jobs in the group."}' \
+  --context "Jobs that first entered Won this calendar month, grouped by outside salesperson, with the number of jobs and their total sell price. For the monthly sales review." \
+  --column-context '{"Total Sell":"Sum of Total Sell Price for the jobs in each salesperson group.","Jobs Won":"Number of jobs in the group."}' \
   --dry-run
 ```
 
@@ -132,17 +132,17 @@ The CLI parses the formula and validates it exactly as the Logic Builder does be
 A **Custom Field** is a calculation or time-between the filter compares but the report never shows. Use one when the user wants records filtered on something computed ("open more than 30 days", "margin under 20%") without a column for it:
 
 ```
---custom-field 'TIMEBETWEEN(field:Created Date, today) | name=Days Open | info=Days since the ticket was created' \
+--custom-field 'TIMEBETWEEN(field:Created Date, today) | name=Days Open | context=Days since the ticket was created' \
 --logic 'CUSTOMFIELD("Days Open") > DAYS(30)'
 ```
 
 If they do want to see the value, make it a column (`--column 'TIMEBETWEEN(…) | name=Days Open'`) and compare it with `COLUMN("Days Open")` instead. Calculated columns and Custom Fields need different names.
 
-### Step 5: Write the report's info and its columns' info
+### Step 5: Write the report's context and its columns' context
 
-People and AI agents see this info every time they open or run the report, so write it for them:
-- **Report info** (`--info` or `--info-file`): one to three sentences — what the report shows, which records are in it (the filter in plain words), who uses it and when. Use what the user told you; don't invent a purpose.
-- **Column info** (`info=` on a column, or `--column-info '{"<column name>":"…"}'`): **every calculated column needs info that says how it is worked out** — "Sell Price minus Cost, per job", "Days from the job's first Won date to today", "Sum of Total Sell Price in each salesperson group". A field column already shows its field's info; give it its own only when the report uses the field in a special way.
+People and AI agents see this context every time they open or run the report, so write it for them:
+- **Report context** (`--context` or `--context-file`): one to three sentences — what the report shows, which records are in it (the filter in plain words), who uses it and when. Use what the user told you; don't invent a purpose.
+- **Column context** (`context=` on a column, or `--column-context '{"<column name>":"…"}'`): **every calculated column needs context that says how it is worked out** — "Sell Price minus Cost, per job", "Days from the job's first Won date to today", "Sum of Total Sell Price in each salesperson group". A field column already shows its field's context; give it its own only when the report uses the field in a special way.
 
 ### Step 6: Decide who can see it
 
@@ -179,14 +179,14 @@ Then run the command with `--name` and the sharing options (`--dry-run` prints t
 --account <ID> get-report <id>
 ```
 
-Check the rows make sense: the right records (spot-check one with `get-record`), groups as asked, totals plausible. `get-report` shows each column, its info, the Custom Fields and the filter as formula text.
+Check the rows make sense: the right records (spot-check one with `get-record`), groups as asked, totals plausible. `get-report` shows each column, its context, the Custom Fields and the filter as formula text.
 
 **Fixing it:**
 | Problem | Fix |
 |---|---|
 | Wrong records | `set-filter report <id> --text '<formula>'` (`--dry-run` first) |
-| Name, info, include archived | `update-report --report-id <id> --data '{"name":"…","include_archived":true}'`, `--info "<text>"` |
-| A column's info | `update-report --report-id <id> --data '{"column_info":{"<column name>":"…"}}'` |
+| Name, context, include archived | `update-report --report-id <id> --data '{"name":"…","include_archived":true}'`, `--context "<text>"` |
+| A column's context | `update-report --report-id <id> --data '{"column_context":{"<column name>":"…"}}'` |
 | A Custom Field | `create-custom-field <id> …`, `update-custom-field <id> <name> …`, `delete-custom-field <id> <name>` |
 | Wrong columns, grouping or totals | The CLI can't change a saved report's columns. Tell the user and either let them adjust it in the web app (Reports → the report → Edit), or, with their OK, create a corrected one under a new name and ask them to delete the old one in the web app. Previewing (`--preview`) until the columns are right avoids this. |
 
@@ -198,14 +198,14 @@ Check the rows make sense: the right records (spot-check one with `get-record`),
 
 | Command | Purpose |
 |---------|---------|
-| `list-business-objects`, `get-business-object`, `list-fields --json`, `list-relationships --json`, `list-workflow-milestones`, `list-workflow-steps` | Load the business object, its fields (types and info), linked records (and their fields), milestones and steps — before writing the filter and columns |
+| `list-business-objects`, `get-business-object`, `list-fields --json`, `list-relationships --json`, `list-workflow-milestones`, `list-workflow-steps` | Load the business object, its fields (types and context), linked records (and their fields), milestones and steps — before writing the filter and columns |
 | `list-reports` | Existing reports (avoid duplicates; names are unique per business object) |
 | `parse-filter --bo-name <n> --text '<formula>' --report` | Check a formula on its own |
 | `list-roles`, `list-users` | Who to share with |
 | `create-report --preview` | Run the report as built and show its rows, saving nothing (try it with the user first) |
 | `create-report` | Create the report (`--dry-run` prints the body) |
 | `run-report --report-id <id>` | Check its rows |
-| `get-report <id>` | Columns, Custom Fields, filter and info |
+| `get-report <id>` | Columns, Custom Fields, filter and context |
 | `set-filter report <id>`, `update-report`, `create-custom-field` / `update-custom-field` / `delete-custom-field` | Fix it |
 | `web-link report <id>` | The link to it in the web app |
 
@@ -216,7 +216,7 @@ Check the rows make sense: the right records (spot-check one with `get-record`),
 1. **Use the path_cli tool** — every operation goes through `path_cli`.
 2. **Resolve everything by name** — the user gives names; look them up. Never guess ids.
 3. **Preview first** (`--preview`), let the user see the rows and adjust, confirm in plain language, then create.
-4. **Every calculated column gets info that says how it's calculated**, and every report gets a short info saying what it's for.
+4. **Every calculated column gets context that says how it's calculated**, and every report gets a short context saying what it's for.
 5. **Plain language with the user** — say "grouped by salesperson", "the total sell per group", "who can see it", not "report_column_type" or "column_key".
 6. **Selection values** — when the filter compares a selection field, use the exact option text from `list-fields --json` / `get-field`; ask if the user's wording doesn't match.
 7. **Run it after creating** and tell the user what it shows.

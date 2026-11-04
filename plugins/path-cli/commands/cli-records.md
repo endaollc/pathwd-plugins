@@ -55,7 +55,7 @@ Use the `path-session` skill to establish auth and select an account before runn
 
 ### First: is there a pathway for this?
 
-Before changing a record, load the pathways the user could start for it, with their info: `pathway-run available --record-id <id> --json` for an existing record, `pathway-run available --from dashboard --json` for a new one (or any request not tied to a record; once per session). If a pathway's `info` says it does what the user asked — win a job, schedule a delivery, send to accounting — offer to run it (`the `cli-pathways` command`) instead of editing fields directly: the pathway is the business's process and does the related work too. Edit directly when no pathway fits or the user asks for a plain field change.
+Before changing a record, load the pathways the user could start for it, with their context: `pathway-run available --record-id <id> --json` for an existing record, the dashboard pathways in the session context for a new one (or any request not tied to a record; `session-context` shows them again). If a pathway's `context` says it does what the user asked — win a job, schedule a delivery, send to accounting — offer to run it (`the `cli-pathways` command`) instead of editing fields directly: the pathway is the business's process and does the related work too. Edit directly when no pathway fits or the user asks for a plain field change.
 
 ### Creating a Record
 
@@ -181,15 +181,15 @@ Before creating, present a plain language summary:
 --account <ID> list-related-records --record-id <id> --relationship-id 55 --direction direct
 ```
 
-- The overview gives each list's `direction` (`direct` / `inverse`), relationship id and name (an inverse tab's `tab_name`), the related business object `{id, name, info}`, the relationship's `info` and a count.
-- A list gives `columns[]` (each with the `info` of the field, relationship or pathway it is based on) and `items[]` with `id`, `identifier` and the cell `values`; lookup cells add `linked_ids`. Open any record with `get-record --record-id <id>` (get-record's `related_ids` gives the ids of the records it links to).
+- The overview gives each list's `direction` (`direct` / `inverse`), relationship id and name (an inverse tab's `tab_name`), the related business object `{id, name, context}`, the relationship's `context` and a count.
+- A list gives `columns[]` (each with the `context` of the field, relationship or pathway it is based on) and `items[]` with `id`, `identifier` and the cell `values`; lookup cells add `linked_ids`. Open any record with `get-record --record-id <id>` (get-record's `related_ids` gives the ids of the records it links to).
 - Only lists the record viewer shows the acting user: a hidden relationship, one failing its visibility rules, or one to a business object they can't view is refused.
 
-### Designer info on records
+### Designer context on records
 
-`get-record`, `list-records --folder-id`, `list-related-records` and `run-report` carry the info of what they show: the folder's or report's own (`folder.info`, `report.info`: what it is for, who uses it), the business object's (`business_object.info`), each field's / column's (`field_info`, `columns[].info`: a report column's own info when it has one, otherwise its field's; a report's filter-only Custom Fields in `custom_fields[]`) and each relationship's (`relationship_info`). Read it before changing a record: it is what the designer (or the folder's / report's owner) meant it for. Every info is given once per session, with no exceptions: later calls, including a second view of the same folder or report, leave out what you were already shown (`info_elided` / `*_elided` flags and an `info_shown_earlier` summary). Pass `--with-info` to see it again. `list-records --folder-id ... --json` is an object: the records are in `items`.
+`get-record`, `list-records --folder-id`, `list-related-records` and `run-report` carry the context of what they show: the folder's or report's own (`folder.context`, `report.context`: what it is for, who uses it), the business object's (`business_object.context`), each field's / column's (`field_context`, `columns[].context`: a report column's own context when it has one, otherwise its field's; a report's filter-only Custom Fields in `custom_fields[]`) and each relationship's (`relationship_context`). Read it before changing a record: it is what the designer (or the folder's / report's owner) meant it for. Context is given once per session, with no exceptions: later calls, including a second view of the same folder or report, leave out what you were already shown (`context_elided` / `*_elided` flags and a `context_shown_earlier` summary). Pass `--with-context` to see it again. `list-records --folder-id ... --json` is an object: the records are in `items`.
 
-To make a new report (`create-report`), or to change a report's info, column info, filter and Custom Fields, use the `cli-reports-skill` command.
+To make a new report (`create-report`), or to change a report's context, column context, filter and Custom Fields, use the `cli-reports-skill` command.
 
 ### Linking Records
 
@@ -293,9 +293,10 @@ Use this when a user says "my colleague can't see the job I created" or "why don
 | `list-fields --bo-name <n> --json` | Get fields for payload building |
 | `create-record --bo-name <n> --data <json>` | Create a new record |
 | `update-record --record-id <id> --data <json>` | Update an existing record |
+| `list-record-notes` / `add-record-note` / `update-record-note` / `delete-record-note --record-id <id> …` | A **Notes field**'s entries (each note separate, with author and time) — never set through `update-record`; see the `cli-record-activity` command |
 | `get-record --record-id <id>` | Get a single record |
-| `list-records` | List records (by folder, BO, or recent); JSON `{business_object, field_info, items}` |
-| `list-related-records --record-id <id> [--relationship-id <id> \| --relationship-name <name>]` | The record viewer's related lists (direct relationships and inverse tabs), or one list's records with its columns and their info |
+| `list-records` | List records (by folder, BO, or recent); JSON `{business_object, field_context, items}` |
+| `list-related-records --record-id <id> [--relationship-id <id> \| --relationship-name <name>]` | The record viewer's related lists (direct relationships and inverse tabs), or one list's records with its columns and their context |
 | `search --query <text>` | Global search for records |
 | `list-relationships --bo-name <n>` | Find relationships for linking |
 | `link-record` | Link two records via a relationship |

@@ -70,7 +70,7 @@ Lists what the user can launch from that point (`--from record|dashboard|folder|
 --account <ID> pathway-run available --from dashboard --json
 ```
 
-The first is a particular record's Pathways tab, the second the dashboard (requests not tied to one record). Read each pathway's `info` — the designer's description of what it is for — and match the user's request to it, not just to the name. If two could fit, say what each is for and ask. (Skip the call if this session already loaded that list; repeated info comes back left out.)
+The first is a particular record's Pathways tab, the second the dashboard (requests not tied to one record). The session context already gives the dashboard list, with each pathway's context, at the start of every session; run the second only if you no longer have it. Read each pathway's `context` — the designer's description of what it is for — and match the user's request to it, not just to the name. If two could fit, say what each is for and ask. (Skip the call if this session already loaded that list; repeated context comes back left out.)
 
 #### Step 2: Find the Record
 
@@ -105,14 +105,14 @@ There are two ways to run:
 
 Automatic steps run, server steps run on the server, and each screen that needs input is shown as text. Before answering a screen, be sure what it is asking in business terms: the `path-concepts` skill explains PATH WD's business objects and processes and what each kind of pathway screen asks and does (its pathways reference). Answer only from what the user told you; when a screen asks something they haven't decided, ask them rather than guess. Add `--answers '<json>'` to script the answers, `--copy-of <record id>` to run on a fresh copy (test data), and `--mode super-user` only as described above. See `pathway-run start --help` and `pathway-run submit --help`.
 
-**Designer info on the run.** Designers can write *info* on a pathway, each of its steps and each field: their own description of what it is for. `pathway-run` puts it in front of you where it matters:
+**Designer context on the run.** Designers can write *context* on a pathway, each of its steps and each field: their own description of what it is for. `pathway-run` puts it in front of you where it matters:
 
-- the pathway's info under the "Pathway …" line when a run starts and in `pathway-run show` (JSON: `pathway.info`, and `pathway_info` on the `started` event);
-- a sub-pathway's info when a Launch Pathway step starts it (a `sub-pathway` event in JSON);
-- the waiting step's info under the "Waiting for input · step …" heading (JSON: `waiting_for.step_info`);
-- each field's info on a line under the field on forms (`detail.fields[].info`, `detail.create_fields[].info`, `detail.info` on Edit Record Field) and tables (`detail.columns[].info`, `detail.detail_columns[].info`). A table column has no info of its own: it shows the info of the field or relationship field it's based on.
+- the pathway's context under the "Pathway …" line when a run starts and in `pathway-run show` (JSON: `pathway.context`, and `pathway_context` on the `started` event);
+- a sub-pathway's context when a Launch Pathway step starts it (a `sub-pathway` event in JSON);
+- the waiting step's context under the "Waiting for input · step …" heading (JSON: `waiting_for.step_context`);
+- each field's context on a line under the field on forms (`detail.fields[].context`, `detail.create_fields[].context`, `detail.context` on Edit Record Field) and tables (`detail.columns[].context`, `detail.detail_columns[].context`). A table column has no context of its own: it shows the context of the field or relationship field it's based on.
 
-Each info is given once per session, like all info: a revisited step, and a second run of the same pathway in the same session, leave out the pathway, step and field info you were already shown (JSON `*_elided` flags, text `(shown earlier this session)`); pass `--with-info` to repeat it. Text output cuts a field's info past 1,000 characters ("…(see --json)"); JSON always has all of it. Read the info before you answer a screen. Use it to work out what the step is for, which questions to ask the user, and what a sensible answer looks like. It is guidance, not an answer: never fill a value from info when the user hasn't decided it. Ask them.
+Context is given once per session: a revisited step, and a second run of the same pathway in the same session, leave out the pathway, step and field context you were already shown (JSON `*_elided` flags, text `(shown earlier this session)`); pass `--with-context` to repeat it. Text output cuts a field's context past 1,000 characters ("…(see --json)"); JSON always has all of it. Read the context before you answer a screen. Use it to work out what the step is for, which questions to ask the user, and what a sensible answer looks like. It is guidance, not an answer: never fill a value from context when the user hasn't decided it. Ask them.
 
 **Headlessly (no person in the loop):**
 
@@ -159,4 +159,4 @@ Other `pathway-run` commands: `list` (saved runs), `log [--api]` (a run's full t
 6. **Pathways may have prerequisites** — some pathways only work when a record is in a certain milestone or step. If a run fails or is refused, check the record's current state and `pathway-run available --all` and explain what might need to change first.
 7. **`--mode super-user` and `--as-user` are restricted** — super-user needs full Admin or Designer permission, `--as-user` needs an account Admin. Don't suggest them to users who lack that; say the web app wouldn't let them either.
 8. **Building or fixing the pathway itself is Designer work** — send the user to an Admin or Designer, who changes it in PATH's Designer (or with the PATH Designer plugin's `path-pathway-builder` skill, if installed).
-9. **Read designer info, don't answer from it.** Pathway, step and field info (see Step 4) is the designer's intent. Let it shape what you ask and how you check an answer, but values come from the user.
+9. **Read designer context, don't answer from it.** Pathway, step and field context (see Step 4) is the designer's intent. Let it shape what you ask and how you check an answer, but values come from the user.

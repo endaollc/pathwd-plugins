@@ -50,19 +50,19 @@ If the user hasn't specified an account ID, ask which account to use or run the 
 
 ### Step 1: Load the business object (always, before writing the filter or running create-folder)
 
-Field names and types and the designers' info decide which fields the filter should use, so load them first:
+Field names and types and the designers' context decide which fields the filter should use, so load them first:
 
 ```
 # Find the BO
 --account <ID> list-business-objects
 
-# The BO itself, with its info
+# The BO itself, with its context
 --account <ID> get-business-object --bo-name <name>
 
-# Its fields, with each field's type and info
+# Its fields, with each field's type and context
 --account <ID> list-fields --bo-name <name> --json
 
-# Its relationships (linked records), with their info
+# Its relationships (linked records), with their context
 --account <ID> list-relationships --bo-name <name> --json
 
 # The fields of every related BO a filter leaf reaches through a relationship
@@ -73,9 +73,9 @@ Field names and types and the designers' info decide which fields the filter sho
 --account <ID> list-workflow-steps --bo-name <name> --json
 ```
 
-Skip what you already loaded this session. If your context no longer has it (for example after compaction), run it again with the global `--with-info` option (`--account <ID> --with-info list-fields …`): info is shown once per session, so a plain re-run leaves it out.
+Skip what you already loaded this session. If your context no longer has it (for example after compaction), run it again with the global `--with-context` option (`--account <ID> --with-context list-fields …`): context is shown once per session, so a plain re-run leaves it out.
 
-Map each of the user's words to a real field, milestone or step. Read the info: it says what each field is for and often settles which one the user means. If two could fit, ask.
+Map each of the user's words to a real field, milestone or step. Read the context: it says what each field is for and often settles which one the user means. If two could fit, ask.
 
 ### Step 2: Build the Filter Logic
 
@@ -129,9 +129,9 @@ Try `--dry-run` first to print the request bodies (folder + permissions) without
 | `--users <names>` | Comma-separated user full names to grant access |
 | `--user-permissions <perms>` | Comma-separated: `view`, `edit`, `delete` (default: view) |
 | `--map-relationship <name-or-id>` | Relationship (name or ID) from this BO to the account's Address BO — enables Folder Map (`map_enabled` + `map_relationship_id`). Only valid if such a relationship exists. |
-| `--info <text>` / `--info-file <path>` | The folder's info: one or two sentences on what the folder is for, who uses it and what its records have in common. Give every new folder one (from what the user told you; don't invent a purpose). People and AI agents see it whenever they open the folder |
+| `--context <text>` / `--context-file <path>` | The folder's context: one or two sentences on what the folder is for, who uses it and what its records have in common. Give every new folder one (from what the user told you; don't invent a purpose). People and AI agents see it whenever they open the folder |
 
-**Changing a folder later:** `update-folder --folder-id <id> --info "<text>"` (or `--info-file`, or `--data '{"folder_name":"…","info":"…"}'`) saves it the way the folder form does, everything else kept; `--info ""` clears the info. A sticker's own info: `--data '{"sticker_info":{"<sticker name>":"…"}}'`. It needs Edit on the folder. Criteria go through `set-filter folder <id> --text '<formula>'`. Reports work the same way with `update-report --report-id <id> --info "<text>"`.
+**Changing a folder later:** `update-folder --folder-id <id> --context "<text>"` (or `--context-file`, or `--data '{"folder_name":"…","context":"…"}'`) saves it the way the folder form does, everything else kept; `--context ""` clears the context. A sticker's own context: `--data '{"sticker_context":{"<sticker name>":"…"}}'`. It needs Edit on the folder. Criteria go through `set-filter folder <id> --text '<formula>'`. Reports work the same way with `update-report --report-id <id> --context "<text>"`.
 
 **Permission levels:**
 - **View only** (default): `--role-permissions "view"`
@@ -169,15 +169,15 @@ Tell the user what was created:
 | Command | Purpose |
 |---------|---------|
 | `list-business-objects` | Find BO by name |
-| `get-business-object --bo-name <n>` | The BO and its info (load before building the filter) |
-| `list-fields --bo-name <n> --json` | Fields with their types and info, for filter building (also for each related BO the filter reaches) |
+| `get-business-object --bo-name <n>` | The BO and its context (load before building the filter) |
+| `list-fields --bo-name <n> --json` | Fields with their types and context, for filter building (also for each related BO the filter reaches) |
 | `list-workflow-milestones --bo-name <n>` | Get milestones for filter building |
 | `list-workflow-steps --bo-name <n>` | Get steps for filter building |
 | `list-relationships --bo-name <n>` | Get relationships for filter building |
 | `parse-filter --bo-name <n> --text '<formula>'` | Validate the formula before creating (see the `path-logic-formula-syntax` skill) |
 | `list-roles` | Find role names (for "all users" role lookup) |
 | `create-folder` | Create folder with filter and permissions (`--dry-run` to preview) |
-| `update-folder --folder-id <id> --info <text>` | Change the folder's info (or `--data` settings) later |
+| `update-folder --folder-id <id> --context <text>` | Change the folder's context (or `--data` settings) later |
 | `list-folders` | Verify folder was created |
 | `list-records --folder-id <id>` | Test which records match |
 

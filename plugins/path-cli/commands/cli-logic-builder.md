@@ -77,7 +77,7 @@ Do not save until the user confirms.
 
 - Existing object: `--account <ID> set-filter <target> <id> --text '<formula>'` (try `--dry-run` first if you want to inspect the pipeline before writing).
 - New folder: `--account <ID> create-folder --bo-name <n> --folder-name "<name>" --logic '<formula>' ...` (see the `cli-folders-skill` command for the rest of folder creation — permissions, columns).
-- New report: `--account <ID> create-report --bo-name <n> --name "<name>" --columns '<columns>' --logic '<formula>' ...` — the formula can compare the report's own calculated columns and Custom Fields (`COLUMN("…")`, `CUSTOMFIELD("…")`); see the `cli-reports-skill` command for the rest (columns, grouping, info, sharing).
+- New report: `--account <ID> create-report --bo-name <n> --name "<name>" --columns '<columns>' --logic '<formula>' ...` — the formula can compare the report's own calculated columns and Custom Fields (`COLUMN("…")`, `CUSTOMFIELD("…")`); see the `cli-reports-skill` command for the rest (columns, grouping, context, sharing).
 
 `--logic-raw <json>` exists on `create-folder` as an escape hatch for the rare filter the formula language can't express (check with `get-filter`, which prints `UNSUPPORTED(...)` for such rules).
 
