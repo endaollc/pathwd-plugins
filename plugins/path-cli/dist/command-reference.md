@@ -370,6 +370,40 @@ Options:
   --all                       With --preview: every row in one page
 ```
 
+### `create-task`
+
+```
+Usage: create-task [options]
+
+Create a task on a record, like the record viewer's New Task: from a task
+template that the record's current milestones offer (--template; list them with
+--list-templates), or a custom task (--title). Anyone who can open the record
+can create one. A template fills the title, assignee and settings; the other
+options change them
+
+Options:
+  --record-id <id>                      Record ID
+  --template <id|title>                 A task template offered on this record
+                                        (see --list-templates)
+  --list-templates                      List the task templates offered on this
+                                        record and stop
+  --title <text>                        Task title
+  --assign-to <user>                    Assignee: an active user's id, email or
+                                        full name; "none" to unassign
+  --due <date>                          Due date: YYYY-MM-DD, "YYYY-MM-DD
+                                        HH:mm", today, tomorrow, +3d (your time
+                                        zone); "none" to clear
+  --notes <text>                        Notes
+  --notify-me-when-done <yes|no>        Notify the creator when the task is
+                                        done
+  --notify-assignee-when-due <yes|no>   Notify the assignee when the task is
+                                        due
+  --can-be-assigned-by-others <yes|no>  Other users may change the assignee
+  --can-be-skipped <yes|no>             The task can be cancelled (skipped)
+  --only-assignee-can-finish <yes|no>   Only the assignee (or creator / an
+                                        admin) can complete it
+```
+
 ### `delete-calendar`
 
 ```
@@ -487,6 +521,36 @@ Options:
   --out <path>      Destination file, or an existing directory to save into
                     under the original file name (default: ./<file name>)
   --stdout          Write the file contents to stdout instead of saving
+```
+
+### `edit-task`
+
+```
+Usage: edit-task [options]
+
+Edit an open task on a record, like a task's Edit button. Its creator or an
+admin can change every option; anyone else only the assignee (--assign-to), and
+only when the task is set to "Can Be Assigned By Other Users"
+
+Options:
+  --record-id <id>                      Record ID
+  --task-id <id>                        Task ID (as listed by list-record-tasks
+                                        or get-record's open_tasks)
+  --title <text>                        Task title
+  --assign-to <user>                    Assignee: an active user's id, email or
+                                        full name; "none" to unassign
+  --due <date>                          Due date: YYYY-MM-DD, "YYYY-MM-DD
+                                        HH:mm", today, tomorrow, +3d (your time
+                                        zone); "none" to clear
+  --notes <text>                        Notes
+  --notify-me-when-done <yes|no>        Notify the creator when the task is
+                                        done
+  --notify-assignee-when-due <yes|no>   Notify the assignee when the task is
+                                        due
+  --can-be-assigned-by-others <yes|no>  Other users may change the assignee
+  --can-be-skipped <yes|no>             The task can be cancelled (skipped)
+  --only-assignee-can-finish <yes|no>   Only the assignee (or creator / an
+                                        admin) can complete it
 ```
 
 ### `execute-pathway`

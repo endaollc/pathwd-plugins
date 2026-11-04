@@ -21593,19 +21593,29 @@ function buildVirtualLoopPathway(ctx, startStepId, endStepId) {
     parentStepIdsSet.add(stepId);
     return config2;
   }
+  function keepInLoopNextStep(config2, isEndStep) {
+    const target = config2.indicator_config?.next_step_override;
+    if (!isEndStep && (typeof target === "number" || typeof target === "string") && loopStepIds.has(target)) {
+      return config2;
+    }
+    return {
+      ...config2,
+      config: { ...config2.config, next_step_id: null },
+      indicator_config: {
+        ...config2.indicator_config,
+        next_step_override: null
+      }
+    };
+  }
   const virtualSteps = stepsToLoop.map((step) => ({
     ...step,
     configurations: step.configurations.map((config2) => {
       switch (config2.config_type) {
         case "NavigationFlow" /* NavigationFlow */:
-          return {
-            ...config2,
-            config: { ...config2.config, next_step_id: null },
-            indicator_config: {
-              ...config2.indicator_config,
-              next_step_override: null
-            }
-          };
+          return keepInLoopNextStep(
+            config2,
+            step.id === endStepId
+          );
         case "RecordStep" /* RecordStep */:
           return {
             ...config2,
@@ -28605,6 +28615,20 @@ var UserAccess = class _UserAccess {
     if (task.assigned_to?.user_id === this.user.id && s.only_assignee_finish) return null;
     return "this task can't be cancelled by this user";
   }
+  /** record-task-permissions canFullyEditRecordTask: the task's creator, or an admin (enabled roles). */
+  canFullyEditTask(task) {
+    return this.isAdmin || task.created_by != null && task.created_by === this.user.id;
+  }
+  /**
+   * record-task-permissions canEditRecordTask (the task's Edit button): a
+   * pending task, edited fully by its creator or an admin, or — when it is
+   * set to "Can Be Assigned By Other Users" — reassigned by anyone else.
+   */
+  canEditTask(task) {
+    if (task.task_status !== "pending") return `the task is ${task.task_status}`;
+    if (this.canFullyEditTask(task) || task.task_settings?.allow_assignment_change) return null;
+    return 'only its creator or an admin can edit this task, and it is not set to "Can Be Assigned By Other Users"';
+  }
   /** record-task-permissions canEditRecordTask: full edit by creator/admin, else assignment if allowed. */
   canAssignTask(task) {
     if (this.isAdmin || task.created_by === this.user.id) return null;
@@ -28890,6 +28914,9 @@ async function checkTaskAction(client, recordId, taskId, action) {
     }
   } else if (action === "cancel") {
     const why = access.canCancelTask(task);
+    if (why) throw new AccessDeniedError(access.label, what, why);
+  } else if (action === "edit") {
+    const why = access.canEditTask(task);
     if (why) throw new AccessDeniedError(access.label, what, why);
   } else {
     const why = access.canAssignTask(task);
@@ -43790,7 +43817,8 @@ var createTask = {
 };
 async function canFullyEdit(task, ctx) {
   const user = await ctx.metadata.currentUser();
-  return task.created_by === user.id || !!user.roles?.some((r) => r.role?.is_admin);
+  const isAdmin = !!user.effective_permissions?.is_admin;
+  return task.created_by != null && task.created_by === user.id || isAdmin;
 }
 function editFormFromTask(task) {
   return {
@@ -49880,7 +49908,7 @@ function waitingForJson(run, view4) {
     detail: view4.detail
   };
 }
-function waitingScreenLines(view4, run, inputError) {
+function waitingScreenLines(view4, run, inputError2) {
   const p = run.pending;
   const lines = [
     "",
@@ -49889,7 +49917,7 @@ function waitingScreenLines(view4, run, inputError) {
     view4.heading,
     ...view4.lines
   ];
-  if (inputError) lines.push("", `\u2717 ${inputError}`);
+  if (inputError2) lines.push("", `\u2717 ${inputError2}`);
   lines.push("", "Next:", ...view4.actions.map((a) => `  ${a}`), "  pathway-run cancel", `(run ${run.runId})`);
   return lines;
 }
@@ -50207,11 +50235,11 @@ var PathwayRunner = class {
       return { kind: "reply", reply: auto };
     }
     const answer = run.answers?.[0];
-    let inputError;
+    let inputError2;
     if (answer) {
       const mismatch = matchesAnswer(answer, pending2);
       if (mismatch) {
-        inputError = `Scripted answer doesn't fit this screen: ${mismatch}`;
+        inputError2 = `Scripted answer doesn't fit this screen: ${mismatch}`;
       } else {
         run.answers.shift();
         if (answer.cancel) {
@@ -50227,7 +50255,7 @@ var PathwayRunner = class {
           return { kind: "reply", reply };
         } catch (err) {
           if (!(err instanceof SurfaceInputError)) throw err;
-          inputError = `Scripted answer rejected: ${err.message}`;
+          inputError2 = `Scripted answer rejected: ${err.message}`;
         }
       }
     }
@@ -50239,12 +50267,12 @@ var PathwayRunner = class {
     saveRun(run);
     if (this.opts.strict) {
       throw new StrictPauseError(
-        inputError ?? `No scripted answer for step "${pending2.stepTitle}" (${pending2.surface})`,
+        inputError2 ?? `No scripted answer for step "${pending2.stepTitle}" (${pending2.surface})`,
         run
       );
     }
     void metadata;
-    return { kind: "pause", outcome: { kind: "paused", run, view: view4, inputError } };
+    return { kind: "pause", outcome: { kind: "paused", run, view: view4, inputError: inputError2 } };
   }
   async #finish(session, state) {
     const { run } = session;
@@ -50664,10 +50692,10 @@ async function link(client, boId3, selfId, relKey, otherId) {
     recordContextHeaders(own ? selfId : otherId)
   );
 }
-async function runSetup(setup6, client, metadata, tag, userId) {
+async function runSetup(setup7, client, metadata, tag, userId) {
   const result = { refs: {}, created: [] };
   try {
-    for (const [name, raw] of Object.entries(setup6)) {
+    for (const [name, raw] of Object.entries(setup7)) {
       if (!/^[A-Za-z_][\w-]*$/.test(name)) throw new Error(`Setup name "${name}" must be a plain word (letters, digits, _ or -)`);
       const spec = resolveRefs(raw, result.refs, tag);
       const source = spec.copy_of ? await client.get(`/v1/records/${encodeURIComponent(spec.copy_of)}`) : null;
@@ -50967,8 +50995,8 @@ function inputFromOpts(opts) {
   }
   return input;
 }
-function printView(view4, run, inputError) {
-  for (const line of waitingScreenLines(view4, run, inputError)) console.log(line);
+function printView(view4, run, inputError2) {
+  for (const line of waitingScreenLines(view4, run, inputError2)) console.log(line);
 }
 function printOutcome(outcome2, json, events) {
   const run = outcome2.run;
@@ -51962,6 +51990,239 @@ var completeTaskCommand = new Command("complete-task").description("Mark a task 
         quiet: parentOpts.quiet
       })
     );
+  } catch (err) {
+    handleError(err);
+  }
+});
+
+// .path-cli/src/commands/task-write.ts
+import { randomUUID as randomUUID4 } from "crypto";
+var FORM_OPTIONS = [
+  ["--title <text>", "title", "Task title"],
+  ["--assign-to <user>", "assign to", `Assignee: an active user's id, email or full name; "none" to unassign`],
+  ["--due <date>", "due on", 'Due date: YYYY-MM-DD, "YYYY-MM-DD HH:mm", today, tomorrow, +3d (your time zone); "none" to clear'],
+  ["--notes <text>", "notes", "Notes"],
+  ["--notify-me-when-done <yes|no>", "notify me when done", "Notify the creator when the task is done"],
+  ["--notify-assignee-when-due <yes|no>", "notify assignee when due", "Notify the assignee when the task is due"],
+  ["--can-be-assigned-by-others <yes|no>", "can be assigned by others", "Other users may change the assignee"],
+  ["--can-be-skipped <yes|no>", "can be skipped", "The task can be cancelled (skipped)"],
+  ["--only-assignee-can-finish <yes|no>", "only assignee can finish", "Only the assignee (or creator / an admin) can complete it"]
+];
+function withFormOptions(command) {
+  for (const [flag, , help] of FORM_OPTIONS) command.option(flag, help);
+  return command;
+}
+function formInput(opts) {
+  const input = emptyInput();
+  for (const [flag, key] of FORM_OPTIONS) {
+    const name = flag.replace(/^--/, "").replace(/ .*$/, "").replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    const value = opts[name];
+    if (typeof value === "string") input.set.push([key, value]);
+  }
+  return input;
+}
+function setup6(command) {
+  const parentOpts = command.parent?.opts() ?? {};
+  const config2 = loadConfig({ accountId: parentOpts.account, baseUrl: parentOpts.baseUrl });
+  if (!config2.accountId) {
+    throw new Error('Missing --account <id>. Run "path list-accounts" to see available accounts.');
+  }
+  const client = new HttpClient(config2);
+  return { parentOpts, client, metadata: new RunMetadata(client, String(config2.accountId)) };
+}
+async function onUserClock(metadata, work) {
+  const previous = activeTimeZoneSetting();
+  setActiveTimeZone(await metadata.userTimeZone());
+  try {
+    return await work();
+  } finally {
+    setActiveTimeZone(previous);
+  }
+}
+async function pendingTasks(client, recordId) {
+  return unwrapPaginated(await client.get(`/v1/records/${encodeURIComponent(recordId)}/tasks`));
+}
+async function taskSummary(metadata, task) {
+  const users = await metadata.userDirectory().catch(() => []);
+  const assignee = task.assigned_to?.user_id != null ? users.find((u) => u.id === task.assigned_to.user_id) : void 0;
+  return {
+    id: task.id,
+    record_id: task.record_id,
+    name: task.task_name,
+    status: task.task_status,
+    due_on: task.due_on ?? null,
+    assigned_to: task.assigned_to?.user_id != null ? userDisplayName(assignee ?? { id: task.assigned_to.user_id }) : null,
+    notes: task.notes ?? null,
+    workflow_task_id: task.workflow_task_id ?? null,
+    pathway_id: task.pathway_id ?? null,
+    settings: {
+      notify_me_when_done: !!task.task_settings?.notify_creator_task_done,
+      notify_assignee_when_due: !!task.task_settings?.notify_assignee_task_due,
+      can_be_assigned_by_others: !!task.task_settings?.allow_assignment_change,
+      can_be_skipped: !!task.task_settings?.allow_cancellation,
+      only_assignee_can_finish: !!task.task_settings?.only_assignee_finish
+    }
+  };
+}
+function printTask(json, verb, summary) {
+  if (json) {
+    console.log(JSON.stringify({ result: verb, task: summary }, null, 2));
+    return;
+  }
+  console.log(`${verb === "created" ? "Created" : "Updated"} task ${summary.id} "${summary.name}" on record ${summary.record_id}`);
+  console.log(`  assigned to: ${summary.assigned_to ?? "(unassigned)"}`);
+  console.log(`  due: ${summary.due_on ?? "(none)"}`);
+  if (summary.notes) console.log(`  notes: ${summary.notes}`);
+  const on = Object.entries(summary.settings).filter(([, v]) => v).map(([k]) => k);
+  console.log(`  settings: ${on.length ? on.join(", ") : "(none)"}`);
+  if (summary.pathway_id != null) console.log(`  completing it runs pathway ${summary.pathway_id}`);
+}
+function formRequest(value) {
+  return {
+    assign_to: value.assign_to,
+    due_on: value.due_on ? new Date(value.due_on).toISOString() : null,
+    notes: value.notes,
+    notify_me_when_done: value.notify_me_when_done,
+    notify_assignee_when_due: value.notify_assignee_when_due,
+    can_be_assigned_by_others: value.can_be_assigned_by_others,
+    can_be_skipped: value.can_be_skipped,
+    only_assignee_can_finish: value.only_assignee_can_finish
+  };
+}
+function inputError(err) {
+  if (err instanceof SurfaceInputError) throw new Error(err.message);
+  throw err;
+}
+var createTaskCommand = withFormOptions(
+  new Command("create-task").description(
+    "Create a task on a record, like the record viewer's New Task: from a task template that the record's current milestones offer (--template; list them with --list-templates), or a custom task (--title). Anyone who can open the record can create one. A template fills the title, assignee and settings; the other options change them"
+  ).requiredOption("--record-id <id>", "Record ID").option("--template <id|title>", "A task template offered on this record (see --list-templates)").option("--list-templates", "List the task templates offered on this record and stop")
+).action(async (opts, command) => {
+  try {
+    const { parentOpts, client, metadata } = setup6(command);
+    const recordId = String(opts.recordId);
+    await assertRecordViewable(client, recordId, `create a task on record ${recordId}`);
+    const record2 = await metadata.record(recordId);
+    if (record2.archived_on) {
+      const who = isRealWorld() ? (await UserAccess.load(client)).label : "You";
+      throw new AccessDeniedError(who, `create a task on record ${recordId}`, "the record is archived (its tasks are hidden)");
+    }
+    const [{ templates, undecided }, openTasks] = await Promise.all([
+      availableTemplates({ record: record2, business_object_id: record2.business_object_id }, metadata),
+      pendingTasks(client, recordId)
+    ]);
+    const openFrom = /* @__PURE__ */ new Map();
+    for (const t of openTasks) {
+      const from = t.workflow_task_id;
+      if (from != null) openFrom.set(from, t);
+    }
+    if (opts.listTemplates) {
+      const rows = templates.map((t) => ({
+        id: t.id,
+        title: t.title,
+        ...t.info ? { info: t.info } : {},
+        ...openFrom.has(t.id) ? { open_task_id: openFrom.get(t.id).id } : {}
+      }));
+      if (parentOpts.json) {
+        console.log(JSON.stringify({ record_id: recordId, templates: rows, ...undecided.length ? { undecided } : {} }, null, 2));
+      } else {
+        console.log(`Task templates offered on record ${recordId} (${rows.length}):`);
+        for (const row of rows) {
+          console.log(`  ${row.id}  ${row.title}${row.open_task_id != null ? `  (already open as task ${row.open_task_id}: can't be added again)` : ""}`);
+          if (row.info) console.log(`      context: ${row.info}`);
+        }
+        if (!rows.length) console.log('  (none \u2014 a custom task only: create-task --record-id <id> --title "<title>")');
+        if (undecided.length) console.log(`  \u26A0 criteria not decidable for: ${undecided.join("; ")}`);
+      }
+      return;
+    }
+    let taskId = null;
+    let value = emptyForm();
+    if (opts.template !== void 0) {
+      const key = String(opts.template).trim().toLowerCase();
+      const template = templates.find((t) => String(t.id) === key || t.title.toLowerCase() === key);
+      if (!template) {
+        throw new Error(
+          `Task template "${opts.template}" isn't offered on record ${recordId} (templates come from the record's current milestones). Offered: ${templates.map((t) => `${t.id} "${t.title}"`).join(", ") || "(none)"}`
+        );
+      }
+      const open5 = openFrom.get(template.id);
+      if (open5) {
+        throw new Error(
+          `Record ${recordId} already has an open "${template.title}" task (task ${open5.id}); a record holds one open task per template, so another wouldn't be created. Edit that one (edit-task --task-id ${open5.id}) or create a custom task (--title)`
+        );
+      }
+      taskId = template.id;
+      value = fromTemplate(template);
+    } else if (opts.title === void 0) {
+      throw new Error('Pass --title "<title>" for a custom task, or --template <id|title> (see --list-templates)');
+    }
+    await onUserClock(metadata, () => applyTaskForm(value, formInput(opts), { metadata }).catch(inputError));
+    const before = new Set(openTasks.map((t) => t.id));
+    const executor = new HttpApiExecutor(client, { runId: randomUUID4(), recordId });
+    await executor.sendRequest(-1, "CreateTask.Custom", {
+      business_object_id: record2.business_object_id,
+      id: recordId,
+      auto_create: false,
+      task_id: taskId,
+      title: value.title,
+      ...formRequest(value)
+    });
+    const created = (await pendingTasks(client, recordId)).filter((t) => !before.has(t.id)).sort((a, b) => b.id - a.id)[0];
+    if (!created) {
+      throw new Error(
+        `No task was created on record ${recordId}: the server accepted the request but no new open task appeared (a disabled template, or one already open on the record, is skipped)`
+      );
+    }
+    printTask(!!parentOpts.json, "created", await taskSummary(metadata, created));
+  } catch (err) {
+    handleError(err);
+  }
+});
+var editTaskCommand = withFormOptions(
+  new Command("edit-task").description(
+    `Edit an open task on a record, like a task's Edit button. Its creator or an admin can change every option; anyone else only the assignee (--assign-to), and only when the task is set to "Can Be Assigned By Other Users"`
+  ).requiredOption("--record-id <id>", "Record ID").requiredOption("--task-id <id>", "Task ID (as listed by list-record-tasks or get-record's open_tasks)")
+).action(async (opts, command) => {
+  try {
+    const { parentOpts, client, metadata } = setup6(command);
+    const recordId = String(opts.recordId);
+    const taskId = Number(opts.taskId);
+    const input = formInput(opts);
+    if (!input.set.length) {
+      throw new Error(`Nothing to change: pass at least one of ${FORM_OPTIONS.map(([flag]) => flag.replace(/ .*$/, "")).join(", ")}`);
+    }
+    const { task } = await checkTaskAction(client, recordId, taskId, "edit");
+    if (!task) throw new Error(`Task ${taskId} isn't an open task on record ${recordId}`);
+    const recordTask = task;
+    const access = isRealWorld() ? await UserAccess.load(client) : null;
+    const full = access ? access.canFullyEditTask(task) : true;
+    const record2 = await metadata.record(recordId);
+    const value = editFormFromTask(recordTask);
+    await onUserClock(
+      metadata,
+      () => applyTaskForm(value, input, { metadata }, !full).catch((err) => {
+        if (err instanceof SurfaceInputError && !full && access) {
+          throw new AccessDeniedError(
+            access.label,
+            `change more than the assignee of task "${recordTask.task_name}"`,
+            "only its creator or an admin can change its other options"
+          );
+        }
+        inputError(err);
+      })
+    );
+    const executor = new HttpApiExecutor(client, { runId: randomUUID4(), recordId });
+    await executor.sendRequest(-1, "EditTask.UpdateTask", {
+      task_name: value.title,
+      ...formRequest(value),
+      business_object_id: record2.business_object_id,
+      id: recordId,
+      task_id: taskId,
+      stage: "update-task"
+    });
+    const updated = (await pendingTasks(client, recordId)).find((t) => t.id === taskId) ?? recordTask;
+    printTask(!!parentOpts.json, "updated", await taskSummary(metadata, updated));
   } catch (err) {
     handleError(err);
   }
@@ -54378,7 +54639,7 @@ var getAccountCommand = new Command("get-account").description(
 // .path-cli/src/index.ts
 var ACCOUNT_CHECK_EXEMPT = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache"]);
 function createProgram() {
-  const program2 = new Command("path").version("1.0.6").description(
+  const program2 = new Command("path").version("1.0.7").description(
     "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, notes, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
@@ -54481,6 +54742,8 @@ function createProgram() {
   program2.addCommand(runReportCommand);
   program2.addCommand(webLinkCommand);
   program2.addCommand(sendMessageCommand);
+  program2.addCommand(createTaskCommand);
+  program2.addCommand(editTaskCommand);
   program2.addCommand(completeTaskCommand);
   program2.addCommand(createCalendarEventCommand);
   program2.addCommand(getCalendarEventCommand);
@@ -62932,7 +63195,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.6";
+var VERSION = "1.0.7";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;

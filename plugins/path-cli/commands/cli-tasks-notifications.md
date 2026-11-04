@@ -134,6 +134,8 @@ does not mark the popup copy, and vice versa.
 | `complete-task --record-id <id> --task-id <id>` | Mark a task as complete |
 | `cancel-task --record-id <id> --task-id <id>` | Cancel (skip) a task |
 | `assign-task --record-id <id> --task-id <id> --user-id <id>` | Assign a task to a user |
+| `create-task --record-id <id> [--template <id\|title> \| --title <t>] [--assign-to …] [--due …] [--notes …]` | Create a task (New Task); `--list-templates` lists the templates offered |
+| `edit-task --record-id <id> --task-id <id> [--title …] [--assign-to …] [--due …] [--notes …] …` | Edit an open task (creator/admin: everything; others: the assignee only, when allowed) |
 | `list-notifications` | List notifications |
 | `list-notifications --unread` | List unread notifications only |
 | `get-record --record-id <id>` | Get record context for a task |

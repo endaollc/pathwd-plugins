@@ -1,6 +1,6 @@
 ---
 name: record-activity
-description: Use this skill when the user wants to interact with a specific record's activity — messages, notes (Notes fields), emails, files, or tasks, including editing or deleting messages and files and logging emails. Users describe what they want in plain language like "Post an update on Job 12345", "What messages are on this record?", "Add a note to the Job Notes", "Show files attached to this invoice", "Complete the Deposit task", or "What tasks are pending on this job?"
+description: Use this skill when the user wants to interact with a specific record's activity — messages, notes (Notes fields), emails, files, or tasks, including editing or deleting messages and files and logging emails. Users describe what they want in plain language like "Post an update on Job 12345", "What messages are on this record?", "Add a note to the Job Notes", "Show files attached to this invoice", "Add a task to call the customer tomorrow", or "What tasks are pending on this job?"
 
 Examples:
 - User: "Post a message on Job abc-123 saying the materials have arrived"
@@ -299,6 +299,44 @@ First list tasks to find the task ID, then complete it:
   --task-id <task_id>
 ```
 
+#### Creating a Task
+
+Like the record viewer's **New Task**. Anyone who can open the record can create one. First see which task templates the record's current milestones offer (with each one's context):
+
+```
+--account <ID> create-task --record-id <id> --list-templates
+```
+
+Then create it from a template, or as a custom task:
+
+```
+# From a template (fills the title, assignee and settings; options change them)
+--account <ID> create-task --record-id <id> --template "<id or title>" [--due tomorrow]
+
+# Custom task
+--account <ID> create-task --record-id <id> --title "Call customer" \
+  --assign-to "<user id, email or full name>" --due 2026-11-12 --notes "..." \
+  [--notify-me-when-done yes] [--notify-assignee-when-due yes] \
+  [--can-be-assigned-by-others yes] [--can-be-skipped yes] [--only-assignee-can-finish yes]
+```
+
+- A template is accepted only when the record's current milestones offer it, as in the web picker. A record holds one open task per template, so a template that is already open on the record is refused (`--list-templates` marks it). Edit that task instead, or create a custom one.
+- Dates are read on the user's clock: `YYYY-MM-DD`, `"YYYY-MM-DD HH:mm"`, `today`, `tomorrow`, `+3d`.
+- Before creating, check the record's open tasks and pathways (`get-record`): a pathway or an existing task may already do what the user wants. Confirm the title, assignee and due date with the user first.
+
+#### Editing a Task
+
+Like a task's **Edit** button, on an open task:
+
+```
+--account <ID> edit-task --record-id <id> --task-id <task_id> \
+  [--title ...] [--assign-to ...] [--due ...] [--notes ...] [--can-be-skipped yes|no] ...
+```
+
+- The task's **creator or an admin** can change every option.
+- **Anyone else** can only change the assignee (`--assign-to`), and only when the task is set to "Can Be Assigned By Other Users". Otherwise the edit is refused. Say so in plain words ("only Maria, who created it, or an admin can change its due date").
+- Pass only what changes; everything else stays as it is. `--due none` clears the due date, and `--assign-to none` unassigns it.
+
 #### Assigning a Task
 
 ```
@@ -342,6 +380,8 @@ Or for task completion:
 | `complete-task --record-id <id> --task-id <id>` | Mark a task as complete |
 | `cancel-task --record-id <id> --task-id <id>` | Cancel a task |
 | `assign-task --record-id <id> --task-id <id> --user-id <id>` | Assign a task to a user |
+| `create-task --record-id <id> [--template <id\|title> \| --title <t>] [--assign-to …] [--due …] [--notes …]` | Create a task (New Task); `--list-templates` lists the templates offered |
+| `edit-task --record-id <id> --task-id <id> [--title …] [--assign-to …] [--due …] [--notes …] …` | Edit an open task (creator/admin: everything; others: the assignee only, when allowed) |
 | `update-record-file --record-id <id> --file-id <id> --data <json>` | Change a file's types and comment |
 | `archive-record-file` / `unarchive-record-file --record-id <id> --file-id <id>` | Hide / restore a file |
 | `delete-record-file --record-id <id> --file-id <id>` | Permanently delete a file |
