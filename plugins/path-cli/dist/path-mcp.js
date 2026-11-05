@@ -37019,7 +37019,8 @@ var FILTER_FUNCTIONS = [
     maxArgs: 1,
     summary: "True when the field has no value.",
     snippet: "ISEMPTY(${1:[Field]})",
-    category: "compare"
+    category: "compare",
+    negation: "ISNOTEMPTY"
   },
   {
     name: "ISNOTEMPTY",
@@ -37028,7 +37029,8 @@ var FILTER_FUNCTIONS = [
     maxArgs: 1,
     summary: "True when the field has a value.",
     snippet: "ISNOTEMPTY(${1:[Field]})",
-    category: "compare"
+    category: "compare",
+    negation: "ISEMPTY"
   },
   {
     name: "ISANYOF",
@@ -37036,7 +37038,8 @@ var FILTER_FUNCTIONS = [
     minArgs: 2,
     summary: "True when the field equals any of the listed values.",
     snippet: 'ISANYOF(${1:[Field]}, "${2:value}")',
-    category: "compare"
+    category: "compare",
+    negation: "ISNOTANYOF"
   },
   {
     name: "ISNOTANYOF",
@@ -37044,7 +37047,8 @@ var FILTER_FUNCTIONS = [
     minArgs: 2,
     summary: "True when the field equals none of the listed values.",
     snippet: 'ISNOTANYOF(${1:[Field]}, "${2:value}")',
-    category: "compare"
+    category: "compare",
+    negation: "ISANYOF"
   },
   {
     name: "CONTAINS",
@@ -37053,7 +37057,8 @@ var FILTER_FUNCTIONS = [
     maxArgs: 2,
     summary: "True when the text contains the search text (ignoring case).",
     snippet: 'CONTAINS(${1:[Field]}, "${2:text}")',
-    category: "compare"
+    category: "compare",
+    negation: "NOTCONTAINS"
   },
   {
     name: "NOTCONTAINS",
@@ -37062,7 +37067,8 @@ var FILTER_FUNCTIONS = [
     maxArgs: 2,
     summary: "True when the text does not contain the search text.",
     snippet: 'NOTCONTAINS(${1:[Field]}, "${2:text}")',
-    category: "compare"
+    category: "compare",
+    negation: "CONTAINS"
   },
   {
     name: "ISANYTIME",
@@ -37089,7 +37095,8 @@ var FILTER_FUNCTIONS = [
     maxArgs: 2,
     summary: "True when the date is within the given span before now.",
     snippet: "INTHELAST(${1:[Date]}, DAYS(${2:30}))",
-    category: "date"
+    category: "date",
+    negationRewrite: "MORETHANAGO([Date], DAYS(n)) OR ISEMPTY([Date])"
   },
   {
     name: "INTHENEXT",
@@ -37098,7 +37105,8 @@ var FILTER_FUNCTIONS = [
     maxArgs: 2,
     summary: "True when the date is within the given span after now.",
     snippet: "INTHENEXT(${1:[Date]}, DAYS(${2:7}))",
-    category: "date"
+    category: "date",
+    negationRewrite: "MORETHANFROMNOW([Date], DAYS(n)) OR ISEMPTY([Date])"
   },
   {
     name: "MORETHANAGO",
@@ -37235,6 +37243,7 @@ var FILTER_FUNCTIONS = [
     summary: "True while the record is in the milestone (or any of the milestones listed).",
     snippet: 'INMILESTONE("${1:milestone}")',
     category: "milestone",
+    negation: "NOTINMILESTONE",
     names: "milestone"
   },
   {
@@ -37244,6 +37253,7 @@ var FILTER_FUNCTIONS = [
     summary: "True while the record is in any of the milestones. Same as INMILESTONE.",
     snippet: 'INANYMILESTONE("${1:milestone}", "${2:milestone}")',
     category: "milestone",
+    negation: "NOTINMILESTONE",
     names: "milestone"
   },
   {
@@ -37253,6 +37263,7 @@ var FILTER_FUNCTIONS = [
     summary: "True while the record is not in the milestone (nor any listed).",
     snippet: 'NOTINMILESTONE("${1:milestone}")',
     category: "milestone",
+    negation: "INMILESTONE",
     names: "milestone"
   },
   {
@@ -37262,6 +37273,7 @@ var FILTER_FUNCTIONS = [
     summary: "True while the record is in none of the milestones. Same as NOTINMILESTONE.",
     snippet: 'NOTINANYMILESTONE("${1:milestone}", "${2:milestone}")',
     category: "milestone",
+    negation: "INMILESTONE",
     names: "milestone"
   },
   {
@@ -37290,6 +37302,7 @@ var FILTER_FUNCTIONS = [
     summary: "True while the record has the step (or any of the steps listed).",
     snippet: 'HASSTEP("${1:step}")',
     category: "step",
+    negation: "NOTHASSTEP",
     names: "step"
   },
   {
@@ -37299,6 +37312,7 @@ var FILTER_FUNCTIONS = [
     summary: "True while the record has any of the steps. Same as HASSTEP.",
     snippet: 'HASANYSTEP("${1:step}", "${2:step}")',
     category: "step",
+    negation: "NOTHASSTEP",
     names: "step"
   },
   {
@@ -37308,6 +37322,7 @@ var FILTER_FUNCTIONS = [
     summary: "True while the record has every one of the steps.",
     snippet: 'HASALLSTEPS("${1:step}", "${2:step}")',
     category: "step",
+    negation: "NOTHASALLSTEPS",
     names: "step"
   },
   {
@@ -37317,6 +37332,7 @@ var FILTER_FUNCTIONS = [
     summary: "True while the record has none of the steps.",
     snippet: 'NOTHASSTEP("${1:step}")',
     category: "step",
+    negation: "HASSTEP",
     names: "step"
   },
   {
@@ -37326,6 +37342,7 @@ var FILTER_FUNCTIONS = [
     summary: "True while the record has none of the steps. Same as NOTHASSTEP.",
     snippet: 'NOTHASANYSTEP("${1:step}", "${2:step}")',
     category: "step",
+    negation: "HASSTEP",
     names: "step"
   },
   {
@@ -37335,6 +37352,7 @@ var FILTER_FUNCTIONS = [
     summary: "True while the record is missing at least one of the steps.",
     snippet: 'NOTHASALLSTEPS("${1:step}", "${2:step}")',
     category: "step",
+    negation: "HASALLSTEPS",
     names: "step"
   },
   {
@@ -37422,6 +37440,34 @@ for (const spec of FILTER_FUNCTIONS) {
 function findFilterFunction(name) {
   return BY_NAME2.get(name.toUpperCase());
 }
+function isRuleFunction(spec) {
+  return spec.category !== "value" && spec.category !== "entry-date" && spec.category !== "report-column";
+}
+function negationHint(spec) {
+  if (spec.negation) return `use ${spec.negation}(...)`;
+  if (spec.negationRewrite) {
+    return `${spec.name} has no negative form; use ${spec.negationRewrite}`;
+  }
+  return `${spec.name} has no negative form`;
+}
+function negatedFunctionOf(name) {
+  const upper = name.toUpperCase();
+  const base = /^IS_?NOT_?(\w+)$/.exec(upper)?.[1] ?? /^NOT_?(\w+)$/.exec(upper)?.[1];
+  if (!base) return void 0;
+  const spec = BY_NAME2.get(base) ?? BY_NAME2.get(`IS${base}`);
+  return spec && isRuleFunction(spec) ? spec : void 0;
+}
+var NOT_HINT_RULES = [
+  "HASSTEP",
+  "INMILESTONE",
+  "ISANYOF",
+  "CONTAINS",
+  "ISEMPTY"
+];
+var NOT_HINT_NEGATIONS = NOT_HINT_RULES.map(
+  (name) => BY_NAME2.get(name)?.negation
+).filter(Boolean);
+var NO_NOT_HINT = `use the rule's negative form: ${NOT_HINT_NEGATIONS.join(", ")}, != (for INTHELAST: ${BY_NAME2.get("INTHELAST")?.negationRewrite})`;
 
 // utils/filter-text/filter-rules.ts
 var BLANK_OPTION_ID2 = -1;
@@ -37633,6 +37679,14 @@ var COMPARE_OPERATORS = {
   "<": "less_than" /* LessThan */,
   "<=": "less_than_equal" /* LessThanEqual */
 };
+var NEGATED_COMPARE = {
+  "=": "!=",
+  "<>": "=",
+  ">": "<=",
+  ">=": "<",
+  "<": ">=",
+  "<=": ">"
+};
 var SECONDS_PER = {
   SECONDS: 1,
   MINUTES: 60,
@@ -37648,6 +37702,7 @@ var CALENDAR_UNITS = {
 };
 var Parser2 = class {
   constructor(source, catalog, options) {
+    this.source = source;
     this.catalog = catalog;
     this.options = options;
     this.#tokens = tokenize(source);
@@ -37752,14 +37807,16 @@ var Parser2 = class {
       const spec = findFilterFunction(token.text);
       if (!spec) {
         throw new ParseFailure2(
-          `Unknown function "${token.text}"`,
+          `Unknown function "${token.text}"${this.#unknownFunctionHint(upper)}`,
           token.start,
           token.end
         );
       }
       const operandCall = spec.category === "entry-date" || spec.category === "report-column";
       if (spec.category !== "value" && !operandCall) {
-        return this.#booleanCall(spec);
+        const node = this.#booleanCall(spec);
+        this.#rejectTrueFalseCompare(spec);
+        return node;
       }
       if (spec.name !== "SETTING" && !operandCall) {
         throw new ParseFailure2(
@@ -37790,6 +37847,54 @@ var Parser2 = class {
       start: operand.start,
       end: value.end
     });
+  }
+  // --- Negation hints ----------------------------------------------------
+  // There is no NOT: each negatable rule has its own negative function. These
+  // only add a hint to the error; they never accept new syntax.
+  /** NOT(...) and made-up negations (NOTISANYOF) → the real negative form. */
+  #unknownFunctionHint(upper) {
+    if (upper === "NOT") return ` \u2014 there is no NOT; ${this.#notHint()}`;
+    const negated = negatedFunctionOf(upper);
+    if (!negated) return "";
+    return negated.negation ? ` \u2014 did you mean ${negated.negation}?` : ` \u2014 ${negationHint(negated)}`;
+  }
+  /** What to write instead of the NOT(...) at the current token. */
+  #notHint() {
+    let i = this.#pos + 1;
+    const paren = this.#tokens[i].type === "lparen";
+    if (paren) i++;
+    const target = this.#tokens[i];
+    const wrap = (inner) => paren ? `NOT(${inner})` : `NOT ${inner}`;
+    if (target.type === "identifier") {
+      const spec = findFilterFunction(target.text);
+      if (spec && isRuleFunction(spec)) {
+        return spec.negation ? `use ${spec.negation}(...) instead of ${wrap(`${spec.name}(...)`)}` : negationHint(spec);
+      }
+    } else if (target.type === "field") {
+      const op = this.#tokens[i + 1];
+      if (op.type === "operator" && op.text in NEGATED_COMPARE) {
+        const field = this.source.slice(target.start, target.end);
+        const written = this.source.slice(op.start, op.end);
+        return `use ${field} ${NEGATED_COMPARE[op.text]} ... instead of ${wrap(`${field} ${written} ...`)}`;
+      }
+    }
+    return NO_NOT_HINT;
+  }
+  /** `HASSTEP("x") = FALSE`: functions are rules, not TRUE/FALSE values. */
+  #rejectTrueFalseCompare(spec) {
+    const op = this.#peek();
+    const value = this.#tokens[this.#pos + 1];
+    if (op.type !== "operator" || op.text !== "=" && op.text !== "<>") return;
+    const word = value?.type === "identifier" ? value.text.toUpperCase() : "";
+    if (word !== "TRUE" && word !== "FALSE") return;
+    const written = this.source.slice(op.start, op.end);
+    const negate = word === "FALSE" === (op.text === "=");
+    const hint = !negate ? `drop "${written} ${word}"` : spec.negation ? `use ${spec.negation}(...) instead of ${spec.name}(...) ${written} ${word}` : negationHint(spec);
+    throw new ParseFailure2(
+      `Unexpected "${written}" \u2014 functions aren't compared to TRUE/FALSE; ${hint}`,
+      op.start,
+      op.end
+    );
   }
   // --- Boolean functions -------------------------------------------------
   #booleanCall(spec) {
@@ -38656,15 +38761,29 @@ function leaf(type, props) {
     quick_search: false
   };
 }
+function bangHint(rest) {
+  const call = /^\s*\(?\s*([A-Za-z_]\w*)\s*\(/.exec(rest);
+  if (call) {
+    const spec = findFilterFunction(call[1]);
+    if (!spec || !isRuleFunction(spec))
+      return ` \u2014 there is no ! (NOT); ${NO_NOT_HINT}`;
+    return spec.negation ? ` \u2014 there is no ! (NOT); use ${spec.negation}(...) instead of !${spec.name}(...)` : ` \u2014 there is no ! (NOT); ${negationHint(spec)}`;
+  }
+  if (/^\s*\(?\s*\[/.test(rest)) {
+    return ' \u2014 there is no ! (NOT); negate the comparison instead, e.g. [Field] != "value"';
+  }
+  return "";
+}
 function parseFilterText(source, catalog, options = {}) {
   try {
     const filter = new Parser2(source, catalog, options).parseAll();
     return { filter, errors: [] };
   } catch (e) {
     if (e instanceof ParseFailure2 || e instanceof TokenizeError) {
+      const hint = e instanceof TokenizeError && source[e.start] === "!" ? bangHint(source.slice(e.end)) : "";
       return {
         filter: null,
-        errors: [{ message: e.message, start: e.start, end: e.end }]
+        errors: [{ message: e.message + hint, start: e.start, end: e.end }]
       };
     }
     throw e;
@@ -54713,7 +54832,7 @@ var getAccountCommand = new Command("get-account").description(
 // .path-cli/src/index.ts
 var ACCOUNT_CHECK_EXEMPT = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache"]);
 function createProgram() {
-  const program2 = new Command("path").version("1.0.9").description(
+  const program2 = new Command("path").version("1.0.10").description(
     "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, notes, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
@@ -63269,7 +63388,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.9";
+var VERSION = "1.0.10";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;
