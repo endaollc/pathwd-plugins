@@ -26004,11 +26004,9 @@ function resolveDateTimeLogic(logic, value, now, timeZone) {
       return (candidate) => candidate > after;
     }
     case "between": {
-      const v = value;
-      const startDate = v?.start != null ? toDateOrNull(v.start) : null;
-      const endDate = v?.end != null ? toDateOrNull(v.end) : null;
-      if (!startDate || !endDate) return () => false;
-      return (candidate) => candidate >= startDate && candidate <= endDate;
+      const window = calendarDateWindow(logic, value, timeZone);
+      if (!window) return () => false;
+      return (candidate) => inCalendarDateWindow(candidate, window);
     }
     case "between_range": {
       const v = value;
@@ -26025,6 +26023,60 @@ function resolveDateTimeLogic(logic, value, now, timeZone) {
 }
 function matchInRange(range) {
   return (candidate) => candidate >= range.startDate && candidate <= range.endDate;
+}
+function calendarDayOf(value, timeZone) {
+  const date3 = toDateOrNull(value);
+  if (!date3) return null;
+  if (!timeZone) return getDayRange(date3);
+  return getDayRange(allDayBoundIn(date3, timeZone), timeZone);
+}
+function calendarDateWindow(logic, value, timeZone) {
+  if (logic === "between") {
+    const v = value;
+    const first = calendarDayOf(v?.start, timeZone);
+    const last = calendarDayOf(v?.end, timeZone);
+    if (!first || !last) return null;
+    return {
+      bounds: { $gte: first.startDate, $lte: last.endDate },
+      outside: false
+    };
+  }
+  if (!CALENDAR_DATE_LOGICS.has(logic)) return null;
+  const day = calendarDayOf(value, timeZone);
+  if (!day) return null;
+  switch (logic) {
+    case "equal":
+      return {
+        bounds: { $gte: day.startDate, $lte: day.endDate },
+        outside: false
+      };
+    case "not_equal":
+      return {
+        bounds: { $gte: day.startDate, $lte: day.endDate },
+        outside: true
+      };
+    case "less_than":
+      return { bounds: { $lt: day.startDate }, outside: false };
+    case "less_than_equal":
+      return { bounds: { $lte: day.endDate }, outside: false };
+    case "greater_than":
+      return { bounds: { $gt: day.endDate }, outside: false };
+    default:
+      return { bounds: { $gte: day.startDate }, outside: false };
+  }
+}
+var CALENDAR_DATE_LOGICS = /* @__PURE__ */ new Set([
+  "equal",
+  "not_equal",
+  "less_than",
+  "less_than_equal",
+  "greater_than",
+  "greater_than_equal"
+]);
+function inCalendarDateWindow(candidate, { bounds, outside }) {
+  const t = candidate.getTime();
+  const inside = (bounds.$gt == null || t > bounds.$gt.getTime()) && (bounds.$gte == null || t >= bounds.$gte.getTime()) && (bounds.$lt == null || t < bounds.$lt.getTime()) && (bounds.$lte == null || t <= bounds.$lte.getTime());
+  return outside ? !inside : inside;
 }
 
 // utils/date-time-setting-display.ts
@@ -27001,7 +27053,9 @@ function evalField(filter, record2, ctx) {
   }
   const expected = resolveExpected(filter, record2, ctx, valueMeta);
   return compareWithType(filter.logic, actual, expected, valueMeta, {
-    trimText: !filter.for_field
+    trimText: !filter.for_field,
+    calendarDays: !filter.for_field,
+    timeZone: ctx.timeZone
   });
 }
 function isBlankSentinelLeaf(filter, meta) {
@@ -27226,7 +27280,11 @@ function evalAccountSetting(filter, record2, ctx) {
   }
   return compareScalar(filter.logic, actual, expected);
 }
-function compareWithType(logic, actual, expected, meta, { trimText = true } = {}) {
+function compareWithType(logic, actual, expected, meta, {
+  trimText = true,
+  calendarDays = false,
+  timeZone
+} = {}) {
   switch (fieldFilterKind(meta.field_type)) {
     case "boolean":
       return compareBoolean(logic, actual, expected);
@@ -27243,8 +27301,15 @@ function compareWithType(logic, actual, expected, meta, { trimText = true } = {}
         meta.formatting?.use_percentage_symbol && typeof expected === "number" ? displayToFractional(expected) : expected
       );
     case "date":
-    case "appointment":
+    case "appointment": {
+      const window = calendarDays ? calendarDateWindow(logic, expected, timeZone) : null;
+      if (window) {
+        const a = toDateOrNull(actual);
+        if (a == null) return logic === "not_equal" /* NotEqual */;
+        return inCalendarDateWindow(a, window);
+      }
       return compareDate(logic, actual, expected);
+    }
     case "text":
       return compareString(logic, actual, expected, trimText);
     case "selection":
@@ -54648,7 +54713,7 @@ var getAccountCommand = new Command("get-account").description(
 // .path-cli/src/index.ts
 var ACCOUNT_CHECK_EXEMPT = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache"]);
 function createProgram() {
-  const program2 = new Command("path").version("1.0.8").description(
+  const program2 = new Command("path").version("1.0.9").description(
     "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, notes, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
@@ -63204,7 +63269,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.8";
+var VERSION = "1.0.9";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;

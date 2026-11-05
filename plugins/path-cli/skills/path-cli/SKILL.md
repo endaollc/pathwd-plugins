@@ -214,6 +214,8 @@ TIME          | SESSION | TYPE                             | USER     | ACTION  
 
 Plain output is just the URL; `--json` adds type, id, name and business object. Links use the saved web app address (`PATH_WEB_BASE_URL`, default `https://pathwd.app`) and the current account.
 
+**Record links:** whenever you give the user a link to a specific record, it opens the record on the dashboard, always in exactly this form: `https://pathwd.app/accounts/{accountId}/dashboard?record={recordId}`, e.g. `https://pathwd.app/accounts/1234/dashboard?record=6a1f0c2e9b4d3a7e5c8f1234`. `{recordId}` is the record's `id` from `get-record` / `find-records` (`web-link record <id>`, without `--tab`, prints it), never a record number or name. Never use any other form: no `/record/<id>` or `/records/<id>` paths, no folder- or report-scoped record URLs, no other host, no other query parameters or `:<tab>` suffix.
+
 ### Tags & Reports
 | Command | Description |
 |---------|-------------|

@@ -103,3 +103,4 @@ If they'll want this again, offer a **folder** (`cli-folders-skill`: `create-fol
 3. **Read the context** in the catalog before translating; it is the designers' meaning of each name.
 4. **Resolve names from the catalog** — never guess field, milestone or step names, or ids.
 5. **Plain language first**; the formula is there so the user can check it.
+6. **Record links** — a link to a specific record always opens it on the dashboard, in exactly this form: `https://pathwd.app/accounts/{accountId}/dashboard?record={recordId}`, e.g. `https://pathwd.app/accounts/1234/dashboard?record=6a1f0c2e9b4d3a7e5c8f1234` (`{recordId}` is the record's `id`; `web-link record <id>` prints it). Never any other path, host or query parameter.
