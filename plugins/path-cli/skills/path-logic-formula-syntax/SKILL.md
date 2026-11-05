@@ -86,7 +86,31 @@ set-filter report 6932 --untick-user-filter '[Department]'
 
 ## Syntax reference
 
-**Rules** are joined by `AND` or `OR` — one connective per level; mixing needs parentheses: `A AND (B OR C)`. Each `( … )` is a builder group. No `NOT`: use the negative forms.
+**Rules** are joined by `AND` or `OR` — one connective per level; mixing needs parentheses: `A AND (B OR C)`. Each `( … )` is a builder group.
+
+**There is no `NOT(...)`.** `NOT(...)`, `NOT ...`, `!` and `HASSTEP(...) = FALSE` all fail to parse (`Unknown function "NOT"`). Negate each rule with its own negative form:
+
+| Instead of | Write |
+|---|---|
+| `NOT([f] = v)` | `[f] != v` (`<>` accepted) |
+| `NOT(ISANYOF(f, a, b))` | `ISNOTANYOF(f, a, b)` |
+| `NOT(CONTAINS(f, "t"))` | `NOTCONTAINS(f, "t")` |
+| `NOT(ISEMPTY(f))` | `ISNOTEMPTY(f)`; a date: `ISANYTIME(d)`; a preset selection: `[f] != BLANK` |
+| `NOT(INMILESTONE("a", "b"))` | `NOTINMILESTONE("a", "b")` (in none of them) |
+| `NOT(INALLMILESTONES("a", "b"))` | `NOTINMILESTONE("a") OR NOTINMILESTONE("b")` |
+| `NOT(HASSTEP("a", "b"))` | `NOTHASSTEP("a", "b")` (has none of them) |
+| `NOT(HASALLSTEPS("a", "b"))` | `NOTHASALLSTEPS("a", "b")` (missing at least one) |
+| `NOT(INTHELAST(d, DAYS(30)))` | `MORETHANAGO(d, DAYS(30))` (add `OR ISEMPTY(d)` to keep records with no date) |
+| `NOT(BETWEENDATES(d, s, e))` | `d < s OR d > e` |
+| `NOT(A AND B)` / `NOT(A OR B)` | `(not A) OR (not B)` / `(not A) AND (not B)`, each rule negated as above |
+
+A rule with no negative form (a period like `ISTHISMONTH`) is negated with the opposite comparison (`[d] < DATE("2026-11-01") OR [d] >= DATE("2026-12-01")`); if none fits, tell the user it can't be expressed rather than inventing a function. Example, "jobs created in the last 30 days with no quote or contract sent":
+
+```
+INTHELAST([Created Date], DAYS(30)) AND NOTHASSTEP("Quick Quote Sent to Customer", "Full Quote Sent to Customer", "Final Contract Sent to Customer", "Quick Contract Sent to Customer")
+```
+
+Not sure a function or form exists? Check the formula with `parse-filter` before running `find-records` or saving: it saves nothing.
 
 **Comparisons**: `[Field] = value`, `!=` (`<>` accepted), `> >= < <=`. Right side: a literal, another field (`[Total] > [Customer.Credit Limit]`), `SETTING("name")`, or `CURRENTUSER()` (compared by full name, e.g. `[Salesperson.Person Name] = CURRENTUSER()`). Several fields on the right of one rule must all be on the same record: `ISANYOF([Owner], [Customer.Rep], [Customer.Manager])` works; `ISANYOF([Owner], [Rep], [Customer.Manager])` doesn't.
 
@@ -140,6 +164,7 @@ set-filter report 2496 --text 'INTHELAST(MILESTONEFIRSTENTERED("Won"), DAYS(30))
 | Message | Fix |
 |---|---|
 | `Use parentheses when mixing AND and OR` | Group: `A AND (B OR C)` |
+| `Unknown function "NOT"` (or `NOTISANYOF`, `NOTINTHELAST` …) | No `NOT`: use the rule's negative form from the table above (`NOTHASSTEP`, `NOTINMILESTONE`, `ISNOTANYOF`, `!=` …) |
 | `Unknown field "X"` | `list-fields`; relationship paths use relationship names; only native fields of the reached BO |
 | `"X" is not an option of this field` | Use an option text from `get-field`, or `BLANK` |
 | `<OP> can't be used with [X] (a … field)` | Operator not offered for that kind — see the table above |

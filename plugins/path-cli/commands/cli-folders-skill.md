@@ -79,7 +79,7 @@ Map each of the user's words to a real field, milestone or step. Read the contex
 
 ### Step 2: Build the Filter Logic
 
-`create-folder --logic '<formula>'` takes a Logic Builder **formula** — the same language used everywhere else in PATH (milestone criteria, task criteria, report filters, etc.). Full syntax, operators, names and examples live in the `path-logic-formula-syntax` skill — load that skill and follow it rather than guessing at syntax here. Folders additionally allow `?` (fill in later) and milestone/step entry-date rules (`MILESTONEFIRSTENTERED`, etc.).
+`create-folder --logic '<formula>'` takes a Logic Builder **formula** — the same language used everywhere else in PATH (milestone criteria, task criteria, report filters, etc.). Full syntax, operators, names and examples live in the `path-logic-formula-syntax` skill — load that skill and follow it rather than guessing at syntax here. Folders additionally allow `?` (fill in later) and milestone/step entry-date rules (`MILESTONEFIRSTENTERED`, etc.). There is no `NOT(...)`: negate a rule with its own negative form (`NOTHASSTEP`, `NOTINMILESTONE`, `ISNOTANYOF`, `NOTCONTAINS`, `!=`; the full table is in the syntax skill).
 
 Validate before creating:
 ```

@@ -46,6 +46,7 @@ Map each phrase onto catalog names, using the context to choose:
 |---|---|
 | a status — "open", "waiting on a deposit", "won" | a milestone: `INMILESTONE("…")` |
 | something happened — "a quote was sent", "was scheduled" | a step: `HASSTEP("…")`; several steps that all mean it: `HASSTEP("A", "B")` (any of them) |
+| something did **not** happen / is **not** in a status — "no quote sent yet", "not closed" | the negative form, never `NOT(...)`: `NOTHASSTEP("A", "B")` (has none of them), `NOTINMILESTONE("…")`; for a field `!=`, `ISNOTANYOF(...)`, `NOTCONTAINS(...)` |
 | when it happened — "sent last week" | the step's/milestone's date: `ISLASTWEEK(STEPLASTOCCURRED("…"))`, `INTHELAST(MILESTONEFIRSTENTERED("…"), DAYS(30))` |
 | "created last week" / "this month" / "this year" | a calendar period on the date field: `ISLASTWEEK([Created Date])`, `ISTHISMONTH(...)` |
 | "in the last 7 days" / "older than 30 days" | `INTHELAST([d], DAYS(7))`, `MORETHANAGO([d], DAYS(30))` |
@@ -68,7 +69,7 @@ It prints `<total> <records> match: <formula>` (the formula as PATH reads it bac
 - `--include-archived` — only when the user asks for archived / closed-out records too (left out by default)
 - `--count` — just the number; `--per-page <n>` / `--page <n>` / `--all` for paging
 
-A parse error names the bad piece; fix it from the catalog and run again. `Unknown field` means the field isn't in the user's catalog — it may be hidden from them; say so rather than looking for another way in.
+A parse error names the bad piece; fix it from the catalog and run again. `Unknown function "NOT"`: there is no `NOT(...)`; use the rule's negative form (above). Not sure a function or form exists? Check the formula with `parse-filter --bo-name <BO> --allow-entry-dates --text '<formula>'` first. `Unknown field` means the field isn't in the user's catalog — it may be hidden from them; say so rather than looking for another way in.
 
 ### 4b. Questions about groups — "which … the most", "how many per …", "total … by …"
 

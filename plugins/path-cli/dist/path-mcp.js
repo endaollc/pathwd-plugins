@@ -21462,6 +21462,8 @@ async function* runStepImplementation(ctx, state, services, signal) {
         ...event,
         pathwayId,
         stepId: ctx.step.id,
+        stepName: ctx.resolveTitle(),
+        stepType: ctx.step.step_type,
         state
       } : event;
     }
@@ -29794,6 +29796,13 @@ var HISTORY_ACTION_LABELS = {
   ["designer_note_updated" /* DesignerNoteUpdated */]: "Note Updated",
   ["designer_note_removed" /* DesignerNoteRemoved */]: "Note Removed"
 };
+var EMAIL_RECEIVED_LABEL = "Email Received";
+function historyEventLabel(action, metadata) {
+  if (action === "email_sent" /* EmailSent */ && metadata?.["direction"] === "received") {
+    return EMAIL_RECEIVED_LABEL;
+  }
+  return HISTORY_ACTION_LABELS[action];
+}
 var HISTORY_ACTIONS = Object.values(HistoryAction);
 var HISTORY_ACTION_SET = new Set(HISTORY_ACTIONS);
 
@@ -29947,7 +29956,7 @@ function flatten(sessions, opts) {
         ...opts.includeEntity ? {
           entity: [event.entityType?.replace(/_/g, " "), event.entityId].filter(Boolean).join(" ")
         } : {},
-        action: actionLabel(event.action),
+        action: actionLabel(event.action, event.metadata),
         subject: subject.text,
         changes: cell(changeEntries(event.changes, opts.userNames), opts),
         metadata: cell(
@@ -29968,8 +29977,8 @@ function flatten(sessions, opts) {
 function cell(entries, opts) {
   return opts.multiline ? entries.join("\n") : clipEntries(entries, opts.maxWidth);
 }
-function actionLabel(action) {
-  return HISTORY_ACTION_LABELS[action] ?? humanize(action);
+function actionLabel(action, metadata) {
+  return historyEventLabel(action, metadata) ?? humanize(action);
 }
 var AGENT_LABELS = {
   claude_code: "Claude Code",
@@ -54639,7 +54648,7 @@ var getAccountCommand = new Command("get-account").description(
 // .path-cli/src/index.ts
 var ACCOUNT_CHECK_EXEMPT = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache"]);
 function createProgram() {
-  const program2 = new Command("path").version("1.0.7").description(
+  const program2 = new Command("path").version("1.0.8").description(
     "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, notes, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
@@ -63195,7 +63204,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.7";
+var VERSION = "1.0.8";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;

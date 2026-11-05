@@ -120,7 +120,7 @@ A CALC whose expression has commas goes in its own `--column '<spec>'` flag (rep
 
 ### Step 3: Write the filter
 
-`--logic '<formula>'` is a Logic Builder formula — load the `path-logic-formula-syntax` skill and follow it rather than guessing. Report filters can also use:
+`--logic '<formula>'` is a Logic Builder formula — load the `path-logic-formula-syntax` skill and follow it rather than guessing. There is no `NOT(...)`: negate a rule with its own negative form (`NOTHASSTEP`, `NOTINMILESTONE`, `ISNOTANYOF`, `NOTCONTAINS`, `!=`; the full table is in the syntax skill). When unsure, check the formula with `parse-filter --report` before creating. Report filters can also use:
 - milestone / step entry dates: `INTHELAST(MILESTONEFIRSTENTERED("Won"), DAYS(30))`, `ISTHISMONTH(STEPLASTOCCURRED("Send Quote"))`
 - `?` for a value the person running the report fills in
 - the report's own calculated columns: `COLUMN("Margin") > 1000` (a CALC or TIMEBETWEEN column), and its Custom Fields: `CUSTOMFIELD("Days Open") > DAYS(30)` (time spans compare with `DAYS()`, `HOURS()`…)

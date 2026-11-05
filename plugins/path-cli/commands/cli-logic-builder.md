@@ -51,7 +51,7 @@ Match names case-insensitively; if ambiguous, list the candidates and ask.
 
 ### 3. Write the formula
 
-Compose the formula per the `path-logic-formula-syntax` skill reference. Keep it as close to the user's own words as the syntax allows; don't invent conditions they didn't ask for.
+Compose the formula per the `path-logic-formula-syntax` skill reference. Keep it as close to the user's own words as the syntax allows; don't invent conditions they didn't ask for. There is no `NOT(...)`: negate a rule with its own negative form (`NOTHASSTEP`, `NOTINMILESTONE`, `ISNOTANYOF`, `NOTCONTAINS`, `!=`; the full table is in the syntax skill).
 
 ### 4. Validate
 
