@@ -94,9 +94,14 @@ Options:
 ### `auth`
 
 ```
-Usage: auth [options]
+Usage: auth [options] [action]
 
-Authenticate and store token (browser sign-in by default)
+Authenticate and store token (browser sign-in by default); `auth logout` signs
+out, the same as `logout`
+
+Arguments:
+  action                 Sign in (the default) or sign out (choices: "login",
+                         "logout")
 
 Options:
   --email <email>        User email (opt into the legacy password flow)
@@ -1351,7 +1356,8 @@ Options:
 ```
 Usage: logout [options]
 
-Clear stored auth tokens
+Sign out: end the saved sign-in on the PATH server and remove it from this
+computer (the default account and other settings stay)
 
 Options:
 ```

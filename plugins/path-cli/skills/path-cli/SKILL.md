@@ -107,7 +107,7 @@ Designers can write **context** on the account and on what they set up: business
 | `use-account <id>` | Persist a default account ID to `~/.path-cli/.env` (replaces the need for `--account` on every command) and print the session context |
 | `session-context` | Print the session context in full again: the account with its Account context, the dashboard pathways with their context and your process context (for example after your context was compacted) |
 | `get-account [--account-id <id>]` | The active account: name, time zone, country and Account context (what the business does) |
-| `logout` | Clear stored tokens and saved default account |
+| `logout` | Sign out: ends the sign-in on the PATH server and removes it from this computer (the default account stays). Signs out both PATH plugins. Only when the user asks |
 
 ### Business Object Structure (read-only)
 | Command | Description |

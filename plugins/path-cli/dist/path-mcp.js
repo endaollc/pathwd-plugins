@@ -16503,6 +16503,20 @@ function updateEnvValue(key, value) {
   }
   writeFileSync(envPath, updatedLines.join("\n") + "\n");
 }
+function removeEnvValues(keys) {
+  const envPath = getEnvPath();
+  if (!existsSync(envPath)) return;
+  const remove = new Set(keys);
+  const lines = readFileSync(envPath, "utf-8").split("\n").filter((line) => line.trim().length > 0);
+  const kept = lines.filter((line) => {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("#")) return true;
+    const eqIndex = trimmed.indexOf("=");
+    return eqIndex === -1 || !remove.has(trimmed.slice(0, eqIndex).trim());
+  });
+  if (kept.length === lines.length) return;
+  writeFileSync(envPath, kept.length ? kept.join("\n") + "\n" : "");
+}
 
 // .path-cli/src/system-ca.ts
 import tls from "node:tls";
@@ -30591,8 +30605,88 @@ async function assertActiveAccount(client, accountId, cacheKey) {
   if (key) passed.set(key, Date.now() + ACTIVE_CHECK_TTL_MS);
 }
 
+// .path-cli/src/commands/logout.ts
+var revokeOnServer = (config2) => new HttpClient(config2).postRaw("/oauth/logout", {});
+async function signOut(opts = {}, revoke = revokeOnServer) {
+  if (commandEnv("PATH_ACTING_USER_ID")) {
+    throw new Error("logout signs out the signed-in user; run it without --as-user.");
+  }
+  const config2 = loadConfig({ baseUrl: opts.baseUrl });
+  let outcome2;
+  if (!config2.accessToken) {
+    outcome2 = { status: "not-signed-in" };
+  } else {
+    try {
+      await revoke(config2);
+      outcome2 = { status: "revoked" };
+    } catch (err) {
+      if (err instanceof ApiError && (err.statusCode === 401 || err.statusCode === 403)) {
+        outcome2 = { status: "already-invalid" };
+      } else if (err instanceof ApiError) {
+        outcome2 = { status: "not-revoked", reason: `PATH answered ${err.statusCode}: ${err.message}` };
+      } else {
+        outcome2 = { status: "not-revoked", reason: err instanceof Error ? err.message : String(err) };
+      }
+    }
+  }
+  removeEnvValues(["PATH_ACCESS_TOKEN", "PATH_REFRESH_TOKEN"]);
+  clearAllMetadata();
+  currentInfoGate()?.forgetSessionContexts();
+  return outcome2;
+}
+function signOutMessage(outcome2, tokenInEnvironment = false) {
+  const lines = [];
+  switch (outcome2.status) {
+    case "not-signed-in":
+      lines.push("Not signed in to PATH. Nothing to sign out.");
+      break;
+    case "revoked":
+      lines.push("Signed out of PATH. The sign-in was ended on the server and removed from this computer.");
+      break;
+    case "already-invalid":
+      lines.push(
+        "Signed out of PATH. The saved sign-in had already expired or been ended, so it was removed from this computer."
+      );
+      break;
+    case "not-revoked":
+      lines.push(
+        `WARNING: the sign-in was NOT ended on the PATH server: ${outcome2.reason.replace(/\.$/, "")}.`,
+        "It was removed from this computer, but the token still works until it expires."
+      );
+      break;
+  }
+  if (tokenInEnvironment && outcome2.status !== "not-signed-in") {
+    lines.push("PATH_ACCESS_TOKEN is also set in your environment: unset it too.");
+  }
+  return lines.join("\n");
+}
+async function runSignOut(baseUrl) {
+  try {
+    const outcome2 = await signOut({ baseUrl });
+    const message2 = signOutMessage(outcome2, !!process.env.PATH_ACCESS_TOKEN);
+    if (outcome2.status === "not-revoked") {
+      console.error(message2);
+      setExitCode(1);
+    } else {
+      console.log(message2);
+    }
+  } catch (err) {
+    handleError(err);
+  }
+}
+var logoutCommand = new Command("logout").description(
+  "Sign out: end the saved sign-in on the PATH server and remove it from this computer (the default account and other settings stay)"
+).allowExcessArguments(false).action(async () => {
+  const parentOpts = logoutCommand.parent?.opts() ?? {};
+  await runSignOut(parentOpts.baseUrl);
+});
+
 // .path-cli/src/commands/auth.ts
-var authCommand = new Command("auth").description("Authenticate and store token (browser sign-in by default)").option(
+var authCommand = new Command("auth").description(
+  "Authenticate and store token (browser sign-in by default); `auth logout` signs out, the same as `logout`"
+).addArgument(
+  new Argument("[action]", "Sign in (the default) or sign out").choices(["login", "logout"])
+).allowExcessArguments(false).option(
   "--email <email>",
   "User email (opt into the legacy password flow)"
 ).option(
@@ -30604,9 +30698,13 @@ var authCommand = new Command("auth").description("Authenticate and store token 
 ).option(
   "--no-open",
   "Print the sign-in URL instead of auto-launching a browser (headless)"
-).action(async (opts) => {
+).action(async (action, opts) => {
+  const parentOpts = authCommand.parent?.opts() ?? {};
+  if (action === "logout") {
+    await runSignOut(parentOpts.baseUrl);
+    return;
+  }
   try {
-    const parentOpts = authCommand.parent?.opts() ?? {};
     const config2 = loadConfig({ baseUrl: parentOpts.baseUrl });
     const usePasswordFlow = !opts.browser && (opts.email || opts.password);
     if (!usePasswordFlow) {
@@ -30704,19 +30802,6 @@ async function printAccounts(baseUrl) {
   } catch {
   }
 }
-
-// .path-cli/src/commands/logout.ts
-var logoutCommand = new Command("logout").description("Clear stored auth tokens").action(async () => {
-  try {
-    updateEnvValue("PATH_ACCESS_TOKEN", "");
-    updateEnvValue("PATH_REFRESH_TOKEN", "");
-    updateEnvValue("PATH_ACCOUNT_ID", "");
-    clearAllMetadata();
-    console.log("Logged out. Tokens and default account cleared.");
-  } catch (err) {
-    handleError(err);
-  }
-});
 
 // .path-cli/src/commands/list-accounts.ts
 var listAccountsCommand = new Command("list-accounts").description("List your accounts (not the ones you've been deactivated in)").action(async () => {
@@ -54832,7 +54917,7 @@ var getAccountCommand = new Command("get-account").description(
 // .path-cli/src/index.ts
 var ACCOUNT_CHECK_EXEMPT = /* @__PURE__ */ new Set(["auth", "logout", "list-accounts", "use-account", "clear-cache"]);
 function createProgram() {
-  const program2 = new Command("path").version("1.0.10").description(
+  const program2 = new Command("path").version("1.0.11").description(
     "PATH CLI \u2014 the PATH user app: records, folders, reports, tasks, calendars, messages, notes, files and pathway runs, always with the signed-in (or --as-user) user's web-app access. Designer work is the PATH Designer CLI"
   ).option("--json", "Output full JSON").option("--fields <list>", "Comma-separated field selection").option("--quiet", "Output IDs only").option(
     "--account <id>",
@@ -54857,6 +54942,9 @@ function createProgram() {
       const config2 = loadConfig({ baseUrl: opts.baseUrl });
       if (target && config2.accessToken && !ACCOUNT_CHECK_EXEMPT.has(command)) {
         await assertActiveAccount(new HttpClient(config2), target, `${config2.baseUrl}|${config2.accessToken}`);
+      }
+      if (opts.asUser && (command === "logout" || command === "auth" && actionCommand.args[0] === "logout")) {
+        throw new Error("logout signs out the signed-in user; run it without --as-user.");
       }
       await applyActingUser({ ...opts, mode: actionCommand.opts().mode }, loadConfig);
     } catch (err) {
@@ -55010,6 +55098,15 @@ function commandPath(program2, argv) {
 }
 function commandOf(argv) {
   return commandPath(createProgram2(), argv);
+}
+function signInRefusal(argv, toolName) {
+  if (commandOf(argv) !== "auth") return null;
+  if (argv.some((a) => a === "--help" || a === "-h")) return null;
+  const passwordFlow = !argv.includes("--browser") && argv.some((a) => /^--(email|password)(=|$)/.test(a));
+  if (passwordFlow) return null;
+  const operands = argv.slice(argv.indexOf("auth") + 1).filter((a) => !a.startsWith("-"));
+  if (operands[0] === "logout") return null;
+  return `To sign in, use the authenticate tool (then auth_status), not "auth" through ${toolName}.`;
 }
 function timeoutFor(program2, argv) {
   const command = commandPath(program2, argv);
@@ -63388,7 +63485,7 @@ function isTildeEnd(next) {
 }
 
 // .path-mcp/src/server.ts
-var VERSION = "1.0.10";
+var VERSION = "1.0.11";
 var ACCOUNT_CHECK_TIMEOUT_MS = 15e3;
 function fetchAccounts(config2) {
   let timer;
@@ -63638,17 +63735,9 @@ ${pendingAuth.authorizeUrl}`
           isError: true
         };
       }
-      const passwordFlow = !argv.includes("--browser") && argv.some((a) => /^--(email|password)(=|$)/.test(a));
-      if (commandOf(argv) === "auth" && !passwordFlow && !argv.some((a) => a === "--help" || a === "-h")) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `To sign in, use the authenticate tool (then auth_status), not "auth" through ${options.toolName}.`
-            }
-          ],
-          isError: true
-        };
+      const signIn = signInRefusal(argv, options.toolName);
+      if (signIn) {
+        return { content: [{ type: "text", text: signIn }], isError: true };
       }
       const hasFormatFlag = argv.includes("--json") || argv.includes("--quiet") || argv.includes("--fields");
       if (!hasFormatFlag) {

@@ -55,7 +55,7 @@ Retry once after the user has fixed the cause. Don't keep retrying unchanged.
 
 ## Signing out
 
-`path_cli(command: "logout")` clears the saved sign-in and the saved default account. Only run it when the user asks to sign out. To use PATH again, start over at step 2.
+`path_cli(command: "logout")` ends the sign-in on the PATH server and removes it from this computer, for both PATH plugins. The saved default account stays. Only run it when the user asks to sign out. If it says the sign-in was NOT ended on the server (PATH couldn't be reached), tell the user: it's gone from this computer, but the old sign-in keeps working until it expires. To use PATH again, start over at step 2.
 
 ## Results look stale
 
