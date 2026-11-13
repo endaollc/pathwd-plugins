@@ -1,6 +1,6 @@
 # Pathway screens: how to answer each one
 
-A pathway run (`pathway-run start`) runs every automatic step and stops at each screen that needs a person. This page lists every screen the runner can stop on and exactly how to answer it with `pathway-run submit` (answer and continue) and `pathway-run act` (do something on the screen without continuing: search, page, scan, edit a row). What each screen means for the business, and what answering it changes, is in the [`path-concepts` guide](../../pathwd-guide/references/concepts.md)'s pathways reference.
+A pathway run (`pathway-run start`) runs every automatic step and stops at each screen that needs a person. This page lists every screen the runner can stop on and exactly how to answer it with `pathway-run submit` (answer and continue) and `pathway-run act` (do something on the screen without continuing: search, page, scan, edit a row). What each screen means for the business, and what answering it changes, is in the [`path-concepts` guide](../../pathwd-guide/references/concepts.md)'s pathways reference. Every step type, the automatic ones included, with what it does and what the headless runner does with it, is in [pathway-steps.md](pathway-steps.md).
 
 ## Reading a paused screen
 

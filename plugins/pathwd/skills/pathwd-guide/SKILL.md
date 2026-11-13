@@ -99,4 +99,4 @@ Reference files:
 
 ## Docs version
 
-These skills carry PATH docs version `9e85816adf2d`. The connector reports the version it serves in its session context; when the two differ, `path_docs` has the newer text ([docs-version.md](references/docs-version.md)).
+These skills carry PATH docs version `434fd7ab6862`. The connector reports the version it serves in its session context; when the two differ, `path_docs` has the newer text ([docs-version.md](references/docs-version.md)).

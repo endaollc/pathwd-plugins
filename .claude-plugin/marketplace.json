@@ -12,8 +12,5 @@
       "description": "Work with your PATH WD account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATH WD connector with your own access. Includes PATH's documentation as skills.",
       "category": "productivity"
     }
-  ],
-  "renames": {
-    "path-cli": "pathwd"
-  }
+  ]
 }

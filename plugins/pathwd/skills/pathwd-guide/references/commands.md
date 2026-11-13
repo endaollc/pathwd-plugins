@@ -30,6 +30,7 @@ Most requests have a guide with the steps and checks that go with them:
 | Calendars, appointments, notes | the [`cli-scheduling` workflow](workflows/scheduling.md) |
 | The value form of each field type (`--data` vs pathway `--set`): percent, dates, time spans, phones, blanks | this skill's [field-values.md](cli/field-values.md) |
 | Every pathway screen and how to answer it (`submit`, `act`, `--select`, `--skip`, `--answers`) | this skill's [pathway-screens.md](../../pathwd-pathways/references/pathway-screens.md) |
+| Every pathway step type (Fork, List Loop, Assign Fields, Send Email, …): what it does to the record, its settings, screen or automatic, and what `execute-pathway` / scheduled runs do with it | this skill's [pathway-steps.md](../../pathwd-pathways/references/pathway-steps.md) |
 | `find-records` formulas, flags, recipes and common mistakes | this skill's [find-records-syntax.md](../../pathwd-find-records/references/find-records-syntax.md) |
 | Requests that take several commands: what's on my plate, catch me up on a record, bulk updates, duplicates, export a list, send an email with an attachment, schedule, complete a task with a pathway | this skill's [recipes.md](cli/recipes.md) |
 | Why a record, field, folder, report or pathway isn't there, or an action is refused; `--as-user`; deactivated members | this skill's [access-and-visibility.md](cli/access-and-visibility.md) |

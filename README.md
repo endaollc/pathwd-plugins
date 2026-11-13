@@ -4,7 +4,7 @@ The `pathwd` plugin marketplace from PathWD, for Claude (Claude Code, the Claude
 
 | Plugin | What it does |
 |--------|--------------|
-| [PATH WD](plugins/pathwd/README.md) (`pathwd`, version 1.0.0) | Work with your PATH WD account through the PATH WD connector (`https://mcp.pathwd.app/mcp`), signed in as you: records, folders, reports, pathways, tasks, calendars, messages, files and history, with PATH's documentation as skills. |
+| [PATH WD](plugins/pathwd/README.md) (`pathwd`, version 1.0.1) | Work with your PATH WD account through the PATH WD connector (`https://mcp.pathwd.app/mcp`), signed in as you: records, folders, reports, pathways, tasks, calendars, messages, files and history, with PATH's documentation as skills. |
 
 ## Add the marketplace
 

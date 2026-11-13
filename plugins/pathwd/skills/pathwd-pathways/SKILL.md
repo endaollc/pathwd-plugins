@@ -20,6 +20,7 @@ Step-by-step workflows:
 Reference files:
 
 - [Pathway screens: how to answer each one](references/pathway-screens.md): A pathway run (`pathway-run start`) runs every automatic step and stops at each screen that needs a person.
+- [Pathway steps: every step type and what it does](references/pathway-steps.md): A pathway is built from steps, and every step is one of PATH's step types: Edit Record, Fork, Send Email and so on.
 - [Pathways: What Each Screen Asks and What Answering It Does](references/pathway-concepts.md): A pathway is a guided, step-by-step process, such as "Select Winning Quote" or "New Full Quote", that walks a user through a piece of business in a fixed order.
 
 ## Commands

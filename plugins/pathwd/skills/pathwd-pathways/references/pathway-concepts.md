@@ -96,7 +96,7 @@ Information, which may include the record's current values, and one button (ofte
 
 - **Looks like:** a signature pad with a required checkbox, "I agree to use an electronic signature", and sometimes a second acknowledgement written by the designer.
 - **Deciding:** whether to sign and agree.
-- **Effect:** the signature image is saved to the record's files and the signing is recorded on the record. A signature is a record of consent. Never sign on anyone's behalf unless the user has clearly said to, and never tick an acknowledgement the signer hasn't agreed to.
+- **Effect:** the signature image is saved to the record's files. A signature is a record of consent. Never sign on anyone's behalf unless the user has clearly said to, and never tick an acknowledgement the signer hasn't agreed to.
 
 ### Upload File
 
@@ -106,7 +106,7 @@ Information, which may include the record's current values, and one button (ofte
 ### Select File
 
 - **Looks like:** a list of files already on the record, sometimes only files of certain types. The user picks one or several, and the choice may be required or optional.
-- **Effect:** nothing changes. Later steps use the chosen files, for example as email attachments or as pages to merge.
+- **Effect:** the chosen files are passed on to later steps, for example as email attachments. Some steps also copy the chosen files onto another record.
 
 ### Create Document from Template
 
@@ -180,7 +180,7 @@ At the end of some pathways, the web app opens a record (sometimes on a particul
 
 ## Steps that run on their own
 
-These happen without a screen. When they run, the run usually shows a short status such as "Saving Job" or "Creating Quote".
+These happen without a screen. When they run, the run usually shows a short status such as "Saving Job" or "Creating Quote". Every step type, with what it does and its settings, is in the [`path-cli` guide](../../pathwd-guide/references/commands.md)'s [pathway-steps.md](pathway-steps.md).
 
 - **Save Record:** saves the record the pathway has been working on.
 - **Assign Fields:** sets field values automatically, for example stamping a date or copying a value from the Job.

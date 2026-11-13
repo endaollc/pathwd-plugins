@@ -2,7 +2,7 @@
 
 Work with your PATH WD account from Claude, ChatGPT and Codex: find, create and update records, read and add messages, notes, files and emails, browse and build folders and reports, run pathways, manage tasks, notifications and calendars, and read record history. The assistant always works with your own PATH access, so it can only see and change what you can in the PATH web app.
 
-Version 1.0.0.
+Version 1.0.1.
 
 ## What's in the plugin
 
@@ -13,7 +13,7 @@ Version 1.0.0.
   - **pathwd-history**: what changed on a record, and why a record is or isn't in a milestone.
   - **pathwd-pathways**: pathways, pathway runs and their screens.
 
-The skills carry PATH docs version `9e85816adf2d`. The connector serves the same documentation through its `path_docs` tool and reports its own docs version; when PATH's docs change before the next plugin release, `path_docs` has the newer text.
+The skills carry PATH docs version `434fd7ab6862`. The connector serves the same documentation through its `path_docs` tool and reports its own docs version; when PATH's docs change before the next plugin release, `path_docs` has the newer text.
 
 ## What you need
 

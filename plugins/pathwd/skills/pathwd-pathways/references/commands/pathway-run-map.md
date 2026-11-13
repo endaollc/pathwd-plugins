@@ -60,6 +60,6 @@ pathway-run map --pathway-id 25886 --sub-pathways
 - `Ambiguous pathway name "X". Matches: …  Use --pathway-id.`
 - `<user> can't see pathway <id> "<name>" — none of their roles holds the pathway, as in the web app.` (or: it has no steps / has validation errors).
 
-**Related:** `pathway-run available`, `pathway-run start`, `execute-pathway` (for a pathway with no screens; with screens it runs nothing unless told to skip them). How each screen is answered: the [`path-cli` guide](../../../pathwd-guide/references/commands.md)'s [pathway-screens.md](../pathway-screens.md).
+**Related:** `pathway-run available`, `pathway-run start`, `execute-pathway` (for a pathway with no screens; with screens it runs nothing unless told to skip them). How each screen is answered: the [`path-cli` guide](../../../pathwd-guide/references/commands.md)'s [pathway-screens.md](../pathway-screens.md). What every step type does, and when it is a screen, automatic or sometimes: the [`path-cli` guide](../../../pathwd-guide/references/commands.md)'s [pathway-steps.md](../pathway-steps.md).
 
 Related commands: [`pathway-run available`](pathway-run-available.md), [`pathway-run show`](pathway-run-show.md), [`pathway-run list`](pathway-run-list.md), [`pathway-run log`](pathway-run-log.md).

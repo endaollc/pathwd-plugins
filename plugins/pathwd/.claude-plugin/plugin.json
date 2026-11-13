@@ -1,7 +1,7 @@
 {
   "name": "pathwd",
   "displayName": "PATH WD",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Work with your PATH WD account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATH WD connector with your own access. Includes PATH's documentation as skills.",
   "author": {
     "name": "PathWD",
