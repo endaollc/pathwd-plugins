@@ -1,0 +1,50 @@
+# Glossary
+
+Terms that PATH commands, their output and the other guides use, A to Z, each with where to read more. The core ideas (business objects, records, fields, milestones, workflow steps, tasks, pathways, folders, tags, reports, context) are on this skill's main page.
+
+- **(auto) pathway**: a pathway, often named "(auto) …", that runs from other pathways, actions or schedules rather than being started by a person. → `pathways.md`
+- **Acting user**: the person a command runs as: the signed-in user, or the member named by `--as-user`. Everything shown and every refusal follows that person's access. → `permissions.md`
+- **Activity session**: one batch of history events recorded together: a save in the record viewer, one pathway run, one inbound integration request. A record's history lists its sessions (`#1`, `#2`, …); `get-history-session` opens one session in full. → the [`path-record-history` guide](../../../pathwd-history/references/record-history.md)
+- **Admin**: the account-wide permission that allows everything in the user app (not the Designer). → `permissions.md`
+- **Aggregate field**: a field that totals, counts or summarizes linked records (a Job's quote total). Calculated by PATH. → `relationships.md`
+- **All Users**: the role every member holds; sharing with it shares with everyone. A calendar's All Users level is what members get without their own grant. → `permissions.md`
+- **Appointment field**: a field that holds a calendar event on a record (an install date with its time, calendar and title). It is scheduled through the calendar, not typed. → the [`cli-scheduling` workflow](../workflows/scheduling.md)
+- **Archived**: a record (or file) taken out of lists and searches but kept; it can be unarchived. → `records-and-business-objects.md`
+- **Calendar**: a named set of events with an owner, a color and sharing (who may view or edit it). → `permissions.md`
+- **Calendar Admin**: the permission to create every calendar and calendar group and manage them all. → `permissions.md`
+- **Calendar event (appointment)**: an entry on a calendar. **Standalone** events stand alone; **record appointment** events fill a record's appointment field; **provider** events come from a connected Google or Office 365 calendar (read-only when that calendar is). → the [`cli-scheduling` workflow](../workflows/scheduling.md)
+- **Calendar group**: a named set of calendars viewed together, with its own owner and sharing; sharing it doesn't share the calendars in it.
+- **Child account**: an account that inherits its parent account's design, with its own members, records and calendars; the parent's shared folders and reports show in it read-only. → `permissions.md`
+- **Context**: the designers' own description of what something is for (the account, a business object, a field, a pathway, a folder, a report, …). → main page
+- **Create Folders / Create Reports**: business object permissions to make folders or reports on it. → `permissions.md`
+- **Custom Field**: a calculation a report defines for its filter only (not shown as a column): a formula over the record's fields, or the time between two dates. → the [`cli-reports-skill` workflow](../../../pathwd-find-records/references/workflows/reports.md)
+- **Delete Files / Delete Records**: account-wide permissions to delete record files, and to archive records on any business object. → `permissions.md`
+- **Designer**: PATH's set-up area, and the permission to open it. Changing business objects, fields, workflow, pathways, actions, templates, settings, users and roles is Designer work. → `permissions.md`
+- **Entry date**: when a record first (or last) entered a milestone or had a workflow step, used in folders, reports and formulas ("won in the last 30 days"). → `workflow.md`
+- **Event Description template**: an appointment field's setting that builds the title of the events it creates from the record's fields. → the [`cli-scheduling` workflow](../workflows/scheduling.md)
+- **Exclusive file type**: a file type a record can hold only one file of at a time; uploading a new one takes the type off the previous file.
+- **Feed**: the dashboard's list of the user's notifications, newest first, with read and pinned flags. → the [`cli-tasks-notifications` workflow](../workflows/tasks-notifications.md)
+- **Field group**: a section of fields on the Record Viewer ("Details", "Financial Info"). → `fields.md`
+- **File type**: a label on a record's files (Drawings/Plans, Final Measurement, …), set per business object. **System** file types are PATH's own (Email Attachment, Archived) and are usually hidden from lists.
+- **Fork**: a pathway step that sends the run one way or another depending on a rule. → `pathways.md`
+- **Identifier**: a record's title as PATH builds it ("Job 26-0074: Smith Kitchen"); shown as `record` in `get-record`. It names the record for people; commands take the record **id** instead. → the [`path-cli` guide](../commands.md)'s [ids-names-paging-limits.md](../cli/ids-names-paging-limits.md)
+- **Impersonate**: an Admin acting as another member to see what they see (`--as-user`). → `permissions.md`
+- **Inverse relationship tab**: a tab on a record's Record Viewer listing the records that link *to* it (a Job's Quotes tab); its table columns, Row Details and Summary Fields are set by the designer. → `relationships.md`
+- **List Loop**: a pathway step that repeats steps for each linked record. → `pathways.md`
+- **Medium**: a channel a notification can reach the user by: the Feed, a popup in the app, email, text message, or the mobile app. Notification settings turn each on or off per kind of notification. → the [`cli-tasks-notifications` workflow](../workflows/tasks-notifications.md)
+- **Notes field**: a field that holds a running list of dated notes, each with its author, added with the field's Add Note button (not typed over like other fields). → the [`cli-record-activity` workflow](../workflows/record-activity.md)
+- **Owner**: the user who owns a report, calendar or calendar group (its creator unless handed over); the owner manages its sharing. → `permissions.md`
+- **Popup**: an in-app notification that pops up for the user, separate from the Feed list.
+- **Process context**: the designers' guidance for a role on a business object, given at the start of a session. → main page
+- **Quick search**: the web app's search box: matches a record's quick-search text (name, number and the fields the designer chose), one page at a time.
+- **Record id**: a record's 24-character id (`6a9056455ff33756afba5084`), which commands take as `--record-id`. Not the record's number or identifier.
+- **Record number**: the counting number in a record's identifier (Job 26-0074), from an Auto Number field. Found with quick search.
+- **Row Details**: extra fields shown under each row of an inverse relationship tab (and their totals). → `relationships.md`
+- **Sticker**: a small colored label shown on a record (and in folders) when its rule matches ("Overdue", "Big Job"). Folders can add stickers of their own. → `folders-and-tags.md`
+- **Summary Fields**: values of the viewed record shown under an inverse relationship tab (a Job's totals under its Quotes tab).
+- **Super-user run**: a pathway run started by someone with the Designer permission on a record the pathway's visibility criteria would hide it on. → `permissions.md`
+- **Tag group / tag**: a category (Location) and its values (Austin, Houston) that limit which records each user sees. → `folders-and-tags.md`
+- **Time Between**: a report column or Custom Field measuring the time between two dates (a field, a milestone or step entry date, or today). → the [`cli-reports-skill` workflow](../../../pathwd-find-records/references/workflows/reports.md)
+- **User filter**: a rule of a folder or report that viewers can change from the filter bar (pick a salesperson, a stage) without changing the saved filter. → the [`path-logic-formula-syntax` guide](../../../pathwd-find-records/references/logic-formula-syntax.md)
+- **Visibility criteria**: a pathway's rule for which records it is offered on; also the rules that show a field, field group or relationship only on some records or to some people. → `pathways.md`, `fields.md`
+- **Workspace**: on PATH WD Remote MCP, the connection's private folder for files that commands read and write (uploads, downloads). → the [`path-cli` guide](../commands.md)

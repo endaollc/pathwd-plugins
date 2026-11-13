@@ -1,0 +1,24 @@
+{
+  "name": "pathwd",
+  "displayName": "PATH WD",
+  "version": "1.0.0",
+  "description": "Work with your PATH WD account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATH WD connector with your own access. Includes PATH's documentation as skills.",
+  "author": {
+    "name": "PathWD",
+    "url": "https://pathwd.com"
+  },
+  "homepage": "https://pathwd.app",
+  "repository": "https://github.com/endaollc/pathwd-plugins",
+  "privacyPolicyUrl": "https://www.pathwd.com/privacy-policy",
+  "icon": "./assets/icon.png",
+  "keywords": [
+    "path",
+    "pathwd",
+    "erp",
+    "crm",
+    "workflow",
+    "jobs",
+    "quotes",
+    "mcp"
+  ]
+}

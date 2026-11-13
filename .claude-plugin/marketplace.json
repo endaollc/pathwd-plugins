@@ -4,12 +4,16 @@
     "name": "PathWD",
     "url": "https://pathwd.com"
   },
-  "description": "PATH WD plugins for Claude: work with your PATH WD account from Claude Code and Cowork.",
+  "description": "PATH WD plugins: work with your PATH WD account from Claude, ChatGPT and Codex.",
   "plugins": [
     {
-      "name": "path-cli",
-      "source": "./plugins/path-cli",
-      "description": "Work with PATH WD records, folders, pathways, tasks and calendars from Claude"
+      "name": "pathwd",
+      "source": "./plugins/pathwd",
+      "description": "Work with your PATH WD account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATH WD connector with your own access. Includes PATH's documentation as skills.",
+      "category": "productivity"
     }
-  ]
+  ],
+  "renames": {
+    "path-cli": "pathwd"
+  }
 }
