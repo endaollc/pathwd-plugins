@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "pathwd": {
+    "PATHwd": {
       "type": "http",
       "url": "https://mcp.pathwd.app/mcp"
     }

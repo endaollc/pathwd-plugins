@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "pathwd",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Work with your PATHwd account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATHwd connector with your own access. Includes PATH's documentation as skills.",
   "author": {
     "name": "PATHwd",
