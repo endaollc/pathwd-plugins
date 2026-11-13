@@ -1,6 +1,6 @@
 # Workflow: logic-builder
 
-> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
 
 **Covers:** Logic Builder formulas, the rules that decide which records a folder, folder sticker or report includes: writing one from a plain-language request, checking it, and saving it. Commands: `parse-filter`, `get-filter`, `set-filter`, `create-folder --logic`, `create-report --logic`. Filter JSON is never written by hand: the formula is.
 
@@ -73,7 +73,7 @@ Do not save until the user confirms.
 
 ## Key facts and confirmations
 
-- Every command here runs through the PATH WD Remote MCP tool for its area (each command's page in [the command index](../../../pathwd-guide/references/commands.md) names it).
+- Every command here runs through the PATHwd tool for its area (each command's page in [the command index](../../../pathwd-guide/references/commands.md) names it).
 - Names (fields, milestones, steps, roles) resolve to ids through the commands; ids aren't guessed.
 - Saving a filter changes which records a folder, sticker or report shows for everyone who uses it: the user confirms the rule, restated in plain words, first.
 - Users know "the rules for which records show up", not "GroupFilter" or "filter_condition".

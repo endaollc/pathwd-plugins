@@ -1,6 +1,6 @@
 # path-concepts
 
-PATH is a business system that runs a company's day-to-day work: sales, quoting, ordering, receiving, scheduling, delivery and installation, service, invoicing and payments. **PATH WD** is PATH set up for window and door dealers, and it is what every user of this plugin works in. These users know the PATH web app; this skill gives you the same understanding of it, so you can follow what they ask, explain what you see, and answer pathway screens the way they would.
+PATH is a business system that runs a company's day-to-day work: sales, quoting, ordering, receiving, scheduling, delivery and installation, service, invoicing and payments. **PATHwd** is PATH set up for window and door dealers, and it is what every user of this plugin works in. These users know the PATH web app; this skill gives you the same understanding of it, so you can follow what they ask, explain what you see, and answer pathway screens the way they would.
 
 Nothing here is about how PATH is built. Speak to users in the web app's words, the ones used here.
 
@@ -25,7 +25,7 @@ Nothing here is about how PATH is built. Speak to users in the web app's words, 
 
 This is where understanding matters most. Before answering a screen:
 
-1. **Know where you are.** Read the screen's title and question and the record it is about. If the screen mentions a PATH WD term you don't recognise, look it up in [path-wd.md](concepts/path-wd.md).
+1. **Know where you are.** Read the screen's title and question and the record it is about. If the screen mentions a PATHwd term you don't recognise, look it up in [path-wd.md](concepts/path-wd.md).
 2. **Know what the screen does.** [pathways.md](../../pathwd-pathways/references/pathway-concepts.md) explains each kind of screen, what the person is deciding, and what answering changes.
 3. **Read the designer's context.** A run shows the pathway's context when it starts, the step's context at the top of the screen (`Step context:`), and each field's or table column's context under it. That is what the designer meant the step and its fields for. Use it to decide what to ask the user and what a sensible answer looks like, for example "the amount actually paid, not the quote total". It never answers the screen on its own.
 4. **Answer only from what the user told you.** If they haven't said, ask them. Field values, the record picked in a lookup, a Yes or No, email recipients, scans and signatures all change real data or send real messages. Never sign or acknowledge for someone without their clear say-so.
@@ -37,8 +37,8 @@ Read only the file you need.
 
 | File | Read it when |
 |---|---|
-| [path-wd.md](concepts/path-wd.md) | You need what a PATH WD business object, term or abbreviation means. Also covers how the business objects connect, the Job, Quote, Purchase Order and Service lifecycles with their standard milestones, appointments, receiving, bins, scan sessions, OM and accounting sync. |
-| [pathways.md](../../pathwd-pathways/references/pathway-concepts.md) | You are running a pathway, or explaining one. Covers why a pathway is or isn't offered, how a run flows, every kind of screen, how to answer screens faithfully, run states, and the standard PATH WD pathways. |
+| [path-wd.md](concepts/path-wd.md) | You need what a PATHwd business object, term or abbreviation means. Also covers how the business objects connect, the Job, Quote, Purchase Order and Service lifecycles with their standard milestones, appointments, receiving, bins, scan sessions, OM and accounting sync. |
+| [pathways.md](../../pathwd-pathways/references/pathway-concepts.md) | You are running a pathway, or explaining one. Covers why a pathway is or isn't offered, how a run flows, every kind of screen, how to answer screens faithfully, run states, and the standard PATHwd pathways. |
 | [workflow.md](concepts/workflow.md) | You need milestones, workflow steps or tasks: why a record is in a stage, what recording a step does, where tasks come from. |
 | [actions.md](concepts/actions.md) | Something was sent, created or run automatically and the user wants to know why. |
 | [records-and-business-objects.md](concepts/records-and-business-objects.md) | You need what a record holds, how users refer to records, or archiving versus deleting. |
@@ -51,6 +51,6 @@ Read only the file you need.
 
 ## The account is the final word
 
-These files describe the standard PATH WD setup. An account may have renamed or added business objects, fields, milestones and pathways. When it matters, check what the account actually has (the [`path-cli` guide](commands.md) lists the commands) and go by that.
+These files describe the standard PATHwd setup. An account may have renamed or added business objects, fields, milestones and pathways. When it matters, check what the account actually has (the [`path-cli` guide](commands.md) lists the commands) and go by that.
 
 Designers set all of this up in PATH Designer. This connection uses PATH as the signed-in user does in the web app, and it doesn't change how the account is set up.

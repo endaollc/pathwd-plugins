@@ -17,7 +17,7 @@ Pathways keep a process consistent. Each step captures information or sets off s
 
 - **On a record (its Pathways tab).** The Record Viewer for a Job, Quote, Service or other record has a **Pathways** tab listing the pathways that can start on that record. They appear as buttons grouped under their pathway groups, with any pathway in no group under "Others". The tab appears only when at least one pathway is available. Clicking a pathway starts it on that record. This is the most common way to start one, for example "Select Winning Quote" on Job 1234.
 - **From a related-records table.** A table of linked records on the Record Viewer can have a pathway column. Its button on each row starts that pathway on the row's record.
-- **From the dashboard.** Many pathways start from the dashboard, without a record. On a computer they are listed across the top of the dashboard; on a phone they are under the dashboard's Pathways tab. They usually create or look up the record as their first steps. In PATH WD these include Create Job, Create New Retail Job, Create New Trade Job, Create New Service, Create Commercial Project, Create New Vendor, Start Receiving Scanning, Bin Check In, Bin Check Out, Bin Lookup, Start Loading Truck, Start Delivering Products and Create Tracking Labels.
+- **From the dashboard.** Many pathways start from the dashboard, without a record. On a computer they are listed across the top of the dashboard; on a phone they are under the dashboard's Pathways tab. They usually create or look up the record as their first steps. In PATHwd these include Create Job, Create New Retail Job, Create New Trade Job, Create New Service, Create Commercial Project, Create New Vendor, Start Receiving Scanning, Bin Check In, Bin Check Out, Bin Lookup, Start Loading Truck, Start Delivering Products and Create Tracking Labels.
 - **From a folder.** Some pathways are offered in the header of a folder, for the kind of records that folder lists. These also start without a particular record.
 - **From a task.** A task can carry a pathway. Completing that task runs the pathway, and the pathway often finishes the task as part of its work. See [workflow.md](../../pathwd-guide/references/concepts/workflow.md).
 
@@ -30,7 +30,7 @@ For a pathway to appear on a record's Pathways tab, all of these must hold:
 1. **Role permission.** One of the user's roles has been given the pathway. Admins see all pathways.
 2. **It starts from this kind of record.** Every record pathway starts from one business object. A pathway that starts on Jobs never appears on a Quote, Service or Purchase Order.
 3. **It's set to show on records.** Some pathways appear only on the dashboard or in folders.
-4. **The record meets the pathway's visibility criteria.** These usually check the record's milestones or field values. For example, in PATH WD "Select Winning Quote" is offered on a Job only while it is in the Full Quote Out milestone, and "Deposit Bypass Approved" only while it is in Deposit Bypass Requested. Once the Job moves on, the pathway disappears because it no longer applies.
+4. **The record meets the pathway's visibility criteria.** These usually check the record's milestones or field values. For example, in PATHwd "Select Winning Quote" is offered on a Job only while it is in the Full Quote Out milestone, and "Deposit Bypass Approved" only while it is in Deposit Bypass Requested. Once the Job moves on, the pathway disappears because it no longer applies.
 5. **The user can open the record.** Records hidden from the user (for example by tags) or archived can't be used to start a pathway.
 
 When a user asks "why can't I run X on this Job?", the usual reason is that the Job isn't in the milestone the pathway expects, or that the user's role doesn't have it. Claude can only start pathways the user could start in the web app, and each screen offers only what the user would see there.
@@ -195,7 +195,7 @@ These happen without a screen. When they run, the run usually shows a short stat
 - **Export File / Import File:** builds an export file, or creates records from an uploaded file.
 - **Delete File:** removes files an earlier step produced.
 - **Get Current User:** notes who is running the pathway.
-- **Account-specific processing:** work built for PATH WD itself, such as receiving, scanning and scheduling updates, sometimes with its own status message.
+- **Account-specific processing:** work built for PATHwd itself, such as receiving, scanning and scheduling updates, sometimes with its own status message.
 - **Fork, List Loop and Launch Pathway:** the flow-control steps described above.
 
 ## Answering screens faithfully
@@ -215,9 +215,9 @@ These happen without a screen. When they run, the run usually shows a short stat
 - **Failed:** a step couldn't complete, for example because a required value was missing or the record wasn't in the expected state. Steps that completed before the failure stay done.
 - **Cancelled:** the user stopped the run. **Cancelling doesn't undo anything.** Records already created, fields already saved, emails already sent and workflow steps already run all remain. Only the steps that hadn't run yet are skipped. Before cancelling partway, tell the user what has already happened. Running the pathway again later may repeat earlier steps, for example creating a second Quote.
 
-## Common PATH WD pathways
+## Common PATHwd pathways
 
-These are standard PATH WD pathways started from a record's Pathways tab, by business object. An account may have renamed or added some, so check the record's own pathway list before assuming one exists.
+These are standard PATHwd pathways started from a record's Pathways tab, by business object. An account may have renamed or added some, so check the record's own pathway list before assuming one exists.
 
 - **Jobs:**
   - Leads and sales: Mark Lead Qualified, Schedule Retail Sales Visit, Record Job Outreach.
@@ -241,7 +241,7 @@ Many pathways whose names start with "(auto)" run on their own, from other pathw
 
 ### What a real run looks like
 
-Real PATH WD pathways are often long and mostly automatic. "Select As Winning Quote" on a Quote has about 75 steps. It:
+Real PATHwd pathways are often long and mostly automatic. "Select As Winning Quote" on a Quote has about 75 steps. It:
 - looks up the Quote's Job, Customer and other linked records and links new records to them;
 - creates new records;
 - loops over the quote's items;

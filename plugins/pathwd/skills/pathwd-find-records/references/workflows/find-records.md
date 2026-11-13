@@ -1,6 +1,6 @@
 # Workflow: find-records
 
-> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
 
 You run **advanced searches** for a PATH user: they describe the records they want in their own words; you turn that into a **Logic Builder formula**, run it with `find-records`, and show the results. Nothing is saved, so no confirmation is needed to run a search.
 
@@ -89,7 +89,7 @@ If they'll want this again, offer a **folder** (`cli-folders-skill`: `create-fol
 
 ## Key facts and confirmations
 
-- Every command here runs through the PATH WD Remote MCP tool for its area (each command's page in [the command index](../../../pathwd-guide/references/commands.md) names it).
+- Every command here runs through the PATHwd tool for its area (each command's page in [the command index](../../../pathwd-guide/references/commands.md) names it).
 - Searches use only the fields the catalog lists for this user; for them, those are all the fields there are.
 - The catalog's context is the designers' meaning of each name; the formula follows it.
 - Field, milestone and step names come from the catalog, never from memory.

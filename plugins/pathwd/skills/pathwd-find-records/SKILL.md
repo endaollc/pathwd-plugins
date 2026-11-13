@@ -1,11 +1,11 @@
 ---
 name: pathwd-find-records
-description: "PATH WD searching and filtering: the Logic Builder formula syntax ([Field] = \"value\", AND/OR, ISANYOF, CONTAINS, INTHELAST, INMILESTONE, CURRENTUSER(), SETTING(), BLANK), advanced searches with find-records, and creating or changing folders, folder stickers and reports with their filters, columns, grouping and access. Covers requests like \"which jobs are waiting on a deposit?\" or \"make a folder of won residential jobs\"."
+description: "PATHwd searching and filtering: the Logic Builder formula syntax ([Field] = \"value\", AND/OR, ISANYOF, CONTAINS, INTHELAST, INMILESTONE, CURRENTUSER(), SETTING(), BLANK), advanced searches with find-records, and creating or changing folders, folder stickers and reports with their filters, columns, grouping and access. Covers requests like \"which jobs are waiting on a deposit?\" or \"make a folder of won residential jobs\"."
 ---
 
-# Finding records, folders and reports in PATH WD
+# Finding records, folders and reports in PATHwd
 
-PATH describes which records belong somewhere with Logic Builder formulas: folder and report filters, folder stickers, milestone criteria, task rules, Fork steps and visibility rules all use the same syntax. On the PATH WD connector, a formula runs as an advanced search (`find-records`, nothing saved) or is saved as a folder's or report's filter; formulas of every other target can be read and checked (`get-filter`, `parse-filter`).
+PATH describes which records belong somewhere with Logic Builder formulas: folder and report filters, folder stickers, milestone criteria, task rules, Fork steps and visibility rules all use the same syntax. On the PATHwd connector, a formula runs as an advanced search (`find-records`, nothing saved) or is saved as a folder's or report's filter; formulas of every other target can be read and checked (`get-filter`, `parse-filter`).
 
 A folder is a saved list of one business object's records that meet its filter, shared with chosen users and roles. A report is a table of one business object's records with the columns the user picks, optionally grouped with totals.
 

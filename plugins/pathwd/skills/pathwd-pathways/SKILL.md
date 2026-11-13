@@ -1,13 +1,13 @@
 ---
 name: pathwd-pathways
-description: "PATH WD pathways: what a pathway is and what its steps do, which pathways a user can run on a record or from the dashboard, running a pathway screen by screen (pathway-run start, submit, act), what each kind of screen asks and how it is answered, execute-pathway for pathways without screens, and reading a run's log. Covers requests like \"run the Win Job pathway on Job 12345\" or \"what would this pathway ask me for?\"."
+description: "PATHwd pathways: what a pathway is and what its steps do, which pathways a user can run on a record or from the dashboard, running a pathway screen by screen (pathway-run start, submit, act), what each kind of screen asks and how it is answered, execute-pathway for pathways without screens, and reading a run's log. Covers requests like \"run the Win Job pathway on Job 12345\" or \"what would this pathway ask me for?\"."
 ---
 
-# Pathways in PATH WD
+# Pathways in PATHwd
 
 A pathway is a guided, step-by-step process a user runs on a record or from the dashboard, such as "Win Job" or "Send to Accounting". Its steps show screens (questions, forms, choices), save data, record workflow steps, fire actions and create or link records. Pathway screens save real data when they are submitted.
 
-On the PATH WD connector, `path_pathways` reads pathways and runs (which pathways are available, a pathway's map, a run's state and log) and `path_run_pathway` starts and answers runs. A run moves one screen at a time: it pauses at each screen that needs input, `pathway-run submit` answers the paused screen and continues the run, and `pathway-run act` performs a non-advancing action on it, such as a lookup search. `execute-pathway` runs a pathway on PATH's headless runner, the way scheduled pathways and integrations run, with no screens. Building and editing pathways is done in PATH's Designer.
+On the PATHwd connector, `path_pathways` reads pathways and runs (which pathways are available, a pathway's map, a run's state and log) and `path_run_pathway` starts and answers runs. A run moves one screen at a time: it pauses at each screen that needs input, `pathway-run submit` answers the paused screen and continues the run, and `pathway-run act` performs a non-advancing action on it, such as a lookup search. `execute-pathway` runs a pathway on PATH's headless runner, the way scheduled pathways and integrations run, with no screens. Building and editing pathways is done in PATH's Designer.
 
 The account, session and the connector's tools are described in the **pathwd-guide** skill.
 

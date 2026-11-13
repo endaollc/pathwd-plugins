@@ -1,10 +1,10 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "pathwd",
-  "version": "1.0.1",
-  "description": "Work with your PATH WD account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATH WD connector with your own access. Includes PATH's documentation as skills.",
+  "version": "1.0.2",
+  "description": "Work with your PATHwd account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATHwd connector with your own access. Includes PATH's documentation as skills.",
   "author": {
-    "name": "PathWD",
+    "name": "PATHwd",
     "url": "https://pathwd.com"
   },
   "homepage": "https://pathwd.app",
@@ -22,10 +22,10 @@
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "PATH WD",
-        "shortDescription": "Work with your PATH WD account",
-        "longDescription": "Connects ChatGPT and Codex to your PATH WD account through the PATH WD connector, signed in as you, so it sees and changes only what you can in the PATH web app. Find, create and update records; read and add messages, notes, files and emails; browse and build folders and reports; run pathways screen by screen; manage tasks, notifications and calendars; and read record history. The plugin also carries PATH's documentation as skills: what PATH terms mean, every command the connector runs, Logic Builder formulas, record history and pathways.",
-        "developerName": "PathWD",
+        "displayName": "PATHwd",
+        "shortDescription": "Work with your PATHwd account",
+        "longDescription": "Connects ChatGPT and Codex to your PATHwd account through the PATHwd connector, signed in as you, so it sees and changes only what you can in the PATH web app. Find, create and update records; read and add messages, notes, files and emails; browse and build folders and reports; run pathways screen by screen; manage tasks, notifications and calendars; and read record history. The plugin also carries PATH's documentation as skills: what PATH terms mean, every command the connector runs, Logic Builder formulas, record history and pathways.",
+        "developerName": "PATHwd",
         "category": "Productivity",
         "websiteURL": "https://pathwd.com",
         "privacyPolicyURL": "https://www.pathwd.com/privacy-policy",

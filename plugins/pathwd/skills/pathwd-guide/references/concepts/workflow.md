@@ -4,7 +4,7 @@ Workflow is how a record such as a Job, Quote or Service moves through its lifec
 
 ## How the pieces fit together
 
-Part of the standard PATH WD Job workflow:
+Part of the standard PATHwd Job workflow:
 
 - **Lead:** where a new Job starts. Tasks such as "Need to Qualify Lead" belong to this stage.
 - **Full Quote Out:** entered when the "Full Quote Sent to Customer" workflow step has happened, as long as none of "Job Won", "Job Lost", "Put On Hold" or "Cancelled" has. Tasks such as "Follow Up On Quote" belong to this stage.

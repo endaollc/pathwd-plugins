@@ -1,6 +1,6 @@
 # Workflow: record-activity
 
-> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../commands.md) gives any command's syntax and the tool that runs it.
 
 **Covers:** the activity on one record: messages, notes in Notes fields, emails (reading and sending), files and tasks. Commands: `list-record-messages`, `send-message`, `list-record-notes`, `add-record-note`, `list-record-emails`, `send-record-email`, `list-record-files`, `upload-record-file`, `download-record-file`, `list-record-tasks`, `create-task` and their update and delete counterparts. Each command's syntax and output: its command note.
 
@@ -103,7 +103,7 @@ To @mention people and send them a notification (what typing `@Name` in the reco
 --account <ID> download-record-file --record-id <id> --file-id <id> --stdout
 ```
 
-The file is saved in this connection's workspace on PATH WD's server, and the result gives a download link: pass the link to the user. `--stdout` prints the contents instead, for a text file you need to read.
+The file is saved in this connection's workspace on PATHwd's server, and the result gives a download link: pass the link to the user. `--stdout` prints the contents instead, for a text file you need to read.
 
 #### Changing a File's Type or Comment
 
@@ -150,7 +150,7 @@ Only continue on a clear yes. The command asks for confirmation too: the first r
 
 #### Uploading a File
 
-`upload-record-file` uploads files from the user's computer to the record. Commands run on PATH WD's server, so the file comes in through `request_file_upload` first. It needs:
+`upload-record-file` uploads files from the user's computer to the record. Commands run on PATHwd's server, so the file comes in through `request_file_upload` first. It needs:
 
 1. **The file, uploaded to the workspace.** Users expect to drop the file in the chat. If the client passed it as a file input (ChatGPT), call `attach_chat_file` once per file. Otherwise call `request_file_upload` with the file's name (and `multiple: true` for several files) and a short `purpose`; if you can run code where the file is (an attached file is usually in your sandbox's uploads folder), run its curl command there; if that fails or you can't, give the user the link right away (they can drag the file onto it) and wait until they say it's uploaded. Use the `uploads/<id>/<name>` path returned, and never say a file is uploaded before that's confirmed. The [`path-cli` guide](../commands.md)'s "Files on this connection" has the full order.
 2. **A file type** from the record's business object: an id or a name from `list-file-types --bo-name <name>`. If the user didn't say which, show the types and ask.
@@ -361,7 +361,7 @@ If no PATH CLI command covers what the user asks for, tell them it can't be done
 
 ## Key facts and confirmations
 
-- Every command here runs through the PATH WD Remote MCP tool for its area (each command's page in [the command index](../commands.md) names it).
+- Every command here runs through the PATHwd tool for its area (each command's page in [the command index](../commands.md) names it).
 - Users name tasks, files and notes ("the Review Quote task"); their ids come from `list-record-tasks`, `list-record-files` and `list-record-notes`, and users never need to see them.
 - A completed or cancelled task can't be reopened with these commands, and completing a task that has a pathway means running that pathway: the user confirms first.
 - Lists read best with dates (on the user's clock), authors and the details that matter.

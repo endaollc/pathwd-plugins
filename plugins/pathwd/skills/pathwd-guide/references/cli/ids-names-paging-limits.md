@@ -1,6 +1,6 @@
 # Ids, names, accounts, paging and limits
 
-How PATH CLI commands name things (an id or a name), which account a command runs in, how much a list command returns by default, the output formats, and the limits commands run under on PATH WD Remote MCP. The paging and flag tables are generated from the CLI's own definitions.
+How PATH CLI commands name things (an id or a name), which account a command runs in, how much a list command returns by default, the output formats, and the limits commands run under on PATHwd. The paging and flag tables are generated from the CLI's own definitions.
 
 ## Ids and names
 
@@ -107,7 +107,7 @@ Every flag that names an existing thing, from the CLI's definitions:
 - **Ids belong to one account.** A record, business object, field, pathway or user id from one account means nothing in another; a "not found" or 404 on an id that worked before usually means the command ran in a different account.
 - **Which account a command uses:** `--account <id>` on that command, else the account saved with `use-account <id>`. Without either, account commands fail with `Missing --account <id>. Run "path list-accounts" to see available accounts.` (the account list is `list-accounts`).
 - `get-account --account-id <id>` reads one account's details; it doesn't change which account other commands use.
-- On PATH WD Remote MCP the saved account belongs to the connection, so every chat the user has with it shares one saved account: `use-account` in one chat changes it for the others. A command that compares or copies between accounts passes `--account` on every call.
+- On PATHwd the saved account belongs to the connection, so every chat the user has with it shares one saved account: `use-account` in one chat changes it for the others. A command that compares or copies between accounts passes `--account` on every call.
 - `list-users` lists the account's active users by name with their role names (Admins and User Admins; `--include-inactive` adds the inactive users, marked inactive); the name is what every command that takes a user accepts, and an email works too. Access rules (roles, tags) are per account, so the same person can see different things in two accounts.
 
 ## Paging
@@ -154,7 +154,7 @@ Some list commands return **one page** by default (a full page can mean there ar
 
 Notes a command prints beside its output (a count of what was left out, a warning) come after the output in the same result; a failed command's result reads `Error (exit <code>): <message>`.
 
-## Limits on PATH WD Remote MCP
+## Limits on PATHwd
 
 | Limit | Value | When it's reached |
 |---|---|---|

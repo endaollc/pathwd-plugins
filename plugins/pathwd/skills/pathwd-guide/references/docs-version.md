@@ -1,6 +1,6 @@
 # Docs version
 
-This plugin's skills carry PATH docs version `434fd7ab6862`: the same guides, workflows and command pages the PATH WD connector's `path_docs` tool served when the plugin was built.
+This plugin's skills carry PATH docs version `ee0e4f88da75`: the same guides, workflows and command pages the PATHwd connector's `path_docs` tool served when the plugin was built.
 
 The connector reports the docs version it serves in the session context it returns (on `use-account`, `session-context` and the first command of a session), in the line "PATH docs version on this server: <version>."
 

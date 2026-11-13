@@ -1,16 +1,16 @@
-# PATH WD
+# PATHwd
 
-This file explains PATH WD, the standard setup of PATH for window and door dealers, in the business terms a dealer's staff use. It covers the business objects they work with (Jobs, Services, Quotes, Purchase Orders, Appointments, invoices and payments, and the warehouse and shipping objects), how those objects connect, and what the order tracking, receiving, warehouse, scheduling, loading and delivery screens are doing. Read it to understand what a user means and what a pathway screen is asking.
+This file explains PATHwd, the standard setup of PATH for window and door dealers, in the business terms a dealer's staff use. It covers the business objects they work with (Jobs, Services, Quotes, Purchase Orders, Appointments, invoices and payments, and the warehouse and shipping objects), how those objects connect, and what the order tracking, receiving, warehouse, scheduling, loading and delivery screens are doing. Read it to understand what a user means and what a pathway screen is asking.
 
-## What PATH and PATH WD are
+## What PATH and PATHwd are
 
 **PATH** is a highly customizable ERP system. Each account defines its own business objects (Jobs, Customers, Invoices and so on), fields, relationships, milestones, workflow steps, tasks, folders, reports and pathways, so the system matches how that business works. PATH also connects to standard accounting software.
 
-**PATH WD** is PATH set up for window and door dealers. It is the "off the shelf" configuration: a pre-built set of business objects, fields, relationships, workflow, actions, roles, folders, reports and pathways for the window and door industry. Every user of this plugin is on a PATH WD account.
+**PATHwd** is PATH set up for window and door dealers. It is the "off the shelf" configuration: a pre-built set of business objects, fields, relationships, workflow, actions, roles, folders, reports and pathways for the window and door industry. Every user of this plugin is on a PATHwd account.
 
 Accounts can differ slightly from the standard setup. A business object or field may have a different name, an account may have extra fields, objects or pathways, and milestone and step names can vary. **The current account's own business objects, fields and pathways are always the final word.** Use this file to understand the intent, then confirm the details in the account.
 
-### What PATH WD runs for a dealer
+### What PATHwd runs for a dealer
 
 - **Sales:** lead tracking, quoting, customer and contact management.
 - **Orders:** turning sold work into Jobs, product line items and vendor orders (Purchase Orders).
@@ -145,7 +145,7 @@ Read "belongs to" as "is linked to one". The "many" side is usually shown as a t
 
 A Job moves through **milestones**, the stages users see on the Job and filter folders by. PATH works out milestones from the Job's workflow steps and field values; nobody sets them by hand. A Job is usually in **several milestones at once**, for example "Ordering", "Deposit Collected" and "Unpaid Invoices", because each tracks a different side of the Job.
 
-The names below are the standard PATH WD milestones. An account may have renamed, added or retired a few, so the account's own milestone list is the final word.
+The names below are the standard PATHwd milestones. An account may have renamed, added or retired a few, so the account's own milestone list is the final word.
 
 1. **Lead.** The Job is created for a Customer, with a job address, contacts, a salesperson, a Department and a Lead Source. Milestones: **Lead**, **Qualified**, **Sales Visit Scheduled** (a "Retail Sales Visit" Appointment). **Need Customer**, **Need Contact** and **Need Address** flag a Job that is missing one of those.
 2. **Quoting.** One or more Quotes are created on the Job, each with Quote Items. The quote types are Quick Quote, Full Quote, Final Contract, Commercial Bid and Quick Contract. Milestones: **Quoting**, **Quick Quote Out**, **Full Quote Out**, **Final Contract Out**. When the customer accepts, one Quote is chosen as the winning quote (the "Select As Winning Quote" pathway), and its items carry forward into the order.
@@ -244,7 +244,7 @@ When packages are scheduled, each Tracking Item is marked Scheduled and linked t
 
 ### What OM is
 
-**OM (Order Manager)** is the manufacturer's order and shipment system. PATH WD downloads order data and truck/shipment data from it automatically. When updated data arrives, PATH updates the existing records instead of creating duplicates. From this data PATH keeps Purchase Orders and Job Items current, and creates the trucks, stops, line items and barcoded packages the warehouse scans.
+**OM (Order Manager)** is the manufacturer's order and shipment system. PATHwd downloads order data and truck/shipment data from it automatically. When updated data arrives, PATH updates the existing records instead of creating duplicates. From this data PATH keeps Purchase Orders and Job Items current, and creates the trucks, stops, line items and barcoded packages the warehouse scans.
 
 ### Trucks and stops
 
@@ -326,7 +326,7 @@ In practice, a pathway screen that asks for a barcode scan is handling OM items.
 
 ## Accounting integration
 
-PATH WD syncs with the dealer's accounting system. The supported systems are QuickBooks Online (QBO) and QuickBooks Desktop/Enterprise (QBD). For a user, this means:
+PATHwd syncs with the dealer's accounting system. The supported systems are QuickBooks Online (QBO) and QuickBooks Desktop/Enterprise (QBD). For a user, this means:
 
 - Customers, Jobs, sales orders, purchase orders, vendor bills, invoices, payments and applied payments are kept in step between PATH and accounting. Each carries its matching accounting reference, so the same customer, invoice or payment can be matched on both sides.
 - Records show their sync status in plain fields: on a Job, "Sent to Accounting" and "Invoiced in Accounting". When a sync fails, the reason is shown in an "Accounting Error" field on the Job or Customer.

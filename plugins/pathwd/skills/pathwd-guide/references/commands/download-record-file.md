@@ -35,7 +35,7 @@ download-record-file --record-id 6aad6bfbd7f23b3a293e4aa7 --file-id 6ac541e60081
 
 **Output:** one line, `Saved Terms Sheet 26-0095-1.pdf (130068 bytes, application/pdf) to <where>`. `--quiet` prints only where it was saved.
 
-On PATH WD Remote MCP the saved file comes back as a download link in the result (in place of the path): give the link to the user. It needs their PATH sign-in and works for 24 hours. The file isn't kept in the workspace afterwards, so it can't be read or re-uploaded from there; to read a text file's content, use `--stdout`. `--out` takes a relative path.
+On PATHwd the saved file comes back as a download link in the result (in place of the path): give the link to the user. It needs their PATH sign-in and works for 24 hours. The file isn't kept in the workspace afterwards, so it can't be read or re-uploaded from there; to read a text file's content, use `--stdout`. `--out` takes a relative path.
 
 **Common errors**
 

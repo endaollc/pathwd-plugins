@@ -1,15 +1,15 @@
 {
   "name": "pathwd",
   "owner": {
-    "name": "PathWD",
+    "name": "PATHwd",
     "url": "https://pathwd.com"
   },
-  "description": "PATH WD plugins: work with your PATH WD account from Claude, ChatGPT and Codex.",
+  "description": "PATHwd plugins: work with your PATHwd account from Claude, ChatGPT and Codex.",
   "plugins": [
     {
       "name": "pathwd",
       "source": "./plugins/pathwd",
-      "description": "Work with your PATH WD account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATH WD connector with your own access. Includes PATH's documentation as skills.",
+      "description": "Work with your PATHwd account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATHwd connector with your own access. Includes PATH's documentation as skills.",
       "category": "productivity"
     }
   ]

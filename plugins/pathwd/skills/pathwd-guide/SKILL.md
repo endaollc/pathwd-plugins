@@ -1,11 +1,11 @@
 ---
 name: pathwd-guide
-description: "PATH WD reference for the PATH WD connector: what PATH terms mean (business objects, records, fields, milestones, workflow steps, tasks, folders, tags), the account and its session context, which connector tool runs each PATH command and its exact flags, and how records, messages, notes, files, emails, tasks, notifications and calendars are read, created and changed. Covers questions about a PATH WD account's data and how to work with it."
+description: "PATHwd reference for the PATHwd connector: what PATH terms mean (business objects, records, fields, milestones, workflow steps, tasks, folders, tags), the account and its session context, which connector tool runs each PATH command and its exact flags, and how records, messages, notes, files, emails, tasks, notifications and calendars are read, created and changed. Covers questions about a PATHwd account's data and how to work with it."
 ---
 
-# PATH WD
+# PATHwd
 
-PATH WD is a business system that runs a company's jobs, quotes, services, purchase orders and other records through their workflow. The PATH WD connector (the PATH WD Remote MCP, `https://mcp.pathwd.app/mcp`) is signed in as the user, so every read and change runs with that user's own PATH access, exactly as in the PATH web app.
+PATHwd is a business system that runs a company's jobs, quotes, services, purchase orders and other records through their workflow. The PATHwd connector (`https://mcp.pathwd.app/mcp`) is signed in as the user, so every read and change runs with that user's own PATH access, exactly as in the PATH web app.
 
 This skill is the index of PATH's documentation bundled with the plugin: PATH's concepts, the account and session, the connector's tools and every command they run, and the guides for records and their activity. Three more skills cover their own areas:
 
@@ -67,9 +67,9 @@ More in [path-concepts](references/concepts.md).
 
 ## Guides
 
-- [path-cli](references/commands.md): PATH CLI command reference (the PATH user app): the exact syntax, flags and subcommands of PATH CLI commands, which PATH WD Remote MCP tool runs each, and an overview of what they cover: records…
-- [path-concepts](references/concepts.md): What PATH and PATH WD are and how they work, in the words of the web app.
-- [path-session](references/session.md): The PATH account and session on PATH WD Remote MCP — which accounts the user can open, picking one (saved with the connection, so later commands don't need `--account`), its session context…
+- [path-cli](references/commands.md): PATH CLI command reference (the PATH user app): the exact syntax, flags and subcommands of PATH CLI commands, which PATHwd tool runs each, and an overview of what they cover: records, folders, reports…
+- [path-concepts](references/concepts.md): What PATH and PATHwd are and how they work, in the words of the web app.
+- [path-session](references/session.md): The PATH account and session on PATHwd — which accounts the user can open, picking one (saved with the connection, so later commands don't need `--account`), its session context, switching accounts…
 
 Step-by-step workflows:
 
@@ -84,13 +84,13 @@ Reference files:
 - [Access and visibility](references/cli/access-and-visibility.md): Every PATH CLI command runs as the **acting user** (the signed-in user, or the member named by `--as-user`) and shows and does only what that user could in the web app.
 - [Errors and what to do about them](references/cli/errors.md): What a failed PATH CLI command prints, what each kind of message means, and the usual way forward.
 - [Field values: what each field type takes](references/cli/field-values.md): How to write a value for every PATH field type, in the two places a value is written:
-- [Ids, names, accounts, paging and limits](references/cli/ids-names-paging-limits.md): How PATH CLI commands name things (an id or a name), which account a command runs in, how much a list command returns by default, the output formats, and the limits commands run under on PATH WD Remote MCP.
+- [Ids, names, accounts, paging and limits](references/cli/ids-names-paging-limits.md): How PATH CLI commands name things (an id or a name), which account a command runs in, how much a list command returns by default, the output formats, and the limits commands run under on PATHwd.
 - [Recipes: common requests as commands](references/cli/recipes.md): Tasks users ask for that take several commands: the commands in order, what the user confirms, and the pitfalls.
 - [Actions](references/concepts/actions.md): An action is a single automated job that PATH carries out for a record without anyone filling in a screen, such as sending a notification, emailing a customer or creating a task.
 - [Fields](references/concepts/fields.md): A field is one piece of information on a record: a customer's name, a quote total, a job's install date.
 - [Folders and Tags](references/concepts/folders-and-tags.md): Folders are saved, filtered lists of records for one business object.
 - [Glossary](references/concepts/glossary.md): Terms that PATH commands, their output and the other guides use, A to Z, each with where to read more.
-- [PATH WD](references/concepts/path-wd.md): This file explains PATH WD, the standard setup of PATH for window and door dealers, in the business terms a dealer's staff use.
+- [PATHwd](references/concepts/path-wd.md): This file explains PATHwd, the standard setup of PATH for window and door dealers, in the business terms a dealer's staff use.
 - [Roles and permissions](references/concepts/permissions.md): What a PATH user may see and do comes from the **roles** they hold in the account, their **tags**, and what each folder, report and calendar is shared with.
 - [Records and Business Objects](references/concepts/records-and-business-objects.md): Everything in PATH is stored as a record, and every record belongs to a type called a business object.
 - [Relationships and Linked Records](references/concepts/relationships.md): Records in PATH are connected to each other: a Quote belongs to a Job, a Job belongs to a Customer.
@@ -99,4 +99,4 @@ Reference files:
 
 ## Docs version
 
-These skills carry PATH docs version `434fd7ab6862`. The connector reports the version it serves in its session context; when the two differ, `path_docs` has the newer text ([docs-version.md](references/docs-version.md)).
+These skills carry PATH docs version `ee0e4f88da75`. The connector reports the version it serves in its session context; when the two differ, `path_docs` has the newer text ([docs-version.md](references/docs-version.md)).

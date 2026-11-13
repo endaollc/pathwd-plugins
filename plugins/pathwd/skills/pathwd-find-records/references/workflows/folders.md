@@ -1,6 +1,6 @@
 # Workflow: create-folder
 
-> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
 
 **Covers:** making a folder: a saved list of one business object's records that meet set conditions, shared with chosen roles or users. Commands: `create-folder`, `update-folder`, `set-filter folder`, the folder sticker commands, `list-folders`, `list-records`. Each command's syntax and output: its command note.
 
@@ -174,7 +174,7 @@ If no PATH CLI command covers what the user asks for, tell them it can't be done
 
 ## Key facts and confirmations
 
-- Every command here runs through the PATH WD Remote MCP tool for its area (each command's page in [the command index](../../../pathwd-guide/references/commands.md) names it).
+- Every command here runs through the PATHwd tool for its area (each command's page in [the command index](../../../pathwd-guide/references/commands.md) names it).
 - Users name things (business objects, fields, roles, people); the commands resolve names to ids, so ids come from the account, never from memory.
 - A new folder shows the business object's default columns; other columns are chosen in the web app's folder form or with `update-folder --data '{"columns":[…]}'`.
 - Creating a folder is a change the user sees in their menu: they confirm the name, the rule in plain words and who gets access first.

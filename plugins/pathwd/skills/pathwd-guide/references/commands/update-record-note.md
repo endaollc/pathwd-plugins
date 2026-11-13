@@ -29,7 +29,7 @@ update-record-note --record-id 6adba16ca29a6293f946ca4f --note-id 6adf60eeca742e
 - `--note-id` is the note's `id` from `list-record-notes` (24 hex).
 - The new text replaces the whole note: to add to it, read the current text first and send the combined text. `--note-file` reads it from a file.
 
-On PATH WD Remote MCP `--note-file` reads a workspace file; `write_workspace_file` writes one.
+On PATHwd `--note-file` reads a workspace file; `write_workspace_file` writes one.
 
 **Output:** one line, `Updated note 6adf6815ca742e5ee6784809 in Job Notes on Job 26-0073 (6adba16ca29a6293f946ca4f)`. `--quiet`: the note id.
 

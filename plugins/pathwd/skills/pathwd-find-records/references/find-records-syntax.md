@@ -155,7 +155,7 @@ Yes/no fields are different: unset counts as `FALSE`.
 
 ## Recipes
 
-Each was run with `--count` on a PATH WD account; the names are the PATH WD template's (Job, Department, Job Main Customer, …), so check them against `--catalog` in another account.
+Each was run with `--count` on a PATHwd account; the names are the PATHwd template's (Job, Department, Job Main Customer, …), so check them against `--catalog` in another account.
 
 | Question | `--logic` |
 |---|---|

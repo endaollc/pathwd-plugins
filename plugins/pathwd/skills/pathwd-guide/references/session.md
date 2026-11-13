@@ -4,9 +4,9 @@ A PATH session is the account the user works in and its session context. Every P
 
 ## Steps
 
-1. **Already signed in** — The user signed in to PATH when they connected PATH WD to this app, so there is no sign-in step. Every command runs as that user.
+1. **Already signed in** — The user signed in to PATH when they connected PATHwd to this app, so there is no sign-in step. Every command runs as that user.
    - Never ask for the user's email or password, and don't run `auth` or `logout`: this connection refuses both.
-   - If a command says the sign-in has expired or isn't valid, ask the user to reconnect PATH WD in the app they connected it from (its connector or MCP server settings), then try again.
+   - If a command says the sign-in has expired or isn't valid, ask the user to reconnect PATHwd in the app they connected it from (its connector or MCP server settings), then try again.
 
 2. **List accounts** — `list-accounts` shows every account the user can open. `use-account` with no ID prints the account already saved for this connection, if there is one.
 
@@ -20,7 +20,7 @@ A PATH session is the account the user works in and its session context. Every P
 
 5. **Read the session context** — `use-account` prints the session context under the confirmation: the account with its Account context (the designers' description of the business: what the company does and how it uses PATH), the account's active users with their roles, the pathways the user can start from the dashboard with their context, and the user's process context (what the designers wrote for the user's roles on the business objects they work with). The first command of a session gives it too. Read it before acting and keep it in mind for the rest of the session. `session-context` prints it in full again (for example after your context was compacted); `get-account` shows the account part. If there's no Account context line, the account has none.
 
-6. **PATH's concepts and the guides** — [`path-concepts`](concepts.md) explains what PATH and PATH WD terms mean (Jobs, milestones, workflow steps, tasks, pathways, folders) and how pathway screens are answered. The other guides and workflows cover each area step by step (the `path_docs` description lists them), and `path_docs(query: "<words>")` searches all of them.
+6. **PATH's concepts and the guides** — [`path-concepts`](concepts.md) explains what PATH and PATHwd terms mean (Jobs, milestones, workflow steps, tasks, pathways, folders) and how pathway screens are answered. The other guides and workflows cover each area step by step (the `path_docs` description lists them), and `path_docs(query: "<words>")` searches all of them.
 
 ## Usage pattern for the rest of the session
 
@@ -31,11 +31,11 @@ path_manage_folders_reports(command: "create-folder", args: "--bo-name Equipment
 
 To target a different account for one call, pass `--account <other-id>` on that call only.
 
-If any command fails with an authentication error, the connection's sign-in has expired: ask the user to reconnect PATH WD in their app (step 1).
+If any command fails with an authentication error, the connection's sign-in has expired: ask the user to reconnect PATHwd in their app (step 1).
 
 ## If PATH can't be reached
 
-When a command says **"Couldn't reach PATH at <host>: <reason>"**, PATH WD's server got no answer from PATH. It isn't a sign-in problem and nothing on the user's computer causes it. Tell the user, try once more after a minute, and if it still fails, ask them to check that https://pathwd.app opens in their browser. "The server is busy; try again in a moment" means the same: wait a moment and retry once.
+When a command says **"Couldn't reach PATH at <host>: <reason>"**, PATHwd's server got no answer from PATH. It isn't a sign-in problem and nothing on the user's computer causes it. Tell the user, try once more after a minute, and if it still fails, ask them to check that https://pathwd.app opens in their browser. "The server is busy; try again in a moment" means the same: wait a moment and retry once.
 
 ## Switching accounts
 
@@ -45,7 +45,7 @@ When a command says **"Couldn't reach PATH at <host>: <reason>"**, PATH WD's ser
 
 ## Signing out
 
-To sign out, the user disconnects PATH WD in the app they connected it from (its connector or MCP server settings). That ends the sign-in on the PATH server and deletes this connection's saved account and files. `logout` does nothing here (it is refused). Only bring this up when the user asks to sign out.
+To sign out, the user disconnects PATHwd in the app they connected it from (its connector or MCP server settings). That ends the sign-in on the PATH server and deletes this connection's saved account and files. `logout` does nothing here (it is refused). Only bring this up when the user asks to sign out.
 
 ## Results look stale
 
@@ -68,4 +68,4 @@ This connection is the PATH user app. Building or changing the data model, pathw
 
 ## Files
 
-Commands run on PATH WD's server, in a private workspace for this connection, and only see files there. A file the user drops in the chat or has on their computer comes in through `attach_chat_file` (when the client passes it as a file input, as ChatGPT does) or `request_file_upload` (its curl command run where the file is, else its link for the user); use the `uploads/<id>/<name>` path either returns. A small file you write yourself (a test, a page of text) goes in with `write_workspace_file`. Files a command saves come back as download links in its result. The [`path-cli` guide](commands.md) has the details.
+Commands run on PATHwd's server, in a private workspace for this connection, and only see files there. A file the user drops in the chat or has on their computer comes in through `attach_chat_file` (when the client passes it as a file input, as ChatGPT does) or `request_file_upload` (its curl command run where the file is, else its link for the user); use the `uploads/<id>/<name>` path either returns. A small file you write yourself (a test, a page of text) goes in with `write_workspace_file`. Files a command saves come back as download links in its result. The [`path-cli` guide](commands.md) has the details.

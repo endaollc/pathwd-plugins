@@ -1,10 +1,10 @@
 {
   "name": "pathwd",
-  "displayName": "PATH WD",
-  "version": "1.0.1",
-  "description": "Work with your PATH WD account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATH WD connector with your own access. Includes PATH's documentation as skills.",
+  "displayName": "PATHwd",
+  "version": "1.0.2",
+  "description": "Work with your PATHwd account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATHwd connector with your own access. Includes PATH's documentation as skills.",
   "author": {
-    "name": "PathWD",
+    "name": "PATHwd",
     "url": "https://pathwd.com"
   },
   "homepage": "https://pathwd.app",

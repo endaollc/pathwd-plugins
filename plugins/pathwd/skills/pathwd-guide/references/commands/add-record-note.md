@@ -37,7 +37,7 @@ add-record-note --record-id 6adba16ca29a6293f946ca4f --field 191656 --note-file 
 - The note is posted as the acting user (the signed-in user, or the one given with `--as-user`) and dated now; it can't be backdated.
 - Needs Edit on the record's business object, and the field shown to the user in the record viewer.
 
-On PATH WD Remote MCP `--note-file` reads a workspace file; `write_workspace_file` writes one.
+On PATHwd `--note-file` reads a workspace file; `write_workspace_file` writes one.
 
 **Output:** one line, `Added note 6adf6815ca742e5ee6784809 to Job Notes on Job 26-0073 (6adba16ca29a6293f946ca4f)`. `--quiet`: the note id.
 

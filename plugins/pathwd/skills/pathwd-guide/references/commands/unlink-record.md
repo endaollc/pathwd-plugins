@@ -44,7 +44,7 @@ Unlinked record 6a9056455ff33756afba5084 (Job 26-0050) from record 6ace8be8b2afe
 
 - One line: the record, the record it was linked to (when it was read first) and the relationship cleared.
 
-On the PATH WD Remote MCP, unlinking counts as a removal: a credential with deletes off answers `This agent credential may not run "unlink-record" (deletes are off).`
+On the PATHwd, unlinking counts as a removal: a credential with deletes off answers `This agent credential may not run "unlink-record" (deletes are off).`
 
 **Common errors**
 

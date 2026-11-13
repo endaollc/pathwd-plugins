@@ -43,7 +43,7 @@ get-history-session 6adf681563a500a9a7a44bef --full --newest-first
 
 ```
 Session 6adf681563a500a9a7a44bef: inbound integration: OMAPI: Process Import Sets
-user: PATH WD System (587) · system · 10/7/26 12:03pm – 10/7/26 12:03pm
+user: PATHwd System (587) · system · 10/7/26 12:03pm – 10/7/26 12:03pm
 
 time            | record                   | action              | subject                    | changes                                     | metadata                                   | event
 ----------------|--------------------------|---------------------|----------------------------|---------------------------------------------|--------------------------------------------|-------------------------------------

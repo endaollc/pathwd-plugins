@@ -1,6 +1,6 @@
 # Workflow: records
 
-> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../commands.md) gives any command's syntax and the tool that runs it.
 
 **Covers:** records: creating them, changing field values, finding them by name or by conditions, opening one, linking records, running a workflow step, archiving and unarchiving. Commands: `search`, `find-records`, `get-record`, `create-record`, `update-record`, `link-record` / `unlink-record`, `archive-record` / `unarchive-record`, `run-step`. Value forms: the [`path-cli` guide](../commands.md)'s [field-values.md](../cli/field-values.md); each command's syntax and output: its command note.
 
@@ -334,7 +334,7 @@ If no PATH CLI command covers what the user asks for, tell them it can't be done
 
 ## Key facts and confirmations
 
-- Every command here runs through the PATH WD Remote MCP tool for its area (each command's page in [the command index](../commands.md) names it).
+- Every command here runs through the PATHwd tool for its area (each command's page in [the command index](../commands.md) names it).
 - Users name business objects, fields and records; the commands resolve names to ids, so ids come from the account (`list-fields`, `search`), never from memory.
 - Creating, updating, linking and archiving change real data: the user sees what will change, in plain words, and agrees first.
 - Users know "the Department field" and "this Job", not `field_id` or `business_object_id`.

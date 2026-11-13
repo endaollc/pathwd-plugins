@@ -1,10 +1,10 @@
 # Records and Business Objects
 
-Everything in PATH is stored as a record, and every record belongs to a type called a business object. This page explains what those words mean and how to talk about them the way PATH WD users do.
+Everything in PATH is stored as a record, and every record belongs to a type called a business object. This page explains what those words mean and how to talk about them the way PATHwd users do.
 
 ## Business objects: the types of thing
 
-A business object is a kind of thing the account tracks. In PATH WD the usual ones are Jobs, Quotes, Services, Customers, Invoices, Purchase Orders and Appointments. A business object is only the definition: it says which fields exist, how records of that type link to other types, which milestones and workflow steps they move through, which folders and reports exist, and which actions (emails, texts, notifications, pathways) are available.
+A business object is a kind of thing the account tracks. In PATHwd the usual ones are Jobs, Quotes, Services, Customers, Invoices, Purchase Orders and Appointments. A business object is only the definition: it says which fields exist, how records of that type link to other types, which milestones and workflow steps they move through, which folders and reports exist, and which actions (emails, texts, notifications, pathways) are available.
 
 Users see business objects as the main areas of the app. Each has a singular and plural name ("Job" and "Jobs"), an icon, and often an entry in the navigation menu. Some show a workflow status in the Record Viewer, and some have messaging turned on.
 

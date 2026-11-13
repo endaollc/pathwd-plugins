@@ -42,7 +42,7 @@ Next:
 
 - **`act` keys also work on `submit`**: `submit` applies them first, then continues. `pathway-run submit --set search=1401 --select 1` searches and picks in one command.
 - Field values on forms are typed text, read as the web form reads it: `50` in a Percent field is 50%, dates are `YYYY-MM-DD` on the user's clock, selections are the option's text. Every type's rules are in `field-values.md` (this folder).
-- **Files on PATH WD Remote MCP:** `--file`, `body_file`, `upload` and other paths are workspace paths (`uploads/<id>/<name>` for a file the user dropped in the chat): the [`path-cli` guide](../../pathwd-guide/references/commands.md)'s "Files on this connection" says how a file gets there. A file a screen saves (an export, a downloaded document) comes back as a download link.
+- **Files on PATHwd:** `--file`, `body_file`, `upload` and other paths are workspace paths (`uploads/<id>/<name>` for a file the user dropped in the chat): the [`path-cli` guide](../../pathwd-guide/references/commands.md)'s "Files on this connection" says how a file gets there. A file a screen saves (an export, a downloaded document) comes back as a download link.
 
 ### Scripted answers (`--answers`)
 

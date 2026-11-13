@@ -1,6 +1,6 @@
 # path-milestone-explain
 
-> **Commands:** every command in this skill is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this skill is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
 
 Why a record is (or isn't) in one milestone: the milestone's criteria, printed as a Logic Builder formula, checked clause by clause against the record's current field values, workflow steps, milestones, archived state and linked records.
 

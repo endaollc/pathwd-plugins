@@ -46,7 +46,7 @@ Not archived: record 6aa856c6f6a1d266e4a10ae5 — <user> can't archive record �
 - One line per record (`Archived`, `Already archived` — left as it was — or `Not archived` with the reason), and a count line when there are several.
 - When any record failed, the command exits with an error status after printing every result; the others are still archived.
 
-On the PATH WD Remote MCP, archiving counts as a removal: a credential with deletes off answers `This agent credential may not run "archive-record" (deletes are off).`
+On the PATHwd, archiving counts as a removal: a credential with deletes off answers `This agent credential may not run "archive-record" (deletes are off).`
 
 **Common errors**
 

@@ -1,8 +1,8 @@
 # path-cli
 
-> **Commands:** every command in this skill is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this skill is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](commands.md) gives any command's syntax and the tool that runs it.
 
-The PATH CLI is a compact client for the PATH API. Each PATH WD Remote MCP tool runs the commands of its area and returns their output as compact text: a list is an ASCII table (`id | name | …`, id first, long cells cut with `…`, a footer such as `[12 items]` or `[25 of 140 records — --page 2 for more]`), one item is `key: value` lines, and a change prints a line or two naming what changed with its ids. `--fields <columns>` in `args` picks a table's columns; `format: "quiet"` gives ids only, one per line. The "Commands by tool" table at the end lists which tool runs which command.
+The PATH CLI is a compact client for the PATH API. Each PATHwd tool runs the commands of its area and returns their output as compact text: a list is an ASCII table (`id | name | …`, id first, long cells cut with `…`, a footer such as `[12 items]` or `[25 of 140 records — --page 2 for more]`), one item is `key: value` lines, and a change prints a line or two naming what changed with its ids. `--fields <columns>` in `args` picks a table's columns; `format: "quiet"` gives ids only, one per line. The "Commands by tool" table at the end lists which tool runs which command.
 
 This page is the index: what each command is for, by area, and the references that cover more than one command. Each command's page in [the command index](commands.md) gives one command's usage and flags with its note: worked examples, its output and what to read in it, its common errors and related commands. **Every** command's exact flags: [the command index](commands.md); `--help` in a command's args prints its help, e.g. `path_update_record(command: "update-record", args: "--help")`.
 
@@ -17,7 +17,7 @@ Most requests have a guide with the steps and checks that go with them:
 | Task | Use |
 |------|-----|
 | Sign in, switch account, sign out | the [`path-session` guide](session.md) |
-| What a PATH or PATH WD term, business object, process or pathway screen means | the [`path-concepts` guide](concepts.md) |
+| What a PATH or PATHwd term, business object, process or pathway screen means | the [`path-concepts` guide](concepts.md) |
 | Find, create, update, link, archive records | the [`cli-records` workflow](workflows/records.md) |
 | Messages, emails, files and tasks on a record | the [`cli-record-activity` workflow](workflows/record-activity.md) |
 | What changed on a record, or what a user did | the [`path-record-history` guide](../../pathwd-history/references/record-history.md) |
@@ -44,7 +44,7 @@ Most requests have a guide with the steps and checks that go with them:
 
 Use the [`path-session` guide](session.md) to start a session. In short:
 
-1. **Signed in already** — the user signed in when they connected PATH WD; `list-accounts` lists the accounts they can open
+1. **Signed in already** — the user signed in when they connected PATHwd; `list-accounts` lists the accounts they can open
 2. **Select default account (optional)** — `use-account <id>` so `--account` becomes optional on later commands
 3. **Operate** — pass `--account <id>` per command, or rely on the saved default
 
@@ -65,7 +65,7 @@ Use the [`path-session` guide](session.md) to start a session. In short:
 
 ### Files on this connection
 
-Commands run on PATH WD's server, in a private workspace for this connection, so every file option (`--file`, `--out`, `--answers <file>`, `--context-file`, and `files` / `body_file` in pathway answers) takes a path **relative to that workspace**. A path outside it (starting with `/`, `~` or a drive letter, or using `..`) is refused.
+Commands run on PATHwd's server, in a private workspace for this connection, so every file option (`--file`, `--out`, `--answers <file>`, `--context-file`, and `files` / `body_file` in pathway answers) takes a path **relative to that workspace**. A path outside it (starting with `/`, `~` or a drive letter, or using `..`) is refused.
 
 - **A file the user dropped or attached in the chat, or one on their computer** (a photo for an Upload File screen, a contract to add to a record): users expect to just drop it in the chat. Get it into the workspace in this order:
   1. **The client passes it to tools as a file input** (ChatGPT does): call `attach_chat_file` with it. The server fetches it and returns the workspace path.
@@ -228,7 +228,7 @@ Changing any of this is Designer work.
 
 ## Commands by tool
 
-On PATH WD Remote MCP each tool runs a group of commands: the tool takes the command, its args (the flags below) and an output format.
+On PATHwd each tool runs a group of commands: the tool takes the command, its args (the flags below) and an output format.
 
 | Tool | Kind | Commands |
 |------|------|----------|

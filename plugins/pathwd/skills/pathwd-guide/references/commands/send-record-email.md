@@ -64,7 +64,7 @@ send-record-email --record-id 6aad6bfbd7f23b3a293e4aa7 --to "Pat Lee <pat@exampl
 - `--file` uploads files onto the record (file type Email Attachment) and attaches them; the upload happens on send, not on preview.
 - Account settings can change delivery, and the output's `Note:` lines say so: email turned off for the account (saved on the record, not delivered), or an email override (delivered only to the override address, CC and BCC dropped).
 
-On PATH WD Remote MCP `--file` and `--body-file` take workspace paths (`request_file_upload`, `attach_chat_file` or `write_workspace_file` put files there). An uploaded file is used up by the first write that succeeds with it; a `--preview` sends and uploads nothing and leaves the upload as it was, so the preview and the send can name the same `uploads/<id>/<name>` path. A connection made with an agent credential sends email only when its policy allows it: `This agent credential may not run "send-record-email" (outbound email is off).`
+On PATHwd `--file` and `--body-file` take workspace paths (`request_file_upload`, `attach_chat_file` or `write_workspace_file` put files there). An uploaded file is used up by the first write that succeeds with it; a `--preview` sends and uploads nothing and leaves the upload as it was, so the preview and the send can name the same `uploads/<id>/<name>` path. A connection made with an agent credential sends email only when its policy allows it: `This agent credential may not run "send-record-email" (outbound email is off).`
 
 **Output**
 

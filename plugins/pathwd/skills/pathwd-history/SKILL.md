@@ -1,11 +1,11 @@
 ---
 name: pathwd-history
-description: "PATH WD record history and milestone explanations: what changed on a record, who changed it, when and through which pathway (history sessions and events, read-only), and why a record is or isn't in a milestone, with the milestone's criteria checked one condition at a time against the record. Covers questions like \"what changed on Job 12345 this week?\", \"who moved this record to Won?\" or \"why is this job still in Lead?\"."
+description: "PATHwd record history and milestone explanations: what changed on a record, who changed it, when and through which pathway (history sessions and events, read-only), and why a record is or isn't in a milestone, with the milestone's criteria checked one condition at a time against the record. Covers questions like \"what changed on Job 12345 this week?\", \"who moved this record to Won?\" or \"why is this job still in Lead?\"."
 ---
 
-# Record history and milestones in PATH WD
+# Record history and milestones in PATHwd
 
-PATH records every change to a record as history: each event (saved changes, a milestone reached, a file uploaded, a link) belongs to an activity session, such as a visit to the record's card, a pathway run or an inbound integration request. On the PATH WD connector, a record's history is read with `get-history-by-record`, one session with `get-history-session` and one event's details with `get-event-metadata`. History is read-only.
+PATH records every change to a record as history: each event (saved changes, a milestone reached, a file uploaded, a link) belongs to an activity session, such as a visit to the record's card, a pathway run or an inbound integration request. On the PATHwd connector, a record's history is read with `get-history-by-record`, one session with `get-history-session` and one event's details with `get-event-metadata`. History is read-only.
 
 A record's milestones follow from its milestone criteria: Logic Builder formulas over its field values, workflow steps, other milestones and linked records. Why a record is or isn't in a milestone is answered by reading the milestone's formula and checking each condition against the record.
 

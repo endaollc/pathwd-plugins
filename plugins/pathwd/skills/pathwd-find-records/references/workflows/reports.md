@@ -1,6 +1,6 @@
 # Workflow: create-report
 
-> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
 
 **Covers:** making a report: a table of one business object's records that meet set rules, with chosen columns (fields, linked records' fields, milestone and step dates, counts, calculations), optionally grouped with totals, averages, lowest or highest values per group. Commands: `create-report` (with `--preview`), `update-report`, `set-filter report`, the Custom Field commands, `run-report`. Each command's syntax and output: its command note.
 
@@ -200,7 +200,7 @@ Then run the command with `--name` and the sharing options (`--dry-run` prints t
 
 ## Key facts and confirmations
 
-- Every command here runs through the PATH WD Remote MCP tool for its area (each command's page in [the command index](../../../pathwd-guide/references/commands.md) names it).
+- Every command here runs through the PATHwd tool for its area (each command's page in [the command index](../../../pathwd-guide/references/commands.md) names it).
 - Names (fields, relationships, milestones, steps, roles, people) resolve through the commands; ids aren't guessed.
 - `create-report --preview` runs the report as built without saving it: the user sees the rows, adjusts, and agrees before `create-report` saves it.
 - A report carries a short context saying what it is for, and each calculated column context saying how it is worked out.

@@ -4,15 +4,15 @@ What a failed PATH CLI command prints, what each kind of message means, and the 
 
 ## How an error reads
 
-On PATH WD Remote MCP a failed command's result reads `Error (exit <code>): <message>` and is marked as an error. Notes a successful command prints beside its output (a count of what was left out, a warning) come after the output in the same result.
+On PATHwd a failed command's result reads `Error (exit <code>): <message>` and is marked as an error. Notes a successful command prints beside its output (a count of what was left out, a warning) come after the output in the same result.
 
 | Exit code | Meaning | Looks like |
 |---|---|---|
 | 1 | The command ran and failed: a refusal, a name that matched nothing, a bad value, a server error | `ERROR: …`, `ERROR [<status>]: …`, `<user> can't <action> — <why>, as in the web app.`; a command line the CLI can't read: `error: unknown option '--bogus'` |
-| 2 | Refused before it ran (PATH WD Remote MCP): the wrong tool, a command that isn't offered, quotes that don't balance, a path outside the workspace | the remote MCP's own message (table below) |
+| 2 | Refused before it ran (PATHwd): the wrong tool, a command that isn't offered, quotes that don't balance, a path outside the workspace | the remote MCP's own message (table below) |
 | 3 | A delete waiting for confirmation (nothing was deleted), `execute-pathway` on a pathway with screen steps (nothing ran), or an agent credential's policy refusing the command | `NOT DELETED: this needs confirmation.`, `NOT RUN: Pathway <id> "<name>" has a step that shows a screen in the web app. …` |
 | 4 | `pathway-run start` / `submit --strict`: a screen had no scripted answer | the screen that needs an answer |
-| 5 | A limit of PATH WD Remote MCP: too many commands, the server busy, another command still running on the connection | `Too many commands: slow down (per-connection limit).` |
+| 5 | A limit of PATHwd: too many commands, the server busy, another command still running on the connection | `Too many commands: slow down (per-connection limit).` |
 
 A command that failed with exit 1 or 2 usually changed nothing. The exceptions: a command that does several things in turn (`archive-record --record-ids`, several files in one `upload-record-file`) keeps what it finished before the failure; a command stopped by the time limit may have partly run; and in a pathway run each step that ran before the failure stays done (`pathway-run show` says where it stopped).
 
@@ -27,7 +27,7 @@ A command that failed with exit 1 or 2 usually changed nothing. The exceptions: 
 | `ERROR: Expected property name or '}' in JSON at position 1 …` (and other JSON messages) | A `--data`, `--user-filter` or `--answers` value isn't valid JSON: single-quote the whole value, double-quote every key and string. |
 | `ERROR: --data takes {"fields":[{"field_id":<id>,"value":<stored value>}]} …` | `create-record` / `update-record` `--data` has the wrong shape (field names instead of ids, `fields` not an array): field ids are the `id` column of `list-fields --bo-name <bo>`. |
 
-Quotes in a command string (the PATH plugin and PATH WD Remote MCP split the command line as a shell does):
+Quotes in a command string (the PATH plugin and PATHwd split the command line as a shell does):
 
 <!-- generated:quote-errors -->
 | Message | Meaning |
@@ -36,14 +36,14 @@ Quotes in a command string (the PATH plugin and PATH WD Remote MCP split the com
 | `The command string has an unclosed " quote — a " inside a double-quoted value is written \" (e.g. "[Name] = \"Acme\""); or single-quote the value` | A double quote inside a double-quoted value: escape it as `\"`, or single-quote the value (formulas: `--logic '[Name] = "Acme"'`). |
 <!-- /generated:quote-errors -->
 
-## Before the command runs (PATH WD Remote MCP)
+## Before the command runs (PATHwd)
 
 | Message | Meaning |
 |---|---|
 | `"<command>" is run by <tool>, not <this tool>.` | Each tool runs its own commands; the message names the right tool. |
 | `args start with the command "<command>": pass "<command>" as command (args hold only its flags and values).` | The command's name went into `args`. |
 | `Unknown command "…" for <tool>; its commands: …` | No such command on that tool. |
-| `"<command>" is not available on PATH WD Remote MCP: …` | A command this connection doesn't offer (sign-in, sign-out, the raw API, pathway test commands). |
+| `"<command>" is not available on PATHwd: …` | A command this connection doesn't offer (sign-in, sign-out, the raw API, pathway test commands). |
 
 The service's own messages, from its source:
 
@@ -90,7 +90,7 @@ The service's own messages, from its source:
 | `ERROR: Missing --account <id>. Run "path list-accounts" to see available accounts.` | No account saved and none given: `use-account <id>` saves one, `--account <id>` picks one for a command; `list-accounts` lists them. |
 | `ERROR: Account … isn't one of your accounts. Run "path list-accounts" …` | A wrong account id, or one the user doesn't belong to. |
 | `ERROR: You're deactivated in account … (…), so you can't use it.` | The user's membership there is deactivated. |
-| `ERROR [401]: Unauthorized` | The sign-in has expired or was revoked. The user signs in again (remotely: reconnects PATH WD in the app they connected it from). |
+| `ERROR [401]: Unauthorized` | The sign-in has expired or was revoked. The user signs in again (remotely: reconnects PATHwd in the app they connected it from). |
 | `ERROR: Couldn't reach PATH at <host>: …` | The network or PATH is down; try again shortly. |
 
 ## Names that match nothing, or several things
@@ -170,7 +170,7 @@ The PATH server refused the request; its message follows the status, with valida
 | Status | Usual cause | Next |
 |---|---|---|
 | 400 / 409 / 422 | A value or option the server won't take: a value of the wrong type, an option that doesn't exist, a missing required value, a duplicate name, something that already exists | Read the message and the property it names; value forms: [field-values.md](field-values.md) |
-| 401 | The sign-in expired | Sign in again (remotely: reconnect PATH WD) |
+| 401 | The sign-in expired | Sign in again (remotely: reconnect PATHwd) |
 | 403 | The server's own permission check | As a refusal above: say what the user can't do |
 | 404 | No such id in this account for this user: a wrong id, a record number given as an id, another account's id, a record outside the user's tags | Find the id again (`search`, `find-records`, the list command); check the account |
 | 5xx | The server failed | Try once more; if it fails again, report the message and what was being done |

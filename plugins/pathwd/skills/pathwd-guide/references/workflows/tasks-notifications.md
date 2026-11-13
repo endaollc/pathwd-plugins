@@ -1,6 +1,6 @@
 # Workflow: tasks-notifications
 
-> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../commands.md) gives any command's syntax and the tool that runs it.
 
 **Covers:** the user's own work: the tasks assigned to them, completing or cancelling tasks (and running a task's pathway), notifications, the Feed and popups. Commands: `list-user-tasks`, `complete-task`, `cancel-task`, `pathway-run start --task-id`, `list-notifications`, `list-feed`, `list-popups`, `mark-notification-read`, `mark-all-notifications-read`. Each command's syntax and output: its command note.
 
@@ -128,7 +128,7 @@ does not mark the popup copy, and vice versa.
 
 ## Key facts and confirmations
 
-- Every command here runs through the PATH WD Remote MCP tool for its area (each command's page in [the command index](../commands.md) names it).
+- Every command here runs through the PATHwd tool for its area (each command's page in [the command index](../commands.md) names it).
 - Completing or cancelling a task can't be undone with these commands, and completing a task that has a pathway means running that pathway: the user confirms first.
 - Users name tasks ("the Review Quote task"); ids come from `list-user-tasks` / `list-record-tasks`. Two tasks with similar names on one record are listed and the user picks.
 - Tasks read best with their name, record and status (grouped by record, overdue first); notifications with what happened, on which record and when, unread ones marked.

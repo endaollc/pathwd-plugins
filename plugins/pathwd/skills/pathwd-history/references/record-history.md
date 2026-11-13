@@ -1,6 +1,6 @@
 # path-record-history
 
-> **Commands:** every command in this skill is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this skill is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../../pathwd-guide/references/commands.md) gives any command's syntax and the tool that runs it.
 
 Answer "what happened" questions from PATH's change history: the same events the History tab on a record shows. History is **read-only**. Nothing in this skill changes data, and nothing can edit or remove a history entry.
 
@@ -83,7 +83,7 @@ Under the table, `Sessions:` has one line per `#n`: `#<n> <type> · <user> [· <
 | Part | Meaning |
 |---|---|
 | type | Where it happened: `card view` (the record's card), `pathway: <name>`, `scheduled action`, `inbound integration`, `email received: …`, ... |
-| user | Who did it. `system` (or the account's system user, e.g. `PATH WD System`) means automation, not a person |
+| user | Who did it. `system` (or the account's system user, e.g. `PATHwd System`) means automation, not a person |
 | source | Present only when the session has one. An agent and where the work came from, e.g. `Claude Code · PATH CLI` (Claude, through the PATH CLI tools, signed in as the session's user), `Claude Cowork · PATH CLI`, or `PATH CLI` alone (the person typed CLI commands). Absent: the web app, or a session from before sources were recorded |
 | session id | What `get-history-session` takes |
 

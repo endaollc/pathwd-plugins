@@ -4,7 +4,7 @@ Tasks users ask for that take several commands: the commands in order, what the 
 
 A rule that runs through all of them: **a pathway that does the job is the business's own process** (it fills the right fields, links the right records, moves milestones, sends what should be sent), so when `pathway-run available` offers one that fits, it is usually better than the same change made with `create-record` / `update-record`. And every change, email or run is something the user agreed to: reads need no confirmation, writes do.
 
-On PATH WD Remote MCP each command runs through the tool for its area; each recipe lists them. Read tools change nothing; add, change and remove tools do. A command's note: each command's page in [the command index](../commands.md).
+On PATHwd each command runs through the tool for its area; each recipe lists them. Read tools change nothing; add, change and remove tools do. A command's note: each command's page in [the command index](../commands.md).
 
 ## 1. "What's on my plate today?"
 
@@ -67,7 +67,7 @@ get-record --record-id 6a9056455ff33756afba5084
 1. Find the records and show the user the list (identifier and current value). They confirm the list and the new value.
 2. `pathway-run available --record-id <one of them>`: a pathway that makes this change (and the related ones) is the better route, run once per record.
 3. Otherwise get the field's id, type and options from `list-fields` (`get-field --field-id <id>` when its options are cut short), and the current stored form from `get-record --raw` on one record. The value goes in its stored form ([field-values.md](field-values.md)): a Selection's exact option text, Percent as a fraction, dates as UTC ISO with date-only fields at noon on the user's clock.
-4. One `update-record` per record. There is no bulk command. Where commands are rate-limited (60 a minute on PATH WD Remote MCP), a "Too many commands" refusal changed nothing and is repeated after a pause.
+4. One `update-record` per record. There is no bulk command. Where commands are rate-limited (60 a minute on PATHwd), a "Too many commands" refusal changed nothing and is repeated after a pause.
 5. Read one record back to check the value and what the save recalculated, then report record by record (which changed, which were refused and why).
 
 - A refusal on one record (`… can't edit record …`) doesn't stop the others; report it.
@@ -255,6 +255,6 @@ find-records --account 5678 --bo-name Job --logic 'INMILESTONE("Lead")' --count
 ```
 
 - Pass `--account` on every command when comparing: the saved account is only the default, and ids from one account mean nothing in the other ([ids-names-paging-limits.md](ids-names-paging-limits.md)).
-- On PATH WD Remote MCP the saved account is shared by every chat on the connection, so another chat's `use-account` changes it.
+- On PATHwd the saved account is shared by every chat on the connection, so another chat's `use-account` changes it.
 
 Tools: `path_account`, `path_find_records`.

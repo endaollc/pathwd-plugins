@@ -1,6 +1,6 @@
 # Workflow: scheduling
 
-> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATH WD Remote MCP each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../commands.md) gives any command's syntax and the tool that runs it.
+> **Commands:** every command in this command is a PATH CLI command line: the command name and its flags. On PATHwd each tool runs the commands of one area: a command line such as `--account 1234 list-fields --bo-name Job` runs as `path_data_model(command: "list-fields", args: "--account 1234 --bo-name Job")`, and each command's page in [the command index](../commands.md) gives any command's syntax and the tool that runs it.
 
 **Covers:** calendars and appointments: listing events, scheduling a record's appointment field, standalone events, and (with calendar permission) managing calendars and calendar groups. Commands: `list-calendars`, `list-calendar-events`, `set-appointment`, `clear-appointment`, `create-calendar-event`, `update-calendar-event`, `delete-calendar-event`, the calendar and calendar group commands. Each command's syntax and output: its command note.
 
@@ -242,7 +242,7 @@ for an explicit yes, then re-run the same command with `--confirm <code>`.
 
 ## Key facts and confirmations
 
-- Every command here runs through the PATH WD Remote MCP tool for its area (each command's page in [the command index](../commands.md) names it).
+- Every command here runs through the PATHwd tool for its area (each command's page in [the command index](../commands.md) names it).
 - An appointment field is never written with `update-record`: `set-appointment` / `clear-appointment` (or the event commands) schedule and clear it.
 - Creating, moving and deleting events change real calendars: the user sees what will be created or changed and agrees first.
 - Without other instructions: an hour long, the user's usual calendar (they confirm it), today for listings.

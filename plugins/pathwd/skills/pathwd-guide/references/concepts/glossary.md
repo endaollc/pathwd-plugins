@@ -47,4 +47,4 @@ Terms that PATH commands, their output and the other guides use, A to Z, each wi
 - **Time Between**: a report column or Custom Field measuring the time between two dates (a field, a milestone or step entry date, or today). → the [`cli-reports-skill` workflow](../../../pathwd-find-records/references/workflows/reports.md)
 - **User filter**: a rule of a folder or report that viewers can change from the filter bar (pick a salesperson, a stage) without changing the saved filter. → the [`path-logic-formula-syntax` guide](../../../pathwd-find-records/references/logic-formula-syntax.md)
 - **Visibility criteria**: a pathway's rule for which records it is offered on; also the rules that show a field, field group or relationship only on some records or to some people. → `pathways.md`, `fields.md`
-- **Workspace**: on PATH WD Remote MCP, the connection's private folder for files that commands read and write (uploads, downloads). → the [`path-cli` guide](../commands.md)
+- **Workspace**: on PATHwd, the connection's private folder for files that commands read and write (uploads, downloads). → the [`path-cli` guide](../commands.md)
