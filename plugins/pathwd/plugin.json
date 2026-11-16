@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "pathwd",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Work with your PATHwd account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATHwd connector with your own access. Includes PATH's documentation as skills.",
   "author": {
     "name": "PATHwd",
@@ -24,13 +24,39 @@
       "interface": {
         "displayName": "PATHwd",
         "shortDescription": "Work with your PATHwd account",
-        "longDescription": "Connects ChatGPT and Codex to your PATHwd account through the PATHwd connector, signed in as you, so it sees and changes only what you can in the PATH web app. Find, create and update records; read and add messages, notes, files and emails; browse and build folders and reports; run pathways screen by screen; manage tasks, notifications and calendars; and read record history. The plugin also carries PATH's documentation as skills: what PATH terms mean, every command the connector runs, Logic Builder formulas, record history and pathways.",
-        "developerName": "PATHwd",
+        "longDescription": "PATHwd is a workflow and operations platform for window and door dealers and similar businesses: sales, quoting, purchasing, receiving, scheduling, delivery, installation, service and invoicing, tracked as records that move through milestones, with pathways that guide staff through each process.\n\nThis plugin connects ChatGPT and Codex to your PATHwd account through the PATHwd connector. You sign in with your PATHwd account, and the assistant acts as you, with exactly the access you have in the PATHwd web app. Your roles, tags and sharing apply to every request, and anything hidden from you in the web app stays out of reach.\n\nWhat you can do:\n- Find records with global search or advanced (Logic Builder) searches, and read a record as the record viewer shows it, with its linked records\n- Read a record's files, notes, messages, emails, tasks and change history\n- Create and update records, link them, add notes, upload files (including files attached in the chat) and post messages\n- Send an email from a record, from your name and PATHwd email address, with a preview first\n- Run pathways screen by screen, as in the web app\n- See your tasks and notifications; create, assign and complete tasks\n- Read and manage calendars and calendar events\n- List, run, create and change folders and reports, and save Logic Builder filters\n- Understand how the account is set up: business objects, fields, milestones, workflow steps and pathways\n\nThe plugin also carries PATHwd's documentation as skills: what PATHwd terms mean, every command the connector runs, Logic Builder formulas, record history and pathways.\n\nWho it is for: people who already use PATHwd at work, and the admins who set it up for them.\n\nLimitations:\n- You need a PATHwd account; the plugin can't create one.\n- It can't change the account's design (business objects, fields, workflow or pathway steps); that stays in the PATHwd Designer.\n- It can't do anything your PATHwd access doesn't allow, and only account Admins can act as another member.\n- Permanent deletes need a confirmation code from a first call that deletes nothing; read, add, change and remove actions are separate tools.\n- Raw API calls are not available.\n- Commands are rate limited (60 a minute per connection) and uploads are limited to 100 MB per file.",
+        "developerName": "Endao, LLC",
         "category": "Productivity",
         "websiteURL": "https://pathwd.com",
         "privacyPolicyURL": "https://www.pathwd.com/privacy-policy",
+        "supportURL": "https://pathwd.com/mcp-docs/support",
+        "termsOfServiceURL": "https://www.pathwd.com/terms-of-use",
         "composerIcon": "./assets/icon.png",
-        "logo": "./assets/icon.png"
+        "logo": "./assets/icon.png",
+        "brandColor": "#9B0000",
+        "brandColorDark": "#E04848",
+        "capabilities": [
+          "Find records with global search or Logic Builder searches",
+          "Read a record as the PATHwd record viewer shows it, with its linked records",
+          "Read a record's files, notes, messages, emails, tasks and change history",
+          "Create records and link records to each other",
+          "Update record fields and appointment fields",
+          "Add notes, post messages and upload files to records",
+          "Send an email from a record as the signed-in user, with a preview first",
+          "Run pathways screen by screen, as in the PATHwd web app",
+          "List the user's tasks and notifications; create, assign and complete tasks",
+          "Read and manage calendars, calendar groups and calendar events",
+          "List and run folders and reports",
+          "Create and change folders, reports and Logic Builder filters",
+          "Explain the account's setup: business objects, fields, milestones and pathways",
+          "Archive records and files; delete files, notes and messages after a confirmation code",
+          "Look up PATHwd documentation and command syntax"
+        ],
+        "defaultPrompt": [
+          "What tasks do I have due this week in PATHwd?",
+          "Find the Smith job in PATHwd and tell me which milestone it is in.",
+          "Which PATHwd Jobs were created in the last 30 days and are still in Lead?"
+        ]
       }
     }
   }

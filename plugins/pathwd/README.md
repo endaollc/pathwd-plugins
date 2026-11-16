@@ -2,7 +2,7 @@
 
 Work with your PATHwd account from Claude, ChatGPT and Codex: find, create and update records, read and add messages, notes, files and emails, browse and build folders and reports, run pathways, manage tasks, notifications and calendars, and read record history. The assistant always works with your own PATH access, so it can only see and change what you can in the PATH web app.
 
-Version 1.0.3.
+Version 1.0.4.
 
 ## What's in the plugin
 
@@ -60,7 +60,11 @@ Then start `codex`, type `/plugins`, open the **pathwd** marketplace tab and ins
 
 ### ChatGPT
 
-In the ChatGPT desktop app, open the **Plugins** tab, find **PATHwd** (from the `pathwd` marketplace added above), open its details and select the plus button. Connect the PATHwd connector when asked, then start a new chat.
+Until PATHwd is listed in ChatGPT's apps directory, add the connector on its own. Custom connectors need ChatGPT's developer mode, on plans that offer it:
+
+1. Open **Settings → Apps & Connectors → Advanced settings** and turn on **Developer mode**.
+2. Choose **Create**. Name it **PATHwd**, enter the URL `https://mcp.pathwd.app/mcp` and choose **OAuth** for authentication.
+3. Sign in to PATHwd and choose **Allow**, then start a new chat.
 
 ## Sign in
 
