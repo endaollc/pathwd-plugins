@@ -2,7 +2,7 @@
 
 Work with your PATHwd account from Claude, ChatGPT and Codex: find, create and update records, read and add messages, notes, files and emails, browse and build folders and reports, run pathways, manage tasks, notifications and calendars, and read record history. The assistant always works with your own PATH access, so it can only see and change what you can in the PATH web app.
 
-Version 1.0.5.
+Version 1.0.6.
 
 ## What's in the plugin
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "pathwd",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Work with your PATHwd account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATHwd connector with your own access. Includes PATH's documentation as skills.",
   "author": {
     "name": "PATHwd",
@@ -26,7 +26,7 @@
         "shortDescription": "Work with your PATHwd account",
         "longDescription": "PATHwd is a workflow and operations platform for window and door dealers and similar businesses: sales, quoting, purchasing, receiving, scheduling, delivery, installation, service and invoicing, tracked as records that move through milestones, with pathways that guide staff through each process.\n\nThis plugin connects ChatGPT and Codex to your PATHwd account through the PATHwd connector. You sign in with your PATHwd account, and the assistant acts as you, with exactly the access you have in the PATHwd web app. Your roles, tags and sharing apply to every request, and anything hidden from you in the web app stays out of reach.\n\nWhat you can do:\n- Find records with global search or advanced (Logic Builder) searches, and read a record as the record viewer shows it, with its linked records\n- Read a record's files, notes, messages, emails, tasks and change history\n- Create and update records, link them, add notes, upload files (including files attached in the chat) and post messages\n- Send an email from a record, from your name and PATHwd email address, with a preview first\n- Run pathways screen by screen, as in the web app\n- See your tasks and notifications; create, assign and complete tasks\n- Read and manage calendars and calendar events\n- List, run, create and change folders and reports, and save Logic Builder filters\n- Understand how the account is set up: business objects, fields, milestones, workflow steps and pathways\n\nThe plugin also carries PATHwd's documentation as skills: what PATHwd terms mean, every command the connector runs, Logic Builder formulas, record history and pathways.\n\nWho it is for: people who already use PATHwd at work, and the admins who set it up for them.\n\nLimitations:\n- You need a PATHwd account; the plugin can't create one.\n- It can't change the account's design (business objects, fields, workflow or pathway steps); that stays in the PATHwd Designer.\n- It can't do anything your PATHwd access doesn't allow, and only account Admins can act as another member.\n- Permanent deletes need a confirmation code from a first call that deletes nothing; read, add, change and remove actions are separate tools.\n- Raw API calls are not available.\n- Commands are rate limited (60 a minute per connection) and uploads are limited to 100 MB per file.",
         "developerName": "Endao, LLC",
-        "category": "Productivity",
+        "category": "Business & Operations",
         "websiteURL": "https://pathwd.com",
         "privacyPolicyURL": "https://www.pathwd.com/privacy-policy",
         "supportURL": "https://pathwd.com/mcp-docs/support",
