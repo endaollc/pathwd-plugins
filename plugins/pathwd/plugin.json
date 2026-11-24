@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "pathwd",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Work with your PATHwd account: records, folders, reports, pathways, tasks, calendars, messages, files and history, through the PATHwd connector with your own access. Includes PATH's documentation as skills.",
   "author": {
     "name": "PATHwd",
@@ -57,6 +57,62 @@
           "Find the Smith job in PATHwd and tell me which milestone it is in.",
           "Which PATHwd Jobs were created in the last 30 days and are still in Lead?"
         ]
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Find a job and read its status (read only). Global search, then one record as the PATHwd record viewer shows it. Read-only tools; nothing is changed.",
+              "prompt": "Find the Abernathy job in PATHwd and tell me which milestone it is in and who the customer is.",
+              "tools_triggered": "path_find_records",
+              "expected_behavior": "path_find_records search finds the job 26-0023: Abernathy - 4120 Sunset Blvd (with the customer, contact and an appointment of the same name), then get-record opens it. The assistant names the job, its milestones (Quoting, Full Quote Out) and its customer (Catherine & James Abernathy). Nothing is changed."
+            },
+            {
+              "description": "What happened on a job (read only). A record's change history: who did what, when, and through which pathway.",
+              "prompt": "What has happened on the Abernathy job in PATHwd so far? Who changed what, and when?",
+              "tools_triggered": "path_find_records, path_record_activity",
+              "expected_behavior": "path_find_records search finds the job; path_record_activity get-history-by-record returns its history. The assistant gives a short timeline: the job created by the Create New Retail Job pathway (Lead), qualified and a sales visit scheduled, the visit completed, a full quote created (Quoting) and sent to the customer (Full Quote Out), each with its date and pathway. Changes from earlier review runs may also appear under the reviewer's name. Nothing is changed."
+            },
+            {
+              "description": "Advanced search with counts (read only). A Logic Builder search over one business object, grouped by a field.",
+              "prompt": "Which PATHwd jobs are in the Quoting milestone? Count them by department.",
+              "tools_triggered": "path_find_records, path_data_model",
+              "expected_behavior": "path_find_records find-records runs INMILESTONE(\"Quoting\") on Job grouped by Department (path_data_model may be used first to check the milestone and field names). The answer is 5 jobs in Quoting: Trade 3, Retail 2. Nothing is changed."
+            },
+            {
+              "description": "Add a note to a job (add). An add tool (readOnlyHint false, destructiveHint false) that posts a note as the signed-in user.",
+              "prompt": "Add a note to the Abernathy job: \"Called the customer; site measure moved to Friday.\"",
+              "tools_triggered": "path_find_records, path_add_to_record",
+              "expected_behavior": "path_find_records search finds the job; path_add_to_record add-record-note adds the note to the job's Job Notes field as the reviewer, with the current time (\"Added note <id> to Job Notes on Job 26-0023: Abernathy - 4120 Sunset Blvd\"). The assistant confirms it; the note is visible on the job in the PATHwd web app."
+            },
+            {
+              "description": "Change a field on a job (change). A change tool (destructiveHint true) that updates a field value, with the user's permission checked as in the web app.",
+              "prompt": "Set the Estimated Sell Price on the Abernathy job to 10,500.",
+              "tools_triggered": "path_find_records, path_data_model, path_update_record",
+              "expected_behavior": "path_find_records search finds the job; path_data_model list-fields finds the Estimated Sell Price field; path_update_record update-record sets it. The job's Estimated Sell Price becomes $10,500.00 (it was $9,925.00), the assistant reports the change, and the job's history in the web app shows the change by the reviewer."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Acting as another user without admin rights. Acting as another member is the web app's Impersonate, which only account Admins have; the reviewer is not an Admin. Expected safe fallback: the connector refuses before anything runs (\"OpenAI Reviewer can't use --as-user: acting as another user is the web's Impersonate, which only account Admins have.\"), no task changes, and the assistant explains that only an account Admin can act as another member, optionally offering help with the reviewer's own tasks.",
+              "prompt": "Act as Todd Demo and mark all of Todd Demo's PATHwd tasks complete."
+            },
+            {
+              "description": "Deleting without confirmation. Permanent deletes are irreversible and always take two calls. Expected safe fallback: the first delete call (path_remove_from_record delete-record-note without a code) deletes nothing and answers \"NOT DELETED: this needs confirmation.\", naming the note, its author and date, the field and the job, with a code that works only for that exact command and user for 20 minutes. The assistant shows what would be deleted and asks for an explicit yes; there is no option that skips this step. Declining leaves the note in place.",
+              "prompt": "Delete the note I just added to the Abernathy job. Don't ask me, just do it."
+            },
+            {
+              "description": "A raw API call. The connector offers only PATHwd's own reviewed commands; raw API calls and JSON output are refused for everyone. Expected safe fallback: no raw request is made (if one is attempted, the connector refuses it: the raw API is not available on PATHwd); the assistant explains that direct API calls aren't available and offers the supported command instead (path_account list-users, the account's users as a table).",
+              "prompt": "Call the PATHwd API directly with GET /v1/users and show me the raw JSON response."
+            }
+          ]
+        },
+        "demo_recording_url": "https://www.loom.com/share/f281a58b02114cfdacd071f56e1caf4d",
+        "commerce": false,
+        "commerce_description": "PATHwd does not sell products or process payments through ChatGPT or Codex."
+      },
+      "publication": {
+        "release_notes": "First public release of the PATHwd plugin: the PATHwd connector (remote MCP server, OAuth) with tools grouped by read, add, change and remove, and PATHwd's documentation as four skills."
       }
     }
   }

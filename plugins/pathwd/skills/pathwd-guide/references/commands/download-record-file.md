@@ -1,6 +1,6 @@
 # download-record-file
 
-Runs with: path_record_activity(command: "download-record-file", args: "<flags>") (read-only).
+Runs with: path_download_record_file(command: "download-record-file", args: "<flags>") (add).
 
 ```
 Usage: download-record-file [options]
@@ -16,6 +16,11 @@ Options:
                     under the original file name (default: ./<file name>)
   --stdout          Write the file contents to stdout instead of saving
 ```
+
+## Examples
+
+- args: `--record-id 6a9056455ff33756afba5084 --file-id 6a99b04605b6362500875af0`
+- args: `--record-id 6a9056455ff33756afba5084 --file-id 6a99b04605b6362500875af0 --stdout`
 
 ## Notes
 
@@ -44,5 +49,3 @@ On PATHwd the saved file comes back as a download link in the result (in place o
 - `<user> can't download a file from record … — they don't have View permission on <business object>, as in the web app.`
 
 **Related:** `list-record-files`, `upload-record-file`, `send-record-email --record-file` (send the file by email instead).
-
-Related commands: [`list-record-files`](list-record-files.md), [`list-record-notes`](list-record-notes.md), [`list-record-messages`](list-record-messages.md), [`list-record-emails`](list-record-emails.md), [`list-record-tasks`](list-record-tasks.md), [`get-history-by-record`](../../../pathwd-history/references/commands/get-history-by-record.md), [`get-history-session`](../../../pathwd-history/references/commands/get-history-session.md), [`get-event-metadata`](../../../pathwd-history/references/commands/get-event-metadata.md).

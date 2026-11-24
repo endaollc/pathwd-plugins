@@ -235,7 +235,7 @@ On PATHwd each tool runs a group of commands: the tool takes the command, its ar
 | `path_account` | read | `list-accounts`, `use-account`, `get-account`, `session-context`, `get-profile`, `get-notification-settings`, `list-users`, `list-roles`, `web-link`, `clear-cache` |
 | `path_data_model` | read | `list-business-objects`, `get-business-object`, `list-fields`, `get-field`, `list-field-groups`, `list-relationships`, `list-workflow-milestones`, `list-workflow-steps`, `list-workflow-tasks`, `list-tag-groups`, `list-file-types`, `list-appointment-fields`, `parse-filter`, `get-filter` |
 | `path_find_records` | read | `search`, `find-records`, `list-records`, `get-record`, `list-related-records` |
-| `path_record_activity` | read | `list-record-files`, `download-record-file`, `list-record-notes`, `list-record-messages`, `list-record-emails`, `list-record-tasks`, `get-history-by-record`, `get-history-session`, `get-event-metadata` |
+| `path_record_activity` | read | `list-record-files`, `list-record-notes`, `list-record-messages`, `list-record-emails`, `list-record-tasks`, `get-history-by-record`, `get-history-session`, `get-event-metadata` |
 | `path_my_work` | read | `list-user-tasks`, `list-notifications`, `list-feed`, `feed-unread-counts`, `feed-records`, `list-popups` |
 | `path_folders_reports` | read | `list-folders`, `list-reports`, `get-report`, `run-report` |
 | `path_calendars` | read | `list-calendars`, `get-calendar`, `list-calendar-groups`, `get-calendar-group`, `list-calendar-events`, `get-calendar-event` |
@@ -243,6 +243,7 @@ On PATHwd each tool runs a group of commands: the tool takes the command, its ar
 | `path_create_record` | add | `create-record`, `link-record` |
 | `path_add_to_record` | add | `add-record-note`, `upload-record-file`, `send-message` |
 | `path_send_email` | add | `send-record-email` |
+| `path_download_record_file` | add | `download-record-file` |
 | `path_update_record` | change | `update-record`, `unarchive-record`, `unarchive-record-file`, `set-appointment`, `update-record-note`, `update-record-file`, `update-message` |
 | `path_run_pathway` | change | `pathway-run start`, `pathway-run submit`, `pathway-run act`, `pathway-run cancel`, `execute-pathway`, `run-step` |
 | `path_manage_tasks` | change | `create-task`, `edit-task`, `assign-task`, `complete-task` |
@@ -284,7 +285,7 @@ On PATHwd each tool runs a group of commands: the tool takes the command, its ar
 | [`delete-message`](commands/delete-message.md) | `path_remove_from_record` | Delete a message on a record (your own) |
 | [`delete-record-file`](commands/delete-record-file.md) | `path_remove_from_record` | Delete a file from a record |
 | [`delete-record-note`](commands/delete-record-note.md) | `path_remove_from_record` | Delete a note from a record's Notes field, as the Delete button of its Edit Note form does |
-| [`download-record-file`](commands/download-record-file.md) | `path_record_activity` | Download one file attached to a record (to a workspace path, or to stdout with --stdout) |
+| [`download-record-file`](commands/download-record-file.md) | `path_download_record_file` | Download one file attached to a record (to a workspace path, or to stdout with --stdout) |
 | [`edit-task`](commands/edit-task.md) | `path_manage_tasks` | Edit an open task on a record, like a task's Edit button |
 | [`execute-pathway`](../../pathwd-pathways/references/commands/execute-pathway.md) | `path_run_pathway` | Run a pathway on a record on PATH's headless runner, the way scheduled pathways and integrations run: no screens, so it suits a pathway whose steps… |
 | [`feed-records`](commands/feed-records.md) | `path_my_work` | The records your Feed and popups mention (the Feed page record list) |

@@ -6,8 +6,9 @@ Runs with: path_calendars(command: "get-calendar-event", args: "<flags>") (read-
 Usage: get-calendar-event [options] <id>
 
 Show one calendar event: title, when (your clock), calendar, the record and
-appointment field it is on, source (standalone, or the synced provider and
-organizer), read-only, location, participants, description, created
+appointment field it is on, source (standalone, or the synced provider and who
+created the event there), read-only, location, participants, description,
+created
 
 Arguments:
   id          Calendar event id

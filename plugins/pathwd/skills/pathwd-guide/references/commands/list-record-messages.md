@@ -56,4 +56,4 @@ Columns to read:
 
 **Related:** `send-message`, `update-message`, `delete-message`, `list-record-notes`, `list-record-emails`.
 
-Related commands: [`list-record-files`](list-record-files.md), [`download-record-file`](download-record-file.md), [`list-record-notes`](list-record-notes.md), [`list-record-emails`](list-record-emails.md), [`list-record-tasks`](list-record-tasks.md), [`get-history-by-record`](../../../pathwd-history/references/commands/get-history-by-record.md), [`get-history-session`](../../../pathwd-history/references/commands/get-history-session.md), [`get-event-metadata`](../../../pathwd-history/references/commands/get-event-metadata.md).
+Related commands: [`list-record-files`](list-record-files.md), [`list-record-notes`](list-record-notes.md), [`list-record-emails`](list-record-emails.md), [`list-record-tasks`](list-record-tasks.md), [`get-history-by-record`](../../../pathwd-history/references/commands/get-history-by-record.md), [`get-history-session`](../../../pathwd-history/references/commands/get-history-session.md), [`get-event-metadata`](../../../pathwd-history/references/commands/get-event-metadata.md).
